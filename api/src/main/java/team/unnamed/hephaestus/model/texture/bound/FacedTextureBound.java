@@ -4,9 +4,16 @@ import team.unnamed.hephaestus.struct.Vector2Int;
 
 import java.util.Objects;
 
+/**
+ * Class that holds the bounds of a
+ * texture, it's used to take a section
+ * of a texture to use it in a cube.
+ */
 public class FacedTextureBound {
 
+    /** The origin coordinates */
     private final Vector2Int bounds;
+    /** The size (origin + size = end coordinates) */
     private final Vector2Int size;
 
     public FacedTextureBound(Vector2Int bounds, Vector2Int size) {
