@@ -1,0 +1,10 @@
+# gradle files
+.gradle
+
+# ide files
+.idea
+*.iml
+
+# target dirs
+/api/build/
+/plugin/build/
