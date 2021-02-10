@@ -11,12 +11,12 @@ import java.util.List;
 public class ModelBone implements ModelComponent {
 
     private final String name;
-    private final Vector3Float origin;
+    private final Vector3Float pivot;
     private final List<ModelComponent> components;
 
-    public ModelBone(String name, Vector3Float origin, List<ModelComponent> components) {
+    public ModelBone(String name, Vector3Float pivot, List<ModelComponent> components) {
         this.name = name;
-        this.origin = origin;
+        this.pivot = pivot;
         this.components = components;
     }
 
@@ -26,7 +26,7 @@ public class ModelBone implements ModelComponent {
 
     @Override
     public Vector3Float getOrigin() {
-        return origin;
+        return pivot;
     }
 
     public List<ModelComponent> getComponents() {

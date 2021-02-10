@@ -1,8 +1,8 @@
 package team.unnamed.hephaestus.model;
 
-import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
+import team.unnamed.hephaestus.struct.Vector3Float;
 
 import java.util.Arrays;
 import java.util.Objects;
