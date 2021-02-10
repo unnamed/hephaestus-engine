@@ -1,3 +1,5 @@
 dependencies {
-    project(':hephaestus-api')
+    compile project(':hephaestus-api')
+
+    compileOnly 'com.google.code.gson:gson:2.8.6'
 }
