@@ -35,7 +35,7 @@ public class ModelBoneAnimation {
         if (o == null || getClass() != o.getClass()) return false;
         ModelBoneAnimation that = (ModelBoneAnimation) o;
         return Objects.equals(positionFrames, that.positionFrames)
-                && Objects.equals(rotationFrames, that.rotationFrames)
+                && Objects.equals(rotationFrames, that.rotationFrames);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ModelBoneAnimation {
     public String toString() {
         return "ModelBoneAnimation{" +
                 "positionFrames=" + positionFrames +
-                ", rotationFrames=" + rotationFrames
+                ", rotationFrames=" + rotationFrames +
                 '}';
     }
 }

@@ -16,5 +16,4 @@ public class ModelDescription {
         return identifier;
     }
 
-    en la consola malparido :gatoXD:
 }
