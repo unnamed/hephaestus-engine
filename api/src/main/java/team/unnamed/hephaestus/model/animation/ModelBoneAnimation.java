@@ -12,16 +12,13 @@ public class ModelBoneAnimation {
 
     private final List<KeyFrame> positionFrames;
     private final List<KeyFrame> rotationFrames;
-    private final List<KeyFrame> scaleFrames;
 
     public ModelBoneAnimation(
             List<KeyFrame> positionFrames,
-            List<KeyFrame> rotationFrames,
-            List<KeyFrame> scaleFrames
+            List<KeyFrame> rotationFrames
     ) {
         this.positionFrames = positionFrames;
         this.rotationFrames = rotationFrames;
-        this.scaleFrames = scaleFrames;
     }
 
     public List<KeyFrame> getPositionFrames() {
@@ -32,10 +29,6 @@ public class ModelBoneAnimation {
         return rotationFrames;
     }
 
-    public List<KeyFrame> getScaleFrames() {
-        return scaleFrames;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -43,20 +36,18 @@ public class ModelBoneAnimation {
         ModelBoneAnimation that = (ModelBoneAnimation) o;
         return Objects.equals(positionFrames, that.positionFrames)
                 && Objects.equals(rotationFrames, that.rotationFrames)
-                && Objects.equals(scaleFrames, that.scaleFrames);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(positionFrames, rotationFrames, scaleFrames);
+        return Objects.hash(positionFrames, rotationFrames);
     }
 
     @Override
     public String toString() {
         return "ModelBoneAnimation{" +
                 "positionFrames=" + positionFrames +
-                ", rotationFrames=" + rotationFrames +
-                ", scaleFrames=" + scaleFrames +
+                ", rotationFrames=" + rotationFrames
                 '}';
     }
 }
