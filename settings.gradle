@@ -1,2 +1,10 @@
 rootProject.name = 'hephaestus-engine'
 
+[
+    'api',
+    'plugin'
+].forEach {
+    include it
+    // Add 'hephaestus' as prefix for all subprojects
+    project(':' + it).name = 'hephaestus-' + it
+}
