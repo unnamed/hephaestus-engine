@@ -2,9 +2,13 @@ subprojects {
     apply plugin: 'java'
 
     group 'team.unnamed.hephaestus'
-    version '0.1.0-SNAPSHOT'
+    version '0.1.0'
 
     repositories {
+        mavenLocal()
+        maven { url 'https://repo.codemc.io/repository/nms/' }
+        maven { url 'https://repo.unnamed.team/repository/unnamed-releases/' }
+        maven { url 'https://repo.unnamed.team/repository/unnamed-snapshots/' }
         mavenCentral()
     }
 }

@@ -21,6 +21,66 @@ public class Vector3Float {
         this.z = z;
     }
 
+    public Vector3Float add(float x, float y, float z) {
+        return new Vector3Float(this.x + x, this.y + y, this.z + z);
+    }
+
+    public Vector3Float subtract(float x, float y, float z) {
+        return new Vector3Float(
+                this.x - x,
+                this.y - y,
+                this.z - z
+        );
+    }
+
+    public Vector3Float divide(float value) {
+        return new Vector3Float(
+                this.x / value,
+                this.y / value,
+                this.z / value
+        );
+    }
+
+    public Vector3Float divide(float x, float y, float z) {
+        return new Vector3Float(
+                this.x / x,
+                this.y / y,
+                this.z / z
+        );
+    }
+
+    public float dot(Vector3Float vector) {
+        return this.x * vector.getX() + this.y * vector.getY() + this.z * vector.getZ();
+    }
+
+    public Vector3Float multiply(float value) {
+        return new Vector3Float(
+                this.x * value,
+                this.y * value,
+                this.z * value
+        );
+    }
+
+    public Vector3Float multiply(float x, float y, float z) {
+        return new Vector3Float(
+                this.x * x,
+                this.y * y,
+                this.z * z
+        );
+    }
+
+    public Vector3Float add(Vector3Float vector) {
+        return this.add(vector.getX(), vector.getY(), vector.getZ());
+    }
+
+    public Vector3Float subtract(Vector3Float vector) {
+        return this.subtract(vector.getX(), vector.getY(), vector.getZ());
+    }
+
+    public Vector3Float multiply(Vector3Float vector) {
+        return this.multiply(vector.getX(), vector.getY(), vector.getZ());
+    }
+
     public float getX() {
         return x;
     }
@@ -31,6 +91,43 @@ public class Vector3Float {
 
     public float getZ() {
         return z;
+    }
+
+    public float getInAxis(int axis) {
+        switch (axis) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+            default:
+                throw new IllegalArgumentException("Invalid axis: " + axis);
+        }
+    }
+
+    public Vector3Float setX(float x) {
+        return new Vector3Float(
+                x,
+                this.y,
+                this.z
+        );
+    }
+
+    public Vector3Float setY(float y) {
+        return new Vector3Float(
+                this.x,
+                y,
+                this.z
+        );
+    }
+
+    public Vector3Float setZ(float z) {
+        return new Vector3Float(
+                this.x,
+                this.y,
+                z
+        );
     }
 
     @Override
@@ -56,4 +153,9 @@ public class Vector3Float {
                 ", z=" + z +
                 '}';
     }
+
+    public static Vector3Float zero() {
+        return new Vector3Float(0, 0, 0);
+    }
+
 }

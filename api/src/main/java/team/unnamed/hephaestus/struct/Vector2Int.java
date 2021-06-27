@@ -48,4 +48,9 @@ public class Vector2Int {
                 ", y=" + y +
                 '}';
     }
+
+    public static Vector2Int zero() {
+        return new Vector2Int(0, 0);
+    }
+
 }

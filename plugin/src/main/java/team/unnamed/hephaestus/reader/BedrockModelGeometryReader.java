@@ -1,6 +1,7 @@
 package team.unnamed.hephaestus.reader;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import team.unnamed.hephaestus.model.*;
@@ -8,7 +9,9 @@ import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
 import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.hephaestus.util.Vectors;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
 
@@ -22,90 +25,88 @@ import java.util.*;
  */
 public class BedrockModelGeometryReader implements ModelGeometryReader {
 
+    private static final JsonParser JSON_PARSER = new JsonParser();
+
     private static final List<String> SUPPORTED_FORMATS = Arrays.asList(
             "1.12.0"
     );
 
     @Override
-    public ModelGeometry load(Reader reader) throws Exception {
-        JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+    public ModelGeometry read(Reader reader) throws IOException {
+        JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
+        JsonElement formatVersionElement = json.get("format_version");
 
-        if (!json.has("format_version")) {
-            throw new IllegalArgumentException("Provided json does not have a clear format version");
+        if (
+                formatVersionElement == null
+                || !SUPPORTED_FORMATS.contains(formatVersionElement.getAsString())
+        ) {
+            throw new IOException("Provided JSON doesn't have a valid format version");
         }
 
-        String format = json.get("format_version").getAsString();
-        if (!SUPPORTED_FORMATS.contains(format)) {
-            throw new IllegalArgumentException("Format " + format + " is not supported by this ModelGeometryReader");
-        }
+        JsonElement geometryArrayElement = json.get("minecraft:geometry");
+        JsonArray geometryArray;
 
-        if (!json.has("minecraft:geometry")) {
-            throw new IllegalArgumentException("Provided json does not have a minecraft geometry array");
-        }
-
-        JsonArray geometryArray = json.get("minecraft:geometry").getAsJsonArray();
-        if (geometryArray.size() <= 0) {
-            throw new IllegalArgumentException("Geometry does not have a proper object");
+        if (
+                geometryArrayElement == null
+                || (geometryArray = geometryArrayElement.getAsJsonArray()).size() < 1
+        ) {
+            throw new IOException("Provided json does not have a minecraft geometry array");
         }
 
         JsonObject geometryObject = geometryArray.get(0).getAsJsonObject();
+        JsonObject descriptionJson = geometryObject.getAsJsonObject("description");
+        JsonArray visibleBoundsOffsetArray = descriptionJson.getAsJsonArray("visible_bounds_offset");
 
-        JsonObject descriptionJson = geometryObject.get("description").getAsJsonObject();
         ModelDescription description = new ModelDescription(
-                descriptionJson.get("identifier").getAsString()
+                descriptionJson.get("identifier").getAsString(),
+                descriptionJson.get("texture_width").getAsInt(),
+                descriptionJson.get("texture_height").getAsInt(),
+                descriptionJson.get("visible_bounds_width").getAsInt(),
+                descriptionJson.get("visible_bounds_height").getAsInt(),
+                Vectors.getVector3FloatFromJson(visibleBoundsOffsetArray)
         );
 
-        Map<ModelBone, String> boneParentMap = new HashMap<>();
-        JsonArray bonesArray = geometryObject.get("bones").getAsJsonArray();
-        bonesArray.forEach(boneElement -> {
+        Map<ModelBone, String> parentsByBone = new LinkedHashMap<>();
+
+        JsonArray bonesArray = geometryObject.getAsJsonArray("bones");
+
+        for (JsonElement boneElement : bonesArray) {
 
             JsonObject boneJson = boneElement.getAsJsonObject();
             String name = boneJson.get("name").getAsString();
 
-            JsonArray pivotArray = boneJson.get("pivot").getAsJsonArray();
-            Vector3Float pivot = new Vector3Float(
-                    pivotArray.get(0).getAsFloat(),
-                    pivotArray.get(1).getAsFloat(),
-                    pivotArray.get(2).getAsFloat()
-            );
+            Vector3Float pivot = Vectors.getVector3FloatFromJson(boneJson.get("pivot"));
 
             List<ModelComponent> cubes = new ArrayList<>();
             JsonArray cubesArray = boneJson.get("cubes").getAsJsonArray();
-            cubesArray.forEach(cubeElement -> {
+            for (JsonElement cubeElement : cubesArray) {
 
                 JsonObject cubeJson = cubeElement.getAsJsonObject();
 
-                JsonArray originArray = cubeJson.get("origin").getAsJsonArray();
-                Vector3Float origin = new Vector3Float(
-                        originArray.get(0).getAsFloat(),
-                        originArray.get(1).getAsFloat(),
-                        originArray.get(2).getAsFloat()
-                );
+                JsonElement cubePivotElement = cubeJson.get("pivot");
+                Vector3Float cubePivot = cubePivotElement == null
+                        ? Vector3Float.zero()
+                        : Vectors.getVector3FloatFromJson(cubePivotElement);
 
-                JsonArray sizeArray = cubeJson.get("size").getAsJsonArray();
-                Vector3Float size = new Vector3Float(
-                        sizeArray.get(0).getAsFloat(),
-                        sizeArray.get(1).getAsFloat(),
-                        sizeArray.get(2).getAsFloat()
-                );
+                Vector3Float origin = Vectors.getVector3FloatFromJson(cubeJson.get("origin"));
+                Vector3Float size = Vectors.getVector3FloatFromJson(cubeJson.get("size"));
+
+                JsonElement rotationElement = cubeJson.get("rotation");
+                Vector3Float rotation = rotationElement != null && rotationElement.isJsonArray()
+                        ? Vectors.getVector3FloatFromJson(rotationElement)
+                        : Vector3Float.zero();
+
+                if (cubeJson.get("uv").isJsonArray()) {
+                    throw new IOException("Box UV not supported, please turn it off");
+                }
 
                 FacedTextureBound[] textureBounds = new FacedTextureBound[TextureFace.values().length];
                 cubeJson.get("uv").getAsJsonObject().entrySet().forEach(uvEntry -> {
 
                     TextureFace face = TextureFace.valueOf(uvEntry.getKey().toUpperCase());
                     JsonObject uvJson = uvEntry.getValue().getAsJsonObject();
-
-                    JsonArray boundsArray = uvJson.get("uv").getAsJsonArray();
-                    Vector2Int uvBounds = new Vector2Int(
-                            boundsArray.get(0).getAsInt(),
-                            boundsArray.get(1).getAsInt()
-                    );
-
-                    JsonArray uvSizeArray = uvJson.get("uv_size").getAsJsonArray();
-                    Vector2Int uvSize = new Vector2Int(
-                            uvSizeArray.get(0).getAsInt(),
-                            uvSizeArray.get(1).getAsInt()
-                    );
+                    Vector2Int uvBounds = Vectors.getVector2IntFromJson(uvJson.get("uv"));
+                    Vector2Int uvSize = Vectors.getVector2IntFromJson(uvJson.get("uv_size"));
 
                     textureBounds[face.ordinal()] = new FacedTextureBound(
                             uvBounds,
@@ -115,36 +116,36 @@ public class BedrockModelGeometryReader implements ModelGeometryReader {
 
                 cubes.add(new ModelCube(
                         origin,
+                        cubePivot,
+                        rotation,
                         size,
                         textureBounds
                 ));
-            });
+            }
 
-            String parent = boneJson.has("parent") ?
-                    boneJson.get("parent").getAsString()
-                    :
-                    "";
-
-            boneParentMap.put(
-                    new ModelBone(
-                            name,
-                            pivot,
-                            cubes
-                    ),
-                    parent
+            ModelBone bone = new ModelBone(
+                    name,
+                    pivot,
+                    cubes
             );
-        });
+
+            String parentName = boneJson.has("parent")
+                    ? boneJson.get("parent").getAsString()
+                    : null;
+
+            parentsByBone.put(bone, parentName);
+        }
 
         List<ModelBone> parentedBones = new ArrayList<>();
-        boneParentMap.forEach((bone, parent) -> {
-            if (parent.isEmpty()) {
+        parentsByBone.forEach((bone, parent) -> {
+            if (parent == null) {
                 parentedBones.add(bone);
             } else {
-                boneParentMap.keySet()
-                        .stream()
-                        .filter(mappedBone -> mappedBone.getName().equals(parent))
-                        .findFirst()
-                        .ifPresent(parentBone -> parentBone.getComponents().add(bone));
+                for (ModelBone mappedBone : parentsByBone.keySet()) {
+                    if (mappedBone.getName().equals(parent)) {
+                        mappedBone.getComponents().add(bone);
+                    }
+                }
             }
         });
 

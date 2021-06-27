@@ -11,6 +11,8 @@ import java.util.Objects;
  */
 public class ModelAnimation {
 
+    private final String name;
+
     /** Determines if the animation is infinite */
     private final boolean loop;
 
@@ -21,13 +23,19 @@ public class ModelAnimation {
     private final Map<String, ModelBoneAnimation> animationsByBoneName;
 
     public ModelAnimation(
+            String name,
             boolean loop,
             float animationLength,
             Map<String, ModelBoneAnimation> animationsByBoneName
     ) {
+        this.name = name;
         this.loop = loop;
         this.animationLength = animationLength;
         this.animationsByBoneName = animationsByBoneName;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public boolean isLoop() {

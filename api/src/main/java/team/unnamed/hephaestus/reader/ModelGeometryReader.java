@@ -2,6 +2,7 @@ package team.unnamed.hephaestus.reader;
 
 import team.unnamed.hephaestus.model.ModelGeometry;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -20,9 +21,9 @@ public interface ModelGeometryReader {
      * <p>Note that this method closes the given
      * {@link InputStream}</p>
      */
-    default ModelGeometry load(InputStream input) throws Exception {
+    default ModelGeometry read(InputStream input) throws IOException {
         try (Reader reader = new InputStreamReader(input)) {
-            return load(reader);
+            return read(reader);
         }
     }
 
@@ -33,6 +34,6 @@ public interface ModelGeometryReader {
      * <p>Not that this method closes the given
      * {@link Reader}</p>
      */
-    ModelGeometry load(Reader reader) throws Exception;
+    ModelGeometry read(Reader reader) throws IOException;
 
 }

@@ -17,6 +17,12 @@ public class ModelCube implements ModelComponent {
     /** The origin of the cube */
     private final Vector3Float origin;
 
+    /** The pivot of the cube */
+    private final Vector3Float pivot;
+
+    /** The initial rotation of the cube, value can be null */
+    private final Vector3Float rotation;
+
     /** The size of the cube */
     private final Vector3Float size;
 
@@ -28,16 +34,29 @@ public class ModelCube implements ModelComponent {
 
     public ModelCube(
             Vector3Float origin,
+            Vector3Float pivot,
+            Vector3Float rotation,
             Vector3Float size,
             FacedTextureBound[] textureBounds
     ) {
         this.origin = origin;
+        this.pivot = pivot;
+        this.rotation = rotation;
         this.size = size;
         this.textureBounds = textureBounds;
     }
 
     public Vector3Float getOrigin() {
         return origin;
+    }
+
+    @Override
+    public Vector3Float getPivot() {
+        return pivot;
+    }
+
+    public Vector3Float getRotation() {
+        return rotation;
     }
 
     public Vector3Float getSize() {
@@ -52,27 +71,49 @@ public class ModelCube implements ModelComponent {
         return textureBounds;
     }
 
+    public String getRotationAxis() {
+        float rX = Math.abs(this.rotation.getX());
+        float rY = Math.abs(this.rotation.getY());
+        float rZ = Math.abs(this.rotation.getZ());
+
+        if ((((rX != 0.0F) ? 1 : 0) ^ ((rY != 0.0F) ? 1 : 0) ^ ((rZ != 0.0F) ? 1 : 0)) == 0 && (rX != 0.0F || rY != 0.0F || rZ != 0.0F))
+            throw new IllegalStateException("Illegal cube detected. Cube rotated in multiple axis. [" + rX + ", " + rY + ", " + rZ + "]");
+        if (rX > rY) {
+            if (rX > rZ)
+                return "x";
+            return "z";
+        }
+        if (rY > rZ)
+            return "y";
+        return "z";
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ModelCube that = (ModelCube) o;
-        return origin.equals(that.origin)
-                && size.equals(that.size)
-                && Arrays.equals(textureBounds, that.textureBounds);
+        ModelCube modelCube = (ModelCube) o;
+        return Objects.equals(origin, modelCube.origin)
+                && Objects.equals(pivot, modelCube.pivot)
+                && Objects.equals(rotation, modelCube.rotation)
+                && Objects.equals(size, modelCube.size)
+                && Arrays.equals(textureBounds, modelCube.textureBounds
+        );
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(origin, size);
+        int result = Objects.hash(origin, rotation, size);
         result = 31 * result + Arrays.hashCode(textureBounds);
         return result;
     }
 
     @Override
     public String toString() {
-        return "ModelComponent{" +
+        return "ModelCube{" +
                 "origin=" + origin +
+                ", pivot=" + pivot +
+                ", rotation=" + rotation +
                 ", size=" + size +
                 ", textureBounds=" + Arrays.toString(textureBounds) +
                 '}';

@@ -9,10 +9,8 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 public interface ModelComponent {
 
     /**
-     * Gets the origin of the model component,
-     * it's the pivot for the bones, and the
-     * origin for the cubes
+     * Gets the pivot of the model component,
      */
-    Vector3Float getOrigin();
+    Vector3Float getPivot();
 
 }
