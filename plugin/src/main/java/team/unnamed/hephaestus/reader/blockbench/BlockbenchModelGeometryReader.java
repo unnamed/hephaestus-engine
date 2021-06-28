@@ -22,7 +22,7 @@ import java.util.*;
  * Blockbench modelling tool) and then reads the values.
  *
  * <p>The Blockbench format is explicitly supported
- *  by some modelling tools like Blockbench</p>
+ *  by the Blockbench model editor</p>
  */
 public class BlockbenchModelGeometryReader implements ModelGeometryReader {
 
@@ -36,7 +36,9 @@ public class BlockbenchModelGeometryReader implements ModelGeometryReader {
     public ModelGeometry read(Reader reader) throws IOException {
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
 
-        JsonElement formatVersionElement = json.get("meta").getAsJsonObject().get("format_version");
+        JsonObject meta = json.get("meta").getAsJsonObject();
+        JsonElement formatVersionElement = meta.get("format_version");
+
 
         if (
                 formatVersionElement == null
@@ -45,11 +47,26 @@ public class BlockbenchModelGeometryReader implements ModelGeometryReader {
             throw new IOException("Provided JSON doesn't have a valid format version");
         }
 
+        JsonElement boxUv = meta.get("box_uv");
+
+        if (
+                boxUv == null
+                        || boxUv.getAsBoolean()
+        ) {
+            throw new IOException("Box UV not supported, please turn it off");
+        }
+
         JsonObject resolutionJson = json.getAsJsonObject("resolution");
         ModelDescription description = new ModelDescription(
                 resolutionJson.get("width").getAsInt(),
                 resolutionJson.get("height").getAsInt()
         );
+
+        Map<Integer, String> textureMap = new HashMap<>();
+        JsonArray textureArray = json.get("textures").getAsJsonArray();
+        for (int i = 0; i < textureArray.size(); i++) {
+            textureMap.put(i, textureArray.get(i).getAsJsonObject().get("name").getAsString().split("\\.")[0]);
+        }
 
         Map<String, ModelCube> cubeIdMap = new HashMap<>();
         JsonArray cubesArray = json.getAsJsonArray("elements");
@@ -73,13 +90,18 @@ public class BlockbenchModelGeometryReader implements ModelGeometryReader {
 
             JsonElement rotationElement = cubeJson.get("rotation");
             Vector3Float rotation = rotationElement != null && rotationElement.isJsonArray()
-                    ? Vectors.getVector3FloatFromJson(rotationElement).multiply(-1, 1, 1)
+                    ? Vectors.getVector3FloatFromJson(rotationElement).multiply(-1, -1, 1)
                     : Vector3Float.zero();
 
             FacedTextureBound[] textureBounds = new FacedTextureBound[TextureFace.values().length];
             cubeJson.get("faces").getAsJsonObject().entrySet().forEach(faceEntry -> {
                 TextureFace face = TextureFace.valueOf(faceEntry.getKey().toUpperCase());
-                JsonArray uvJson = faceEntry.getValue().getAsJsonObject().get("uv").getAsJsonArray();
+                JsonObject faceJson = faceEntry.getValue().getAsJsonObject();
+
+                JsonElement textureElement = faceJson.get("texture");
+                int textureId = textureElement.isJsonNull() ? -1 : textureElement.getAsInt();
+                
+                JsonArray uvJson = faceJson.get("uv").getAsJsonArray();
 
                 Vector2Int uvBounds = new Vector2Int(
                         uvJson.get(0).getAsInt(),
@@ -103,10 +125,13 @@ public class BlockbenchModelGeometryReader implements ModelGeometryReader {
                     );
                 }
 
-                textureBounds[face.ordinal()] = new FacedTextureBound(
-                        uvBounds,
-                        uvSize
-                );
+                if (uvBounds.getX() != 0 || uvBounds.getY() != 0 || uvSize.getX() != 0 || uvSize.getY() != 0) {
+                    textureBounds[face.ordinal()] = new FacedTextureBound(
+                            uvBounds,
+                            uvSize,
+                            textureId
+                    );
+                }
             });
 
             cubeIdMap.put(cubeJson.get("uuid").getAsString(), new ModelCube(
@@ -125,7 +150,7 @@ public class BlockbenchModelGeometryReader implements ModelGeometryReader {
             }
         });
 
-        return new ModelGeometry(description, bones);
+        return new ModelGeometry(description, bones, textureMap);
     }
 
     private float round(float number) {

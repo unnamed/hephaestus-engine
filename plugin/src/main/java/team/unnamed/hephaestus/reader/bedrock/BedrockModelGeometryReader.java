@@ -26,6 +26,7 @@ import java.util.*;
  * <p>The Bedrock Model Geometry format is supported by
  * some modelling tools like Blockbench</p>
  */
+@Deprecated
 public class BedrockModelGeometryReader implements ModelGeometryReader {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
@@ -108,7 +109,8 @@ public class BedrockModelGeometryReader implements ModelGeometryReader {
 
                     textureBounds[face.ordinal()] = new FacedTextureBound(
                             uvBounds,
-                            uvSize
+                            uvSize,
+                            777 //THIS DOES NOT WORK
                     );
                 });
 
@@ -147,7 +149,7 @@ public class BedrockModelGeometryReader implements ModelGeometryReader {
             }
         });
 
-        return new ModelGeometry(description, parentedBones);
+        return new ModelGeometry(description, parentedBones, new HashMap<>());
     }
 
 }

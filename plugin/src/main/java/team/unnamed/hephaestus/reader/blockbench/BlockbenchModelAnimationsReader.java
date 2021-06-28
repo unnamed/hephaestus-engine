@@ -19,7 +19,7 @@ import java.util.*;
  * Blockbench modelling tool) and then reads the values.
  *
  * <p>The Blockbench format is explicitly supported
- *  by some modelling tools like Blockbench</p>
+ *  by the Blockbench model editor</p>
  */
 public class BlockbenchModelAnimationsReader implements ModelAnimationsReader {
 
@@ -41,11 +41,17 @@ public class BlockbenchModelAnimationsReader implements ModelAnimationsReader {
             throw new IOException("Provided JSON doesn't have a valid format version");
         }
 
-        Map<String, ModelAnimation>  animations = new HashMap<>();
-        json.get("animations").getAsJsonArray().forEach(animationElement -> {
+        Map<String, ModelAnimation> animations = new HashMap<>();
+
+        JsonElement animationsElement = json.get("animations");
+        if (animationsElement == null) {
+            return animations;
+        }
+
+        animationsElement.getAsJsonArray().forEach(animationElement -> {
             JsonObject animationJson = animationElement.getAsJsonObject();
 
-            String name = animationJson.get("name").getAsString();
+            String name = animationJson.get("name").getAsString().split("\\.")[2];
             boolean loop = animationJson.get("loop").getAsString().equals("loop");
             float length = animationJson.get("length").getAsFloat();
 

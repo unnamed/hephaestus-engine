@@ -24,16 +24,23 @@ import java.util.*;
  * <p>The Bedrock Model Animation format is supported by
  * some modelling tools like Blockbench</p>
  */
+@Deprecated
 public class BedrockModelAnimationsReader implements ModelAnimationsReader {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
 
     @Override
-    public Map<String, ModelAnimation>  read(Reader reader) {
+    public Map<String, ModelAnimation> read(Reader reader) {
         Map<String, ModelAnimation>  animations = new HashMap<>();
 
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
-        JsonObject animationsJson = json.get("animations").getAsJsonObject();
+        JsonElement animationsElement = json.get("animations");
+
+        if (animationsElement == null) {
+            return animations;
+        }
+
+        JsonObject animationsJson = animationsElement.getAsJsonObject();
 
         for (Map.Entry<String, JsonElement> animationEntry : animationsJson.entrySet()) {
             String name = animationEntry.getKey();

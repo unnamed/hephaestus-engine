@@ -5,7 +5,10 @@ import team.unnamed.hephaestus.model.ModelGeometry;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FileModelReader implements ModelReader {
@@ -36,12 +39,18 @@ public class FileModelReader implements ModelReader {
             animations.putAll(this.animationsReader.read(input));
         }
 
-        File textureFile = new File(folder, "texture.png");
+        List<File> textures = new ArrayList<>();
+        for (File file : folder.listFiles()) {
+            if (file.getName().split("\\.")[1].equalsIgnoreCase("png")) {
+                textures.add(file);
+            }
+        }
+
         return new Model(
                 folder.getName(),
                 geometry,
                 animations,
-                textureFile
+                textures
         );
     }
 }

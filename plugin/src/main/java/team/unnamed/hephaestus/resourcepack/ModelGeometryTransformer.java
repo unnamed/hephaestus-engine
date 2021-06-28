@@ -41,10 +41,11 @@ public class ModelGeometryTransformer {
         return bones;
     }
 
-    public JavaModel generateJavaModel(String texture, ModelDescription description, ModelBone bone) {
-
+    public JavaModel generateJavaModel(Model model, ModelDescription description, ModelBone bone) {
         Map<String, String> textures = new HashMap<>();
-        textures.put("layer0", "hephaestus:" + texture);
+        model.getGeometry().getTextureMap().forEach((id, name) ->
+                textures.put("" + id, "hephaestus:" + model.getName() + "/" + name)
+        );
 
         Map<String, JavaDisplay> display = new HashMap<>();
 
@@ -67,6 +68,7 @@ public class ModelGeometryTransformer {
         for (ModelComponent component : bone.getComponents()) {
             if (component instanceof ModelCube) {
                 ModelCube cube = (ModelCube) component;
+
                 Vector3Float origin = cube.getOrigin();
                 Vector3Float cubePivot = cube.getPivot();
                 Vector3Float size = cube.getSize();
@@ -127,7 +129,7 @@ public class ModelGeometryTransformer {
                     float[] uv;
 
                     if (bound == null) {
-                        uv = new float[] {0, 0, 0, 0};
+                        continue;
                     } else {
 
                         Vector2Int boundFrom = bound.getBounds();
@@ -152,11 +154,9 @@ public class ModelGeometryTransformer {
 
                     faces.put(face.name().toLowerCase(), new JavaFace(
                             uv,
-                            "#layer0"
+                            "#" + bound.getTextureId()
                     ));
                 }
-
-
 
                 JavaCube javaCube = new JavaCube(
                         bone.getName() + "-cube-" + (index++),

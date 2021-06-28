@@ -30,7 +30,6 @@ public class HephaestusResourcePackExporter
 
     @Override
     public List<Model> export(File folder, String name, List<Model> models) throws IOException {
-
         this.applyCustomModelData(models);
 
         File file = new File(folder, name + ".zip");
@@ -62,18 +61,17 @@ public class HephaestusResourcePackExporter
                 ModelDescription description = model.getGeometry().getDescription();
                 String modelName = model.getName();
 
-                if (model.getTexture().exists()) {
+                for (File textureFile : model.getTextureFiles()) {
                     // write the texture
-                    output.startEntry("assets/hephaestus/textures/" + modelName + ".png");
-                    try (InputStream input = new FileInputStream(model.getTexture())) {
+                    output.startEntry("assets/hephaestus/textures/" + modelName + "/" + textureFile.getName());
+                    try (InputStream input = new FileInputStream(textureFile)) {
                         Streams.pipe(input, output);
                     }
                     output.closeEntry();
                 }
-
                 // then write all the model bones
                 for (ModelBone bone : this.transformer.getAllBones(model.getGeometry())) {
-                    JavaModel javaModel = this.transformer.generateJavaModel(modelName, description, bone);
+                    JavaModel javaModel = this.transformer.generateJavaModel(model, description, bone);
 
                     overrides.add(new JavaItem.Override(
                                     bone.getCustomModelData(),
