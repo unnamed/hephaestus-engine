@@ -50,7 +50,7 @@ public class HephaestusResourcePackExporter
 
             // write the resource pack icon
             output.startEntry("pack.png");
-            InputStream iconPng = getClass().getClassLoader().getResourceAsStream("ianxd.png");
+            InputStream iconPng = getClass().getClassLoader().getResourceAsStream("unnamed.png");
             if (iconPng != null) {
                 Streams.pipe(iconPng, output);
             }
