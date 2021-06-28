@@ -27,8 +27,9 @@ public final class Streams {
      */
     public static void pipe(InputStream input, OutputStream output) throws IOException {
         byte[] buffer = new byte[1024];
-        while (input.read(buffer) != -1) {
-            output.write(buffer);
+        int len;
+        while ((len = input.read(buffer)) != -1) {
+            output.write(buffer, 0, len);
         }
     }
 
