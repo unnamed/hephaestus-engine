@@ -13,7 +13,15 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
 
-public class BlockbenchModelAnimationReader implements ModelAnimationsReader {
+/**
+ * Implementation of {@link ModelAnimationsReader} that
+ * parses the inputs to JSON (Format used by the
+ * Blockbench modelling tool) and then reads the values.
+ *
+ * <p>The Blockbench format is explicitly supported
+ *  by some modelling tools like Blockbench</p>
+ */
+public class BlockbenchModelAnimationsReader implements ModelAnimationsReader {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
 

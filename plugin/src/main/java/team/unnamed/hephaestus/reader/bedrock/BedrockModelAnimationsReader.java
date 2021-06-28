@@ -7,12 +7,23 @@ import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.reader.ModelAnimationsReader;
+import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelAnimationsReader;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.io.Reader;
 import java.util.*;
 
+/**
+ * Old implementation of {@link ModelAnimationsReader} that
+ * parses the inputs to JSON (Format used by the
+ * Bedrock Model Animation format) and then reads the values.
+ * It is recommended to use {@link BlockbenchModelAnimationsReader}
+ * instead.
+ *
+ * <p>The Bedrock Model Animation format is supported by
+ * some modelling tools like Blockbench</p>
+ */
 public class BedrockModelAnimationsReader implements ModelAnimationsReader {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
@@ -66,7 +77,6 @@ public class BedrockModelAnimationsReader implements ModelAnimationsReader {
 
     private List<KeyFrame> readKeyFrames(JsonElement element) {
         if (element == null) {
-            // pero si no hay rotation o position, nomas no le ponemos keyframes
             return new ArrayList<>();
         } else if (element.isJsonArray()) {
             return new ArrayList<>(Collections.singletonList(new KeyFrame(

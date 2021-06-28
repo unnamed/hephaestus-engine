@@ -8,6 +8,7 @@ import team.unnamed.hephaestus.model.*;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
 import team.unnamed.hephaestus.reader.ModelGeometryReader;
+import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelGeometryReader;
 import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
@@ -17,10 +18,11 @@ import java.io.Reader;
 import java.util.*;
 
 /**
- * Implementation of {@link ModelGeometryReader} that
+ * Old implementation of {@link ModelGeometryReader} that
  * parses the inputs to JSON (Format used by the
  * Bedrock Model Geometry format) and then reads the values.
- *
+ * It is recommended to use {@link BlockbenchModelGeometryReader}
+ * instead.
  * <p>The Bedrock Model Geometry format is supported by
  * some modelling tools like Blockbench</p>
  */

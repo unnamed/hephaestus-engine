@@ -21,7 +21,7 @@ import team.unnamed.hephaestus.reader.FileModelReader;
 import team.unnamed.hephaestus.reader.ModelAnimationsReader;
 import team.unnamed.hephaestus.reader.ModelGeometryReader;
 import team.unnamed.hephaestus.reader.ModelReader;
-import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelAnimationReader;
+import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelAnimationsReader;
 import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelGeometryReader;
 import team.unnamed.hephaestus.resourcepack.HephaestusResourcePackExporter;
 import team.unnamed.hephaestus.resourcepack.ModelRegistry;
@@ -85,7 +85,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         commandManager.registerCommands(commandBuilder.fromClass(new HephaestusCommand()));
 
         ModelGeometryReader geometryReader = new BlockbenchModelGeometryReader();
-        ModelAnimationsReader animationsReader = new BlockbenchModelAnimationReader();
+        ModelAnimationsReader animationsReader = new BlockbenchModelAnimationsReader();
         ModelReader modelReader = new FileModelReader(geometryReader, animationsReader);
         ResourcePackExporter resourcePackExporter = new HephaestusResourcePackExporter();
 

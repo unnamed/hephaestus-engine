@@ -25,19 +25,6 @@ public final class Vectors {
         );
     }
 
-    /*public static Vector3Float rotatePoint(Vector3Float pivot, Vector3Float point, EulerAngle angle) {
-        Vector3Float relativeCenter = pivot.subtract(point);
-
-        Quaternion quaternion = Quaternion.toQuaternion(angle);
-        Quaternion vectorQuaternion = new Quaternion(0, relativeCenter);
-        Quaternion conjugate = Quaternion.multiply(quaternion, -1);
-
-        Quaternion rotation = Quaternion.multiply(Quaternion.multiply(Quaternion.multiply(quaternion, vectorQuaternion), conjugate), -1);
-
-        return pivot.subtract(rotation.getVector());
-    }
-     */
-
     /**
      * Constructs a {@link Vector3Float} from
      * a {@link JsonElement} (must be a

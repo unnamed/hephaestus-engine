@@ -16,6 +16,14 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
 
+/**
+ * Implementation of {@link ModelGeometryReader} that
+ * parses the inputs to JSON (Format used by the
+ * Blockbench modelling tool) and then reads the values.
+ *
+ * <p>The Blockbench format is explicitly supported
+ *  by some modelling tools like Blockbench</p>
+ */
 public class BlockbenchModelGeometryReader implements ModelGeometryReader {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
