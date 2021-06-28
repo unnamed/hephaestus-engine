@@ -1,13 +1,13 @@
 
 jar {
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
 dependencies {
-    compile project(':hephaestus-api')
-    compile 'org.jetbrains:annotations:20.1.0'
-    compile 'me.fixeddev:commandflow-bukkit:0.4.0'
+    implementation project(':hephaestus-api')
+    implementation 'org.jetbrains:annotations:20.1.0'
+    implementation 'me.fixeddev:commandflow-bukkit:0.4.0'
     compileOnly 'org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT'
 }
