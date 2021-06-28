@@ -1,7 +1,5 @@
 package team.unnamed.hephaestus.model;
 
-import team.unnamed.hephaestus.struct.Vector3Float;
-
 /**
  * Class that holds descriptive
  * data about a specific {@link ModelGeometry}

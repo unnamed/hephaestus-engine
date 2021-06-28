@@ -2,8 +2,6 @@ package team.unnamed.hephaestus.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import org.bukkit.util.EulerAngle;
-import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
 

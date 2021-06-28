@@ -1,14 +1,18 @@
 package team.unnamed.hephaestus.resourcepack;
 
 import com.google.gson.Gson;
-import team.unnamed.hephaestus.model.*;
-import team.unnamed.hephaestus.resourcepack.java.*;
+import team.unnamed.hephaestus.model.Model;
+import team.unnamed.hephaestus.model.ModelBone;
+import team.unnamed.hephaestus.model.ModelDescription;
+import team.unnamed.hephaestus.resourcepack.java.JavaItem;
+import team.unnamed.hephaestus.resourcepack.java.JavaModel;
 import team.unnamed.hephaestus.serialize.GsonFactory;
 import team.unnamed.hephaestus.util.Streams;
 import team.unnamed.hephaestus.util.ZippedDataOutputStream;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HephaestusResourcePackExporter
         implements ResourcePackExporter {

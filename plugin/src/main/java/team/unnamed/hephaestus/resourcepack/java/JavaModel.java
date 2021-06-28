@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -43,19 +42,19 @@ public class JavaModel {
                 Vector3Float to = cube.getTo();
 
                 if (from.getInAxis(i) + offset[i] > 32.0F) {
-                    offset[i] = offset[i] - from.getInAxis(i) + offset[i] - 32.0F;
+                    offset[i] -= from.getInAxis(i) + offset[i] - 32.0F;
                 }
 
                 if (from.getInAxis(i) + offset[i] < -16.0F) {
-                    offset[i] = offset[i] - from.getInAxis(i) + offset[i] + 16.0F;
+                    offset[i] -= from.getInAxis(i) + offset[i] + 16.0F;
                 }
 
                 if (to.getInAxis(i) + offset[i] > 32.0F) {
-                    offset[i] = offset[i] - to.getInAxis(i) + offset[i] - 32.0F;
+                    offset[i] -= to.getInAxis(i) + offset[i] - 32.0F;
                 }
 
                 if (to.getInAxis(i) + offset[i] < -16.0F) {
-                    offset[i] = offset[i] - to.getInAxis(i) + offset[i] + 16.0F;
+                    offset[i] -= to.getInAxis(i) + offset[i] + 16.0F;
                 }
             }
         }

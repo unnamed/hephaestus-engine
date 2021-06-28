@@ -7,7 +7,7 @@ import me.fixeddev.commandflow.bukkit.annotation.Sender;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.AnimationEnginePlugin;
-import team.unnamed.hephaestus.model.*;
+import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
 import team.unnamed.hephaestus.model.entity.ModelEntitySpawner;

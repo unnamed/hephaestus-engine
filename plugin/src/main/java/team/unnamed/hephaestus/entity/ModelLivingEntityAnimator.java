@@ -15,7 +15,6 @@ import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
 import team.unnamed.hephaestus.model.entity.ModelLivingEntity;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.util.Offset;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.List;

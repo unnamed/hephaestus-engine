@@ -5,9 +5,7 @@ import team.unnamed.hephaestus.model.ModelGeometry;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FileModelReader implements ModelReader {

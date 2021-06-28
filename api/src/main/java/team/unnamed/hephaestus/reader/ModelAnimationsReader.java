@@ -2,7 +2,10 @@ package team.unnamed.hephaestus.reader;
 
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Map;
 
 public interface ModelAnimationsReader {
