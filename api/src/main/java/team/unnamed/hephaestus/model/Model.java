@@ -3,6 +3,7 @@ package team.unnamed.hephaestus.model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 public class Model {
@@ -10,13 +11,13 @@ public class Model {
     private final String name;
     private final ModelGeometry geometry;
     private final Map<String, ModelAnimation> animations;
-    private final File texture;
+    private final List<File> textures;
 
-    public Model(String name, ModelGeometry geometry, Map<String, ModelAnimation> animations, File texture) {
+    public Model(String name, ModelGeometry geometry, Map<String, ModelAnimation> animations, List<File> textures) {
         this.name = name;
         this.geometry = geometry;
         this.animations = animations;
-        this.texture = texture;
+        this.textures = textures;
     }
 
     public String getName() {
@@ -31,8 +32,7 @@ public class Model {
         return animations;
     }
 
-    public File getTexture() {
-        return texture;
+    public List<File> getTextureFiles() {
+        return textures;
     }
-
 }

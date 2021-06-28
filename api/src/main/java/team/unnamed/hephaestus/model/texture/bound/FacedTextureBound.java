@@ -16,9 +16,13 @@ public class FacedTextureBound {
     /** The size (origin + size = end coordinates) */
     private final Vector2Int size;
 
-    public FacedTextureBound(Vector2Int bounds, Vector2Int size) {
+    /** Texture id used when exporting */
+    private final int textureId;
+
+    public FacedTextureBound(Vector2Int bounds, Vector2Int size, int textureId) {
         this.bounds = bounds;
         this.size = size;
+        this.textureId = textureId;
     }
 
     public Vector2Int getBounds() {
@@ -27,6 +31,10 @@ public class FacedTextureBound {
 
     public Vector2Int getSize() {
         return size;
+    }
+
+    public int getTextureId() {
+        return textureId;
     }
 
     @Override
