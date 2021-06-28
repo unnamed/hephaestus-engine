@@ -6,7 +6,9 @@ import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FileModelReader implements ModelReader {
 
@@ -23,23 +25,20 @@ public class FileModelReader implements ModelReader {
 
     @Override
     public Model read(File folder) throws IOException {
-        File geometryFile = new File(folder, "geometry.json");
-        File animationsFile = new File(folder, "animations.json");
-        File textureFile = new File(folder, "texture.png");
+        File modelFile = new File(folder, "model.bbmodel");
 
-        if (!geometryFile.exists()) {
+        if (!modelFile.exists()) {
             throw new IllegalArgumentException("Geometry file does not exist in " + folder.getPath());
         }
 
-        ModelGeometry geometry = this.geometryReader.read(new FileReader(geometryFile));
-        List<ModelAnimation> animations = new ArrayList<>();
+        ModelGeometry geometry = this.geometryReader.read(new FileReader(modelFile));
+        Map<String, ModelAnimation> animations = new HashMap<>();
 
-        if (animationsFile.exists()) {
-            try (InputStream input = new FileInputStream(animationsFile)) {
-                animations.addAll(this.animationsReader.read(input));
-            }
+        try (InputStream input = new FileInputStream(modelFile)) {
+            animations.putAll(this.animationsReader.read(input));
         }
 
+        File textureFile = new File(folder, "texture.png");
         return new Model(
                 folder.getName(),
                 geometry,

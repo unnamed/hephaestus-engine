@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.reader;
+package team.unnamed.hephaestus.reader.bedrock;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import team.unnamed.hephaestus.model.*;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
+import team.unnamed.hephaestus.reader.ModelGeometryReader;
 import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
@@ -55,15 +56,10 @@ public class BedrockModelGeometryReader implements ModelGeometryReader {
 
         JsonObject geometryObject = geometryArray.get(0).getAsJsonObject();
         JsonObject descriptionJson = geometryObject.getAsJsonObject("description");
-        JsonArray visibleBoundsOffsetArray = descriptionJson.getAsJsonArray("visible_bounds_offset");
 
         ModelDescription description = new ModelDescription(
-                descriptionJson.get("identifier").getAsString(),
                 descriptionJson.get("texture_width").getAsInt(),
-                descriptionJson.get("texture_height").getAsInt(),
-                descriptionJson.get("visible_bounds_width").getAsInt(),
-                descriptionJson.get("visible_bounds_height").getAsInt(),
-                Vectors.getVector3FloatFromJson(visibleBoundsOffsetArray)
+                descriptionJson.get("texture_height").getAsInt()
         );
 
         Map<ModelBone, String> parentsByBone = new LinkedHashMap<>();

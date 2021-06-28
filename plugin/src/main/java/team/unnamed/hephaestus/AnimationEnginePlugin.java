@@ -9,13 +9,18 @@ import me.fixeddev.commandflow.bukkit.BukkitCommandManager;
 import me.fixeddev.commandflow.bukkit.factory.BukkitModule;
 import org.bukkit.plugin.java.JavaPlugin;
 import team.unnamed.hephaestus.commands.HephaestusCommand;
+import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
 import team.unnamed.hephaestus.entity.ModelLivingEntityAnimator;
 import team.unnamed.hephaestus.entity.ModelLivingEntitySpawner;
 import team.unnamed.hephaestus.model.Model;
+import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
 import team.unnamed.hephaestus.model.entity.ModelEntitySpawner;
 import team.unnamed.hephaestus.reader.*;
+import team.unnamed.hephaestus.reader.bedrock.BedrockModelAnimationsReader;
+import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelAnimationReader;
+import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelGeometryReader;
 import team.unnamed.hephaestus.resourcepack.HephaestusResourcePackExporter;
 import team.unnamed.hephaestus.resourcepack.ModelRegistry;
 import team.unnamed.hephaestus.resourcepack.ResourcePackExporter;
@@ -65,6 +70,9 @@ public class AnimationEnginePlugin extends JavaPlugin {
         partInjector.bindFactory(Model.class, (name, modifiers) ->
                 new ModelPart(modelRegistry, name)
         );
+        partInjector.bindFactory(ModelAnimation.class, (name, modifiers) ->
+                new ModelAnimationPart(modelRegistry, name)
+        );
 
         AnnotatedCommandTreeBuilder commandBuilder = new AnnotatedCommandTreeBuilderImpl(
                 partInjector
@@ -74,8 +82,8 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
         commandManager.registerCommands(commandBuilder.fromClass(new HephaestusCommand()));
 
-        ModelGeometryReader geometryReader = new BedrockModelGeometryReader();
-        ModelAnimationsReader animationsReader = new BedrockModelAnimationsReader();
+        ModelGeometryReader geometryReader = new BlockbenchModelGeometryReader();
+        ModelAnimationsReader animationsReader = new BlockbenchModelAnimationReader();
         ModelReader modelReader = new FileModelReader(geometryReader, animationsReader);
         ResourcePackExporter resourcePackExporter = new HephaestusResourcePackExporter();
 

@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.reader;
+package team.unnamed.hephaestus.reader.bedrock;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
+import team.unnamed.hephaestus.reader.ModelAnimationsReader;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
@@ -14,14 +15,13 @@ import java.util.*;
 
 public class BedrockModelAnimationsReader implements ModelAnimationsReader {
 
-    private final JsonParser jsonParser = new JsonParser();
+    private static final JsonParser JSON_PARSER = new JsonParser();
 
     @Override
-    public List<ModelAnimation> read(Reader reader) {
+    public Map<String, ModelAnimation>  read(Reader reader) {
+        Map<String, ModelAnimation>  animations = new HashMap<>();
 
-        List<ModelAnimation> animations = new ArrayList<>();
-
-        JsonObject json = this.jsonParser.parse(reader).getAsJsonObject();
+        JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
         JsonObject animationsJson = json.get("animations").getAsJsonObject();
 
         for (Map.Entry<String, JsonElement> animationEntry : animationsJson.entrySet()) {
@@ -53,7 +53,7 @@ public class BedrockModelAnimationsReader implements ModelAnimationsReader {
                 );
             }
 
-            animations.add(new ModelAnimation(
+            animations.put(name, new ModelAnimation(
                     name,
                     loop,
                     animationLength,

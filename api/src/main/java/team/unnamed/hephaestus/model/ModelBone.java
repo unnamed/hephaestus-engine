@@ -14,7 +14,7 @@ public class ModelBone implements ModelComponent {
     private final Vector3Float pivot;
     private final List<ModelComponent> components;
 
-    private Vector3Float globalOffset;
+    private final Vector3Float globalOffset;
     private Vector3Float localOffset;
 
     private int customModelData;

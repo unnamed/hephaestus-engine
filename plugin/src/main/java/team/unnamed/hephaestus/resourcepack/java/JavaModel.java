@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -36,24 +37,25 @@ public class JavaModel {
     public JavaModel normalize() {
         float[] offset = { 0.0F, 0.0F, 0.0F };
         for (JavaCube cube : this.elements) {
+
             for (int i = 0; i < 3; i++) {
                 Vector3Float from = cube.getFrom();
                 Vector3Float to = cube.getTo();
 
-                if (from.getInAxis(i) + offset[i] > 32) {
-                    offset[i] -= from.getInAxis(i) + offset[i] - 32;
+                if (from.getInAxis(i) + offset[i] > 32.0F) {
+                    offset[i] = offset[i] - from.getInAxis(i) + offset[i] - 32.0F;
                 }
 
-                if (from.getInAxis(i) + offset[i] < -16) {
-                    offset[i] -= from.getInAxis(i) + offset[i] + 16;
+                if (from.getInAxis(i) + offset[i] < -16.0F) {
+                    offset[i] = offset[i] - from.getInAxis(i) + offset[i] + 16.0F;
                 }
 
-                if (to.getInAxis(i) + offset[i] > 32) {
-                    offset[i] -= to.getInAxis(i) + offset[i] - 32;
+                if (to.getInAxis(i) + offset[i] > 32.0F) {
+                    offset[i] = offset[i] - to.getInAxis(i) + offset[i] - 32.0F;
                 }
 
-                if (to.getInAxis(i) + offset[i] < -16) {
-                    offset[i] -= to.getInAxis(i) + offset[i] + 16;
+                if (to.getInAxis(i) + offset[i] < -16.0F) {
+                    offset[i] = offset[i] - to.getInAxis(i) + offset[i] + 16.0F;
                 }
             }
         }

@@ -38,7 +38,7 @@ public class JavaDisplay {
                 || Math.abs(this.translation.getY()) > 80
                 || Math.abs(this.translation.getZ()) > 80
         ) {
-            throw new IllegalStateException("Transition value cannot be higher or lower than 80");
+            throw new IllegalStateException("Translation value cannot be higher or lower than 80");
         }
     }
 }

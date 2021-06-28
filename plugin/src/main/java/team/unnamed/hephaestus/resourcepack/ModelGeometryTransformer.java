@@ -16,7 +16,7 @@ import static team.unnamed.hephaestus.util.ModelMath.shrink;
 
 public class ModelGeometryTransformer {
 
-    public static final float DISPLAY_SCALE = 3.8095f;
+    public static final float DISPLAY_SCALE = 3.7333333F;
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
 
     public List<ModelBone> getAllBones(ModelGeometry model) {
@@ -156,6 +156,8 @@ public class ModelGeometryTransformer {
                     ));
                 }
 
+
+
                 JavaCube javaCube = new JavaCube(
                         bone.getName() + "-cube-" + (index++),
                         from,
@@ -163,6 +165,7 @@ public class ModelGeometryTransformer {
                         rotation,
                         faces
                 );
+
                 javaCube.shrink();
                 elements.add(javaCube);
             }
@@ -190,5 +193,4 @@ public class ModelGeometryTransformer {
                 elements
         ).normalize();
     }
-
 }
