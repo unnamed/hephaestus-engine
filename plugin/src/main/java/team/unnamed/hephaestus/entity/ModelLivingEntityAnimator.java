@@ -89,6 +89,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
         private void updateBone(
                 ModelBone bone,
                 Vector3Float offset,
+                EulerAngle angleOffset,
                 float tick
         ) {
             ArmorStand boneEntity = (ArmorStand) Bukkit.getEntity(this.entity.getEntities().get(bone.getName()));
@@ -98,25 +99,56 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
 
             ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
 
-            KeyFrame previousFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
+            KeyFrame previousPositionFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
                     : getPrevious(tick, boneAnimation.getPositionFrames());
 
-            KeyFrame nextFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
+            KeyFrame nextPositionFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
                     : getNext(tick, boneAnimation.getPositionFrames());
 
-            if (previousFrame == null) {
-                previousFrame = new KeyFrame(tick, Vector3Float.zero());
+            if (previousPositionFrame == null) {
+                previousPositionFrame = new KeyFrame(tick, Vector3Float.zero());
             }
 
-            if (nextFrame == null) {
-                nextFrame = new KeyFrame(tick, Vector3Float.zero());
+            if (nextPositionFrame == null) {
+                nextPositionFrame = new KeyFrame(tick, Vector3Float.zero());
+            }
+
+            KeyFrame previousRotationFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
+                    : getPrevious(tick, boneAnimation.getRotationFrames());
+
+            KeyFrame nextRotationFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
+                    : getNext(tick, boneAnimation.getRotationFrames());
+
+            if (previousRotationFrame == null) {
+                previousRotationFrame = new KeyFrame(tick, Vector3Float.zero());
+            }
+
+            if (nextRotationFrame == null) {
+                nextRotationFrame = new KeyFrame(tick, Vector3Float.zero());
             }
 
             Vector3Float positionAdd = Vectors.lerp(
-                    previousFrame.getValue(),
-                    nextFrame.getValue(),
-                    (tick / 20) / nextFrame.getPosition()
+                    previousPositionFrame.getValue(),
+                    nextPositionFrame.getValue(),
+                    (tick / 20) / nextPositionFrame.getPosition()
             ).multiply(1, 1, -1).divide(10);
+
+            Vector3Float rotationVector = Vectors.lerp(
+                    previousRotationFrame.getValue(),
+                    nextRotationFrame.getValue(),
+                    (tick / 20) / nextPositionFrame.getPosition()
+            );
+
+            EulerAngle rotationAdd = new EulerAngle(
+                    Math.toRadians(rotationVector.getX()),
+                    Math.toRadians(rotationVector.getY()),
+                    Math.toRadians(rotationVector.getZ())
+            );
+
+            Vector3Float positionCorrection = bone.getLocalOffset().multiply(1, 1, -1)
+                    .rotateAroundX(rotationVector.getX())
+                    .rotateAroundY(rotationVector.getY())
+                    .rotateAroundZ(rotationVector.getZ());
 
             Vector3Float globalPosition = Vectors.rotate(
                     positionAdd.add(offset).add(bone.getLocalOffset().multiply(1, 1, -1)),
@@ -124,11 +156,12 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             );
 
             Location worldPosition = this.entity.getLocation().clone().add(
-                    globalPosition.getX(),
-                    globalPosition.getY(),
-                    globalPosition.getZ()
+                    positionCorrection.getX(),
+                    positionCorrection.getY(),
+                    positionCorrection.getZ()
             );
 
+            boneEntity.setHeadPose(angleOffset.add(rotationAdd.getX(), rotationAdd.getY(), rotationAdd.getZ()));
             boneEntity.teleport(worldPosition);
 
             for (ModelComponent component : bone.getComponents()) {
@@ -136,6 +169,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                     this.updateBone(
                             (ModelBone) component,
                             offset.add(positionAdd),
+                            angleOffset.add(rotationAdd.getX(), rotationAdd.getY(), rotationAdd.getZ()),
                             tick
                     );
                 }
@@ -153,6 +187,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                 this.updateBone(
                         bone,
                         Vector3Float.zero(),
+                        EulerAngle.ZERO,
                         entity.getTick()
                 );
             }
