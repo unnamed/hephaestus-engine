@@ -58,12 +58,10 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             tick /= 20;
             KeyFrame selectedFrame = null;
             for (KeyFrame frame : frames) {
-                if (frame.getPosition() <= tick) {
-                    break;
-                } else {
+                if (frame.getPosition() > tick){
                     if (selectedFrame == null) {
                         selectedFrame = frame;
-                    } else if(frame.getPosition() < selectedFrame.getPosition()) {
+                    } else if (frame.getPosition() < selectedFrame.getPosition()) {
                         selectedFrame = frame;
                     }
                 }
@@ -76,9 +74,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             tick /= 20;
             KeyFrame selectedFrame = null;
             for (KeyFrame frame : frames) {
-                if (frame.getPosition() > tick) {
-                    break;
-                } else {
+                if (frame.getPosition() <= tick) {
                     if (selectedFrame == null) {
                         selectedFrame = frame;
                     } else if(frame.getPosition() > selectedFrame.getPosition()) {
@@ -108,24 +104,19 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             KeyFrame nextFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
                     : getNext(tick, boneAnimation.getPositionFrames());
 
-            if (nextFrame == null) {
-                for (ModelComponent component : bone.getComponents()) {
-                    if (component instanceof ModelBone) {
-                        this.updateBone(
-                                (ModelBone) component,
-                                offset,
-                                tick
-                        );
-                    }
-                }
-
-                return;
+            if (previousFrame == null) {
+                previousFrame = new KeyFrame(tick, Vector3Float.zero());
             }
 
-            Vector3Float positionAdd = previousFrame.getValue().lerp(
+            if (nextFrame == null) {
+                nextFrame = new KeyFrame(tick, Vector3Float.zero());
+            }
+
+            Vector3Float positionAdd = Vectors.lerp(
+                    previousFrame.getValue(),
                     nextFrame.getValue(),
-                    tick / nextFrame.getPosition()
-            );
+                    (tick / 20) / nextFrame.getPosition()
+            ).multiply(1, 1, -1).divide(10);
 
             Vector3Float globalPosition = Vectors.rotate(
                     positionAdd.add(offset).add(bone.getLocalOffset().multiply(1, 1, -1)),

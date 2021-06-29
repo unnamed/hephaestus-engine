@@ -25,6 +25,9 @@ public final class Vectors {
         );
     }
 
+    public static Vector3Float lerp(Vector3Float start, Vector3Float end, float percent) {
+        return start.add(end.subtract(start).multiply(percent));
+    }
     /**
      * Constructs a {@link Vector3Float} from
      * a {@link JsonElement} (must be a
