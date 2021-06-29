@@ -81,6 +81,14 @@ public class Vector3Float {
         return this.multiply(vector.getX(), vector.getY(), vector.getZ());
     }
 
+    public Vector3Float lerp(Vector3Float vector, float time) {
+        float x = (float) ((this.getX() * (1.0 - time)) + (vector.getX() * time));
+        float y = (float) ((this.getY() * (1.0 - time)) + (vector.getY() * time));
+        float z = (float) ((this.getZ() * (1.0 - time)) + (vector.getZ() * time));
+
+        return new Vector3Float(x, y, z);
+    }
+
     public float getX() {
         return x;
     }

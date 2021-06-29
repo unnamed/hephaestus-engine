@@ -17,6 +17,7 @@ import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class ModelLivingEntityAnimator implements ModelEntityAnimator {
@@ -53,23 +54,44 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             this.animation = animation;
         }
 
-        private static KeyFrame selectFrame(List<KeyFrame> frames, float tick) {
-            tick /= 20; // convert tick to second TODO: This can be more efficient
+        private static KeyFrame getNext(float tick, List<KeyFrame> frames) {
+            tick /= 20;
+            KeyFrame selectedFrame = null;
+            for (KeyFrame frame : frames) {
+                if (frame.getPosition() <= tick) {
+                    break;
+                } else {
+                    if (selectedFrame == null) {
+                        selectedFrame = frame;
+                    } else if(frame.getPosition() < selectedFrame.getPosition()) {
+                        selectedFrame = frame;
+                    }
+                }
+            }
+
+            return selectedFrame;
+        }
+
+        private static KeyFrame getPrevious(float tick, List<KeyFrame> frames) {
+            tick /= 20;
             KeyFrame selectedFrame = null;
             for (KeyFrame frame : frames) {
                 if (frame.getPosition() > tick) {
                     break;
                 } else {
-                    selectedFrame = frame;
+                    if (selectedFrame == null) {
+                        selectedFrame = frame;
+                    } else if(frame.getPosition() > selectedFrame.getPosition()) {
+                        selectedFrame = frame;
+                    }
                 }
             }
+
             return selectedFrame;
         }
 
         private void updateBone(
                 ModelBone bone,
-                Vector3Float parentGlobalPosition,
-                EulerAngle parentGlobalRotation,
                 Vector3Float offset,
                 float tick
         ) {
@@ -79,35 +101,34 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             }
 
             ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
-            KeyFrame positionFrame = selectFrame(boneAnimation.getPositionFrames(), tick);
-            KeyFrame rotationFrame = selectFrame(boneAnimation.getRotationFrames(), tick);
 
-            Vector3Float positionAdd = (positionFrame == null
-                    ? Vector3Float.zero()
-                    : positionFrame.getValue()
+            KeyFrame previousFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
+                    : getPrevious(tick, boneAnimation.getPositionFrames());
+
+            KeyFrame nextFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
+                    : getNext(tick, boneAnimation.getPositionFrames());
+
+            if (nextFrame == null) {
+                for (ModelComponent component : bone.getComponents()) {
+                    if (component instanceof ModelBone) {
+                        this.updateBone(
+                                (ModelBone) component,
+                                offset,
+                                tick
+                        );
+                    }
+                }
+
+                return;
+            }
+
+            Vector3Float positionAdd = previousFrame.getValue().lerp(
+                    nextFrame.getValue(),
+                    tick / nextFrame.getPosition()
             );
 
-            EulerAngle rotationAdd = rotationFrame == null
-                    ? new EulerAngle(0, 0, 0)
-                    : new EulerAngle(
-                            Math.toRadians(rotationFrame.getValue().getX()),
-                            Math.toRadians(rotationFrame.getValue().getY()),
-                            Math.toRadians(rotationFrame.getValue().getZ())
-                    );
-
-            EulerAngle globalRotation = Quaternion.combine(rotationAdd, parentGlobalRotation);
-
-            Quaternion rotationQuaternion = Quaternion.toQuaternion(globalRotation);
-            Vector3Float correction = Quaternion.multiply(
-                    rotationQuaternion,
-                    new Quaternion(0,
-                            parentGlobalPosition.subtract(bone.getLocalOffset())
-                    )
-            ).getVec();
-
-
             Vector3Float globalPosition = Vectors.rotate(
-                    positionAdd.add(offset).add(bone.getLocalOffset().multiply(1, 1, -1))/*.add(correction)*/,
+                    positionAdd.add(offset).add(bone.getLocalOffset().multiply(1, 1, -1)),
                     -this.entity.getLocation().getYaw() * 0.017453292F
             );
 
@@ -117,15 +138,12 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                     globalPosition.getZ()
             );
 
-            boneEntity.setHeadPose(globalRotation);
             boneEntity.teleport(worldPosition);
 
             for (ModelComponent component : bone.getComponents()) {
                 if (component instanceof ModelBone) {
                     this.updateBone(
                             (ModelBone) component,
-                            globalPosition,
-                            globalRotation,
                             offset.add(positionAdd),
                             tick
                     );
@@ -143,8 +161,6 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             for (ModelBone bone : this.entity.getModel().getGeometry().getBones()) {
                 this.updateBone(
                         bone,
-                        Vector3Float.zero(),
-                        new EulerAngle(0, 0, 0),
                         Vector3Float.zero(),
                         entity.getTick()
                 );

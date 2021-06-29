@@ -54,7 +54,7 @@ public class ModelLivingEntity {
     }
 
     public void resetTick() {
-        tick = 0;
+        tick = 1;
     }
 
     public float getTick() {
