@@ -2,7 +2,7 @@ package team.unnamed.hephaestus.serialize;
 
 import com.google.gson.*;
 import team.unnamed.hephaestus.struct.Vector2Int;
-import team.unnamed.hephaestus.util.Vectors;
+import team.unnamed.hephaestus.util.Serialization;
 
 import java.lang.reflect.Type;
 
@@ -21,7 +21,7 @@ public class Vector2IntCodec implements JsonSerializer<Vector2Int>, JsonDeserial
         if (array.size() != 2) {
             throw new JsonParseException("Invalid array size, expected 2, given: " + array.size());
         }
-        return Vectors.getVector2IntFromJson(array);
+        return Serialization.getVector2IntFromJson(array);
     }
 
     @Override

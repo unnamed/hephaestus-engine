@@ -2,44 +2,22 @@ package team.unnamed.hephaestus.reader.blockbench;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
-import team.unnamed.hephaestus.reader.ModelAnimationsReader;
 import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.hephaestus.util.Serialization;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.util.*;
 
 /**
- * Implementation of {@link ModelAnimationsReader} that
- * parses the inputs to JSON (Format used by the
- * Blockbench modelling tool) and then reads the values.
- *
+ * Converts JSON to {@link ModelAnimation}
  * <p>The Blockbench format is explicitly supported
  *  by the Blockbench model editor</p>
  */
-public class BlockbenchModelAnimationsReader implements ModelAnimationsReader {
+public class BlockbenchModelAnimationsReader {
 
-    private static final JsonParser JSON_PARSER = new JsonParser();
-
-    private static final List<String> SUPPORTED_FORMATS = Arrays.asList(
-            "3.6"
-    );
-
-    @Override
-    public Map<String, ModelAnimation> read(Reader reader) throws IOException {
-        JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
-        JsonElement formatVersionElement = json.get("meta").getAsJsonObject().get("format_version");
-
-        if (
-                formatVersionElement == null
-                        || !SUPPORTED_FORMATS.contains(formatVersionElement.getAsString())
-        ) {
-            throw new IOException("Provided JSON doesn't have a valid format version");
-        }
+    public Map<String, ModelAnimation> read(JsonObject json) {
 
         Map<String, ModelAnimation> animations = new HashMap<>();
 
@@ -56,37 +34,25 @@ public class BlockbenchModelAnimationsReader implements ModelAnimationsReader {
             float length = animationJson.get("length").getAsFloat();
 
             Map<String, ModelBoneAnimation> boneAnimations = new HashMap<>();
-            for (Map.Entry<String, JsonElement> boneAnimationEntry : animationJson.get("animators").getAsJsonObject().entrySet()) {
+            for (Map.Entry<String, JsonElement> boneAnimationEntry : animationJson.get("animators")
+                    .getAsJsonObject()
+                    .entrySet()) {
+
                 JsonObject boneAnimationJson = boneAnimationEntry.getValue().getAsJsonObject();
                 String boneName = boneAnimationJson.get("name").getAsString();
 
                 List<KeyFrame> rotationFrames = new ArrayList<>();
                 List<KeyFrame> positionFrames = new ArrayList<>();
 
-                boneAnimationJson.get("keyframes").getAsJsonArray().forEach(keyframeElement -> {
-                    JsonObject keyframeJson = keyframeElement.getAsJsonObject();
+                for (JsonElement keyFrameElement : boneAnimationJson.get("keyframes").getAsJsonArray()) {
+                    JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
                     JsonObject dataPoint = keyframeJson.get("data_points").getAsJsonArray().get(0).getAsJsonObject();
 
-                    float x = dataPoint.get("x").getAsJsonPrimitive().isString() ?
-                            Float.parseFloat(dataPoint.get("x").getAsString().replace(",",  "."))
-                            :
-                            dataPoint.get("x").getAsFloat();
+                    float x = Serialization.parseLenientFloat(dataPoint.get("x"));
+                    float y = Serialization.parseLenientFloat(dataPoint.get("y"));
+                    float z = Serialization.parseLenientFloat(dataPoint.get("z"));
 
-                    float y = dataPoint.get("y").getAsJsonPrimitive().isString() ?
-                            Float.parseFloat(dataPoint.get("y").getAsString().replace(",",  "."))
-                            :
-                            dataPoint.get("y").getAsFloat();
-
-                    float z = dataPoint.get("z").getAsJsonPrimitive().isString() ?
-                            Float.parseFloat(dataPoint.get("z").getAsString().replace(",",  "."))
-                            :
-                            dataPoint.get("z").getAsFloat();
-
-                    Vector3Float value = new Vector3Float(
-                            x,
-                            y,
-                            z
-                    );
+                    Vector3Float value = new Vector3Float(x, y, z);
 
                     String channel = keyframeJson.get("channel").getAsString();
                     float time = keyframeJson.get("time").getAsFloat();
@@ -103,7 +69,7 @@ public class BlockbenchModelAnimationsReader implements ModelAnimationsReader {
                             positionFrames.add(keyFrame);
                             break;
                     }
-                });
+                }
 
                 boneAnimations.put(boneName, new ModelBoneAnimation(positionFrames, rotationFrames));
             }

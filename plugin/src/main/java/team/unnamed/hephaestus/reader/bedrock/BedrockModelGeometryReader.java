@@ -7,18 +7,17 @@ import com.google.gson.JsonParser;
 import team.unnamed.hephaestus.model.*;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
-import team.unnamed.hephaestus.reader.ModelGeometryReader;
 import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelGeometryReader;
 import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.util.Vectors;
+import team.unnamed.hephaestus.util.Serialization;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
 
 /**
- * Old implementation of {@link ModelGeometryReader} that
+ * Old implementation of ModelGeometryReader that
  * parses the inputs to JSON (Format used by the
  * Bedrock Model Geometry format) and then reads the values.
  * It is recommended to use {@link BlockbenchModelGeometryReader}
@@ -27,7 +26,7 @@ import java.util.*;
  * some modelling tools like Blockbench</p>
  */
 @Deprecated
-public class BedrockModelGeometryReader implements ModelGeometryReader {
+public class BedrockModelGeometryReader {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
 
@@ -35,7 +34,6 @@ public class BedrockModelGeometryReader implements ModelGeometryReader {
             "1.12.0"
     );
 
-    @Override
     public ModelGeometry read(Reader reader) throws IOException {
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
         JsonElement formatVersionElement = json.get("format_version");
@@ -74,7 +72,7 @@ public class BedrockModelGeometryReader implements ModelGeometryReader {
             JsonObject boneJson = boneElement.getAsJsonObject();
             String name = boneJson.get("name").getAsString();
 
-            Vector3Float pivot = Vectors.getVector3FloatFromJson(boneJson.get("pivot"));
+            Vector3Float pivot = Serialization.getVector3FloatFromJson(boneJson.get("pivot"));
 
             List<ModelComponent> cubes = new ArrayList<>();
             JsonArray cubesArray = boneJson.get("cubes").getAsJsonArray();
@@ -85,14 +83,14 @@ public class BedrockModelGeometryReader implements ModelGeometryReader {
                 JsonElement cubePivotElement = cubeJson.get("pivot");
                 Vector3Float cubePivot = cubePivotElement == null
                         ? Vector3Float.zero()
-                        : Vectors.getVector3FloatFromJson(cubePivotElement);
+                        : Serialization.getVector3FloatFromJson(cubePivotElement);
 
-                Vector3Float origin = Vectors.getVector3FloatFromJson(cubeJson.get("origin"));
-                Vector3Float size = Vectors.getVector3FloatFromJson(cubeJson.get("size"));
+                Vector3Float origin = Serialization.getVector3FloatFromJson(cubeJson.get("origin"));
+                Vector3Float size = Serialization.getVector3FloatFromJson(cubeJson.get("size"));
 
                 JsonElement rotationElement = cubeJson.get("rotation");
                 Vector3Float rotation = rotationElement != null && rotationElement.isJsonArray()
-                        ? Vectors.getVector3FloatFromJson(rotationElement)
+                        ? Serialization.getVector3FloatFromJson(rotationElement)
                         : Vector3Float.zero();
 
                 if (cubeJson.get("uv").isJsonArray()) {
@@ -104,8 +102,8 @@ public class BedrockModelGeometryReader implements ModelGeometryReader {
 
                     TextureFace face = TextureFace.valueOf(uvEntry.getKey().toUpperCase());
                     JsonObject uvJson = uvEntry.getValue().getAsJsonObject();
-                    Vector2Int uvBounds = Vectors.getVector2IntFromJson(uvJson.get("uv"));
-                    Vector2Int uvSize = Vectors.getVector2IntFromJson(uvJson.get("uv_size"));
+                    Vector2Int uvBounds = Serialization.getVector2IntFromJson(uvJson.get("uv"));
+                    Vector2Int uvSize = Serialization.getVector2IntFromJson(uvJson.get("uv_size"));
 
                     textureBounds[face.ordinal()] = new FacedTextureBound(
                             uvBounds,

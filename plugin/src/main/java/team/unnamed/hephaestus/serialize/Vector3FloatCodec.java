@@ -2,7 +2,7 @@ package team.unnamed.hephaestus.serialize;
 
 import com.google.gson.*;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.util.Vectors;
+import team.unnamed.hephaestus.util.Serialization;
 
 import java.lang.reflect.Type;
 
@@ -21,7 +21,7 @@ public class Vector3FloatCodec implements JsonSerializer<Vector3Float>, JsonDese
         if (array.size() != 3) {
             throw new JsonParseException("Invalid array size, expected 3, given: " + array.size());
         }
-        return Vectors.getVector3FloatFromJson(element);
+        return Serialization.getVector3FloatFromJson(element);
     }
 
     @Override

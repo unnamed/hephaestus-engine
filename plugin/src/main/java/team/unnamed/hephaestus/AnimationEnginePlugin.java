@@ -17,12 +17,8 @@ import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
 import team.unnamed.hephaestus.model.entity.ModelEntitySpawner;
-import team.unnamed.hephaestus.reader.FileModelReader;
-import team.unnamed.hephaestus.reader.ModelAnimationsReader;
-import team.unnamed.hephaestus.reader.ModelGeometryReader;
 import team.unnamed.hephaestus.reader.ModelReader;
-import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelAnimationsReader;
-import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelGeometryReader;
+import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelReader;
 import team.unnamed.hephaestus.resourcepack.HephaestusResourcePackExporter;
 import team.unnamed.hephaestus.resourcepack.ModelRegistry;
 import team.unnamed.hephaestus.resourcepack.ResourcePackExporter;
@@ -84,9 +80,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
         commandManager.registerCommands(commandBuilder.fromClass(new HephaestusCommand()));
 
-        ModelGeometryReader geometryReader = new BlockbenchModelGeometryReader();
-        ModelAnimationsReader animationsReader = new BlockbenchModelAnimationsReader();
-        ModelReader modelReader = new FileModelReader(geometryReader, animationsReader);
+        ModelReader modelReader = new BlockbenchModelReader();
         ResourcePackExporter resourcePackExporter = new HephaestusResourcePackExporter();
 
         File modelsDirectory = new File(this.getDataFolder(), "models");

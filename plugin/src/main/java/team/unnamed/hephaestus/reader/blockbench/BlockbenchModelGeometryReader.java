@@ -3,50 +3,26 @@ package team.unnamed.hephaestus.reader.blockbench;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import team.unnamed.hephaestus.model.*;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
-import team.unnamed.hephaestus.reader.ModelGeometryReader;
 import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.util.Vectors;
+import team.unnamed.hephaestus.util.Serialization;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.*;
 
 /**
- * Implementation of {@link ModelGeometryReader} that
- * parses the inputs to JSON (Format used by the
- * Blockbench modelling tool) and then reads the values.
- *
+ * Converts JSON to {@link ModelGeometry}
  * <p>The Blockbench format is explicitly supported
  *  by the Blockbench model editor</p>
  */
-public class BlockbenchModelGeometryReader implements ModelGeometryReader {
+public class BlockbenchModelGeometryReader {
 
-    private static final JsonParser JSON_PARSER = new JsonParser();
-
-    private static final List<String> SUPPORTED_FORMATS = Arrays.asList(
-            "3.6"
-    );
-
-    @Override
-    public ModelGeometry read(Reader reader) throws IOException {
-        JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
+    public ModelGeometry read(JsonObject json) throws IOException {
 
         JsonObject meta = json.get("meta").getAsJsonObject();
-        JsonElement formatVersionElement = meta.get("format_version");
-
-
-        if (
-                formatVersionElement == null
-                        || !SUPPORTED_FORMATS.contains(formatVersionElement.getAsString())
-        ) {
-            throw new IOException("Provided JSON doesn't have a valid format version");
-        }
-
         JsonElement boxUv = meta.get("box_uv");
 
         if (
@@ -73,9 +49,9 @@ public class BlockbenchModelGeometryReader implements ModelGeometryReader {
         for (JsonElement cubeElement : cubesArray) {
             JsonObject cubeJson = cubeElement.getAsJsonObject();
 
-            Vector3Float pivot = Vectors.getVector3FloatFromJson(cubeJson.get("origin")).multiply(-1, 1, 1);
-            Vector3Float to = Vectors.getVector3FloatFromJson(cubeJson.get("to"));
-            Vector3Float from = Vectors.getVector3FloatFromJson(cubeJson.get("from"));
+            Vector3Float pivot = Serialization.getVector3FloatFromJson(cubeJson.get("origin")).multiply(-1, 1, 1);
+            Vector3Float to = Serialization.getVector3FloatFromJson(cubeJson.get("to"));
+            Vector3Float from = Serialization.getVector3FloatFromJson(cubeJson.get("from"));
 
             Vector3Float origin = new Vector3Float(
                     -to.getX(),
@@ -90,7 +66,7 @@ public class BlockbenchModelGeometryReader implements ModelGeometryReader {
 
             JsonElement rotationElement = cubeJson.get("rotation");
             Vector3Float rotation = rotationElement != null && rotationElement.isJsonArray()
-                    ? Vectors.getVector3FloatFromJson(rotationElement).multiply(-1, -1, 1)
+                    ? Serialization.getVector3FloatFromJson(rotationElement).multiply(-1, -1, 1)
                     : Vector3Float.zero();
 
             FacedTextureBound[] textureBounds = new FacedTextureBound[TextureFace.values().length];
@@ -159,7 +135,7 @@ public class BlockbenchModelGeometryReader implements ModelGeometryReader {
 
     private ModelBone createBone(Map<String, ModelCube> cubeIdMap, JsonObject json) {
         String name = json.get("name").getAsString();
-        Vector3Float pivot = Vectors.getVector3FloatFromJson(json.get("origin")).multiply(-1, 1, 1);
+        Vector3Float pivot = Serialization.getVector3FloatFromJson(json.get("origin")).multiply(-1, 1, 1);
 
         List<ModelComponent> components = new ArrayList<>();
         json.get("children").getAsJsonArray().forEach(componentElement -> {
