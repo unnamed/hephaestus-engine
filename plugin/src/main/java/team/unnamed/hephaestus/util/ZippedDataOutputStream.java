@@ -1,7 +1,6 @@
 package team.unnamed.hephaestus.util;
 
 import com.google.gson.Gson;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -19,7 +18,7 @@ public class ZippedDataOutputStream
     private final Gson gson;
 
     public ZippedDataOutputStream(
-            @NotNull OutputStream out,
+            OutputStream out,
             Gson gson
     ) {
         super(out);
