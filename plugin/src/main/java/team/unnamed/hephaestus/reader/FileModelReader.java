@@ -40,9 +40,13 @@ public class FileModelReader implements ModelReader {
         }
 
         List<File> textures = new ArrayList<>();
-        for (File file : folder.listFiles()) {
-            if (file.getName().split("\\.")[1].equalsIgnoreCase("png")) {
-                textures.add(file);
+        File[] children = folder.listFiles();
+
+        if (children != null) {
+            for (File file : children) {
+                if (file.getName().endsWith(".png")) {
+                    textures.add(file);
+                }
             }
         }
 
