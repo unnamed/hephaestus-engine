@@ -10,6 +10,13 @@ import java.io.OutputStream;
  */
 public final class Streams {
 
+    /**
+     * Determines the length of the buffer
+     * used in the {@link Streams#pipe}
+     * operation
+     */
+    private static final int BUFFER_LENGTH = 1024;
+
     private Streams() {
     }
 
@@ -26,10 +33,10 @@ public final class Streams {
      * reading or writing the data
      */
     public static void pipe(InputStream input, OutputStream output) throws IOException {
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = input.read(buffer)) != -1) {
-            output.write(buffer, 0, len);
+        byte[] buffer = new byte[BUFFER_LENGTH];
+        int length;
+        while ((length = input.read(buffer)) != -1) {
+            output.write(buffer, 0, length);
         }
     }
 
