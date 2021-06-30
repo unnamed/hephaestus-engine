@@ -48,7 +48,7 @@ public class BlockbenchModelAnimationsReader implements ModelAnimationsReader {
             return animations;
         }
 
-        animationsElement.getAsJsonArray().forEach(animationElement -> {
+        for (JsonElement animationElement : animationsElement.getAsJsonArray()) {
             JsonObject animationJson = animationElement.getAsJsonObject();
 
             String name = animationJson.get("name").getAsString().split("\\.")[2];
@@ -109,8 +109,7 @@ public class BlockbenchModelAnimationsReader implements ModelAnimationsReader {
             }
 
             animations.put(name, new ModelAnimation(name, loop, length, boneAnimations));
-        });
-
+        }
 
         return animations;
     }
