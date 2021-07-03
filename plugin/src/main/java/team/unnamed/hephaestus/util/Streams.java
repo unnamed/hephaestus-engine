@@ -18,6 +18,7 @@ public final class Streams {
     private static final int BUFFER_LENGTH = 1024;
 
     private Streams() {
+        throw new UnsupportedOperationException("This class cannot be instantiated");
     }
 
     /**

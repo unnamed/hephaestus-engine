@@ -13,6 +13,7 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 public final class GsonFactory {
 
     private GsonFactory() {
+        throw new UnsupportedOperationException("This class cannot be instantiated");
     }
 
     /**

@@ -7,6 +7,7 @@ package team.unnamed.hephaestus.util;
 public final class ModelMath {
 
     private ModelMath() {
+        throw new UnsupportedOperationException("This class cannot be instantiated");
     }
 
     public static float shrink(float p) {

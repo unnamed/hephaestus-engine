@@ -12,6 +12,7 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 public final class Serialization {
 
     private Serialization() {
+        throw new UnsupportedOperationException("This class cannot be instantiated");
     }
 
     /**

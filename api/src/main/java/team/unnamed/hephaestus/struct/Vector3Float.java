@@ -82,33 +82,27 @@ public class Vector3Float {
     }
 
     public Vector3Float rotateAroundX(double angle) {
-        float angleCos = (float) Math.cos(angle);
-        float angleSin = (float) Math.sin(angle);
-
-        float y = angleCos * getY() - angleSin * getZ();
-        float z = angleSin * getY() + angleCos * getZ();
-
-        return new Vector3Float(this.x, y, z);
+        return new Vector3Float(
+                x,
+                (float) (y * Math.cos(angle) - z * Math.sin(angle)),
+                (float) (y * Math.sin(angle) + z * Math.cos(angle))
+        );
     }
 
     public Vector3Float rotateAroundY(double angle) {
-        float angleCos = (float) Math.cos(angle);
-        float angleSin = (float) Math.sin(angle);
-
-        float x = angleCos * getX() + angleSin * getZ();
-        float z = -angleSin * getX() + angleCos * getZ();
-
-        return new Vector3Float(x, this.y, z);
+        return new Vector3Float(
+                (float) (x * Math.cos(angle) - z * Math.sin(angle)),
+                y,
+                (float) (x * Math.sin(angle) + z * Math.cos(angle))
+        );
     }
 
     public Vector3Float rotateAroundZ(double angle) {
-        float angleCos = (float) Math.cos(angle);
-        float angleSin = (float) Math.sin(angle);
-
-        float x = angleCos * getX() - angleSin * getY();
-        float y = angleSin * getX() + angleCos * getY();
-
-        return new Vector3Float(x, y, this.z);
+        return new Vector3Float(
+                (float) (x * Math.cos(angle) + y * Math.sin(angle)),
+                (float) (-(x * Math.sin(angle)) + y * Math.cos(angle)),
+                z
+        );
     }
 
     public float getX() {

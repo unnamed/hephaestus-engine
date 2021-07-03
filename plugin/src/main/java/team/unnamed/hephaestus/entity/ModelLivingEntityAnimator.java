@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.EulerAngle;
-import org.bukkit.util.Vector;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelComponent;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
@@ -13,13 +12,12 @@ import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
 import team.unnamed.hephaestus.model.entity.ModelLivingEntity;
-import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
-import java.util.Iterator;
 import java.util.List;
 
+//TODO: Pass entity handling to packet side and make animations 60 fps
 public class ModelLivingEntityAnimator implements ModelEntityAnimator {
 
     private final Plugin plugin;
@@ -89,7 +87,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
         private void updateBone(
                 ModelBone bone,
                 Vector3Float offset,
-                EulerAngle angleOffset,
+                Vector3Float rotationOffset,
                 float tick
         ) {
             ArmorStand boneEntity = (ArmorStand) Bukkit.getEntity(this.entity.getEntities().get(bone.getName()));
@@ -133,35 +131,35 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                     (tick / 20) / nextPositionFrame.getPosition()
             ).multiply(1, 1, -1).divide(10);
 
-            Vector3Float rotationVector = Vectors.lerp(
+            Vector3Float rotationAdd = Vectors.lerp(
                     previousRotationFrame.getValue(),
                     nextRotationFrame.getValue(),
-                    (tick / 20) / nextPositionFrame.getPosition()
+                    (tick / 20) / nextRotationFrame.getPosition()
             );
 
-            EulerAngle rotationAdd = new EulerAngle(
-                    Math.toRadians(rotationVector.getX()),
-                    Math.toRadians(rotationVector.getY()),
-                    Math.toRadians(rotationVector.getZ())
-            );
+            Vector3Float globalRotation = rotationOffset.add(rotationAdd);
 
-            Vector3Float positionCorrection = bone.getLocalOffset().multiply(1, 1, -1)
-                    .rotateAroundX(rotationVector.getX())
-                    .rotateAroundY(rotationVector.getY())
-                    .rotateAroundZ(rotationVector.getZ());
+            EulerAngle worldRotation = new EulerAngle(
+                    Math.toRadians(globalRotation.getX()),
+                    Math.toRadians(globalRotation.getY()),
+                    Math.toRadians(globalRotation.getZ())
+            );
 
             Vector3Float globalPosition = Vectors.rotate(
-                    positionAdd.add(offset).add(bone.getLocalOffset().multiply(1, 1, -1)),
+                    bone.getLocalOffset().multiply(1, 1, -1).add(positionAdd).add(offset)
+                            .rotateAroundX(Math.toRadians(rotationOffset.getX()))
+                            .rotateAroundY(Math.toRadians(rotationOffset.getY()))
+                            .rotateAroundZ(Math.toRadians(rotationOffset.getZ())),
                     -this.entity.getLocation().getYaw() * 0.017453292F
             );
 
             Location worldPosition = this.entity.getLocation().clone().add(
-                    positionCorrection.getX(),
-                    positionCorrection.getY(),
-                    positionCorrection.getZ()
+                    globalPosition.getX(),
+                    globalPosition.getY(),
+                    globalPosition.getZ()
             );
 
-            boneEntity.setHeadPose(angleOffset.add(rotationAdd.getX(), rotationAdd.getY(), rotationAdd.getZ()));
+            boneEntity.setHeadPose(worldRotation);
             boneEntity.teleport(worldPosition);
 
             for (ModelComponent component : bone.getComponents()) {
@@ -169,7 +167,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                     this.updateBone(
                             (ModelBone) component,
                             offset.add(positionAdd),
-                            angleOffset.add(rotationAdd.getX(), rotationAdd.getY(), rotationAdd.getZ()),
+                            globalRotation,
                             tick
                     );
                 }
@@ -187,7 +185,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                 this.updateBone(
                         bone,
                         Vector3Float.zero(),
-                        EulerAngle.ZERO,
+                        Vector3Float.zero(),
                         entity.getTick()
                 );
             }

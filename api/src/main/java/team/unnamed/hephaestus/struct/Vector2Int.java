@@ -27,10 +27,6 @@ public class Vector2Int {
         return y;
     }
 
-    public Vector2Int subtract(Vector2Int vector2Int) {
-        return new Vector2Int(x - vector2Int.getX(), y - vector2Int.getY());
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
