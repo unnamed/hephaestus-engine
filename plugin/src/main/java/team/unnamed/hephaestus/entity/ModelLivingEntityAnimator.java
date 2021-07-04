@@ -37,7 +37,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                         plugin,
                         new AnimationTask(entity, animation),
                         0L,
-                        1L
+                        6L
                 )
                 .getTaskId();
     }
@@ -85,6 +85,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
         }
 
         private void updateBone(
+                Vector3Float parentPosition,
                 ModelBone bone,
                 Vector3Float offset,
                 Vector3Float rotationOffset,
@@ -97,18 +98,18 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
 
             ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
 
-            KeyFrame previousPositionFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
+            KeyFrame previousPositionFrame = boneAnimation == null ? new KeyFrame(tick/20, Vector3Float.zero())
                     : getPrevious(tick, boneAnimation.getPositionFrames());
 
-            KeyFrame nextPositionFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
+            KeyFrame nextPositionFrame = boneAnimation == null ? new KeyFrame(tick/20, Vector3Float.zero())
                     : getNext(tick, boneAnimation.getPositionFrames());
 
             if (previousPositionFrame == null) {
-                previousPositionFrame = new KeyFrame(tick, Vector3Float.zero());
+                previousPositionFrame = new KeyFrame(tick/20, Vector3Float.zero());
             }
 
             if (nextPositionFrame == null) {
-                nextPositionFrame = new KeyFrame(tick, Vector3Float.zero());
+                nextPositionFrame = new KeyFrame(tick/20, previousPositionFrame.getValue());
             }
 
             KeyFrame previousRotationFrame = boneAnimation == null ? new KeyFrame(tick, Vector3Float.zero())
@@ -118,23 +119,23 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                     : getNext(tick, boneAnimation.getRotationFrames());
 
             if (previousRotationFrame == null) {
-                previousRotationFrame = new KeyFrame(tick, Vector3Float.zero());
+                previousRotationFrame = new KeyFrame(tick/20, Vector3Float.zero());
             }
 
             if (nextRotationFrame == null) {
-                nextRotationFrame = new KeyFrame(tick, Vector3Float.zero());
+                nextRotationFrame = new KeyFrame(tick/20, previousRotationFrame.getValue());
             }
 
             Vector3Float positionAdd = Vectors.lerp(
                     previousPositionFrame.getValue(),
                     nextPositionFrame.getValue(),
-                    (tick / 20) / nextPositionFrame.getPosition()
-            ).multiply(1, 1, -1).divide(10);
+                    tick / (nextPositionFrame.getPosition() * 20)
+            ).multiply(-1, 1, -1).divide(16, 16, 16);
 
             Vector3Float rotationAdd = Vectors.lerp(
                     previousRotationFrame.getValue(),
                     nextRotationFrame.getValue(),
-                    (tick / 20) / nextRotationFrame.getPosition()
+                    tick / (nextRotationFrame.getPosition() * 20)
             );
 
             Vector3Float globalRotation = rotationOffset.add(rotationAdd);
@@ -145,11 +146,19 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                     Math.toRadians(globalRotation.getZ())
             );
 
+            Vector3Float localPosition = bone.getLocalOffset()
+                    .multiply(1, 1, -1)
+                    .subtract(
+                            parentPosition == null ? bone.getLocalOffset().multiply(1, 1, -1) : parentPosition
+                    )
+                    .rotateAroundX(Math.toRadians(rotationOffset.getX()))
+                    .rotateAroundY(Math.toRadians(rotationOffset.getY()))
+                    .rotateAroundZ(Math.toRadians(rotationOffset.getZ()))
+                    .add(parentPosition == null ? bone.getLocalOffset().multiply(1, 1, -1) : parentPosition)
+                    .add(positionAdd).add(offset);
+
             Vector3Float globalPosition = Vectors.rotate(
-                    bone.getLocalOffset().multiply(1, 1, -1).add(positionAdd).add(offset)
-                            .rotateAroundX(Math.toRadians(rotationOffset.getX()))
-                            .rotateAroundY(Math.toRadians(rotationOffset.getY()))
-                            .rotateAroundZ(Math.toRadians(rotationOffset.getZ())),
+                    localPosition,
                     -this.entity.getLocation().getYaw() * 0.017453292F
             );
 
@@ -165,6 +174,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             for (ModelComponent component : bone.getComponents()) {
                 if (component instanceof ModelBone) {
                     this.updateBone(
+                            localPosition,
                             (ModelBone) component,
                             offset.add(positionAdd),
                             globalRotation,
@@ -183,6 +193,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
 
             for (ModelBone bone : this.entity.getModel().getGeometry().getBones()) {
                 this.updateBone(
+                        null,
                         bone,
                         Vector3Float.zero(),
                         Vector3Float.zero(),

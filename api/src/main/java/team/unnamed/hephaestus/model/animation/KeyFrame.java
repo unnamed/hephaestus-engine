@@ -30,6 +30,14 @@ public class KeyFrame {
     }
 
     @Override
+    public KeyFrame clone() {
+       return new KeyFrame(
+               this.position,
+               value.clone()
+       );
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

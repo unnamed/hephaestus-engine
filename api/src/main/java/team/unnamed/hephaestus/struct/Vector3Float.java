@@ -1,5 +1,7 @@
 package team.unnamed.hephaestus.struct;
 
+import org.bukkit.util.EulerAngle;
+
 import java.util.Objects;
 
 /**
@@ -150,6 +152,15 @@ public class Vector3Float {
         return new Vector3Float(
                 this.x,
                 this.y,
+                z
+        );
+    }
+
+    @Override
+    public Vector3Float clone() {
+        return new Vector3Float(
+                x,
+                y,
                 z
         );
     }
