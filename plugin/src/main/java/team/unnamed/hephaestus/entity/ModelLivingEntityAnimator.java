@@ -76,12 +76,12 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             EulerAngle globalRotation;
 
             if (parent == null) {
-                globalPosition = localPosition.rotateAroundY((float) Math.toRadians(this.entity.getLocation().getYaw()));
+                globalPosition = localPosition.rotateAroundY(Math.toRadians(this.entity.getLocation().getYaw()));
                 globalRotation = localRotation;
             } else {
                 globalPosition = localPosition
                         .rotateAroundEuler(parentRotation)
-                        .rotateAroundY((float) Math.toRadians(this.entity.getLocation().getYaw()))
+                        .rotateAroundY(Math.toRadians(this.entity.getLocation().getYaw()))
                         .add(parentPosition);
 
                 globalRotation = Quaternion.combine(localRotation, parentRotation);

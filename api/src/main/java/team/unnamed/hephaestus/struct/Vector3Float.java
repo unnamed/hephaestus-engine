@@ -95,41 +95,41 @@ public class Vector3Float {
         return this.multiply(vector.getX(), vector.getY(), vector.getZ());
     }
 
-    public Vector3Float rotateAroundX(float angle) {
-        float sin = (float) Math.sin(angle);
-        float cos = (float) Math.cos(angle);
+    public Vector3Float rotateAroundX(double angle) {
+        double sin = Math.sin(angle);
+        double cos = Math.cos(angle);
 
-        float y = this.getY() * cos - this.getZ() * sin;
-        float z = this.getY() * sin + this.getZ() * cos;
+        float y = (float) (this.getY() * cos - this.getZ() * sin);
+        float z = (float) (this.getY() * sin + this.getZ() * cos);
 
-        return setY(y).setZ(z);
+        return new Vector3Float(x, y, z);
     }
 
-    public Vector3Float rotateAroundY(float angle) {
-        float sin = (float) Math.sin(angle);
-        float cos = (float) Math.cos(angle);
+    public Vector3Float rotateAroundY(double angle) {
+        double sin =  Math.sin(angle);
+        double cos = Math.cos(angle);
 
-        float x = this.getX() * cos - this.getZ() * sin;
-        float z = this.getX() * sin + this.getZ() * cos;
+        float x = (float) (this.getX() * cos - this.getZ() * sin);
+        float z = (float) (this.getX() * sin + this.getZ() * cos);
 
-        return setX(x).setZ(z);
+        return new Vector3Float(x, y, z);
     }
 
-    public Vector3Float rotateAroundZ(float angle) {
-        float sin = (float) Math.sin(angle);
-        float cos = (float) Math.cos(angle);
+    public Vector3Float rotateAroundZ(double angle) {
+        double sin = Math.sin(angle);
+        double cos = Math.cos(angle);
 
-        float x = this.getX() * cos + this.getY() * sin;
-        float y = -this.getX() * sin + this.getY() * cos;
+        float x = (float) (this.getX() * cos + this.getY() * sin);
+        float y = (float) (-this.getX() * sin + this.getY() * cos);
 
-        return setX(x).setY(y);
+        return new Vector3Float(x, y, z);
     }
 
     public Vector3Float rotateAroundEuler(EulerAngle eulerAngle) {
         return this
-                .rotateAroundX((float) eulerAngle.getX())
-                .rotateAroundY((float) eulerAngle.getY())
-                .rotateAroundZ((float) eulerAngle.getZ());
+                .rotateAroundX(eulerAngle.getX())
+                .rotateAroundY(eulerAngle.getY())
+                .rotateAroundZ(eulerAngle.getZ());
 
     }
 
