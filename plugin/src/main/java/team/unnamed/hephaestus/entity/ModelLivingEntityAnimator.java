@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import team.unnamed.hephaestus.animation.ModelFrameProvider;
 import team.unnamed.hephaestus.model.ModelBone;
@@ -32,17 +33,12 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
         entity.resetTick();
         entity.setAnimation(animation);
 
-        return Bukkit.getScheduler()
-                .runTaskTimer(
-                        plugin,
-                        new AnimationTask(entity, animation),
-                        0L,
-                        6L
-                )
+        return new AnimationTask(entity, animation)
+                .runTaskTimer(plugin, 0L, 6L)
                 .getTaskId();
     }
 
-    class AnimationTask implements Runnable {
+    class AnimationTask extends BukkitRunnable {
 
         private final ModelLivingEntity entity;
         private final ModelAnimation animation;
@@ -116,8 +112,13 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
         @Override
         public void run() {
 
-            if (animation.isLoop() && entity.getTick() > animation.getAnimationLength()) {
-                entity.resetTick();
+            if (entity.getTick() > animation.getAnimationLength()) {
+                if (animation.isLoop()) {
+                    entity.resetTick();
+                } else {
+                    cancel();
+                    return;
+                }
             }
 
             for (ModelBone bone : this.entity.getModel().getGeometry().getBones()) {
