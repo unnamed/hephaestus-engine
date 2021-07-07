@@ -27,27 +27,19 @@ public class ModelLivingEntitySpawner implements ModelEntitySpawner {
                 UUID.randomUUID()
         );
         for (ModelBone bone : model.getGeometry().getBones()) {
-            summonBone(entity, location, bone);
+            summonBone(entity, location, bone, Vector3Float.ZERO);
         }
         return entity;
     }
 
-    private void summonBone(ModelLivingEntity entity, Location location, ModelBone bone) {
+    private void summonBone(ModelLivingEntity entity, Location location, ModelBone bone, Vector3Float offset) {
 
         World world = location.getWorld();
 
         if (world == null) {
             throw new IllegalArgumentException("Invalid location was given. It doesn't have a world!");
         }
-
-        Vector3Float relativePos = new Vector3Float(
-                bone.getLocalOffset().getX(),
-                bone.getLocalOffset().getY(),
-                -bone.getLocalOffset().getZ()
-        );
-
-        relativePos = Vectors.rotate(relativePos, -location.getYaw() * 0.017453292F);
-
+        Vector3Float relativePos = Vectors.rotate(bone.getLocalOffset().multiply(1, 1, -1).add(offset), -location.getYaw() * 0.017453292F);
         Location position = location.clone().add(
                 relativePos.getX(),
                 relativePos.getY(),
@@ -81,10 +73,8 @@ public class ModelLivingEntitySpawner implements ModelEntitySpawner {
 
         for (ModelComponent component : bone.getComponents()) {
             if (component instanceof ModelBone) {
-                summonBone(entity, location, (ModelBone) component);
+                summonBone(entity, location, (ModelBone) component, offset.add(bone.getLocalOffset().multiply(1, 1, -1)));
             }
         }
     }
-
-
 }

@@ -29,7 +29,7 @@ public class BlockbenchModelAnimationsReader {
         for (JsonElement animationElement : animationsElement.getAsJsonArray()) {
             JsonObject animationJson = animationElement.getAsJsonObject();
 
-            String name = animationJson.get("name").getAsString().split("\\.")[2];
+            String name = animationJson.get("name").getAsString();
             boolean loop = animationJson.get("loop").getAsString().equals("loop");
             float length = Math.round(animationJson.get("length").getAsFloat()*20);
 
