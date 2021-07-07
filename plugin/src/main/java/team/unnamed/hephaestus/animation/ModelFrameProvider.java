@@ -6,6 +6,7 @@ import team.unnamed.hephaestus.model.animation.FrameProvider;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
+import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
@@ -85,11 +86,12 @@ public class ModelFrameProvider implements FrameProvider {
         EulerAngle frameRotation = previousRotationFrame.getValue().toEuler();
         if (nextRotationFrame != null) {
             float ratio = ((tick) - previousRotationFrame.getPosition()) / (nextRotationFrame.getPosition() - previousRotationFrame.getPosition());
-            frameRotation = Vectors.lerp(
-                    previousRotationFrame.getValue(),
-                    nextRotationFrame.getValue(),
+
+            frameRotation = Quaternion.lerp(
+                    previousRotationFrame.getValue().toEuler(),
+                    nextRotationFrame.getValue().toEuler(),
                     ratio
-            ).toEuler();
+            );
         }
 
         return frameRotation;
