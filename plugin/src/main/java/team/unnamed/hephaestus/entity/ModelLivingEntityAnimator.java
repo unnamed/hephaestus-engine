@@ -13,6 +13,7 @@ import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
 import team.unnamed.hephaestus.model.entity.ModelLivingEntity;
 import team.unnamed.hephaestus.struct.EulerOrder;
+import team.unnamed.hephaestus.struct.OldQuaternion;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Offset;
@@ -69,8 +70,8 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             Vector3Float framePosition = frameProvider.providePosition(tick, animation, bone).multiply(0.0625F);
             EulerAngle frameRotation = frameProvider.provideRotation(tick, animation, bone);
 
-            Vector3Float defaultPosition = bone.getPivot().divide(16).multiply(1, 1, -1);
-            EulerAngle defaultRotation = bone.getRotation().toEuler();
+            Vector3Float defaultPosition = bone.getLocalOffset().multiply(1, 1, -1);
+            EulerAngle defaultRotation = Quaternion.toEuler(Quaternion.toQuaternion(bone.getRotation().toEuler()));
 
             Vector3Float localPosition = framePosition.add(defaultPosition);
             EulerAngle localRotation = defaultRotation.add(frameRotation.getX(), frameRotation.getY(), frameRotation.getZ());
@@ -82,32 +83,9 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                 globalPosition = Offset.rotateYaw(localPosition, Math.toRadians(this.entity.getLocation().getYaw()));
                 globalRotation = localRotation;
             } else {
-                Quaternion rotation = Quaternion.fromEuler(
-                        new EulerAngle(
-                                -parentRotation.getX(),
-                                parentRotation.getY(),
-                                parentRotation.getZ()
-                        ),
-                        EulerOrder.XYZ
-                );
-
-                Quaternion positionQuaternion = Quaternion
-                        .fromVector(parentPosition)
-                        .premultiply(rotation.clone().conjugate())
-                        .multiply(rotation);
-
-                localPosition = new Vector3Float(
-                        positionQuaternion.getX(),
-                        positionQuaternion.getY(),
-                        positionQuaternion.getZ()
-                ).add(defaultPosition);
-
-                globalPosition = Offset.rotateYaw(localPosition, Math.toRadians(this.entity.getLocation().getYaw()));
-
-                globalRotation = Quaternion
-                        .fromEuler(localRotation, EulerOrder.XYZ)
-                        .multiply(Quaternion.fromEuler(parentRotation, EulerOrder.XYZ))
-                        .toEuler(EulerOrder.XYZ);
+                localPosition = Offset.getRelativeLocation(parentRotation, localPosition);
+                globalPosition = Offset.rotateYaw(localPosition, Math.toRadians(this.entity.getLocation().getYaw())).add(parentPosition);
+                globalRotation = Quaternion.combine(parentRotation, localRotation);
             }
 
             Location worldPosition = this.entity.getLocation().clone().add(
