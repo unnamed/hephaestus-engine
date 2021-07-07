@@ -64,7 +64,10 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                 return;
             }
 
-            Vector3Float framePosition = frameProvider.providePosition(tick, animation, bone).multiply(0.0625F).multiply(1, 1, -1);
+            Vector3Float framePosition = frameProvider.providePosition(tick, animation, bone)
+                    .divide(16)
+                    .multiply(1, 1, -1);
+
             EulerAngle frameRotation = frameProvider.provideRotation(tick, animation, bone);
 
             Vector3Float defaultPosition = bone.getLocalOffset().multiply(1, 1, -1);
