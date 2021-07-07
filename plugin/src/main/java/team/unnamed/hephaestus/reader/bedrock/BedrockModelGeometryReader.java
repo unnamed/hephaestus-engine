@@ -82,7 +82,7 @@ public class BedrockModelGeometryReader {
 
                 JsonElement cubePivotElement = cubeJson.get("pivot");
                 Vector3Float cubePivot = cubePivotElement == null
-                        ? Vector3Float.zero()
+                        ? Vector3Float.ZERO
                         : Serialization.getVector3FloatFromJson(cubePivotElement);
 
                 Vector3Float origin = Serialization.getVector3FloatFromJson(cubeJson.get("origin"));
@@ -91,7 +91,7 @@ public class BedrockModelGeometryReader {
                 JsonElement rotationElement = cubeJson.get("rotation");
                 Vector3Float rotation = rotationElement != null && rotationElement.isJsonArray()
                         ? Serialization.getVector3FloatFromJson(rotationElement)
-                        : Vector3Float.zero();
+                        : Vector3Float.ZERO;
 
                 if (cubeJson.get("uv").isJsonArray()) {
                     throw new IOException("Box UV not supported, please turn it off");
@@ -124,6 +124,7 @@ public class BedrockModelGeometryReader {
             ModelBone bone = new ModelBone(
                     name,
                     pivot,
+                    Vector3Float.ZERO,
                     cubes
             );
 

@@ -67,7 +67,7 @@ public class BlockbenchModelGeometryReader {
             JsonElement rotationElement = cubeJson.get("rotation");
             Vector3Float rotation = rotationElement != null && rotationElement.isJsonArray()
                     ? Serialization.getVector3FloatFromJson(rotationElement).multiply(-1, -1, 1)
-                    : Vector3Float.zero();
+                    : Vector3Float.ZERO;
 
             FacedTextureBound[] textureBounds = new FacedTextureBound[TextureFace.values().length];
             cubeJson.get("faces").getAsJsonObject().entrySet().forEach(faceEntry -> {
@@ -136,6 +136,9 @@ public class BlockbenchModelGeometryReader {
     private ModelBone createBone(Map<String, ModelCube> cubeIdMap, JsonObject json) {
         String name = json.get("name").getAsString();
         Vector3Float pivot = Serialization.getVector3FloatFromJson(json.get("origin")).multiply(-1, 1, 1);
+        Vector3Float rotation = json.get("rotation") == null
+                ? Vector3Float.ZERO
+                : Serialization.getVector3FloatFromJson(json.get("rotation"));
 
         List<ModelComponent> components = new ArrayList<>();
         json.get("children").getAsJsonArray().forEach(componentElement -> {
@@ -146,6 +149,6 @@ public class BlockbenchModelGeometryReader {
             }
         });
 
-        return new ModelBone(name, pivot, components);
+        return new ModelBone(name, pivot, rotation, components);
     }
 }

@@ -72,20 +72,15 @@ public class ModelCube implements ModelComponent {
     }
 
     public String getRotationAxis() {
-        float rX = Math.abs(this.rotation.getX());
-        float rY = Math.abs(this.rotation.getY());
-        float rZ = Math.abs(this.rotation.getZ());
-
-        if ((((rX != 0.0F) ? 1 : 0) ^ ((rY != 0.0F) ? 1 : 0) ^ ((rZ != 0.0F) ? 1 : 0)) == 0 && (rX != 0.0F || rY != 0.0F || rZ != 0.0F))
-            throw new IllegalStateException("Illegal cube detected. Cube rotated in multiple axis. [" + rX + ", " + rY + ", " + rZ + "]");
-        if (rX > rY) {
-            if (rX > rZ)
-                return "x";
-            return "z";
-        }
-        if (rY > rZ)
+        if ((((this.rotation.getX() != 0.0F) ? 1 : 0) ^ ((this.rotation.getY() != 0.0F) ? 1 : 0) ^ ((this.rotation.getZ() != 0.0F) ? 1 : 0)) == 0 && (this.rotation.getX() != 0.0F || this.rotation.getY() != 0.0F || this.rotation.getZ() != 0.0F))
+            throw new UnsupportedOperationException("Cube rotated in multiple axis");
+        if (this.rotation.getX() != 0.0F)
+            return "x";
+        if (this.rotation.getY() != 0.0F)
             return "y";
-        return "z";
+        if (this.rotation.getZ() != 0.0F)
+            return "z";
+        return "x";
     }
 
     @Override

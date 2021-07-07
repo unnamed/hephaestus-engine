@@ -12,6 +12,7 @@ public class ModelBone implements ModelComponent {
 
     private final String name;
     private final Vector3Float pivot;
+    private final Vector3Float rotation;
     private final List<ModelComponent> components;
 
     private final Vector3Float globalOffset;
@@ -19,16 +20,17 @@ public class ModelBone implements ModelComponent {
 
     private int customModelData;
 
-    public ModelBone(String name, Vector3Float pivot, List<ModelComponent> components) {
+    public ModelBone(String name, Vector3Float pivot, Vector3Float rotation, List<ModelComponent> components) {
         this.name = name;
         this.pivot = pivot;
+        this.rotation = rotation;
         this.components = components;
         this.globalOffset = new Vector3Float(
                 pivot.getX() / 16,
                 pivot.getY() / 16,
                 pivot.getZ() / 16
         );
-        this.localOffset = Vector3Float.zero();
+        this.localOffset = Vector3Float.ZERO;
     }
 
     public Vector3Float getGlobalOffset() {
@@ -73,6 +75,10 @@ public class ModelBone implements ModelComponent {
     @Override
     public Vector3Float getPivot() {
         return pivot;
+    }
+
+    public Vector3Float getRotation() {
+        return rotation;
     }
 
     public List<ModelComponent> getComponents() {

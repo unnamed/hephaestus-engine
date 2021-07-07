@@ -31,7 +31,7 @@ public class BlockbenchModelAnimationsReader {
 
             String name = animationJson.get("name").getAsString().split("\\.")[2];
             boolean loop = animationJson.get("loop").getAsString().equals("loop");
-            float length = animationJson.get("length").getAsFloat();
+            float length = Math.round(animationJson.get("length").getAsFloat()*20);
 
             Map<String, ModelBoneAnimation> boneAnimations = new HashMap<>();
             for (Map.Entry<String, JsonElement> boneAnimationEntry : animationJson.get("animators")
@@ -55,7 +55,7 @@ public class BlockbenchModelAnimationsReader {
                     Vector3Float value = new Vector3Float(x, y, z);
 
                     String channel = keyframeJson.get("channel").getAsString();
-                    float time = keyframeJson.get("time").getAsFloat();
+                    float time = Math.round(keyframeJson.get("time").getAsFloat()*20);
                     KeyFrame keyFrame = new KeyFrame(
                             time,
                             value

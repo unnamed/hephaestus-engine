@@ -55,6 +55,18 @@ public class Vector3Float {
         return this.x * vector.getX() + this.y * vector.getY() + this.z * vector.getZ();
     }
 
+    public Vector3Float crossProduct(Vector3Float o) {
+        float newX = y * o.z - o.y * z;
+        float newY = z * o.x - o.z * x;
+        float newZ = x * o.y - o.x * y;
+
+        return new Vector3Float(
+                newX,
+                newY,
+                newZ
+        );
+    }
+
     public Vector3Float multiply(float value) {
         return new Vector3Float(
                 this.x * value,
@@ -84,26 +96,39 @@ public class Vector3Float {
     }
 
     public Vector3Float rotateAroundX(double angle) {
-        return new Vector3Float(
-                x,
-                (float) (y * Math.cos(angle) - z * Math.sin(angle)),
-                (float) (y * Math.sin(angle) + z * Math.cos(angle))
-        );
+        float angleCos = (float) Math.cos(angle);
+        float angleSin = (float) Math.sin(angle);
+
+        float y = angleCos * getY() - angleSin * getZ();
+        float z = angleSin * getY() + angleCos * getZ();
+        return setY(y).setZ(z);
     }
 
     public Vector3Float rotateAroundY(double angle) {
-        return new Vector3Float(
-                (float) (x * Math.cos(angle) - z * Math.sin(angle)),
-                y,
-                (float) (x * Math.sin(angle) + z * Math.cos(angle))
-        );
+        float angleCos = (float) Math.cos(angle);
+        float angleSin = (float) Math.sin(angle);
+
+        float x = angleCos * getX() + angleSin * getZ();
+        float z = -angleSin * getX() + angleCos * getZ();
+        return setX(x).setZ(z);
     }
 
     public Vector3Float rotateAroundZ(double angle) {
-        return new Vector3Float(
-                (float) (x * Math.cos(angle) + y * Math.sin(angle)),
-                (float) (-(x * Math.sin(angle)) + y * Math.cos(angle)),
-                z
+        float angleCos = (float) Math.cos(angle);
+        float angleSin = (float) Math.sin(angle);
+
+        float x = angleCos * getX() - angleSin * getY();
+        float y = angleSin * getX() + angleCos * getY();
+
+        return setX(x).setY(y);
+    }
+
+
+    public EulerAngle toEuler() {
+        return new EulerAngle(
+                Math.toRadians(x),
+                Math.toRadians(y),
+                Math.toRadians(z)
         );
     }
 
@@ -189,8 +214,6 @@ public class Vector3Float {
                 '}';
     }
 
-    public static Vector3Float zero() {
-        return new Vector3Float(0, 0, 0);
-    }
+    public static Vector3Float ZERO = new Vector3Float(0, 0, 0);
 
 }
