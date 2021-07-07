@@ -12,11 +12,8 @@ import team.unnamed.hephaestus.model.animation.FrameProvider;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
 import team.unnamed.hephaestus.model.entity.ModelLivingEntity;
-import team.unnamed.hephaestus.struct.EulerOrder;
-import team.unnamed.hephaestus.struct.OldQuaternion;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.util.Offset;
 
 //TODO: Pass entity handling to packet side and make animations 60 fps
 public class ModelLivingEntityAnimator implements ModelEntityAnimator {
@@ -67,7 +64,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                 return;
             }
 
-            Vector3Float framePosition = frameProvider.providePosition(tick, animation, bone).multiply(0.0625F);
+            Vector3Float framePosition = frameProvider.providePosition(tick, animation, bone).multiply(0.0625F).multiply(1, 1, -1);
             EulerAngle frameRotation = frameProvider.provideRotation(tick, animation, bone);
 
             Vector3Float defaultPosition = bone.getLocalOffset().multiply(1, 1, -1);
@@ -80,12 +77,15 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             EulerAngle globalRotation;
 
             if (parent == null) {
-                globalPosition = Offset.rotateYaw(localPosition, Math.toRadians(this.entity.getLocation().getYaw()));
+                globalPosition = localPosition.rotateAroundY((float) Math.toRadians(this.entity.getLocation().getYaw()));
                 globalRotation = localRotation;
             } else {
-                localPosition = Offset.getRelativeLocation(parentRotation, localPosition);
-                globalPosition = Offset.rotateYaw(localPosition, Math.toRadians(this.entity.getLocation().getYaw())).add(parentPosition);
-                globalRotation = Quaternion.combine(parentRotation, localRotation);
+                globalPosition = localPosition
+                        .rotateAroundEuler(parentRotation)
+                        .rotateAroundY((float) Math.toRadians(this.entity.getLocation().getYaw()))
+                        .add(parentPosition);
+
+                globalRotation = Quaternion.combine(localRotation, parentRotation);
             }
 
             Location worldPosition = this.entity.getLocation().clone().add(

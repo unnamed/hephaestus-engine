@@ -33,13 +33,17 @@ public class ModelLivingEntitySpawner implements ModelEntitySpawner {
     }
 
     private void summonBone(ModelLivingEntity entity, Location location, ModelBone bone, Vector3Float offset) {
-
         World world = location.getWorld();
 
         if (world == null) {
             throw new IllegalArgumentException("Invalid location was given. It doesn't have a world!");
         }
-        Vector3Float relativePos = Vectors.rotate(bone.getLocalOffset().multiply(1, 1, -1).add(offset), -location.getYaw() * 0.017453292F);
+
+        Vector3Float relativePos = bone.getLocalOffset()
+                .multiply(1, 1, -1)
+                .add(offset)
+                .rotateAroundY((float) Math.toRadians(location.getYaw()));
+
         Location position = location.clone().add(
                 relativePos.getX(),
                 relativePos.getY(),
