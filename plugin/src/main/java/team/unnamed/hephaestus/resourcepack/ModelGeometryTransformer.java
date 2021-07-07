@@ -171,13 +171,10 @@ public class ModelGeometryTransformer {
             }
         }
 
-        bone.setRelativeOffset(Vector3Float.ZERO);
-        bone.updateChildRelativeOffset();
-
         for (ModelComponent component : bone.getComponents()) {
             if (component instanceof ModelBone) {
                 ModelBone child = (ModelBone) component;
-                child.setRelativeOffset(Vector3Float.ZERO);
+                child.setRelativeOffset(bonePivot.divide(16));
                 child.updateChildRelativeOffset();
             }
         }
