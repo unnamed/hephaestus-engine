@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.util;
+package team.unnamed.hephaestus.io;
 
 import com.google.gson.Gson;
 

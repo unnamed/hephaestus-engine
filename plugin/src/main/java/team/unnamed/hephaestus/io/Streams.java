@@ -1,8 +1,12 @@
-package team.unnamed.hephaestus.util;
+package team.unnamed.hephaestus.io;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * Utility class for working with
@@ -39,6 +43,25 @@ public final class Streams {
         while ((length = input.read(buffer)) != -1) {
             output.write(buffer, 0, length);
         }
+    }
+
+    /**
+     * Creates a {@link ByteArrayInputStream} for reading
+     * the given {@code string} using the specified {@code charset}
+     */
+    public static InputStream fromString(String string, Charset charset) {
+        byte[] bytes = string.getBytes(charset);
+        return new ByteArrayInputStream(bytes);
+    }
+
+    /**
+     * Creates a {@link InputStream} for reading and decoding
+     * the given {@code string} from Base64 using the specified
+     * {@code charset}
+     */
+    public static InputStream fromBase64(String string, Charset charset) {
+        InputStream original = fromString(string, charset);
+        return Base64.getDecoder().wrap(original);
     }
 
 }

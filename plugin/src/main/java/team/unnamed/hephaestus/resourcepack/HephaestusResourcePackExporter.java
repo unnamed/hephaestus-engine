@@ -7,8 +7,8 @@ import team.unnamed.hephaestus.model.ModelDescription;
 import team.unnamed.hephaestus.resourcepack.java.JavaItem;
 import team.unnamed.hephaestus.resourcepack.java.JavaModel;
 import team.unnamed.hephaestus.serialize.GsonFactory;
-import team.unnamed.hephaestus.util.Streams;
-import team.unnamed.hephaestus.util.ZippedDataOutputStream;
+import team.unnamed.hephaestus.io.Streams;
+import team.unnamed.hephaestus.io.ZippedDataOutputStream;
 
 import java.io.*;
 import java.util.ArrayList;
