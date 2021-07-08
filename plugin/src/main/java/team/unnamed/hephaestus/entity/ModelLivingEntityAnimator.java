@@ -67,7 +67,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             EulerAngle frameRotation = frameProvider.provideRotation(tick, animation, bone);
 
             Vector3Float defaultPosition = bone.getLocalOffset().multiply(1, 1, -1);
-            EulerAngle defaultRotation = Quaternion.toEuler(Quaternion.fromEuler(bone.getRotation().toEuler()));
+            EulerAngle defaultRotation = bone.getRotation().toEuler();
 
             Vector3Float localPosition = framePosition.add(defaultPosition);
             EulerAngle localRotation = defaultRotation.add(frameRotation.getX(), frameRotation.getY(), frameRotation.getZ());
