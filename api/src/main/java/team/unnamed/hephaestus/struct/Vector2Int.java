@@ -11,6 +11,8 @@ import java.util.Objects;
  */
 public class Vector2Int {
 
+    public static final Vector2Int ZERO = new Vector2Int(0, 0);
+
     private final int x;
     private final int y;
 
@@ -47,10 +49,6 @@ public class Vector2Int {
                 "x=" + x +
                 ", y=" + y +
                 '}';
-    }
-
-    public static Vector2Int zero() {
-        return new Vector2Int(0, 0);
     }
 
 }

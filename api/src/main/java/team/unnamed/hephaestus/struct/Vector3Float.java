@@ -13,6 +13,8 @@ import java.util.Objects;
  */
 public class Vector3Float {
 
+    public static Vector3Float ZERO = new Vector3Float(0, 0, 0);
+
     private final float x;
     private final float y;
     private final float z;
@@ -223,7 +225,5 @@ public class Vector3Float {
                 ", z=" + z +
                 '}';
     }
-
-    public static Vector3Float ZERO = new Vector3Float(0, 0, 0);
 
 }
