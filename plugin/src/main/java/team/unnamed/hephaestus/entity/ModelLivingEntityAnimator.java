@@ -67,7 +67,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             EulerAngle frameRotation = frameProvider.provideRotation(tick, animation, bone);
 
             Vector3Float defaultPosition = bone.getLocalOffset().multiply(1, 1, -1);
-            EulerAngle defaultRotation = Quaternion.toEuler(Quaternion.toQuaternion(bone.getRotation().toEuler()));
+            EulerAngle defaultRotation = Quaternion.toEuler(Quaternion.fromEuler(bone.getRotation().toEuler()));
 
             Vector3Float localPosition = framePosition.add(defaultPosition);
             EulerAngle localRotation = defaultRotation.add(frameRotation.getX(), frameRotation.getY(), frameRotation.getZ());
@@ -75,7 +75,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             Vector3Float globalPosition;
             EulerAngle globalRotation;
 
-            if (parent == null) {
+            if (parent == null || parentRotation.equals(EulerAngle.ZERO)) {
                 globalPosition = localPosition.rotateAroundY(Math.toRadians(this.entity.getLocation().getYaw()));
                 globalRotation = localRotation;
             } else {
@@ -83,7 +83,6 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                         .rotateAroundEuler(parentRotation)
                         .rotateAroundY(Math.toRadians(this.entity.getLocation().getYaw()))
                         .add(parentPosition);
-
                 globalRotation = Quaternion.combine(localRotation, parentRotation);
             }
 
