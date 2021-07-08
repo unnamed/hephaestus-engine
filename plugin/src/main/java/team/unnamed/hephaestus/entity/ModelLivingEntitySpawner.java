@@ -39,10 +39,9 @@ public class ModelLivingEntitySpawner implements ModelEntitySpawner {
             throw new IllegalArgumentException("Invalid location was given. It doesn't have a world!");
         }
 
-        Vector3Float relativePos = bone.getLocalOffset()
+        Vector3Float relativePos = Vectors.rotateAroundY(bone.getLocalOffset()
                 .multiply(1, 1, -1)
-                .add(offset)
-                .rotateAroundY((float) Math.toRadians(location.getYaw()));
+                .add(offset), Math.toRadians(location.getYaw()));
 
         Location position = location.clone().add(
                 relativePos.getX(),

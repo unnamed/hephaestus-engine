@@ -97,44 +97,6 @@ public class Vector3Float {
         return this.multiply(vector.getX(), vector.getY(), vector.getZ());
     }
 
-    public Vector3Float rotateAroundX(double angle) {
-        double sin = Math.sin(angle);
-        double cos = Math.cos(angle);
-
-        float y = (float) (this.getY() * cos - this.getZ() * sin);
-        float z = (float) (this.getY() * sin + this.getZ() * cos);
-
-        return new Vector3Float(x, y, z);
-    }
-
-    public Vector3Float rotateAroundY(double angle) {
-        double sin =  Math.sin(angle);
-        double cos = Math.cos(angle);
-
-        float x = (float) (this.getX() * cos - this.getZ() * sin);
-        float z = (float) (this.getX() * sin + this.getZ() * cos);
-
-        return new Vector3Float(x, y, z);
-    }
-
-    public Vector3Float rotateAroundZ(double angle) {
-        double sin = Math.sin(angle);
-        double cos = Math.cos(angle);
-
-        float x = (float) (this.getX() * cos + this.getY() * sin);
-        float y = (float) (-this.getX() * sin + this.getY() * cos);
-
-        return new Vector3Float(x, y, z);
-    }
-
-    public Vector3Float rotateAroundEuler(EulerAngle eulerAngle) {
-        return this
-                .rotateAroundX(eulerAngle.getX())
-                .rotateAroundY(eulerAngle.getY())
-                .rotateAroundZ(eulerAngle.getZ());
-
-    }
-
 
     public EulerAngle toEuler() {
         return new EulerAngle(

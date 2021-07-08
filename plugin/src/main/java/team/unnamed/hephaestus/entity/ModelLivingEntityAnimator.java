@@ -15,6 +15,7 @@ import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
 import team.unnamed.hephaestus.model.entity.ModelLivingEntity;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.hephaestus.util.Vectors;
 
 //TODO: Pass entity handling to packet side and make animations 60 fps
 public class ModelLivingEntityAnimator implements ModelEntityAnimator {
@@ -76,13 +77,13 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             EulerAngle globalRotation;
 
             if (parent == null) {
-                globalPosition = localPosition.rotateAroundY(Math.toRadians(this.entity.getLocation().getYaw()));
+                globalPosition = Vectors.rotateAroundY(localPosition, Math.toRadians(this.entity.getLocation().getYaw()));
                 globalRotation = localRotation;
             } else {
-                globalPosition = localPosition
-                        .rotateAroundEuler(parentRotation)
-                        .rotateAroundY(Math.toRadians(this.entity.getLocation().getYaw()))
-                        .add(parentPosition);
+                globalPosition = Vectors.rotateAroundY(
+                        Vectors.rotate(localPosition, parentRotation),
+                        Math.toRadians(this.entity.getLocation().getYaw())
+                ).add(parentPosition);
                 globalRotation = Quaternion.combine(localRotation, parentRotation);
             }
 
