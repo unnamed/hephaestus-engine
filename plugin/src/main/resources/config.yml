@@ -1,0 +1,28 @@
+#################################################################
+##     _    _            _                     _               ##
+##   | |  | |          | |                   | |               ##
+##   | |__| | ___ _ __ | |__   __ _  ___  ___| |_ _   _ ___    ##
+##   |  __  |/ _ \ '_ \| '_ \ / _` |/ _ \/ __| __| | | / __|   ##
+##   | |  | |  __/ |_) | | | | (_| |  __/\__ \ |_| |_| \__ \   ##
+##   |_|  |_|\___| .__/|_| |_|\__,_|\___||___/\__|\__,_|___/   ##
+##               | | Engine              by Unnamed Team       ##
+##               |_|                                           ##
+#################################################################
+
+
+# Resource Pack configuration
+pack:
+    # Namespace for model and textures
+    # Set it to your server's name
+    namespace: "hephaestus"
+
+    # Resource Pack Format Version
+    format: 6
+
+    # Resource Pack Description
+    description: "Hephaestus custom generated pack"
+
+    # How to generate the resource pack
+    # -> file:filename -> Generates a resource pack as a file (ZIP)
+    # -> upload:url -> Uploads the resource pack to the given URL (ZIP)
+    generate: "file:hephaestus-generated.zip"

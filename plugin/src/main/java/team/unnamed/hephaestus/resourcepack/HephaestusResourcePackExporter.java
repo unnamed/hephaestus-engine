@@ -18,6 +18,7 @@ public class HephaestusResourcePackExporter
         implements ResourcePackExporter {
 
     private static final int PACK_FORMAT = 6;
+    public static final String NAMESPACE = "hephaestus";
     private static final String PACK_METADATA = "{\n" +
             "  \"pack\": {\n" +
             "    \"pack_format\": " + PACK_FORMAT + ",\n" +
@@ -63,7 +64,7 @@ public class HephaestusResourcePackExporter
 
                 for (File textureFile : model.getTextureFiles()) {
                     // write the texture
-                    output.startEntry("assets/hephaestus/textures/" + modelName + "/" + textureFile.getName());
+                    output.startEntry("assets/" + NAMESPACE + "/textures/" + modelName + "/" + textureFile.getName());
                     try (InputStream input = new FileInputStream(textureFile)) {
                         Streams.pipe(input, output);
                     }
@@ -75,7 +76,7 @@ public class HephaestusResourcePackExporter
 
                     overrides.add(new JavaItem.Override(
                                     bone.getCustomModelData(),
-                                    "hephaestus:"
+                                    NAMESPACE + ":"
                                             + modelName
                                             + "/" + javaModel.getFileName()
                             )
@@ -83,7 +84,7 @@ public class HephaestusResourcePackExporter
 
 
                     output.startEntry(
-                            "assets/hephaestus/models/"
+                            "assets/" + NAMESPACE + "/models/"
                                     + modelName
                                     +  "/" + javaModel.getFileName()
                                     + ".json"
