@@ -75,7 +75,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             Vector3Float globalPosition;
             EulerAngle globalRotation;
 
-            if (parent == null || parentRotation.equals(EulerAngle.ZERO)) {
+            if (parent == null) {
                 globalPosition = localPosition.rotateAroundY(Math.toRadians(this.entity.getLocation().getYaw()));
                 globalRotation = localRotation;
             } else {
