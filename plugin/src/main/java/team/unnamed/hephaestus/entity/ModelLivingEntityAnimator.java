@@ -50,6 +50,8 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
         }
 
         private void updateBone(
+                double bodyYaw,
+
                 ModelBone parent,
                 ModelBone bone,
                 EulerAngle parentRotation,
@@ -77,12 +79,12 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             EulerAngle globalRotation;
 
             if (parent == null) {
-                globalPosition = Vectors.rotateAroundY(localPosition, Math.toRadians(this.entity.getLocation().getYaw()));
+                globalPosition = Vectors.rotateAroundY(localPosition, bodyYaw);
                 globalRotation = localRotation;
             } else {
                 globalPosition = Vectors.rotateAroundY(
                         Vectors.rotate(localPosition, parentRotation),
-                        Math.toRadians(this.entity.getLocation().getYaw())
+                        bodyYaw
                 ).add(parentPosition);
                 globalRotation = Quaternion.combine(localRotation, parentRotation);
             }
@@ -99,6 +101,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
             for (ModelComponent component : bone.getComponents()) {
                 if (component instanceof ModelBone) {
                     this.updateBone(
+                            bodyYaw,
                             bone,
                             (ModelBone) component,
                             globalRotation,
@@ -121,8 +124,11 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                 }
             }
 
+            double bodyYaw = Math.toRadians(this.entity.getLocation().getYaw());
+
             for (ModelBone bone : this.entity.getModel().getGeometry().getBones()) {
                 this.updateBone(
+                        bodyYaw,
                         null,
                         bone,
                         EulerAngle.ZERO,
