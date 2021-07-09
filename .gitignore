@@ -8,3 +8,4 @@
 # target dirs
 /api/build/
 /plugin/build/
+/molang/build/

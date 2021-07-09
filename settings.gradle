@@ -2,7 +2,8 @@ rootProject.name = 'hephaestus-engine'
 
 [
     'api',
-    'plugin'
+    'plugin',
+    'molang'
 ].forEach {
     include it
     // Add 'hephaestus' as prefix for all subprojects
