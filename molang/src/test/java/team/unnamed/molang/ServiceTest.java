@@ -16,7 +16,7 @@ public class ServiceTest {
 
         try {
             System.out.println(engine.eval(
-                    "query.print('hello world'); query.print('hello world again');"
+                    "10"
             ));
         } catch (ScriptException e) {
             e.printStackTrace();

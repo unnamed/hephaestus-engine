@@ -6,6 +6,7 @@ import team.unnamed.molang.expression.Expression;
 import team.unnamed.molang.expression.IdentifierExpression;
 import team.unnamed.molang.expression.LiteralExpression;
 import team.unnamed.molang.expression.BinaryExpression;
+import team.unnamed.molang.expression.NegationExpression;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -101,41 +102,22 @@ public class StandardMoLangParser
         //#endregion
 
         //#region Float literal expression
-        boolean negative = false;
-        if (Character.isDigit(current) || (negative = current == Tokens.HYPHEN)) {
-            // skip the sign
-            if (negative) {
-                current = context.next();
-            }
-            boolean readingDecimalPart = false;
-            float value = 0;
-            float divideBy = 1;
+        if (Character.isDigit(current)) {
+            return LiteralExpression.parseFloat(context, 1);
+        }
+        //#endregion
 
-            while (true) {
-                if (Character.isDigit(current)) {
-                    value *= 10;
-                    value += Character.getNumericValue(current);
-                    if (readingDecimalPart) {
-                        divideBy *= 10;
-                    }
-                    current = context.next();
-                } else if (current == Tokens.DOT) {
-                    if (readingDecimalPart) {
-                        throw new ParseException(
-                                "Numbers can't have multiple floating points!",
-                                context.getCursor()
-                        );
-                    }
-                    readingDecimalPart = true;
-                    current = context.next();
-                } else {
-                    // skip whitespace
-                    context.skipWhitespace();
-                    break;
-                }
+        //#region Negation
+        if (current == Tokens.HYPHEN) {
+            current = context.next();
+            if (Character.isDigit(current)) {
+                // if negated expression is numeral, make it
+                // negative instead of creating a negation expression
+                return LiteralExpression.parseFloat(context, -1);
+            } else {
+                Expression expression = parseSingle(context);
+                return new NegationExpression(expression);
             }
-
-            return new LiteralExpression(value / divideBy);
         }
         //#endregion
 
