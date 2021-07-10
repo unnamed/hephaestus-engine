@@ -10,21 +10,29 @@ import java.util.List;
 public class CallExpression
         implements Expression {
 
-    private final Expression thiz;
+    private final Expression function;
     private final List<Expression> arguments;
 
-    public CallExpression(Expression thiz, List<Expression> arguments) {
-        this.thiz = thiz;
+    public CallExpression(Expression function, List<Expression> arguments) {
+        this.function = function;
         this.arguments = arguments;
+    }
+
+    public Expression getFunction() {
+        return function;
+    }
+
+    public List<Expression> getArguments() {
+        return arguments;
     }
 
     @Override
     public Object eval(EvalContext context) {
-        return thiz.eval(context);
+        return function.call(context, arguments);
     }
 
     @Override
     public String toString() {
-        return "call(" + thiz + ", " + arguments + ")";
+        return "call(" + function + ", " + arguments + ")";
     }
 }

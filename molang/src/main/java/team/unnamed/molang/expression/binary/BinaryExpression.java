@@ -96,6 +96,95 @@ public abstract class BinaryExpression
             return "subtract(" + leftHand + ", " + rightHand + ")";
         }
     }
+
+    /**
+     * {@link BinaryExpression} implementation for
+     * multiplication of two numerical expressions
+     */
+    public static class Multiplication
+            extends BinaryExpression {
+
+        public Multiplication(
+                Expression leftHand,
+                Expression rightHand
+        ) {
+            super(leftHand, rightHand);
+        }
+
+        @Override
+        public float evalAsFloat(EvalContext context) {
+            // override to avoid unboxing
+            return leftHand.evalAsFloat(context)
+                    * rightHand.evalAsFloat(context);
+        }
+
+        @Override
+        public Object eval(EvalContext context) {
+            return evalAsFloat(context);
+        }
+
+        @Override
+        public String toString() {
+            return "multiply(" + leftHand + ", " + rightHand + ")";
+        }
+    }
+
+    /**
+     * {@link BinaryExpression} implementation for
+     * division of two numerical expressions
+     */
+    public static class Division
+            extends BinaryExpression {
+
+        public Division(
+                Expression leftHand,
+                Expression rightHand
+        ) {
+            super(leftHand, rightHand);
+        }
+
+        @Override
+        public float evalAsFloat(EvalContext context) {
+            // override to avoid unboxing
+            return leftHand.evalAsFloat(context)
+                    / rightHand.evalAsFloat(context);
+        }
+
+        @Override
+        public Object eval(EvalContext context) {
+            return evalAsFloat(context);
+        }
+
+        @Override
+        public String toString() {
+            return "divide(" + leftHand + ", " + rightHand + ")";
+        }
+    }
+
+    /**
+     * {@link BinaryExpression} implementation for
+     * representing field accessing
+     */
+    public static class Access
+            extends BinaryExpression {
+
+        public Access(
+                Expression leftHand,
+                Expression rightHand
+        ) {
+            super(leftHand, rightHand);
+        }
+
+        @Override
+        public Object eval(EvalContext context) {
+            return leftHand.evalProperty(context, rightHand); // temporary
+        }
+
+        @Override
+        public String toString() {
+            return "access(" + leftHand + ", " + rightHand + ")";
+        }
+    }
     //#endregion
 
 }

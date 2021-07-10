@@ -10,11 +10,12 @@ public class ServiceTest {
 
     @Test
     public void test() {
+
         ScriptEngineManager engineManager = new ScriptEngineManager();
         ScriptEngine engine = engineManager.getEngineByName("molang");
 
         try {
-            System.out.println(engine.eval("(((0.64+0.36)+13))"));
+            System.out.println(engine.eval("math.cos(5 * 5)"));
         } catch (ScriptException e) {
             e.printStackTrace();
         }

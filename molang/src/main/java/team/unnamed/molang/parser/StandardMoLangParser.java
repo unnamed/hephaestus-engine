@@ -142,6 +142,37 @@ public class StandardMoLangParser
         return new LiteralExpression("unknown");
     }
 
+    private Expression parseMultiplication(ParseContext context, Expression left)
+        throws ParseException {
+        int current = context.getCurrent();
+        if (current == '*') {
+            context.nextNoWhitespace();
+            Expression right = parseSingle(context);
+            return new BinaryExpression.Multiplication(left, right);
+        } else if (current == '/') {
+            context.nextNoWhitespace();
+            Expression right = parseSingle(context);
+            return new BinaryExpression.Division(left, right);
+        }
+        return left;
+    }
+
+    private Expression parseAddition(ParseContext context, Expression left)
+        throws ParseException {
+        int current = context.getCurrent();
+        if (current == '+') {
+            context.nextNoWhitespace();
+            Expression right = parse(context);
+            return new BinaryExpression.Addition(left, right);
+        } else if (current == '-') {
+            context.nextNoWhitespace();
+            Expression right = parse(context);
+            return new BinaryExpression.Subtraction(left, right);
+        }
+        // try fallback-ing to multiplication/division
+        return parseMultiplication(context, left);
+    }
+
     private Expression parse(ParseContext context, Expression left) throws ParseException {
         int current = context.getCurrent();
 
@@ -175,24 +206,27 @@ public class StandardMoLangParser
         }
         //#endregion
 
-        //#region Addition and subtraction expression
-        if (current == '+') {
+        //#region Dot access expression
+        if (current == '.') {
             context.nextNoWhitespace();
             Expression right = parse(context);
-            return new BinaryExpression.Addition(left, right);
-        } else if (current == '-') {
-            context.nextNoWhitespace();
-            Expression right = parse(context);
-            return new BinaryExpression.Subtraction(left, right);
+            return new BinaryExpression.Access(left, right);
         }
-        //#endregion
 
-        return left;
+        return parseAddition(context, left);
     }
 
     private Expression parse(ParseContext context) throws ParseException {
-        // TODO: I think this shouldn't be like this
-        return parse(context, parseSingle(context));
+        Expression expression = parseSingle(context);
+        while (true) {
+            Expression compositeExpr = parse(context, expression);
+            if (compositeExpr == expression) {
+                break;
+            } else {
+                expression = compositeExpr;
+            }
+        }
+        return expression;
     }
 
     @Override

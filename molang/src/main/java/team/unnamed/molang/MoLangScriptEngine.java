@@ -1,6 +1,8 @@
 package team.unnamed.molang;
 
+import team.unnamed.molang.binding.StandardBindings;
 import team.unnamed.molang.context.EvalContext;
+import team.unnamed.molang.expression.Expression;
 import team.unnamed.molang.parser.MoLangParser;
 
 import javax.script.AbstractScriptEngine;
@@ -13,6 +15,7 @@ import javax.script.SimpleBindings;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.List;
 
 public class MoLangScriptEngine
         extends AbstractScriptEngine
@@ -34,8 +37,13 @@ public class MoLangScriptEngine
     @Override
     public Object eval(Reader reader, ScriptContext context) throws ScriptException {
         try {
+            Bindings bindings = createBindings();
+            bindings.put("query", StandardBindings.QUERY_BINDING);
+            bindings.put("math", StandardBindings.MATH_BINDING);
+
             // temporal
-            return parser.parse(reader).get(0).eval(new EvalContext());
+            List<Expression> expressions = parser.parse(reader);
+            return expressions.get(0).eval(new EvalContext(bindings));
         } catch (IOException e) {
             throw new ScriptException(e);
         }

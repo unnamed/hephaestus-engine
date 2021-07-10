@@ -2,6 +2,8 @@ package team.unnamed.molang.expression;
 
 import team.unnamed.molang.context.EvalContext;
 
+import java.util.List;
+
 /**
  * A fundamental interface representing every
  * possible expression in the MoLang language
@@ -13,6 +15,25 @@ public interface Expression {
      * the given {@code context}
      */
     Object eval(EvalContext context);
+
+    /**
+     * Evaluates the given {@code property} for
+     * {@code this} expression using the
+     * specified {@code context}, used in field
+     * access
+     */
+    default Object evalProperty(EvalContext context, Expression property) {
+        return property.eval(context);
+    }
+
+    /**
+     * Calls {@code this} expression using the
+     * specified {@code arguments} in the given
+     * {@code context}
+     */
+    default Object call(EvalContext context, List<Expression> arguments) {
+        return eval(context);
+    }
 
     /**
      * Evaluates the expression using
