@@ -5,7 +5,7 @@ import team.unnamed.molang.expression.CallExpression;
 import team.unnamed.molang.expression.Expression;
 import team.unnamed.molang.expression.IdentifierExpression;
 import team.unnamed.molang.expression.LiteralExpression;
-import team.unnamed.molang.expression.binary.BinaryExpression;
+import team.unnamed.molang.expression.BinaryExpression;
 
 import java.io.Reader;
 import java.util.ArrayList;
