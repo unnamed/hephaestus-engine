@@ -26,3 +26,10 @@ pack:
     # -> file:filename -> Generates a resource pack as a file (ZIP)
     # -> upload:url -> Uploads the resource pack to the given URL (ZIP)
     generate: "file:hephaestus-generated.zip"
+
+# Scripting configuration
+script:
+    # What language to use for scripting
+    # Supported: molang and other languages, depending
+    # on your current JVM
+    lang: "molang"

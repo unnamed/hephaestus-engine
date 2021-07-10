@@ -23,6 +23,8 @@ import team.unnamed.hephaestus.resourcepack.HephaestusResourcePackExporter;
 import team.unnamed.hephaestus.resourcepack.ModelRegistry;
 import team.unnamed.hephaestus.resourcepack.ResourcePackExporter;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -51,6 +53,12 @@ public class AnimationEnginePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        getConfig().options().copyDefaults(true);
+        saveDefaultConfig();
+
+        ScriptEngineManager engineManager = new ScriptEngineManager();
+        ScriptEngine engine = engineManager.getEngineByName(getConfig().getString("script.lang"));
+
         try {
             this.saveResourceDir("models", "pegasus");
         } catch (IOException exception) {
@@ -75,7 +83,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         AnnotatedCommandTreeBuilder commandBuilder = new AnnotatedCommandTreeBuilderImpl(
                 partInjector
         );
-        
+
         CommandManager commandManager = new BukkitCommandManager(this.getName());
 
         commandManager.registerCommands(commandBuilder.fromClass(new HephaestusCommand()));
