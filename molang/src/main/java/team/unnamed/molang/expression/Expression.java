@@ -14,4 +14,19 @@ public interface Expression {
      */
     Object eval(EvalContext context);
 
+    /**
+     * Evaluates the expression using
+     * the given {@code context} and
+     * trying to convert it to a float,
+     * returns zero if not possible
+     */
+    default float evalAsFloat(EvalContext context) {
+        Object result = eval(context);
+        if (!(result instanceof Number)) {
+            return 0;
+        } else {
+            return ((Number) result).floatValue();
+        }
+    }
+
 }

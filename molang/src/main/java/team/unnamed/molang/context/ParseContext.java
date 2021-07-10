@@ -1,6 +1,7 @@
 package team.unnamed.molang.context;
 
 import team.unnamed.molang.parser.ParseException;
+import team.unnamed.molang.parser.Tokens;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -39,6 +40,32 @@ public class ParseContext {
                     cursor
             );
         }
+    }
+
+    /**
+     * Calls {@link ParseContext#next()} and calls it
+     * again while the read char is whitespace
+     * @see Tokens#isWhitespace(int)
+     */
+    public int nextNoWhitespace() throws ParseException {
+        int value;
+        do {
+            value = next();
+        } while (Tokens.isWhitespace(value));
+        return value;
+    }
+
+    /**
+     * Similar to {@link ParseContext#nextNoWhitespace()}
+     * but it won't call {@link ParseContext#next()} if
+     * current character isn't whitespace
+     */
+    public int skipWhitespace() throws ParseException {
+        int localCurrent = current;
+        while (Tokens.isWhitespace(localCurrent)) {
+            localCurrent = next();
+        }
+        return localCurrent;
     }
 
     public int getCurrent() {

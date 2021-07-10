@@ -14,6 +14,10 @@ public final class Tokens {
     private Tokens() {
     }
 
+    public static boolean isWhitespace(int c) {
+        return c == ' ' || c == '\t' || c == '\n';
+    }
+
     public static boolean isLetter(int c) {
         return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
     }

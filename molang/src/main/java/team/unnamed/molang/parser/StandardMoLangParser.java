@@ -5,6 +5,7 @@ import team.unnamed.molang.expression.CallExpression;
 import team.unnamed.molang.expression.Expression;
 import team.unnamed.molang.expression.IdentifierExpression;
 import team.unnamed.molang.expression.LiteralExpression;
+import team.unnamed.molang.expression.binary.BinaryExpression;
 
 import java.io.Reader;
 import java.util.ArrayList;
@@ -15,6 +16,18 @@ import java.util.List;
  * Standard implementation of {@link MoLangParser},
  * it's Hephaestus-MoLang parser since some MoLang
  * characteristics may change
+ *
+ * <p>There are some contracts for the parse methods:
+ *
+ * - After an invoke, the {@link ParseContext#getCurrent()} should
+ *   return a non-whitespace new token that the next parse method can parse
+ *
+ * - They must assume that the {@link ParseContext#getCurrent()} will be
+ *   a new non-whitespace token when they are called
+ * </p>
+ *
+ * @see Tokens
+ * @see Expression
  */
 public class StandardMoLangParser
         implements MoLangParser {
@@ -43,12 +56,13 @@ public class StandardMoLangParser
 
         //#region Expression inside parenthesis
         if (current == '(') {
-            context.next();
+            context.nextNoWhitespace();
             // wrapped expression: (expression)
             Expression expression = parse(context);
             assertToken(context, ')');
-            // skip the closing parenthesis
-            context.next();
+            // skip the closing parenthesis and
+            // following spaces
+            context.nextNoWhitespace();
             return expression;
         }
         //#endregion
@@ -59,6 +73,8 @@ public class StandardMoLangParser
             do {
                 identifier.append((char) current);
             } while (Tokens.isValidForIdentifier(current = context.next()));
+            // skip whitespace
+            context.skipWhitespace();
             return new IdentifierExpression(identifier.toString());
         }
         //#endregion
@@ -78,8 +94,8 @@ public class StandardMoLangParser
                 );
             }
 
-            // skip the last quote
-            context.next();
+            // skip the last quote and following whitespaces
+            context.nextNoWhitespace();
             return new LiteralExpression(builder.toString());
         }
         //#endregion
@@ -113,6 +129,8 @@ public class StandardMoLangParser
                     readingDecimalPart = true;
                     current = context.next();
                 } else {
+                    // skip whitespace
+                    context.skipWhitespace();
                     break;
                 }
             }
@@ -132,8 +150,9 @@ public class StandardMoLangParser
 
             List<Expression> arguments = new ArrayList<>();
 
-            // skip the initial parenthesis
-            context.next();
+            // skip the initial parenthesis and
+            // following spaces
+            context.nextNoWhitespace();
 
             // start reading the arguments
             while (true) {
@@ -143,8 +162,9 @@ public class StandardMoLangParser
                 if (current == -1) {
                     failUnexpectedToken(context, (char) -1, ')');
                 } else if (current == ')') {
-                    // skip closing parenthesis
-                    context.next();
+                    // skip closing parenthesis and
+                    // following whitespace
+                    context.nextNoWhitespace();
                     break;
                 } else {
                     assertToken(context, ',');
@@ -155,11 +175,15 @@ public class StandardMoLangParser
         }
         //#endregion
 
-        //#region Addition expression
+        //#region Addition and subtraction expression
         if (current == '+') {
-            context.next();
+            context.nextNoWhitespace();
             Expression right = parse(context);
-            return (ctx) -> "sum(" + left + ", " + right + ")";
+            return new BinaryExpression.Addition(left, right);
+        } else if (current == '-') {
+            context.nextNoWhitespace();
+            Expression right = parse(context);
+            return new BinaryExpression.Subtraction(left, right);
         }
         //#endregion
 
