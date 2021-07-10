@@ -43,8 +43,15 @@ public class MoLangScriptEngine
 
             // temporal
             List<Expression> expressions = parser.parse(reader);
-            System.out.println(expressions);
-            return expressions.get(0).eval(new EvalContext(bindings));
+
+            EvalContext evalContext = new EvalContext(bindings);
+            Object lastResult = 0;
+
+            for (Expression expression : expressions) {
+                lastResult = expression.eval(evalContext);
+            }
+
+            return lastResult;
         } catch (IOException e) {
             throw new ScriptException(e);
         }

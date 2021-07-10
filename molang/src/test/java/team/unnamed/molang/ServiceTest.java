@@ -15,7 +15,9 @@ public class ServiceTest {
         ScriptEngine engine = engineManager.getEngineByName("molang");
 
         try {
-            System.out.println(engine.eval("2 / 0"));
+            System.out.println(engine.eval(
+                    "query.print('hello world'); query.print('hello world again');"
+            ));
         } catch (ScriptException e) {
             e.printStackTrace();
         }

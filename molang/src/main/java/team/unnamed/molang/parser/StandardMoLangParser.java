@@ -139,7 +139,7 @@ public class StandardMoLangParser
         }
         //#endregion
 
-        return new LiteralExpression("unknown");
+        return new LiteralExpression(0);
     }
 
     private Expression parseMultiplication(ParseContext context, Expression left)
@@ -231,9 +231,28 @@ public class StandardMoLangParser
 
     @Override
     public List<Expression> parse(Reader reader) throws ParseException {
+
         ParseContext context = new ParseContext(reader);
-        context.next(); // initial next() call
-        return Collections.singletonList(parse(context));
+        // initial next() call
+        context.nextNoWhitespace();
+
+        List<Expression> expressions = new ArrayList<>();
+        int current;
+        while (true) {
+            expressions.add(parse(context));
+            current = context.getCurrent();
+            if (current == -1) {
+                // end reached, break
+                break;
+            } else {
+                assertToken(context, ';');
+                // skip current semicolon and
+                // following whitespace
+                context.nextNoWhitespace();
+            }
+        }
+
+        return expressions;
     }
 
 }
