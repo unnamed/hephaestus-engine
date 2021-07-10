@@ -14,4 +14,11 @@ public interface ObjectBinding {
      */
     Object getProperty(String name);
 
+    /**
+     * Sets the property with the given
+     * {@code name} to the specified {@code value},
+     * may not be supported
+     */
+    void setProperty(String name, Object value);
+
 }

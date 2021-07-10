@@ -92,7 +92,7 @@ public class MoLangScriptEngineFactory
 
     @Override
     public String getOutputStatement(String toDisplay) {
-        return getMethodCallSyntax("hephaestus", "print", toDisplay);
+        return getMethodCallSyntax("query", "print", toDisplay);
     }
 
     @Override

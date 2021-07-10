@@ -18,17 +18,11 @@ public final class Bind {
      */
     public static final ObjectBinding MATH_BINDING = new MathBinding();
 
-    public static final ObjectBinding QUERY_BINDING = property -> {
-        if (property.equalsIgnoreCase("print")) {
-            return (CallableBinding) args -> {
-                if (args.length > 0) {
-                    System.out.println(args[0]);
-                }
-                return 0;
-            };
-        }
-        return 0;
-    };
+    /**
+     * Default bindings for queries
+     * @see QueryBinding
+     */
+    public static final ObjectBinding QUERY_BINDING = new QueryBinding();
 
     private Bind() {
     }
