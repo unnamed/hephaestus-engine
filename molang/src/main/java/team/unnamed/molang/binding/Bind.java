@@ -5,24 +5,18 @@ import team.unnamed.molang.expression.Expression;
 
 import java.util.List;
 
-public class Bind {
+/**
+ * Class holding some default bindings and
+ * static utility methods for ease working
+ * with bindings
+ */
+public final class Bind {
 
-    public static final ObjectBinding MATH_BINDING = property -> {
-        switch (property) {
-            case "cos": {
-                return (CallableBinding) args -> {
-                    if (args.length > 0) {
-                        return Math.cos(Math.toRadians(
-                                ((Number) args[0]).floatValue()
-                        ));
-                    }
-                    return 0;
-                };
-            }
-            default:
-                return 0;
-        }
-    };
+    /**
+     * Default bindings for math
+     * @see MathBinding
+     */
+    public static final ObjectBinding MATH_BINDING = new MathBinding();
 
     public static final ObjectBinding QUERY_BINDING = property -> {
         if (property.equalsIgnoreCase("print")) {

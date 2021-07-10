@@ -16,7 +16,7 @@ public class ServiceTest {
 
         try {
             System.out.println(engine.eval(
-                    "10"
+                    "math.pi"
             ));
         } catch (ScriptException e) {
             e.printStackTrace();

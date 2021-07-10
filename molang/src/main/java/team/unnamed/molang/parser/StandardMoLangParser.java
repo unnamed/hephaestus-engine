@@ -181,6 +181,8 @@ public class StandardMoLangParser
                     break;
                 } else {
                     assertToken(context, ',');
+                    // skip current comma and following whitespace
+                    context.nextNoWhitespace();
                 }
             }
 
