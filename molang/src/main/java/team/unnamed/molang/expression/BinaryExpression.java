@@ -144,9 +144,15 @@ public abstract class BinaryExpression
 
         @Override
         public float evalAsFloat(EvalContext context) {
+            float divisor = rightHand.evalAsFloat(context);
+            if (divisor == 0F) {
+                // MoLang specification declares that division by
+                // zero returns zero
+                // "Errors (such as divide by zero, ...) generally return a value of 0.0"
+                return 0F;
+            }
             // override to avoid unboxing
-            return leftHand.evalAsFloat(context)
-                    / rightHand.evalAsFloat(context);
+            return leftHand.evalAsFloat(context) / divisor;
         }
 
         @Override
