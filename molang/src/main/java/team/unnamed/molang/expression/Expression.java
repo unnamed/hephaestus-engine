@@ -1,5 +1,6 @@
 package team.unnamed.molang.expression;
 
+import team.unnamed.molang.binding.Bind;
 import team.unnamed.molang.context.EvalContext;
 
 import java.util.List;
@@ -32,7 +33,9 @@ public interface Expression {
      * {@code context}
      */
     default Object call(EvalContext context, List<Expression> arguments) {
-        return eval(context);
+        Object value = eval(context);
+        // try call 'value'
+        return Bind.callBinding(context, value, arguments);
     }
 
     /**

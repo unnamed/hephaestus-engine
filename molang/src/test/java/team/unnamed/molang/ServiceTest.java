@@ -15,7 +15,7 @@ public class ServiceTest {
         ScriptEngine engine = engineManager.getEngineByName("molang");
 
         try {
-            System.out.println(engine.eval("math.cos(5 * 5)"));
+            System.out.println(engine.eval("2 / 0"));
         } catch (ScriptException e) {
             e.printStackTrace();
         }

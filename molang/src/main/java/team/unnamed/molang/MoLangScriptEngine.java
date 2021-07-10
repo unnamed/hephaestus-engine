@@ -1,6 +1,6 @@
 package team.unnamed.molang;
 
-import team.unnamed.molang.binding.StandardBindings;
+import team.unnamed.molang.binding.Bind;
 import team.unnamed.molang.context.EvalContext;
 import team.unnamed.molang.expression.Expression;
 import team.unnamed.molang.parser.MoLangParser;
@@ -38,11 +38,12 @@ public class MoLangScriptEngine
     public Object eval(Reader reader, ScriptContext context) throws ScriptException {
         try {
             Bindings bindings = createBindings();
-            bindings.put("query", StandardBindings.QUERY_BINDING);
-            bindings.put("math", StandardBindings.MATH_BINDING);
+            bindings.put("query", Bind.QUERY_BINDING);
+            bindings.put("math", Bind.MATH_BINDING);
 
             // temporal
             List<Expression> expressions = parser.parse(reader);
+            System.out.println(expressions);
             return expressions.get(0).eval(new EvalContext(bindings));
         } catch (IOException e) {
             throw new ScriptException(e);

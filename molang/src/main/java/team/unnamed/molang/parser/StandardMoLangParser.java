@@ -209,7 +209,7 @@ public class StandardMoLangParser
         //#region Dot access expression
         if (current == '.') {
             context.nextNoWhitespace();
-            Expression right = parse(context);
+            Expression right = parseSingle(context);
             return new BinaryExpression.Access(left, right);
         }
 
