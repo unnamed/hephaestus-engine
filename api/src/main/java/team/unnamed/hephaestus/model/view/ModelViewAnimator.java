@@ -10,9 +10,9 @@ public interface ModelViewAnimator {
 
     /**
      * Starts a task for animating the given
-     * {@code entity} with the specified {@code animation}.
+     * {@code view} with the specified {@code animation}.
      * @return The created task id
      */
-    int animate(ModelView entity, ModelAnimation animation);
+    int animate(ModelView view, ModelAnimation animation);
 
 }

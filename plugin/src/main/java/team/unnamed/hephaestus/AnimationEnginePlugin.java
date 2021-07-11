@@ -70,8 +70,8 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
         AdaptionModule module = AdaptionModuleFactory.create();
 
-        renderer = module.createRenderer();
         animator = new ModelLivingViewAnimator(this);
+        renderer = module.createRenderer(animator);
 
         ModelRegistry modelRegistry = new ModelRegistry();
 

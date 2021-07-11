@@ -28,10 +28,6 @@ public class ModelLivingViewAnimator implements ModelViewAnimator {
 
     @Override
     public int animate(ModelView entity, ModelAnimation animation) {
-
-        entity.resetTick();
-        entity.setAnimation(animation);
-
         return new AnimationTask(entity, animation)
                 .runTaskTimer(plugin, 0L, 1L)
                 .getTaskId();

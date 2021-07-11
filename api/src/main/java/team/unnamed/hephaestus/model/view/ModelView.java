@@ -1,5 +1,6 @@
 package team.unnamed.hephaestus.model.view;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
@@ -13,6 +14,7 @@ import java.util.Map;
 public class ModelView {
 
     private final ModelViewController controller;
+    private final ModelViewAnimator animator;
 
     private final Model model;
 
@@ -26,8 +28,6 @@ public class ModelView {
      */
     private final Map<String, Object> entities = new HashMap<>();
 
-    /** The current entity tick, used to animate the entity */
-    private float tick = 0;
 
     /**
      * Reference of the current animation
@@ -35,13 +35,22 @@ public class ModelView {
      */
     private ModelAnimation animation;
 
+    /** The current animation task id, -1 if absent */
+    private int animationTaskId = -1;
+
+    /** The current entity tick, used to animate the entity */
+    private float tick = 0;
+
     public ModelView(
             ModelViewController controller,
+            ModelViewAnimator animator,
             Model model,
             Player viewer,
             Location location
     ) {
         this.controller = controller;
+        this.animator = animator;
+
         this.model = model;
         this.viewer = viewer;
         this.location = location;
@@ -75,15 +84,28 @@ public class ModelView {
         return animation;
     }
 
-    public void setAnimation(ModelAnimation animation) {
-        this.animation = animation;
-    }
-
     public Map<String, Object> getEntities() {
         return entities;
     }
 
-    //#region Delegations to ModelViewController
+    //#region Delegations to other handler classes
+    public void playAnimation(String animationName) {
+        ModelAnimation animation = model.getAnimations().get(animationName);
+        if (animation != null) {
+            throw new IllegalArgumentException("Unknown animation: '" + animationName + "'");
+        }
+        playAnimation(animation);
+    }
+
+    public void playAnimation(ModelAnimation animation) {
+        // stop previous animation
+        if (animationTaskId != -1) {
+            Bukkit.getScheduler().cancelTask(animationTaskId);
+        }
+        this.animation = animation;
+        this.animationTaskId = this.animator.animate(this, animation);
+    }
+
     public void teleport(Location newLocation) {
         this.location = newLocation.clone();
         controller.teleport(this, this.location);
