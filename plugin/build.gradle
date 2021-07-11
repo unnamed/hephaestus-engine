@@ -13,6 +13,6 @@ dependencies {
 
     // adaption modules
     ['v1_16_R3'].forEach {
-        runtimeOnly project(":adapt:hephaestus-adapt-$it")
+        implementation project(":hephaestus-adapt-$it")
     }
 }

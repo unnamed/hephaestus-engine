@@ -2,17 +2,12 @@ rootProject.name = 'hephaestus-engine'
 
 [
     'api',
-    'molang'
+    'molang',
+    'plugin',
+    // adaption modules
+    'adapt-v1_16_R3'
 ].forEach {
     include it
     // Add 'hephaestus' as prefix for all subprojects
-    project(":$it").name = 'hephaestus-' + it
+    findProject(":$it")?.name = "hephaestus-$it"
 }
-
-['v1_16_R3'].forEach {
-    include ":adapt:adapt-$it"
-    project(":adapt:adapt-$it").name = "hephaestus-adapt-$it"
-}
-
-include 'plugin'
-project(":plugin").name = 'hephaestus-plugin'
