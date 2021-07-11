@@ -35,7 +35,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
         entity.setAnimation(animation);
 
         return new AnimationTask(entity, animation)
-                .runTaskTimer(plugin, 0L, 6L)
+                .runTaskTimer(plugin, 0L, 1L)
                 .getTaskId();
     }
 

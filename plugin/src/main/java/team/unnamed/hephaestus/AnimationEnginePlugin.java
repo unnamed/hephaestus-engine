@@ -60,7 +60,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         ScriptEngine engine = engineManager.getEngineByName(getConfig().getString("script.lang"));
 
         try {
-            this.saveResourceDir("models", "pegasus");
+            this.saveResourceDir("models", "default");
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -102,7 +102,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         List<Model> models = new ArrayList<>();
         if (contents != null) {
             for (File modelFile : contents) {
-                if (modelFile.isDirectory()) {
+                if (modelFile.isFile()) {
                     try {
                         Model model = modelReader.read(modelFile);
                         this.getLogger().log(Level.INFO, "Loaded model " + model.getName());
@@ -136,7 +136,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
     }
 
     private void saveResourceDir(String path, String resource) throws IOException {
-        File folder = new File(this.getDataFolder().getPath(), path + File.separator + resource);
+        File folder = new File(this.getDataFolder().getPath(), path);
         if (folder.exists()) return;
         folder.mkdirs();
 

@@ -38,14 +38,11 @@ public class BlockbenchModelReader implements ModelReader {
     private final BlockbenchModelAnimationsReader animationsReader = new BlockbenchModelAnimationsReader();
 
     @Override
-    public Model read(File folder) throws IOException {
-
-        File modelFile = new File(folder, "model.bbmodel");
-
-        if (!modelFile.exists()) {
+    public Model read(File modelFile) throws IOException {
+        if (!modelFile.exists() || !modelFile.getName().endsWith(".bbmodel")) {
             throw new IOException(
-                    "Could not read a model from '" + folder.getName() + "' "
-                            + "due to the absence of a 'model.bbmodel' file"
+                    "Could not read a model from '" + modelFile.getName() + "' "
+                            + "due to the absence of a '.bbmodel' file"
             );
         }
 
@@ -77,7 +74,7 @@ public class BlockbenchModelReader implements ModelReader {
 
                 if (!(source.startsWith(BASE_64_PREFIX))) {
                     throw new IOException(
-                            "Model '" + folder.getName() + "' contains an invalid "
+                            "Model '" + modelFile.getName() + "' contains an invalid "
                                     + "texture source. Not Base64"
                     );
                 }
@@ -87,12 +84,11 @@ public class BlockbenchModelReader implements ModelReader {
             }
 
             return new Model(
-                    folder.getName(),
+                    modelFile.getName().split("\\.")[0],
                     geometry,
                     animations,
                     textures
             );
         }
     }
-
 }
