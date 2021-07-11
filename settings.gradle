@@ -2,7 +2,6 @@ rootProject.name = 'hephaestus-engine'
 
 [
     'api',
-    'plugin',
     'molang'
 ].forEach {
     include it
@@ -14,3 +13,6 @@ rootProject.name = 'hephaestus-engine'
     include ":adapt:adapt-$it"
     project(":adapt:adapt-$it").name = "hephaestus-adapt-$it"
 }
+
+include 'plugin'
+project(":plugin").name = 'hephaestus-plugin'
