@@ -1,8 +1,0 @@
-team/unnamed/hephaestus/adapt/v1_16_R3/ModelViewController_v1_16_R3.java
- team.unnamed.hephaestus.adapt.v1_16_R3.ModelViewController_v1_16_R3
-team/unnamed/hephaestus/adapt/v1_16_R3/AdaptionModule_v1_16_R3.java
- team.unnamed.hephaestus.adapt.v1_16_R3.AdaptionModule_v1_16_R3
-team/unnamed/hephaestus/adapt/v1_16_R3/Packets.java
- team.unnamed.hephaestus.adapt.v1_16_R3.Packets
-team/unnamed/hephaestus/adapt/v1_16_R3/ModelViewRenderer_v1_16_R3.java
- team.unnamed.hephaestus.adapt.v1_16_R3.ModelViewRenderer_v1_16_R3
