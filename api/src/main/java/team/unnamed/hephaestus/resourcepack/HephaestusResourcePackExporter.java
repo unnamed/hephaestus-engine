@@ -32,18 +32,10 @@ public class HephaestusResourcePackExporter
     private final ModelGeometryTransformer transformer = new ModelGeometryTransformer();
 
     @Override
-    public List<Model> export(File folder, String name, List<Model> models) throws IOException {
+    public List<Model> export(OutputStream stream, List<Model> models) throws IOException {
         this.applyCustomModelData(models);
 
-        File file = new File(folder, name + ".zip");
-
-        if (!folder.exists() && !folder.mkdirs()) {
-            throw new IOException("Cannot create folder");
-        } else if (!file.exists() && !file.createNewFile()) {
-            throw new IOException("Failed to create the resource pack file");
-        }
-
-        try (ZippedDataOutputStream output = new ZippedDataOutputStream(new FileOutputStream(file), gson)) {
+        try (ZippedDataOutputStream output = new ZippedDataOutputStream(stream, gson)) {
 
             // write the pack data
             output.startEntry("pack.mcmeta");

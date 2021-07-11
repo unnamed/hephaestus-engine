@@ -4,6 +4,7 @@ import team.unnamed.hephaestus.model.Model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -18,6 +19,6 @@ public interface ResourcePackExporter {
      * @return The exported models with all
      * it's bones model data loaded
      */
-    List<Model> export(File folder, String name, List<Model> models) throws IOException;
+    List<Model> export(OutputStream stream, List<Model> models) throws IOException;
 
 }

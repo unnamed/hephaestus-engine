@@ -13,7 +13,7 @@ import team.unnamed.hephaestus.adapt.AdaptionModuleFactory;
 import team.unnamed.hephaestus.commands.HephaestusCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
-import team.unnamed.hephaestus.entity.ModelLivingViewAnimator;
+import team.unnamed.hephaestus.model.view.DefaultModelViewAnimator;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.view.ModelViewAnimator;
@@ -26,10 +26,7 @@ import team.unnamed.hephaestus.resourcepack.ResourcePackExporter;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -70,7 +67,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
         AdaptionModule module = AdaptionModuleFactory.create();
 
-        animator = new ModelLivingViewAnimator(this);
+        animator = new DefaultModelViewAnimator(this);
         renderer = module.createRenderer(animator);
 
         ModelRegistry modelRegistry = new ModelRegistry();
@@ -129,7 +126,14 @@ public class AnimationEnginePlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Successfully loaded " + models.size() + " models!");
 
         try {
-            resourcePackExporter.export(this.getDataFolder(), "hephaestus-generated", models)
+            File resourcePackFile = new File(this.getDataFolder(), "hephaestus-generated" + ".zip");
+
+            if (!this.getDataFolder().exists() && !this.getDataFolder().mkdirs()) {
+                throw new IOException("Cannot create folder");
+            } else if (!resourcePackFile.exists() && !resourcePackFile.createNewFile()) {
+                throw new IOException("Failed to create the resource pack file");
+            }
+            resourcePackExporter.export(new FileOutputStream(resourcePackFile), models)
                     .forEach(model -> {
                         getLogger().info("Registered model " + model.getName());
                         modelRegistry.register(model);

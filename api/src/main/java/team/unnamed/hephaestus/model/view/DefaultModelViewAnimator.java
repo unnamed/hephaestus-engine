@@ -1,13 +1,12 @@
-package team.unnamed.hephaestus.entity;
+package team.unnamed.hephaestus.model.view;
 
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
-import team.unnamed.hephaestus.animation.ModelFrameProvider;
+import team.unnamed.hephaestus.model.animation.FrameProvider;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelComponent;
-import team.unnamed.hephaestus.model.animation.FrameProvider;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelView;
@@ -15,15 +14,14 @@ import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
-//TODO: Pass entity handling to packet side and make animations 60 fps
-public class ModelLivingViewAnimator implements ModelViewAnimator {
+public class DefaultModelViewAnimator implements ModelViewAnimator {
 
     private final Plugin plugin;
     private final FrameProvider frameProvider;
 
-    public ModelLivingViewAnimator(Plugin plugin) {
+    public DefaultModelViewAnimator(Plugin plugin) {
         this.plugin = plugin;
-        this.frameProvider = new ModelFrameProvider();
+        this.frameProvider = new FrameProvider();
     }
 
     @Override
@@ -44,8 +42,7 @@ public class ModelLivingViewAnimator implements ModelViewAnimator {
         }
 
         private void updateBone(
-                double bodyYaw,
-
+                double yaw,
                 ModelBone parent,
                 ModelBone bone,
                 EulerAngle parentRotation,
@@ -69,12 +66,12 @@ public class ModelLivingViewAnimator implements ModelViewAnimator {
             EulerAngle globalRotation;
 
             if (parent == null) {
-                globalPosition = Vectors.rotateAroundY(localPosition, bodyYaw);
+                globalPosition = Vectors.rotateAroundY(localPosition, yaw);
                 globalRotation = localRotation;
             } else {
                 globalPosition = Vectors.rotateAroundY(
                         Vectors.rotate(localPosition, parentRotation),
-                        bodyYaw
+                        yaw
                 ).add(parentPosition);
                 globalRotation = Quaternion.combine(localRotation, parentRotation);
             }
@@ -91,7 +88,7 @@ public class ModelLivingViewAnimator implements ModelViewAnimator {
             for (ModelComponent component : bone.getComponents()) {
                 if (component instanceof ModelBone) {
                     this.updateBone(
-                            bodyYaw,
+                            yaw,
                             bone,
                             (ModelBone) component,
                             globalRotation,
