@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.model.entity;
+package team.unnamed.hephaestus.model.view;
 
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
@@ -13,6 +13,6 @@ public interface ModelEntityAnimator {
      * {@code entity} with the specified {@code animation}.
      * @return The created task id
      */
-    int animate(ModelLivingEntity entity, ModelAnimation animation);
+    int animate(ModelView entity, ModelAnimation animation);
 
 }

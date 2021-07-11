@@ -12,11 +12,10 @@ import team.unnamed.hephaestus.commands.HephaestusCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
 import team.unnamed.hephaestus.entity.ModelLivingEntityAnimator;
-import team.unnamed.hephaestus.entity.ModelLivingEntitySpawner;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
-import team.unnamed.hephaestus.model.entity.ModelEntitySpawner;
+import team.unnamed.hephaestus.model.view.ModelEntityAnimator;
+import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelReader;
 import team.unnamed.hephaestus.resourcepack.HephaestusResourcePackExporter;
@@ -41,10 +40,10 @@ import java.util.logging.Level;
 public class AnimationEnginePlugin extends JavaPlugin {
 
     // TODO: REPLACE THIS SHIT, USE DEPENDENCY INJECTION
-    private static ModelEntitySpawner spawner;
+    private static ModelViewRenderer spawner;
     private static ModelEntityAnimator animator;
 
-    public static ModelEntitySpawner getSpawner() {
+    public static ModelViewRenderer getSpawner() {
         return spawner;
     }
 
@@ -67,7 +66,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
             exception.printStackTrace();
         }
 
-        spawner = new ModelLivingEntitySpawner();
+        spawner = new DefaultModelViewRenderer();
         animator = new ModelLivingEntityAnimator(this);
 
         ModelRegistry modelRegistry = new ModelRegistry();

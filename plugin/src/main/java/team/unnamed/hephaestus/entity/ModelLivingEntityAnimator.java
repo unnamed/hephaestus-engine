@@ -11,8 +11,8 @@ import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelComponent;
 import team.unnamed.hephaestus.model.animation.FrameProvider;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
-import team.unnamed.hephaestus.model.entity.ModelLivingEntity;
+import team.unnamed.hephaestus.model.view.ModelEntityAnimator;
+import team.unnamed.hephaestus.model.view.ModelView;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
@@ -29,7 +29,7 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
     }
 
     @Override
-    public int animate(ModelLivingEntity entity, ModelAnimation animation) {
+    public int animate(ModelView entity, ModelAnimation animation) {
 
         entity.resetTick();
         entity.setAnimation(animation);
@@ -41,10 +41,10 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
 
     class AnimationTask extends BukkitRunnable {
 
-        private final ModelLivingEntity entity;
+        private final ModelView entity;
         private final ModelAnimation animation;
 
-        public AnimationTask(ModelLivingEntity entity, ModelAnimation animation) {
+        public AnimationTask(ModelView entity, ModelAnimation animation) {
             this.entity = entity;
             this.animation = animation;
         }

@@ -9,14 +9,14 @@ import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.AnimationEnginePlugin;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.entity.ModelEntityAnimator;
-import team.unnamed.hephaestus.model.entity.ModelEntitySpawner;
-import team.unnamed.hephaestus.model.entity.ModelLivingEntity;
+import team.unnamed.hephaestus.model.view.ModelEntityAnimator;
+import team.unnamed.hephaestus.model.view.ModelViewRenderer;
+import team.unnamed.hephaestus.model.view.ModelView;
 
 public class SummonCommand implements CommandClass {
 
     // TODO: This shit is temporal
-    private final ModelEntitySpawner modelEntitySpawner = AnimationEnginePlugin.getSpawner();
+    private final ModelViewRenderer modelViewRenderer = AnimationEnginePlugin.getSpawner();
     private final ModelEntityAnimator modelEntityAnimator = AnimationEnginePlugin.getAnimator();
 
     @Command(names = "summon")
@@ -27,8 +27,8 @@ public class SummonCommand implements CommandClass {
     ) {
         Location location = player.getLocation();
 
-        ModelLivingEntity entity = modelEntitySpawner.spawn(model, location);
-        player.sendMessage("Model '" + model.getName() + "' summoned. Entity ID is " + entity.getId());
+        ModelView entity = modelViewRenderer.render(player, model, location);
+        player.sendMessage("Model '" + model.getName() + "' summoned.");
 
         if (animation != null) {
             this.modelEntityAnimator.animate(entity, animation);

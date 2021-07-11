@@ -7,5 +7,10 @@ rootProject.name = 'hephaestus-engine'
 ].forEach {
     include it
     // Add 'hephaestus' as prefix for all subprojects
-    project(':' + it).name = 'hephaestus-' + it
+    project(":$it").name = 'hephaestus-' + it
+}
+
+['v1_16_R3'].forEach {
+    include ":adapt:adapt-$it"
+    project(":adapt:adapt-$it").name = "hephaestus-adapt-$it"
 }
