@@ -1,8 +1,11 @@
 package team.unnamed.hephaestus.reader.blockbench;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import team.unnamed.hephaestus.io.Streamable;
+import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelGeometry;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
@@ -12,13 +15,15 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class BlockbenchModelReader implements ModelReader {
 
+    private static final String BASE_64_PREFIX = "data:image/png;base64,";
     private static final JsonParser JSON_PARSER = new JsonParser();
 
     /**
@@ -60,25 +65,34 @@ public class BlockbenchModelReader implements ModelReader {
 
             geometry = geometryReader.read(json);
             animations = animationsReader.read(json);
-        }
 
-        List<File> textures = new ArrayList<>();
-        File[] children = folder.listFiles();
+            JsonArray texturesJson = json.get("textures").getAsJsonArray();
+            Map<String, Streamable> textures = new HashMap<>();
 
-        if (children != null) {
-            for (File texture : children) {
-                if (texture.getName().endsWith(".png")) {
-                    textures.add(texture);
+            for (JsonElement textureElement : texturesJson) {
+                JsonObject textureJson = textureElement.getAsJsonObject();
+
+                String name = textureJson.get("name").getAsString();
+                String source = textureJson.get("source").getAsString();
+
+                if (!(source.startsWith(BASE_64_PREFIX))) {
+                    throw new IOException(
+                            "Model '" + folder.getName() + "' contains an invalid "
+                                    + "texture source. Not Base64"
+                    );
                 }
-            }
-        }
 
-        return new Model(
-                folder.getName(),
-                geometry,
-                animations,
-                textures
-        );
+                String base64Source = source.substring(BASE_64_PREFIX.length());
+                textures.put(name, () -> Streams.fromBase64(base64Source, StandardCharsets.UTF_8));
+            }
+
+            return new Model(
+                    folder.getName(),
+                    geometry,
+                    animations,
+                    textures
+            );
+        }
     }
 
 }

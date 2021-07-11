@@ -1,8 +1,8 @@
 package team.unnamed.hephaestus.model;
 
+import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -11,9 +11,14 @@ public class Model {
     private final String name;
     private final ModelGeometry geometry;
     private final Map<String, ModelAnimation> animations;
-    private final List<File> textures;
+    private final Map<String, Streamable> textures;
 
-    public Model(String name, ModelGeometry geometry, Map<String, ModelAnimation> animations, List<File> textures) {
+    public Model(
+            String name,
+            ModelGeometry geometry,
+            Map<String, ModelAnimation> animations,
+            Map<String, Streamable> textures
+    ) {
         this.name = name;
         this.geometry = geometry;
         this.animations = animations;
@@ -32,7 +37,7 @@ public class Model {
         return animations;
     }
 
-    public List<File> getTextureFiles() {
+    public Map<String, Streamable> getTextures() {
         return textures;
     }
 }

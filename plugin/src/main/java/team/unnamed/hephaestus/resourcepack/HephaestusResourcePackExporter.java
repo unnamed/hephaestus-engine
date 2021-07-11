@@ -1,6 +1,7 @@
 package team.unnamed.hephaestus.resourcepack;
 
 import com.google.gson.Gson;
+import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelDescription;
@@ -13,6 +14,7 @@ import team.unnamed.hephaestus.io.ZippedDataOutputStream;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class HephaestusResourcePackExporter
         implements ResourcePackExporter {
@@ -62,10 +64,13 @@ public class HephaestusResourcePackExporter
                 ModelDescription description = model.getGeometry().getDescription();
                 String modelName = model.getName();
 
-                for (File textureFile : model.getTextureFiles()) {
+                for (Map.Entry<String, Streamable> texture : model.getTextures().entrySet()) {
+                    String textureName = texture.getKey();
+                    Streamable data = texture.getValue();
+
                     // write the texture
-                    output.startEntry("assets/" + NAMESPACE + "/textures/" + modelName + "/" + textureFile.getName());
-                    try (InputStream input = new FileInputStream(textureFile)) {
+                    output.startEntry("assets/" + NAMESPACE + "/textures/" + modelName + "/" + textureName);
+                    try (InputStream input = data.openIn()) {
                         Streams.pipe(input, output);
                     }
                     output.closeEntry();
