@@ -9,19 +9,19 @@ import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelComponent;
 import team.unnamed.hephaestus.model.animation.FrameProvider;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.view.ModelEntityAnimator;
+import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelView;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
 //TODO: Pass entity handling to packet side and make animations 60 fps
-public class ModelLivingEntityAnimator implements ModelEntityAnimator {
+public class ModelLivingViewAnimator implements ModelViewAnimator {
 
     private final Plugin plugin;
     private final FrameProvider frameProvider;
 
-    public ModelLivingEntityAnimator(Plugin plugin) {
+    public ModelLivingViewAnimator(Plugin plugin) {
         this.plugin = plugin;
         this.frameProvider = new ModelFrameProvider();
     }

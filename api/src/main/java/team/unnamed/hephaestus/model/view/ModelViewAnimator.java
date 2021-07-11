@@ -6,7 +6,7 @@ import team.unnamed.hephaestus.model.animation.ModelAnimation;
  * Responsible of animating model
  * living entities
  */
-public interface ModelEntityAnimator {
+public interface ModelViewAnimator {
 
     /**
      * Starts a task for animating the given

@@ -13,10 +13,10 @@ import team.unnamed.hephaestus.adapt.AdaptionModuleFactory;
 import team.unnamed.hephaestus.commands.HephaestusCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
-import team.unnamed.hephaestus.entity.ModelLivingEntityAnimator;
+import team.unnamed.hephaestus.entity.ModelLivingViewAnimator;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.view.ModelEntityAnimator;
+import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelReader;
@@ -43,13 +43,13 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
     // TODO: REPLACE THIS SHIT, USE DEPENDENCY INJECTION
     private static ModelViewRenderer renderer;
-    private static ModelEntityAnimator animator;
+    private static ModelViewAnimator animator;
 
     public static ModelViewRenderer getRenderer() {
         return renderer;
     }
 
-    public static ModelEntityAnimator getAnimator() {
+    public static ModelViewAnimator getAnimator() {
         return animator;
     }
 
@@ -71,7 +71,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         AdaptionModule module = AdaptionModuleFactory.create();
 
         renderer = module.createRenderer();
-        animator = new ModelLivingEntityAnimator(this);
+        animator = new ModelLivingViewAnimator(this);
 
         ModelRegistry modelRegistry = new ModelRegistry();
 

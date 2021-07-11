@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.AnimationEnginePlugin;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.view.ModelEntityAnimator;
+import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.model.view.ModelView;
 
@@ -17,7 +17,7 @@ public class SummonCommand implements CommandClass {
 
     // TODO: This shit is temporal
     private final ModelViewRenderer modelViewRenderer = AnimationEnginePlugin.getRenderer();
-    private final ModelEntityAnimator modelEntityAnimator = AnimationEnginePlugin.getAnimator();
+    private final ModelViewAnimator modelViewAnimator = AnimationEnginePlugin.getAnimator();
 
     @Command(names = "summon")
     public void onCommand(
@@ -31,7 +31,7 @@ public class SummonCommand implements CommandClass {
         player.sendMessage("Model '" + model.getName() + "' summoned.");
 
         if (animation != null) {
-            this.modelEntityAnimator.animate(entity, animation);
+            this.modelViewAnimator.animate(entity, animation);
         }
     }
 }
