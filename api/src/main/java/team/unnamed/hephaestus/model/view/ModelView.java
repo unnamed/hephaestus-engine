@@ -91,7 +91,7 @@ public class ModelView {
     //#region Delegations to other handler classes
     public void playAnimation(String animationName) {
         ModelAnimation animation = model.getAnimations().get(animationName);
-        if (animation != null) {
+        if (animation == null) {
             throw new IllegalArgumentException("Unknown animation: '" + animationName + "'");
         }
         playAnimation(animation);
