@@ -2,7 +2,9 @@ package team.unnamed.hephaestus.model.view;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.EulerAngle;
 import team.unnamed.hephaestus.model.Model;
+import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
 import java.util.HashMap;
@@ -85,6 +87,14 @@ public class ModelView {
     public void teleport(Location newLocation) {
         this.location = newLocation.clone();
         controller.teleport(this, this.location);
+    }
+
+    public void setBonePose(ModelBone bone, EulerAngle angle) {
+        controller.setBonePose(this, bone, angle);
+    }
+
+    public void teleportBone(ModelBone bone, Location location) {
+        controller.teleportBone(this, bone, location);
     }
     //#endregion
 

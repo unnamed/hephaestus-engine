@@ -1,8 +1,6 @@
 package team.unnamed.hephaestus.entity;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
@@ -58,10 +56,6 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                 Vector3Float parentPosition,
                 float tick
         ) {
-            ArmorStand boneEntity = (ArmorStand) Bukkit.getEntity(this.entity.getEntities().get(bone.getName()));
-            if (boneEntity == null) {
-                return;
-            }
 
             Vector3Float framePosition = frameProvider.providePosition(tick, animation, bone)
                     .divide(16)
@@ -95,8 +89,8 @@ public class ModelLivingEntityAnimator implements ModelEntityAnimator {
                     globalPosition.getZ()
             );
 
-            boneEntity.teleport(worldPosition);
-            boneEntity.setHeadPose(globalRotation);
+            entity.teleportBone(bone, worldPosition);
+            entity.setBonePose(bone, globalRotation);
 
             for (ModelComponent component : bone.getComponents()) {
                 if (component instanceof ModelBone) {

@@ -8,6 +8,8 @@ import me.fixeddev.commandflow.annotated.part.defaults.DefaultsModule;
 import me.fixeddev.commandflow.bukkit.BukkitCommandManager;
 import me.fixeddev.commandflow.bukkit.factory.BukkitModule;
 import org.bukkit.plugin.java.JavaPlugin;
+import team.unnamed.hephaestus.adapt.AdaptionModule;
+import team.unnamed.hephaestus.adapt.AdaptionModuleFactory;
 import team.unnamed.hephaestus.commands.HephaestusCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
@@ -40,11 +42,11 @@ import java.util.logging.Level;
 public class AnimationEnginePlugin extends JavaPlugin {
 
     // TODO: REPLACE THIS SHIT, USE DEPENDENCY INJECTION
-    private static ModelViewRenderer spawner;
+    private static ModelViewRenderer renderer;
     private static ModelEntityAnimator animator;
 
-    public static ModelViewRenderer getSpawner() {
-        return spawner;
+    public static ModelViewRenderer getRenderer() {
+        return renderer;
     }
 
     public static ModelEntityAnimator getAnimator() {
@@ -66,7 +68,9 @@ public class AnimationEnginePlugin extends JavaPlugin {
             exception.printStackTrace();
         }
 
-        spawner = new DefaultModelViewRenderer();
+        AdaptionModule module = AdaptionModuleFactory.create();
+
+        renderer = module.createRenderer();
         animator = new ModelLivingEntityAnimator(this);
 
         ModelRegistry modelRegistry = new ModelRegistry();

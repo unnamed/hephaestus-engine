@@ -16,7 +16,7 @@ import team.unnamed.hephaestus.model.view.ModelView;
 public class SummonCommand implements CommandClass {
 
     // TODO: This shit is temporal
-    private final ModelViewRenderer modelViewRenderer = AnimationEnginePlugin.getSpawner();
+    private final ModelViewRenderer modelViewRenderer = AnimationEnginePlugin.getRenderer();
     private final ModelEntityAnimator modelEntityAnimator = AnimationEnginePlugin.getAnimator();
 
     @Command(names = "summon")
