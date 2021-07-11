@@ -149,8 +149,14 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
     private void saveDefaultModels() throws IOException {
         File folder = new File(this.getDataFolder().getPath(), "models");
-        if (folder.exists()) return;
-        folder.mkdirs();
+
+        if (folder.exists()) {
+            return;
+        }
+
+        if (!folder.mkdirs()) {
+            throw new IOException("Failed to place default models");
+        }
 
         final File jarFile = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
         if (jarFile.isFile()) {
