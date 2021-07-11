@@ -3,6 +3,7 @@ package team.unnamed.hephaestus;
 import me.fixeddev.commandflow.CommandManager;
 import me.fixeddev.commandflow.annotated.AnnotatedCommandTreeBuilder;
 import me.fixeddev.commandflow.annotated.AnnotatedCommandTreeBuilderImpl;
+import me.fixeddev.commandflow.annotated.builder.AnnotatedCommandBuilderImpl;
 import me.fixeddev.commandflow.annotated.part.PartInjector;
 import me.fixeddev.commandflow.annotated.part.defaults.DefaultsModule;
 import me.fixeddev.commandflow.bukkit.BukkitCommandManager;
@@ -11,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import team.unnamed.hephaestus.adapt.AdaptionModule;
 import team.unnamed.hephaestus.adapt.AdaptionModuleFactory;
 import team.unnamed.hephaestus.commands.HephaestusCommand;
+import team.unnamed.hephaestus.commands.SummonCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
 import team.unnamed.hephaestus.model.view.DefaultModelViewAnimator;
@@ -21,7 +23,6 @@ import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelReader;
 import team.unnamed.hephaestus.resourcepack.HephaestusResourcePackExporter;
-import team.unnamed.hephaestus.resourcepack.ModelRegistry;
 import team.unnamed.hephaestus.resourcepack.ResourcePackExporter;
 
 import javax.script.ScriptEngine;
@@ -37,18 +38,6 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 
 public class AnimationEnginePlugin extends JavaPlugin {
-
-    // TODO: REPLACE THIS SHIT, USE DEPENDENCY INJECTION
-    private static ModelViewRenderer renderer;
-    private static ModelViewAnimator animator;
-
-    public static ModelViewRenderer getRenderer() {
-        return renderer;
-    }
-
-    public static ModelViewAnimator getAnimator() {
-        return animator;
-    }
 
     @Override
     public void onEnable() {
@@ -67,8 +56,8 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
         AdaptionModule module = AdaptionModuleFactory.create();
 
-        animator = new DefaultModelViewAnimator(this);
-        renderer = module.createRenderer(animator);
+        ModelViewAnimator animator = new DefaultModelViewAnimator(this);
+        ModelViewRenderer renderer = module.createRenderer(animator);
 
         ModelRegistry modelRegistry = new ModelRegistry();
 
@@ -83,7 +72,19 @@ public class AnimationEnginePlugin extends JavaPlugin {
         );
 
         AnnotatedCommandTreeBuilder commandBuilder = new AnnotatedCommandTreeBuilderImpl(
-                partInjector
+                new AnnotatedCommandBuilderImpl(partInjector),
+                (clazz, parent) -> {
+                    if (clazz.isAssignableFrom(SummonCommand.class)) {
+                        return new SummonCommand(renderer, animator);
+                    } else {
+                        try {
+                            return clazz.newInstance();
+                        } catch (InstantiationException | IllegalAccessException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    }
+                }
         );
 
         CommandManager commandManager = new BukkitCommandManager(this.getName());

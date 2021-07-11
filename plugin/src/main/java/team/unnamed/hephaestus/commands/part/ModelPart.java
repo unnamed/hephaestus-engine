@@ -4,8 +4,8 @@ import me.fixeddev.commandflow.CommandContext;
 import me.fixeddev.commandflow.exception.ArgumentParseException;
 import me.fixeddev.commandflow.part.ArgumentPart;
 import me.fixeddev.commandflow.stack.ArgumentStack;
+import team.unnamed.hephaestus.ModelRegistry;
 import team.unnamed.hephaestus.model.Model;
-import team.unnamed.hephaestus.resourcepack.ModelRegistry;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
