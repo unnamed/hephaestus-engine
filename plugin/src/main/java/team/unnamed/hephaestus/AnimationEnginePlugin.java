@@ -60,7 +60,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         ScriptEngine engine = engineManager.getEngineByName(getConfig().getString("script.lang"));
 
         try {
-            this.saveResourceDir("models", "default");
+            this.saveDefaultModels();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -147,8 +147,8 @@ public class AnimationEnginePlugin extends JavaPlugin {
         }
     }
 
-    private void saveResourceDir(String path, String resource) throws IOException {
-        File folder = new File(this.getDataFolder().getPath(), path);
+    private void saveDefaultModels() throws IOException {
+        File folder = new File(this.getDataFolder().getPath(), "models");
         if (folder.exists()) return;
         folder.mkdirs();
 
@@ -158,10 +158,10 @@ public class AnimationEnginePlugin extends JavaPlugin {
             final Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 final String name = entries.nextElement().getName();
-                if (name.startsWith(resource + "/") && !name.equals(resource + "/")) {
-                    String fileName = name.split(resource + "/")[1];
+                if (name.startsWith("default" + "/") && !name.equals("default" + "/")) {
+                    String fileName = name.split("default" + "/")[1];
                     Files.copy(
-                            this.getClass().getClassLoader().getResourceAsStream(resource + "/" + fileName),
+                            this.getClass().getClassLoader().getResourceAsStream("default" + "/" + fileName),
                             Paths.get(folder.getPath() + File.separator + fileName)
                     );
                 }
