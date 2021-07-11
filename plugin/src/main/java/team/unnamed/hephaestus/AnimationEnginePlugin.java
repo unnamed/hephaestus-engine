@@ -26,7 +26,9 @@ import team.unnamed.hephaestus.resourcepack.ResourcePackExporter;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -102,9 +104,12 @@ public class AnimationEnginePlugin extends JavaPlugin {
         List<Model> models = new ArrayList<>();
         if (contents != null) {
             for (File modelFile : contents) {
-                if (modelFile.isFile()) {
-                    try {
-                        Model model = modelReader.read(modelFile);
+                if (modelFile.isFile() && modelFile.getName().endsWith(".bbmodel")) {
+                    try (Reader reader = new FileReader(modelFile)) {
+                        Model model = modelReader.read(
+                                modelFile.getName().split("\\.")[0],
+                                reader
+                        );
                         this.getLogger().log(Level.INFO, "Loaded model " + model.getName());
                         models.add(model);
                     } catch (IOException exception) {

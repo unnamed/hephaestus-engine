@@ -4,9 +4,10 @@ import team.unnamed.hephaestus.model.Model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 
 public interface ModelReader {
 
-    Model read(File folder) throws IOException;
+    Model read(String name, Reader reader) throws IOException;
 
 }
