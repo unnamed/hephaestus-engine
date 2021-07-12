@@ -39,6 +39,75 @@ import java.util.logging.Level;
 
 public class AnimationEnginePlugin extends JavaPlugin {
 
+    private ModelRegistry modelRegistry;
+    private ModelViewAnimator animator;
+    private ModelViewRenderer renderer;
+
+    @Override
+    public void onLoad() {
+        modelRegistry = new ModelRegistry();
+        AdaptionModule module = AdaptionModuleFactory.create();
+
+        animator = new DefaultModelViewAnimator(this);
+        renderer = module.createRenderer(animator);
+
+        ModelReader modelReader = new BlockbenchModelReader();
+        ResourcePackExporter resourcePackExporter = new HephaestusResourcePackExporter();
+
+        File modelsDirectory = new File(this.getDataFolder(), "models");
+
+        if (!modelsDirectory.exists() && !modelsDirectory.mkdirs()) {
+            throw new IllegalStateException("Cannot create models folder");
+        }
+
+        File[] contents = modelsDirectory.listFiles();
+
+        List<Model> models = new ArrayList<>();
+        if (contents != null) {
+            for (File modelFile : contents) {
+                if (modelFile.isFile() && modelFile.getName().endsWith(".bbmodel")) {
+                    try (Reader reader = new FileReader(modelFile)) {
+                        Model model = modelReader.read(
+                            modelFile.getName().split("\\.")[0],
+                            reader
+                        );
+                        this.getLogger().log(Level.INFO, "Loaded model " + model.getName());
+                        models.add(model);
+                    } catch (IOException exception) {
+                        this.getLogger().log(
+                            Level.WARNING,
+                            "Cannot read model data from directory " + modelFile.getName(),
+                            exception
+                        );
+                    }
+                }
+            }
+        }
+
+        this.getLogger().log(Level.INFO, "Successfully loaded " + models.size() + " models!");
+
+        try {
+            File resourcePackFile = new File(this.getDataFolder(), "hephaestus-generated" + ".zip");
+
+            if (!this.getDataFolder().exists() && !this.getDataFolder().mkdirs()) {
+                throw new IOException("Cannot create folder");
+            } else if (!resourcePackFile.exists() && !resourcePackFile.createNewFile()) {
+                throw new IOException("Failed to create the resource pack file");
+            }
+            resourcePackExporter.export(new FileOutputStream(resourcePackFile), models)
+                .forEach(model -> {
+                    getLogger().info("Registered model " + model.getName());
+                    modelRegistry.register(model);
+                });
+        } catch (IOException exception) {
+            this.getLogger().log(
+                Level.SEVERE,
+                "Could not generate resource pack",
+                exception
+            );
+        }
+    }
+
     @Override
     public void onEnable() {
 
@@ -53,13 +122,6 @@ public class AnimationEnginePlugin extends JavaPlugin {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
-
-        AdaptionModule module = AdaptionModuleFactory.create();
-
-        ModelViewAnimator animator = new DefaultModelViewAnimator(this);
-        ModelViewRenderer renderer = module.createRenderer(animator);
-
-        ModelRegistry modelRegistry = new ModelRegistry();
 
         PartInjector partInjector = PartInjector.create();
         partInjector.install(new DefaultsModule());
@@ -90,62 +152,18 @@ public class AnimationEnginePlugin extends JavaPlugin {
         CommandManager commandManager = new BukkitCommandManager(this.getName());
 
         commandManager.registerCommands(commandBuilder.fromClass(new HephaestusCommand()));
+    }
 
-        ModelReader modelReader = new BlockbenchModelReader();
-        ResourcePackExporter resourcePackExporter = new HephaestusResourcePackExporter();
+    public ModelRegistry getModelRegistry() {
+        return modelRegistry;
+    }
 
-        File modelsDirectory = new File(this.getDataFolder(), "models");
+    public ModelViewAnimator getAnimator() {
+        return animator;
+    }
 
-        if (!modelsDirectory.exists() && !modelsDirectory.mkdirs()) {
-            throw new IllegalStateException("Cannot create models folder");
-        }
-
-        File[] contents = modelsDirectory.listFiles();
-
-        List<Model> models = new ArrayList<>();
-        if (contents != null) {
-            for (File modelFile : contents) {
-                if (modelFile.isFile() && modelFile.getName().endsWith(".bbmodel")) {
-                    try (Reader reader = new FileReader(modelFile)) {
-                        Model model = modelReader.read(
-                                modelFile.getName().split("\\.")[0],
-                                reader
-                        );
-                        this.getLogger().log(Level.INFO, "Loaded model " + model.getName());
-                        models.add(model);
-                    } catch (IOException exception) {
-                        this.getLogger().log(
-                                Level.WARNING,
-                                "Cannot read model data from directory " + modelFile.getName(),
-                                exception
-                        );
-                    }
-                }
-            }
-        }
-
-        this.getLogger().log(Level.INFO, "Successfully loaded " + models.size() + " models!");
-
-        try {
-            File resourcePackFile = new File(this.getDataFolder(), "hephaestus-generated" + ".zip");
-
-            if (!this.getDataFolder().exists() && !this.getDataFolder().mkdirs()) {
-                throw new IOException("Cannot create folder");
-            } else if (!resourcePackFile.exists() && !resourcePackFile.createNewFile()) {
-                throw new IOException("Failed to create the resource pack file");
-            }
-            resourcePackExporter.export(new FileOutputStream(resourcePackFile), models)
-                    .forEach(model -> {
-                        getLogger().info("Registered model " + model.getName());
-                        modelRegistry.register(model);
-                    });
-        } catch (IOException exception) {
-            this.getLogger().log(
-                    Level.SEVERE,
-                    "Could not generate resource pack",
-                    exception
-            );
-        }
+    public ModelViewRenderer getRenderer() {
+        return renderer;
     }
 
     private void saveDefaultModels() throws IOException {

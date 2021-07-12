@@ -106,6 +106,14 @@ public class ModelView {
         this.animationTaskId = this.animator.animate(this, animation);
     }
 
+    public void show() {
+        controller.show(this);
+    }
+
+    public void hide() {
+        controller.hide(this);
+    }
+
     public void teleport(Location newLocation) {
         this.location = newLocation.clone();
         controller.teleport(this, this.location);

@@ -6,6 +6,10 @@ import team.unnamed.hephaestus.model.ModelBone;
 
 public interface ModelViewController {
 
+    void show(ModelView view);
+
+    void hide(ModelView view);
+
     void teleport(ModelView view, Location location);
 
     void teleportBone(ModelView view, ModelBone bone, Location location);
