@@ -2,6 +2,7 @@
 Hephaestus Engine is a library which allows the visualization of block bench models and animations in a Minecraft server by the use of a generated resource pack and armor stands.
 # Installation
 Latest Snapshot: [![Latest Snapshot](https://img.shields.io/nexus/s/team.unnamed.hephaestus/hephaestus-api.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-snapshots)
+
 Latest Release: [![Latest Release](https://img.shields.io/nexus/r/team.unnamed.hephaestus/hephaestus-api.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-snapshots)
 # Maven Dependency
 Add the repositories into your  `<repositories>`  tag (`pom.xml`)
