@@ -45,6 +45,12 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        try {
+            this.saveDefaultModels();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
         modelRegistry = new ModelRegistry();
         AdaptionModule module = AdaptionModuleFactory.create();
 
@@ -116,12 +122,6 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
         ScriptEngineManager engineManager = new ScriptEngineManager();
         ScriptEngine engine = engineManager.getEngineByName(getConfig().getString("script.lang"));
-
-        try {
-            this.saveDefaultModels();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
 
         PartInjector partInjector = PartInjector.create();
         partInjector.install(new DefaultsModule());
