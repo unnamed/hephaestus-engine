@@ -4,6 +4,11 @@ subprojects {
     group 'team.unnamed.hephaestus'
     version '0.1.0'
 
+    compileJava {
+        sourceCompatibility = 8
+        targetCompatibility = 8
+    }
+
     repositories {
         mavenLocal()
         maven { url 'https://repo.codemc.io/repository/nms/' }
