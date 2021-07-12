@@ -27,7 +27,7 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
     @Override
     public int animate(ModelView entity, ModelAnimation animation) {
         return new AnimationTask(entity, animation)
-                .runTaskTimer(plugin, 0L, 1L)
+                .runTaskTimerAsynchronously(plugin, 0L, 1L)
                 .getTaskId();
     }
 
