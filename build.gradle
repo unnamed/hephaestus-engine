@@ -1,5 +1,6 @@
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'maven-publish'
 
     group 'team.unnamed.hephaestus'
     version '0.1.0'
@@ -15,5 +16,13 @@ subprojects {
         maven { url 'https://repo.unnamed.team/repository/unnamed-releases/' }
         maven { url 'https://repo.unnamed.team/repository/unnamed-snapshots/' }
         mavenCentral()
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                from components.java
+            }
+        }
     }
 }
