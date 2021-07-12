@@ -167,14 +167,10 @@ public class AnimationEnginePlugin extends JavaPlugin {
     }
 
     private void saveDefaultModels() throws IOException {
-        File folder = new File(this.getDataFolder().getPath(), "models");
+        File modelsDirectory = new File(this.getDataFolder(), "models");
 
-        if (folder.exists()) {
-            return;
-        }
-
-        if (!folder.mkdirs()) {
-            throw new IOException("Failed to place default models");
+        if (!modelsDirectory.exists() && !modelsDirectory.mkdirs()) {
+            throw new IllegalStateException("Cannot create models folder");
         }
 
         final File jarFile = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
@@ -187,7 +183,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
                     String fileName = name.split("default" + "/")[1];
                     Files.copy(
                             this.getClass().getClassLoader().getResourceAsStream("default" + "/" + fileName),
-                            Paths.get(folder.getPath() + File.separator + fileName)
+                            Paths.get(modelsDirectory.getPath() + File.separator + fileName)
                     );
                 }
             }
