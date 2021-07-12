@@ -8,7 +8,6 @@ import me.fixeddev.commandflow.annotated.part.PartInjector;
 import me.fixeddev.commandflow.annotated.part.defaults.DefaultsModule;
 import me.fixeddev.commandflow.bukkit.BukkitCommandManager;
 import me.fixeddev.commandflow.bukkit.factory.BukkitModule;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import team.unnamed.hephaestus.adapt.AdaptionModule;
 import team.unnamed.hephaestus.adapt.AdaptionModuleFactory;
@@ -16,7 +15,6 @@ import team.unnamed.hephaestus.commands.HephaestusCommand;
 import team.unnamed.hephaestus.commands.SummonCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
-import team.unnamed.hephaestus.listener.PlayerJoinListener;
 import team.unnamed.hephaestus.model.view.DefaultModelViewAnimator;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
@@ -148,11 +146,6 @@ public class AnimationEnginePlugin extends JavaPlugin {
                     exception
             );
         }
-
-        Bukkit.getPluginManager().registerEvents(
-            new PlayerJoinListener(this),
-            this
-        );
     }
 
     private void saveDefaultModels() throws IOException {
