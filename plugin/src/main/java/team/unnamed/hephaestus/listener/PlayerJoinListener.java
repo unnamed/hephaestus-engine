@@ -22,11 +22,12 @@ public class PlayerJoinListener implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+		event.setJoinMessage("§d" + player.getName() + "§f joined");
 		player.sendMessage(
 				"§d-----------------------------------------------\n"
-				+ "Welcome to the §dUnnamed Team §fTest Server\n"
+				+ "§fWelcome to the §dUnnamed Team §fTest Server\n"
 				+ "Feel free to §dinvite your friends to test our\n"
-				+ "projects..."
+				+ "projects...\n"
 				+ "§d-----------------------------------------------"
 		);
 		Bukkit.getScheduler().runTaskLater(
