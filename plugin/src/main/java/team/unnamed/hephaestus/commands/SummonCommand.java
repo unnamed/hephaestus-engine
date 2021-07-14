@@ -12,14 +12,37 @@ import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.model.view.ModelView;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+
 public class SummonCommand implements CommandClass {
 
     private final ModelViewRenderer renderer;
-    private final ModelViewAnimator animator;
+    // temporal
+    private final Map<String, ModelView> views = new HashMap<>();
 
-    public SummonCommand(ModelViewRenderer renderer, ModelViewAnimator animator) {
+    public SummonCommand(ModelViewRenderer renderer) {
         this.renderer = renderer;
-        this.animator = animator;
+    }
+
+    @Command(names = "animate")
+    public void animate(
+            @Sender Player player,
+            String viewId,
+            String animationName
+    ) {
+        ModelView view = views.get(viewId);
+        if (view == null) {
+            player.sendMessage("§cUnknown view");
+            return;
+        }
+        ModelAnimation animation = view.getModel().getAnimations().get(animationName);
+        if (animation == null) {
+            player.sendMessage("§cUnknown animation");
+            return;
+        }
+        view.playAnimation(animation);
     }
 
     @Command(names = "summon")
@@ -30,11 +53,13 @@ public class SummonCommand implements CommandClass {
     ) {
         Location location = player.getLocation();
 
+        String id = Integer.toHexString(ThreadLocalRandom.current().nextInt(0xFFFFFFF));
         ModelView entity = renderer.render(player, model, location);
-        player.sendMessage("Model '" + model.getName() + "' summoned.");
+        views.put(id, entity);
+        player.sendMessage("Model '" + model.getName() + "' summoned. Id: " + id);
 
         if (animation != null) {
-            this.animator.animate(entity, animation);
+            entity.playAnimation(animation);
         }
     }
 }

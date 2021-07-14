@@ -102,8 +102,12 @@ public class ModelView {
         if (animationTaskId != -1) {
             Bukkit.getScheduler().cancelTask(animationTaskId);
         }
-        this.animation = animation;
-        this.animationTaskId = this.animator.animate(this, animation);
+        if (this.animation == null) {
+            this.animation = animation;
+        } else {
+            this.animation = ModelAnimation.merge(this.animation, animation);
+        }
+        this.animationTaskId = this.animator.animate(this, this.animation);
     }
 
     public void show() {

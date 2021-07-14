@@ -24,7 +24,6 @@ import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelReader;
 import team.unnamed.hephaestus.resourcepack.ResourceExports;
 import team.unnamed.hephaestus.resourcepack.ZipResourcePackWriter;
-import team.unnamed.hephaestus.resourcepack.ResourcePackWriter;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -49,11 +48,11 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        try {
+        /*try {
             this.saveDefaultModels();
         } catch (IOException exception) {
             exception.printStackTrace();
-        }
+        }*/
 
         modelRegistry = new ModelRegistry();
         AdaptionModule module = AdaptionModuleFactory.create();
@@ -62,7 +61,6 @@ public class AnimationEnginePlugin extends JavaPlugin {
         renderer = module.createRenderer(animator);
 
         ModelReader modelReader = new BlockbenchModelReader();
-        ResourcePackWriter resourcePackWriter = new ZipResourcePackWriter();
 
         File modelsDirectory = new File(this.getDataFolder(), "models");
 
@@ -139,7 +137,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
                 new AnnotatedCommandBuilderImpl(partInjector),
                 (clazz, parent) -> {
                     if (clazz.isAssignableFrom(SummonCommand.class)) {
-                        return new SummonCommand(renderer, animator);
+                        return new SummonCommand(renderer);
                     } else {
                         try {
                             return clazz.newInstance();
