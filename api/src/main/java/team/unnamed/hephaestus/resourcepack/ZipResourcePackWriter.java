@@ -95,14 +95,14 @@ public class ZipResourcePackWriter
                             )
                     );
 
-
                     output.startEntry(
                             "assets/" + namespace + "/models/"
                                     + modelName
                                     +  "/" + bone.getName()
                                     + ".json"
                     );
-                    gson.toJson(json, gson.newJsonWriter(new OutputStreamWriter(output)));
+
+                    output.writeString(json.toString());
                     output.closeEntry();
                 }
             }
