@@ -10,7 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -29,8 +28,7 @@ public final class ResourceExports {
     public static class HttpExporter
             implements ResourceExporter<String> {
 
-        private static final String BOUNDARY = "-- HephaestusBoundary"
-                + Integer.toHexString(ThreadLocalRandom.current().nextInt());
+        private static final String BOUNDARY = "HephaestusBoundary";
 
         private static final String LINE_FEED = "\r\n";
 
@@ -80,8 +78,8 @@ public final class ResourceExports {
             }
 
             if (fileName == null) {
-                // use 'hephaestus-generated.zip' as default name
-                fileName = "hephaestus-generated.zip";
+                // use 'resourcepack' as default name
+                fileName = "resourcepack";
             }
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -93,7 +91,7 @@ public final class ResourceExports {
 
             connection.setRequestProperty("User-Agent", "Hephaestus-Engine");
             connection.setRequestProperty("Charset", "utf-8");
-            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=");
+            connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
 
             if (authorization != null) {
                 connection.setRequestProperty("Authorization", authorization);
