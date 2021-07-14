@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.util;
+package team.unnamed.hephaestus.struct;
 
 import org.bukkit.util.EulerAngle;
 
