@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class HephaestusResourcePackExporter
-        implements ResourcePackExporter {
+public class ZipResourcePackWriter
+        implements ResourcePackWriter {
 
     private static final int PACK_FORMAT = 6;
     public static final String NAMESPACE = "hephaestus";
@@ -32,7 +32,7 @@ public class HephaestusResourcePackExporter
     private final ModelGeometryTransformer transformer = new ModelGeometryTransformer();
 
     @Override
-    public List<Model> export(OutputStream stream, List<Model> models) throws IOException {
+    public List<Model> write(OutputStream stream, List<Model> models) throws IOException {
         this.applyCustomModelData(models);
 
         ZippedDataOutputStream output = new ZippedDataOutputStream(stream, gson);

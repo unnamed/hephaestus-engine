@@ -37,12 +37,30 @@ public final class Streams {
      * @throws IOException If an error occurs while
      * reading or writing the data
      */
-    public static void pipe(InputStream input, OutputStream output) throws IOException {
+    public static void pipe(
+            InputStream input,
+            OutputStream output
+    ) throws IOException {
         byte[] buffer = new byte[BUFFER_LENGTH];
         int length;
         while ((length = input.read(buffer)) != -1) {
             output.write(buffer, 0, length);
         }
+    }
+
+    /**
+     * Writes the given {@code string} into
+     * the specified {@code output} using the
+     * UTF-8 charset
+     * @throws IOException If an error occurs
+     * while writing the string
+     */
+    public static void writeUTF(
+            OutputStream output,
+            String string
+    ) throws IOException {
+        byte[] data = string.getBytes(StandardCharsets.UTF_8);
+        output.write(data, 0, data.length);
     }
 
     /**

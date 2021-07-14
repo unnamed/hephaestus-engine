@@ -44,7 +44,7 @@ public class ModelGeometryTransformer {
     public JavaModel generateJavaModel(Model model, ModelDescription description, ModelBone bone) {
         Map<String, String> textures = new HashMap<>();
         model.getGeometry().getTextureMap().forEach((id, name) ->
-                textures.put("" + id, HephaestusResourcePackExporter.NAMESPACE + ":" + model.getName() + "/" + name)
+                textures.put("" + id, ZipResourcePackWriter.NAMESPACE + ":" + model.getName() + "/" + name)
         );
 
         Map<String, JavaDisplay> display = new HashMap<>();

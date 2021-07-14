@@ -22,8 +22,9 @@ import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelReader;
-import team.unnamed.hephaestus.resourcepack.HephaestusResourcePackExporter;
-import team.unnamed.hephaestus.resourcepack.ResourcePackExporter;
+import team.unnamed.hephaestus.resourcepack.ResourceExports;
+import team.unnamed.hephaestus.resourcepack.ZipResourcePackWriter;
+import team.unnamed.hephaestus.resourcepack.ResourcePackWriter;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -58,7 +59,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         renderer = module.createRenderer(animator);
 
         ModelReader modelReader = new BlockbenchModelReader();
-        ResourcePackExporter resourcePackExporter = new HephaestusResourcePackExporter();
+        ResourcePackWriter resourcePackWriter = new ZipResourcePackWriter();
 
         File modelsDirectory = new File(this.getDataFolder(), "models");
 
@@ -93,20 +94,16 @@ public class AnimationEnginePlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Successfully loaded " + models.size() + " models!");
 
         try {
-            File resourcePackFile = new File(this.getDataFolder(), "hephaestus-generated.zip");
+            ResourceExports.newHttpExport("https://artemis.unnamed.team/resource-pack")
+                    .setAuthorization("authorization token")
+                    .setFileName("resource-pack.zip")
+                    .setWriter(new ZipResourcePackWriter())
+                    .export(models);
 
-            if (!this.getDataFolder().exists() && !this.getDataFolder().mkdirs()) {
-                throw new IOException("Cannot create folder");
-            } else if (!resourcePackFile.exists() && !resourcePackFile.createNewFile()) {
-                throw new IOException("Failed to create the resource pack file");
-            }
-            try (OutputStream output = new FileOutputStream(resourcePackFile)) {
-                resourcePackExporter.export(output, models)
-                    .forEach(model -> {
-                        getLogger().info("Registered model " + model.getName());
-                        modelRegistry.register(model);
-                    });
-            }
+            models.forEach(model -> {
+                getLogger().info("Registered model " + model.getName());
+                modelRegistry.register(model);
+            });
         } catch (IOException exception) {
             this.getLogger().log(
                 Level.SEVERE,

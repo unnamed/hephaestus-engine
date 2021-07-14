@@ -8,21 +8,21 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * Responsible of exporting resource packs
+ * Responsible of writing resource packs
  * from {@link Model}s
  */
-public interface ResourcePackExporter {
+public interface ResourcePackWriter {
 
     /**
-     * Exports the given {@link Model}s
+     * Writes the given {@link Model}s
      *
      * <strong>Note that this method doesn't
      * close the given {@code stream}</strong>
      *
      * @param models The raw models
      * @return The exported models with all
-     * it's bones model data loaded
+     * bone model data inside it
      */
-    List<Model> export(OutputStream stream, List<Model> models) throws IOException;
+    List<Model> write(OutputStream stream, List<Model> models) throws IOException;
 
 }
