@@ -24,6 +24,13 @@ Add the dependency into your  `<dependencies>`  tag (`pom.xml`)
 - [API](https://github.com/unnamed/hephaestus-engine/tree/master/api)
 - [Molang Parser](https://github.com/unnamed/hephaestus-engine/tree/master/molang)
 - [Plugin](https://github.com/unnamed/hephaestus-engine/tree/master/plugin)
+# Limitations
+- Cube rotations are limited by increments of 22.5 from -45 to 45
+- Bones cannot be larger than 48x48x48
+# Recommended format
+Hephaestus engine allows for flexibility while modeling and handling animations but there is a recommended format to follow when modeling. You should start with a root bone and have the rest of the model as it's descendant. Here's an example on how our iconic pegasus model is made:
+
+![Pegasus](PegasusFormat.png)
 # Features
 - Deploys Blockbench models into game-ready texture packs
 - Plays animations
