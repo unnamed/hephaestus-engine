@@ -93,7 +93,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Successfully loaded " + models.size() + " models!");
 
         try {
-            File resourcePackFile = new File(this.getDataFolder(), "hephaestus-generated" + ".zip");
+            File resourcePackFile = new File(this.getDataFolder(), "hephaestus-generated.zip");
 
             if (!this.getDataFolder().exists() && !this.getDataFolder().mkdirs()) {
                 throw new IOException("Cannot create folder");
