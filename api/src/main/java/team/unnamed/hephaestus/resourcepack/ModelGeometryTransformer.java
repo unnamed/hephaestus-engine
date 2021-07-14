@@ -27,17 +27,10 @@ public class ModelGeometryTransformer {
 
     private List<ModelBone> getBoneBones(ModelBone bone) {
         List<ModelBone> bones = new ArrayList<>();
-        if (bone.getComponents().isEmpty()) {
-            return bones;
+        for (ModelBone component : bone.getBones()) {
+            bones.add(component);
+            bones.addAll(getBoneBones(component));
         }
-
-        bone.getComponents().forEach(component -> {
-            if (component instanceof ModelBone) {
-                bones.add((ModelBone) component);
-                bones.addAll(this.getBoneBones((ModelBone) component));
-            }
-        });
-
         return bones;
     }
 
@@ -65,118 +58,112 @@ public class ModelGeometryTransformer {
         float deltaY = bonePivot.getY() - 8.0F;
         float deltaZ = bonePivot.getZ() - 8.0F;
 
-        for (ModelComponent component : bone.getComponents()) {
-            if (component instanceof ModelCube) {
-                ModelCube cube = (ModelCube) component;
+        for (ModelCube cube : bone.getCubes()) {
 
-                Vector3Float origin = cube.getOrigin();
-                Vector3Float cubePivot = cube.getPivot();
-                Vector3Float size = cube.getSize();
+            Vector3Float origin = cube.getOrigin();
+            Vector3Float cubePivot = cube.getPivot();
+            Vector3Float size = cube.getSize();
 
-                Vector3Float from = new Vector3Float(
-                        16F - origin.getX() + deltaX - size.getX(),
-                        origin.getY() - deltaY,
-                        origin.getZ() - deltaZ
-                );
-                Vector3Float to = new Vector3Float(
-                        from.getX() + size.getX(),
-                        from.getY() + size.getY(),
-                        from.getZ() + size.getZ()
-                );
+            Vector3Float from = new Vector3Float(
+                    16F - origin.getX() + deltaX - size.getX(),
+                    origin.getY() - deltaY,
+                    origin.getZ() - deltaZ
+            );
+            Vector3Float to = new Vector3Float(
+                    from.getX() + size.getX(),
+                    from.getY() + size.getY(),
+                    from.getZ() + size.getZ()
+            );
 
-                String axis = cube.getRotationAxis();
+            String axis = cube.getRotationAxis();
 
-                Vector3Float rotationOrigin;
-                float angle = 0;
-                switch (axis) {
-                    case "z":
-                        angle = cube.getRotation().getZ();
-                        break;
-                    case "x":
-                        angle = -cube.getRotation().getX();
-                        break;
-                    case "y":
-                        angle = -cube.getRotation().getY();
-                        break;
-                }
-
-                if (angle % 22.5D != 0.0D || angle > 45.0F || angle < -45.0F) {
-                    throw new IllegalArgumentException("Angle has to be 45 through -45 degrees in 22.5 degree increments");
-                }
-
-                if (cubePivot.getX() == 0 && cubePivot.getY() == 0 && cubePivot.getZ() == 0) {
-                    rotationOrigin = new Vector3Float(8, 8, 8);
-                } else {
-                    rotationOrigin = new Vector3Float(
-                            shrink(-cubePivot.getX() + bonePivot.getX() + 8),
-                            shrink(cubePivot.getY() - bonePivot.getY() + 8),
-                            shrink(cubePivot.getZ() - bonePivot.getZ() + 8)
-                    );
-                }
-
-                JavaRotation rotation = new JavaRotation(
-                        axis,
-                        angle,
-                        rotationOrigin
-                );
-
-                Map<String, JavaFace> faces = new HashMap<>();
-                FacedTextureBound[] bounds = cube.getTextureBounds();
-
-                float ratio = 16.0F / description.getTextureWidth();
-                for (TextureFace face : TextureFace.values()) {
-                    FacedTextureBound bound = bounds[face.ordinal()];
-                    float[] uv;
-
-                    if (bound == null) {
-                        continue;
-                    } else {
-
-                        Vector2Int boundFrom = bound.getBounds();
-                        Vector2Int boundSize = bound.getSize();
-
-                        float sX = boundFrom.getX() * ratio;
-                        float sY = boundFrom.getY() * ratio;
-
-                        float eX = (boundFrom.getX() + boundSize.getX()) * ratio;
-                        float eY = (boundFrom.getY() + boundSize.getY()) * ratio;
-
-                        if (face != TextureFace.UP) {
-                            if (face != TextureFace.DOWN) {
-                                uv = new float[] {sX, sY, eX, eY};
-                            } else {
-                                uv = new float[] {sX, eY, eX, sY};
-                            }
-                        } else {
-                            uv = new float[] {eX, eY, sX, sY};
-                        }
-                    }
-
-                    faces.put(face.name().toLowerCase(), new JavaFace(
-                            uv,
-                            "#" + bound.getTextureId()
-                    ));
-                }
-
-                JavaCube javaCube = new JavaCube(
-                        bone.getName() + "-cube-" + (index++),
-                        from,
-                        to,
-                        rotation,
-                        faces
-                );
-
-                javaCube.shrink();
-                elements.add(javaCube);
+            Vector3Float rotationOrigin;
+            float angle = 0;
+            switch (axis) {
+                case "z":
+                    angle = cube.getRotation().getZ();
+                    break;
+                case "x":
+                    angle = -cube.getRotation().getX();
+                    break;
+                case "y":
+                    angle = -cube.getRotation().getY();
+                    break;
             }
+
+            if (angle % 22.5D != 0.0D || angle > 45.0F || angle < -45.0F) {
+                throw new IllegalArgumentException("Angle has to be 45 through -45 degrees in 22.5 degree increments");
+            }
+
+            if (cubePivot.getX() == 0 && cubePivot.getY() == 0 && cubePivot.getZ() == 0) {
+                rotationOrigin = new Vector3Float(8, 8, 8);
+            } else {
+                rotationOrigin = new Vector3Float(
+                        shrink(-cubePivot.getX() + bonePivot.getX() + 8),
+                        shrink(cubePivot.getY() - bonePivot.getY() + 8),
+                        shrink(cubePivot.getZ() - bonePivot.getZ() + 8)
+                );
+            }
+
+            JavaRotation rotation = new JavaRotation(
+                    axis,
+                    angle,
+                    rotationOrigin
+            );
+
+            Map<String, JavaFace> faces = new HashMap<>();
+            FacedTextureBound[] bounds = cube.getTextureBounds();
+
+            float ratio = 16.0F / description.getTextureWidth();
+            for (TextureFace face : TextureFace.values()) {
+                FacedTextureBound bound = bounds[face.ordinal()];
+                float[] uv;
+
+                if (bound == null) {
+                    continue;
+                } else {
+
+                    Vector2Int boundFrom = bound.getBounds();
+                    Vector2Int boundSize = bound.getSize();
+
+                    float sX = boundFrom.getX() * ratio;
+                    float sY = boundFrom.getY() * ratio;
+
+                    float eX = (boundFrom.getX() + boundSize.getX()) * ratio;
+                    float eY = (boundFrom.getY() + boundSize.getY()) * ratio;
+
+                    if (face != TextureFace.UP) {
+                        if (face != TextureFace.DOWN) {
+                            uv = new float[] {sX, sY, eX, eY};
+                        } else {
+                            uv = new float[] {sX, eY, eX, sY};
+                        }
+                    } else {
+                        uv = new float[] {eX, eY, sX, sY};
+                    }
+                }
+
+                faces.put(face.name().toLowerCase(), new JavaFace(
+                        uv,
+                        "#" + bound.getTextureId()
+                ));
+            }
+
+            JavaCube javaCube = new JavaCube(
+                    bone.getName() + "-cube-" + (index++),
+                    from,
+                    to,
+                    rotation,
+                    faces
+            );
+
+            javaCube.shrink();
+            elements.add(javaCube);
         }
 
-        for (ModelComponent component : bone.getComponents()) {
-            if (component instanceof ModelBone) {
-                ModelBone child = (ModelBone) component;
-                child.setRelativeOffset(bonePivot.divide(16));
-                child.updateChildRelativeOffset();
-            }
+        for (ModelBone child : bone.getBones()) {
+            child.setRelativeOffset(bonePivot.divide(16));
+            child.updateChildRelativeOffset();
         }
 
         return new JavaModel(

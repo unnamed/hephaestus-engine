@@ -13,23 +13,22 @@ public class ModelBone implements ModelComponent {
     private final String name;
     private final Vector3Float pivot;
     private final Vector3Float rotation;
-    private final List<ModelComponent> components;
+
+    private final List<ModelBone> bones;
+    private final List<ModelCube> cubes;
 
     private final Vector3Float globalOffset;
     private Vector3Float localOffset;
 
     private int customModelData;
 
-    public ModelBone(String name, Vector3Float pivot, Vector3Float rotation, List<ModelComponent> components) {
+    public ModelBone(String name, Vector3Float pivot, Vector3Float rotation, List<ModelBone> bones, List<ModelCube> cubes) {
         this.name = name;
         this.pivot = pivot;
         this.rotation = rotation;
-        this.components = components;
-        this.globalOffset = new Vector3Float(
-                pivot.getX() / 16,
-                pivot.getY() / 16,
-                pivot.getZ() / 16
-        );
+        this.bones = bones;
+        this.cubes = cubes;
+        this.globalOffset = pivot.divide(16);
         this.localOffset = Vector3Float.ZERO;
     }
 
@@ -50,13 +49,9 @@ public class ModelBone implements ModelComponent {
     }
 
     public void updateChildRelativeOffset() {
-        for (ModelComponent component : components) {
-            if (component instanceof ModelBone) {
-                ((ModelBone) component)
-                        .setRelativeOffset(globalOffset);
-                ((ModelBone) component)
-                        .updateChildRelativeOffset();
-            }
+        for (ModelBone bone : bones) {
+            bone.setRelativeOffset(globalOffset);
+            bone.updateChildRelativeOffset();
         }
     }
 
@@ -81,7 +76,12 @@ public class ModelBone implements ModelComponent {
         return rotation;
     }
 
-    public List<ModelComponent> getComponents() {
-        return components;
+    public List<ModelBone> getBones() {
+        return bones;
     }
+
+    public List<ModelCube> getCubes() {
+        return cubes;
+    }
+
 }
