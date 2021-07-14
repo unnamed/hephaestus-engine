@@ -15,6 +15,10 @@ public interface ResourcePackExporter {
 
     /**
      * Exports the given {@link Model}s
+     *
+     * <strong>Note that this method doesn't
+     * close the given {@code stream}</strong>
+     *
      * @param models The raw models
      * @return The exported models with all
      * it's bones model data loaded

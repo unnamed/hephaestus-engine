@@ -35,7 +35,9 @@ public class HephaestusResourcePackExporter
     public List<Model> export(OutputStream stream, List<Model> models) throws IOException {
         this.applyCustomModelData(models);
 
-        try (ZippedDataOutputStream output = new ZippedDataOutputStream(stream, gson)) {
+        ZippedDataOutputStream output = new ZippedDataOutputStream(stream, gson);
+
+        try {
 
             // write the pack data
             output.startEntry("pack.mcmeta");
@@ -94,6 +96,9 @@ public class HephaestusResourcePackExporter
             output.startEntry("assets/minecraft/models/item/bone.json");
             output.writeJson(new JavaItem(overrides));
             output.closeEntry();
+        } finally {
+            // finish but don't close
+            output.finish();
         }
 
         return models;

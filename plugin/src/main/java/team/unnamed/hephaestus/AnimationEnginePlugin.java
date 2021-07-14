@@ -100,11 +100,13 @@ public class AnimationEnginePlugin extends JavaPlugin {
             } else if (!resourcePackFile.exists() && !resourcePackFile.createNewFile()) {
                 throw new IOException("Failed to create the resource pack file");
             }
-            resourcePackExporter.export(new FileOutputStream(resourcePackFile), models)
-                .forEach(model -> {
-                    getLogger().info("Registered model " + model.getName());
-                    modelRegistry.register(model);
-                });
+            try (OutputStream output = new FileOutputStream(resourcePackFile)) {
+                resourcePackExporter.export(output, models)
+                    .forEach(model -> {
+                        getLogger().info("Registered model " + model.getName());
+                        modelRegistry.register(model);
+                    });
+            }
         } catch (IOException exception) {
             this.getLogger().log(
                 Level.SEVERE,
