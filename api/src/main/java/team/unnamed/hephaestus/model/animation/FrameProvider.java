@@ -8,9 +8,12 @@ import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.List;
 
-public class FrameProvider {
+public final class FrameProvider {
 
-    private KeyFrame getNext(float tick, List<KeyFrame> frames) {
+    private FrameProvider() {
+    }
+
+    private static KeyFrame getNext(float tick, List<KeyFrame> frames) {
         KeyFrame selectedFrame = null;
         for (KeyFrame frame : frames) {
             if (frame.getPosition() > tick){
@@ -25,7 +28,7 @@ public class FrameProvider {
         return selectedFrame;
     }
 
-    private KeyFrame getPrevious(float tick, List<KeyFrame> frames) {
+    private static KeyFrame getPrevious(float tick, List<KeyFrame> frames) {
         KeyFrame selectedFrame = null;
         for (KeyFrame frame : frames) {
             if (frame.getPosition() <= tick) {
@@ -44,7 +47,7 @@ public class FrameProvider {
         return selectedFrame;
     }
 
-    public Vector3Float providePosition(float tick, ModelAnimation animation, ModelBone bone) {
+    public static Vector3Float providePosition(float tick, ModelAnimation animation, ModelBone bone) {
         ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
 
         if (boneAnimation == null) {
@@ -67,7 +70,7 @@ public class FrameProvider {
         return framePosition;
     }
 
-    public EulerAngle provideRotation(float tick, ModelAnimation animation, ModelBone bone) {
+    public static EulerAngle provideRotation(float tick, ModelAnimation animation, ModelBone bone) {
         ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
 
         if (boneAnimation == null) {

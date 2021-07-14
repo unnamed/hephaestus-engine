@@ -4,9 +4,9 @@ import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
-import team.unnamed.hephaestus.model.animation.FrameProvider;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelComponent;
+import team.unnamed.hephaestus.model.animation.FrameProvider;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
@@ -15,11 +15,9 @@ import team.unnamed.hephaestus.util.Vectors;
 public class DefaultModelViewAnimator implements ModelViewAnimator {
 
     private final Plugin plugin;
-    private final FrameProvider frameProvider;
 
     public DefaultModelViewAnimator(Plugin plugin) {
         this.plugin = plugin;
-        this.frameProvider = new FrameProvider();
     }
 
     @Override
@@ -29,7 +27,7 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
                 .getTaskId();
     }
 
-    class AnimationTask extends BukkitRunnable {
+    static class AnimationTask extends BukkitRunnable {
 
         private final ModelView entity;
         private final ModelAnimation animation;
@@ -48,11 +46,11 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
                 float tick
         ) {
 
-            Vector3Float framePosition = frameProvider.providePosition(tick, animation, bone)
+            Vector3Float framePosition = FrameProvider.providePosition(tick, animation, bone)
                     .divide(16)
                     .multiply(1, 1, -1);
 
-            EulerAngle frameRotation = frameProvider.provideRotation(tick, animation, bone);
+            EulerAngle frameRotation = FrameProvider.provideRotation(tick, animation, bone);
 
             Vector3Float defaultPosition = bone.getLocalOffset().multiply(1, 1, -1);
             EulerAngle defaultRotation = bone.getRotation().toEuler();
