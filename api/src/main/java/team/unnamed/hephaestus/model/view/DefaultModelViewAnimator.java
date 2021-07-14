@@ -5,7 +5,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import team.unnamed.hephaestus.model.ModelBone;
-import team.unnamed.hephaestus.model.ModelComponent;
 import team.unnamed.hephaestus.model.animation.FrameProvider;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.struct.Quaternion;
@@ -81,17 +80,15 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
             entity.teleportBone(bone, worldPosition);
             entity.setBonePose(bone, globalRotation);
 
-            for (ModelComponent component : bone.getComponents()) {
-                if (component instanceof ModelBone) {
-                    this.updateBone(
-                            yaw,
-                            bone,
-                            (ModelBone) component,
-                            globalRotation,
-                            globalPosition,
-                            tick
-                    );
-                }
+            for (ModelBone component : bone.getBones()) {
+                this.updateBone(
+                        yaw,
+                        bone,
+                        component,
+                        globalRotation,
+                        globalPosition,
+                        tick
+                );
             }
         }
 
