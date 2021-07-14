@@ -26,7 +26,8 @@ public final class ResourceExports {
      * Fluent-style class for exporting resource
      * packs and upload it using HTTP
      */
-    public static class HttpExport {
+    public static class HttpExporter
+            implements ResourceExporter<String> {
 
         private static final String BOUNDARY = "-- HephaestusBoundary"
                 + Integer.toHexString(ThreadLocalRandom.current().nextInt());
@@ -38,7 +39,7 @@ public final class ResourceExports {
 	    private ResourcePackWriter writer;
 	    private String fileName;
 
-	    public HttpExport(String url)
+	    public HttpExporter(String url)
                 throws MalformedURLException {
 	        this.url = new URL(url);
         }
@@ -47,7 +48,7 @@ public final class ResourceExports {
          * Sets the authorization token for this
          * exporter class
          */
-	    public HttpExport setAuthorization(@Nullable String authorization) {
+	    public HttpExporter setAuthorization(@Nullable String authorization) {
 	        this.authorization = authorization;
 	        return this;
         }
@@ -56,7 +57,7 @@ public final class ResourceExports {
          * Sets the resource pack writer for this
          * exporter
          */
-        public HttpExport setWriter(@Nullable ResourcePackWriter writer) {
+        public HttpExporter setWriter(@Nullable ResourcePackWriter writer) {
 	        this.writer = writer;
 	        return this;
         }
@@ -65,11 +66,12 @@ public final class ResourceExports {
          * Sets the filename passed to the HTTP server
          * when uploading the data
          */
-        public HttpExport setFileName(String fileName) {
+        public HttpExporter setFileName(String fileName) {
             this.fileName = Objects.requireNonNull(fileName, "fileName");
             return this;
         }
 
+        @Override
         public String export(List<Model> models) throws IOException {
 
             if (writer == null) {
@@ -130,21 +132,22 @@ public final class ResourceExports {
      * @throws MalformedURLException If the given
      * {@code url} isn't a valid URL
      */
-    public static HttpExport newHttpExport(String url)
+    public static HttpExporter newHttpExporter(String url)
             throws MalformedURLException {
-	    return new HttpExport(url);
+	    return new HttpExporter(url);
     }
 
     /**
      * Fluent-style class for exporting resource
      * packs to {@link File}s
      */
-    public static class FileExport {
+    public static class FileExporter
+            implements ResourceExporter<File> {
 
         private final File target;
         private ResourcePackWriter writer;
 
-        public FileExport(File target) {
+        public FileExporter(File target) {
             this.target = target;
         }
 
@@ -152,12 +155,13 @@ public final class ResourceExports {
          * Sets the resource pack writer for this
          * exporter
          */
-        public FileExport setWriter(@Nullable ResourcePackWriter writer) {
+        public FileExporter setWriter(@Nullable ResourcePackWriter writer) {
             this.writer = writer;
             return this;
         }
 
-        public void export(List<Model> models) throws IOException {
+        @Override
+        public File export(List<Model> models) throws IOException {
             if (!target.exists() && !target.createNewFile()) {
                 throw new IOException("Failed to create target resource pack file");
             }
@@ -169,6 +173,7 @@ public final class ResourceExports {
                          = new BufferedOutputStream(new FileOutputStream(target))) {
                 writer.write(output, models);
             }
+            return target;
         }
 
     }
@@ -177,8 +182,8 @@ public final class ResourceExports {
      * Creates a new file export fluent builder
      * targeting the given {@code file}
      */
-    public static FileExport newFileExport(File file) {
-        return new FileExport(file);
+    public static FileExporter newFileExporter(File file) {
+        return new FileExporter(file);
     }
 
 }

@@ -23,8 +23,7 @@ import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelReader;
-import team.unnamed.hephaestus.resourcepack.ResourceExports;
-import team.unnamed.hephaestus.resourcepack.ZipResourcePackWriter;
+import team.unnamed.hephaestus.resourcepack.ResourceExportMethodFactory;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -97,11 +96,10 @@ public class AnimationEnginePlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Successfully loaded " + models.size() + " models!");
 
         try {
-            ResourceExports.newHttpExport("https://artemis.unnamed.team/resource-pack")
-                    .setAuthorization("authorization token")
-                    .setFileName("resource-pack.zip")
-                    .setWriter(new ZipResourcePackWriter())
-                    .export(models);
+            ResourceExportMethodFactory.createExporter(
+                    getDataFolder(),
+                    getConfig().getString("pack.generate", "file:hephaestus-generated.zip")
+            ).export(models);
 
             models.forEach(model -> {
                 getLogger().info("Registered model " + model.getName());

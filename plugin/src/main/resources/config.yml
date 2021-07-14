@@ -23,8 +23,11 @@ pack:
     description: "Hephaestus custom generated pack"
 
     # How to generate the resource pack
-    # -> file:filename -> Generates a resource pack as a file (ZIP)
-    # -> upload:url -> Uploads the resource pack to the given URL (ZIP)
+    # -> file:filename
+    #     -> Generates a resource pack as a file (ZIP)
+    # -> upload:authorization:url
+    #     -> Uploads the resource pack to the given URL (ZIP)
+    #     -> Use 'none' as authorization if no authorization
     generate: "file:hephaestus-generated.zip"
 
 # Scripting configuration
