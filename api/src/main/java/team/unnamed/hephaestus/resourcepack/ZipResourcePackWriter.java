@@ -1,17 +1,20 @@
 package team.unnamed.hephaestus.resourcepack;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelDescription;
 import team.unnamed.hephaestus.resourcepack.java.JavaItem;
-import team.unnamed.hephaestus.resourcepack.java.JavaModel;
 import team.unnamed.hephaestus.serialize.GsonFactory;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.io.ZippedDataOutputStream;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +23,6 @@ public class ZipResourcePackWriter
         implements ResourcePackWriter {
 
     private static final int PACK_FORMAT = 6;
-    public static final String NAMESPACE = "hephaestus";
     private static final String PACK_METADATA = "{\n" +
             "  \"pack\": {\n" +
             "    \"pack_format\": " + PACK_FORMAT + ",\n" +
@@ -28,8 +30,19 @@ public class ZipResourcePackWriter
             "  }\n" +
             "}";
 
-    private final Gson gson = GsonFactory.createDefault();
-    private final ModelGeometryTransformer transformer = new ModelGeometryTransformer();
+    private final String namespace;
+    private final Gson gson;
+    private final ModelGeometryTransformer transformer;
+
+    public ZipResourcePackWriter(String namespace) {
+        this.namespace = namespace;
+        this.gson = GsonFactory.createDefault();
+        this.transformer = new ModelGeometryTransformer(namespace);
+    }
+
+    public ZipResourcePackWriter() {
+        this("hephaestus");
+    }
 
     @Override
     public List<Model> write(OutputStream stream, List<Model> models) throws IOException {
@@ -63,7 +76,7 @@ public class ZipResourcePackWriter
                     Streamable data = texture.getValue();
 
                     // write the texture
-                    output.startEntry("assets/" + NAMESPACE + "/textures/" + modelName + "/" + textureName);
+                    output.startEntry("assets/" + namespace + "/textures/" + modelName + "/" + textureName);
                     try (InputStream input = data.openIn()) {
                         Streams.pipe(input, output);
                     }
@@ -71,24 +84,25 @@ public class ZipResourcePackWriter
                 }
                 // then write all the model bones
                 for (ModelBone bone : this.transformer.getAllBones(model.getGeometry())) {
-                    JavaModel javaModel = this.transformer.generateJavaModel(model, description, bone);
+
+                    JsonObject json = transformer.toJavaJson(model, description, bone);
 
                     overrides.add(new JavaItem.Override(
                                     bone.getCustomModelData(),
-                                    NAMESPACE + ":"
+                                    namespace + ":"
                                             + modelName
-                                            + "/" + javaModel.getFileName()
+                                            + "/" + bone.getName()
                             )
                     );
 
 
                     output.startEntry(
-                            "assets/" + NAMESPACE + "/models/"
+                            "assets/" + namespace + "/models/"
                                     + modelName
-                                    +  "/" + javaModel.getFileName()
+                                    +  "/" + bone.getName()
                                     + ".json"
                     );
-                    output.writeJson(javaModel);
+                    gson.toJson(json, gson.newJsonWriter(new OutputStreamWriter(output)));
                     output.closeEntry();
                 }
             }

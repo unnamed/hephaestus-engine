@@ -51,7 +51,7 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
 
             EulerAngle frameRotation = FrameProvider.provideRotation(tick, animation, bone);
 
-            Vector3Float defaultPosition = bone.getLocalOffset().multiply(1, 1, -1);
+            Vector3Float defaultPosition = bone.getOffset().multiply(1, 1, -1);
             EulerAngle defaultRotation = bone.getRotation().toEuler();
 
             Vector3Float localPosition = framePosition.add(defaultPosition);

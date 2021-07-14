@@ -1,5 +1,6 @@
 package team.unnamed.hephaestus.model;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +11,9 @@ import java.util.Map;
  */
 public class ModelGeometry {
 
-    private final ModelDescription description;
     private final List<ModelBone> bones;
-    private final Map<Integer, String> textureMap;
+    private ModelDescription description;
+    private Map<Integer, String> textureMap;
 
     public ModelGeometry(ModelDescription description, List<ModelBone> bones, Map<Integer, String> textureMap) {
         this.description = description;
@@ -20,6 +21,7 @@ public class ModelGeometry {
         this.textureMap = textureMap;
     }
 
+    @Nullable
     public ModelDescription getDescription() {
         return description;
     }
@@ -28,8 +30,20 @@ public class ModelGeometry {
         return bones;
     }
 
+    @Nullable
     public Map<Integer, String> getTextureMap() {
         return textureMap;
+    }
+
+    /**
+     * Discards the information used only for
+     * resource pack generation from this geometry
+     * instance
+     */
+    public void discardResourcePackData() {
+        this.description = null;
+        this.textureMap = null;
+        bones.forEach(ModelBone::discardResourcePackData);
     }
 
 }

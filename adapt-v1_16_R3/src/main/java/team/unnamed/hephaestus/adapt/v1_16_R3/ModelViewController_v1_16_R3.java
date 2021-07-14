@@ -1,19 +1,7 @@
 package team.unnamed.hephaestus.adapt.v1_16_R3;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.server.v1_16_R3.DataWatcher;
-import net.minecraft.server.v1_16_R3.DataWatcherObject;
-import net.minecraft.server.v1_16_R3.DataWatcherRegistry;
-import net.minecraft.server.v1_16_R3.EntityArmorStand;
-import net.minecraft.server.v1_16_R3.EntityTypes;
-import net.minecraft.server.v1_16_R3.EnumItemSlot;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityEquipment;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityTeleport;
-import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_16_R3.Vector3f;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -22,7 +10,6 @@ import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.EulerAngle;
 import team.unnamed.hephaestus.model.ModelBone;
-import team.unnamed.hephaestus.model.ModelComponent;
 import team.unnamed.hephaestus.model.view.ModelView;
 import team.unnamed.hephaestus.model.view.ModelViewController;
 import team.unnamed.hephaestus.struct.Vector3Float;
@@ -35,10 +22,10 @@ public class ModelViewController_v1_16_R3
         implements ModelViewController {
 
     private void summonBone(
-        ModelView view,
-        Location location,
-        ModelBone bone,
-        Vector3Float offset
+            ModelView view,
+            Location location,
+            ModelBone bone,
+            Vector3Float offset
     ) {
         World world = location.getWorld();
 
@@ -47,10 +34,10 @@ public class ModelViewController_v1_16_R3
 
         // location computing
         Vector3Float relativePos = Vectors.rotateAroundY(
-            bone.getLocalOffset()
-                .multiply(1, 1, -1)
-                .add(offset),
-            Math.toRadians(location.getYaw())
+                bone.getOffset()
+                        .multiply(1, 1, -1)
+                        .add(offset),
+                Math.toRadians(location.getYaw())
         );
 
         // spawning the bone armorstand
@@ -58,11 +45,11 @@ public class ModelViewController_v1_16_R3
         EntityArmorStand entity = new EntityArmorStand(EntityTypes.ARMOR_STAND, worldServer);
 
         entity.setLocation(
-            location.getX() + relativePos.getX(),
-            location.getY() + relativePos.getY(),
-            location.getZ() + relativePos.getZ(),
-            location.getYaw(),
-            location.getPitch()
+                location.getX() + relativePos.getX(),
+                location.getY() + relativePos.getY(),
+                location.getZ() + relativePos.getZ(),
+                location.getYaw(),
+                location.getPitch()
         );
 
         entity.setSilent(true);
@@ -80,29 +67,27 @@ public class ModelViewController_v1_16_R3
         item.setItemMeta(meta);
 
         Packets.send(
-            view.getViewer(),
-            new PacketPlayOutSpawnEntityLiving(entity),
-            new PacketPlayOutEntityMetadata(entity.getId(), entity.getDataWatcher(), true),
-            new PacketPlayOutEntityEquipment(
-                entity.getId(),
-                Collections.singletonList(new Pair<>(
-                    EnumItemSlot.HEAD,
-                    CraftItemStack.asNMSCopy(item)
-                ))
-            )
+                view.getViewer(),
+                new PacketPlayOutSpawnEntityLiving(entity),
+                new PacketPlayOutEntityMetadata(entity.getId(), entity.getDataWatcher(), true),
+                new PacketPlayOutEntityEquipment(
+                        entity.getId(),
+                        Collections.singletonList(new Pair<>(
+                                EnumItemSlot.HEAD,
+                                CraftItemStack.asNMSCopy(item)
+                        ))
+                )
         );
 
         view.getEntities().put(bone.getName(), entity);
 
-        for (ModelComponent component : bone.getComponents()) {
-            if (component instanceof ModelBone) {
-                summonBone(
+        for (ModelBone component : bone.getBones()) {
+            summonBone(
                     view,
                     location,
-                    (ModelBone) component,
-                    offset.add(bone.getLocalOffset().multiply(1, 1, -1))
-                );
-            }
+                    component,
+                    offset.add(bone.getOffset().multiply(1, 1, -1))
+            );
         }
     }
 
@@ -114,10 +99,10 @@ public class ModelViewController_v1_16_R3
     }
 
     private void teleportBonesRecursively(
-        ModelView view,
-        Location location,
-        ModelBone bone,
-        Vector3Float offset
+            ModelView view,
+            Location location,
+            ModelBone bone,
+            Vector3Float offset
     ) {
         World world = location.getWorld();
 
@@ -126,37 +111,35 @@ public class ModelViewController_v1_16_R3
 
         // location computing
         Vector3Float relativePos = Vectors.rotateAroundY(
-            bone.getLocalOffset()
-                .multiply(1, 1, -1)
-                .add(offset),
-            Math.toRadians(location.getYaw())
+                bone.getOffset()
+                        .multiply(1, 1, -1)
+                        .add(offset),
+                Math.toRadians(location.getYaw())
         );
 
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
         entity.setLocation(
-            location.getX() + relativePos.getX(),
-            location.getY() + relativePos.getY(),
-            location.getZ() + relativePos.getZ(),
-            location.getYaw(),
-            location.getPitch()
+                location.getX() + relativePos.getX(),
+                location.getY() + relativePos.getY(),
+                location.getZ() + relativePos.getZ(),
+                location.getYaw(),
+                location.getPitch()
         );
 
         Packets.send(
-            view.getViewer(),
-            new PacketPlayOutEntityTeleport(entity)
+                view.getViewer(),
+                new PacketPlayOutEntityTeleport(entity)
         );
 
         view.getEntities().put(bone.getName(), entity);
 
-        for (ModelComponent component : bone.getComponents()) {
-            if (component instanceof ModelBone) {
-                teleportBonesRecursively(
+        for (ModelBone component : bone.getBones()) {
+            teleportBonesRecursively(
                     view,
                     location,
-                    (ModelBone) component,
-                    offset.add(bone.getLocalOffset().multiply(1, 1, -1))
-                );
-            }
+                    component,
+                    offset.add(bone.getOffset().multiply(1, 1, -1))
+            );
         }
     }
 
@@ -170,10 +153,8 @@ public class ModelViewController_v1_16_R3
     private void hideBone(ModelView view, ModelBone bone) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
         Packets.send(view.getViewer(), new PacketPlayOutEntityDestroy(entity.getId()));
-        for (ModelComponent component : bone.getComponents()) {
-            if (component instanceof ModelBone) {
-                hideBone(view, (ModelBone) component);
-            }
+        for (ModelBone component : bone.getBones()) {
+            hideBone(view, component);
         }
     }
 

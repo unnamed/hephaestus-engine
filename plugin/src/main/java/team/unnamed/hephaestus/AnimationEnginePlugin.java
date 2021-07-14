@@ -15,6 +15,7 @@ import team.unnamed.hephaestus.commands.HephaestusCommand;
 import team.unnamed.hephaestus.commands.SummonCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
+import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.model.view.DefaultModelViewAnimator;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
@@ -28,11 +29,12 @@ import team.unnamed.hephaestus.resourcepack.ZipResourcePackWriter;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -96,13 +98,14 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
         try {
             ResourceExports.newHttpExport("https://artemis.unnamed.team/resource-pack")
-                    .setAuthorization("authorization token")
+                    .setAuthorization("buscosexo")
                     .setFileName("resource-pack.zip")
                     .setWriter(new ZipResourcePackWriter())
                     .export(models);
 
             models.forEach(model -> {
                 getLogger().info("Registered model " + model.getName());
+                model.discardResourcePackData();
                 modelRegistry.register(model);
             });
         } catch (IOException exception) {
@@ -173,18 +176,25 @@ public class AnimationEnginePlugin extends JavaPlugin {
             throw new IllegalStateException("Cannot create models folder");
         }
 
-        final File jarFile = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        File jarFile = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
         if (jarFile.isFile()) {
-            final JarFile jar = new JarFile(jarFile);
-            final Enumeration<JarEntry> entries = jar.entries();
+            JarFile jar = new JarFile(jarFile);
+            Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
-                final String name = entries.nextElement().getName();
-                if (name.startsWith("default" + "/") && !name.equals("default" + "/")) {
-                    String fileName = name.split("default" + "/")[1];
-                    Files.copy(
-                            this.getClass().getClassLoader().getResourceAsStream("default" + "/" + fileName),
-                            Paths.get(modelsDirectory.getPath() + File.separator + fileName)
-                    );
+                String name = entries.nextElement().getName();
+                if (name.startsWith("default/") && !name.equals("default/")) {
+                    InputStream input = this.getClass().getClassLoader()
+                            .getResourceAsStream(name);
+                    File target = new File(modelsDirectory, name.split("default/")[1]);
+                    if (input != null && !target.exists() && target.createNewFile()) {
+                        OutputStream output = new FileOutputStream(target);
+                        try {
+                            Streams.pipe(input, output);
+                        } finally {
+                            input.close();
+                            output.close();
+                        }
+                    }
                 }
             }
             jar.close();

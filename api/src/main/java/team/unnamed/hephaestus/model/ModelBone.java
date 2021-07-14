@@ -15,10 +15,12 @@ public class ModelBone implements ModelComponent {
     private final Vector3Float rotation;
 
     private final List<ModelBone> bones;
-    private final List<ModelCube> cubes;
+    private List<ModelCube> cubes;
 
-    private final Vector3Float globalOffset;
-    private Vector3Float localOffset;
+    // cached pivot divided by 16, used to compute the
+    // offset, that's divided by 16 too
+    private final Vector3Float scaledPivot;
+    private Vector3Float offset;
 
     private int customModelData;
 
@@ -28,30 +30,18 @@ public class ModelBone implements ModelComponent {
         this.rotation = rotation;
         this.bones = bones;
         this.cubes = cubes;
-        this.globalOffset = pivot.divide(16);
-        this.localOffset = Vector3Float.ZERO;
+        this.scaledPivot = pivot.divide(16);
+        this.offset = Vector3Float.ZERO;
     }
 
-    public Vector3Float getGlobalOffset() {
-        return globalOffset;
+    public Vector3Float getOffset() {
+        return offset;
     }
 
-    public Vector3Float getLocalOffset() {
-        return localOffset;
-    }
-
-    public void setRelativeOffset(Vector3Float offset) {
-        this.localOffset = new Vector3Float(
-                globalOffset.getX() - offset.getX(),
-                globalOffset.getY() - offset.getY(),
-                globalOffset.getZ() - offset.getZ()
-        );
-    }
-
-    public void updateChildRelativeOffset() {
+    public void computeOffsets(Vector3Float offset) {
+        this.offset = scaledPivot.subtract(offset);
         for (ModelBone bone : bones) {
-            bone.setRelativeOffset(globalOffset);
-            bone.updateChildRelativeOffset();
+            bone.computeOffsets(scaledPivot);
         }
     }
 
@@ -82,6 +72,10 @@ public class ModelBone implements ModelComponent {
 
     public List<ModelCube> getCubes() {
         return cubes;
+    }
+
+    public void discardResourcePackData() {
+        this.cubes = null;
     }
 
 }

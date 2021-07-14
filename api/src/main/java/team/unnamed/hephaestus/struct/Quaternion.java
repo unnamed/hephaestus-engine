@@ -1,6 +1,7 @@
 package team.unnamed.hephaestus.struct;
 
 import org.bukkit.util.EulerAngle;
+import team.unnamed.hephaestus.util.MoreMath;
 
 import java.util.Objects;
 
@@ -22,33 +23,18 @@ public class Quaternion {
         double x2 = x + x;
         double y2 = y + y;
         double z2 = z + z;
-        double xx = x * x2;
-        double xy = x * y2;
-        double xz = x * z2;
-        double yy = y * y2;
-        double yz = y * z2;
-        double zz = z * z2;
-        double wx = w * x2;
-        double wy = w * y2;
-        double wz = w * z2;
-        double m11 = 1.0 - (yy + zz);
-        double m12 = xy - wz;
-        double m13 = xz + wy;
-        double m14 = 1.0 - (xx + zz);
-        double m15 = yz - wx;
-        double m16 = yz + wx;
-        double m17 = 1.0 - (xx + yy);
-        double ey = Math.asin(Math.min(Math.max(m13, -1), 1));
+        double test = (x * z2) + (w * y2);
         double ex;
         double ez;
-        if (Math.abs(m13) < 0.99999) {
-            ex = Math.atan2(-m15, m17);
-            ez = Math.atan2(-m12, m11);
+        if (Math.abs(test) < 0.99999) {
+            double yy = y * y2;
+            ex = Math.atan2(-((y * z2) - (w * x2)), 1.0 - ((x * x2) + yy));
+            ez = Math.atan2(-((x * y2) - (w * z2)), 1.0 - (yy + (z * z2)));
         } else {
-            ex = Math.atan2(m16, m14);
+            ex = Math.atan2((y * z2) + (w * x2), 1.0 - ((x * x2) + (z * z2)));
             ez = 0.0;
         }
-        return new EulerAngle(ex, -ey, ez);
+        return new EulerAngle(ex, -Math.asin(MoreMath.clamp(test, -1, 1)), ez);
     }
 
     public Quaternion multiply(Quaternion other) {
