@@ -98,7 +98,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
         try {
             ResourceExports.newHttpExport("https://artemis.unnamed.team/resource-pack")
-                    .setAuthorization("buscosexo")
+                    .setAuthorization("authorization token")
                     .setFileName("resource-pack.zip")
                     .setWriter(new ZipResourcePackWriter())
                     .export(models);
