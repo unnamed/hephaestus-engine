@@ -30,7 +30,7 @@ Add the dependency into your  `<dependencies>`  tag (`pom.xml`)
 # Recommended format
 Hephaestus engine allows for flexibility while modeling and handling animations but there is a recommended format to follow when modeling. You should start with a root bone and have the rest of the model as it's descendant. Here's an example on how our iconic pegasus model is made:
 
-![Pegasus](PegasusFormat.png)
+![Pegasus](pegasus-format.png)
 # Features
 - Deploys Blockbench models into game-ready texture packs
 - Plays animations
