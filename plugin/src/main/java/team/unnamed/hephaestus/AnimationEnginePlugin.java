@@ -1,5 +1,7 @@
 package team.unnamed.hephaestus;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.fixeddev.commandflow.CommandManager;
 import me.fixeddev.commandflow.annotated.AnnotatedCommandTreeBuilder;
 import me.fixeddev.commandflow.annotated.AnnotatedCommandTreeBuilderImpl;
@@ -8,6 +10,7 @@ import me.fixeddev.commandflow.annotated.part.PartInjector;
 import me.fixeddev.commandflow.annotated.part.defaults.DefaultsModule;
 import me.fixeddev.commandflow.bukkit.BukkitCommandManager;
 import me.fixeddev.commandflow.bukkit.factory.BukkitModule;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import team.unnamed.hephaestus.adapt.AdaptionModule;
 import team.unnamed.hephaestus.adapt.AdaptionModuleFactory;
@@ -16,6 +19,7 @@ import team.unnamed.hephaestus.commands.SummonCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
 import team.unnamed.hephaestus.io.Streams;
+import team.unnamed.hephaestus.listener.ResourcePackApplyListener;
 import team.unnamed.hephaestus.model.view.DefaultModelViewAnimator;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
@@ -46,6 +50,9 @@ public class AnimationEnginePlugin extends JavaPlugin {
     private ModelRegistry modelRegistry;
     private ModelViewAnimator animator;
     private ModelViewRenderer renderer;
+
+    private String url;
+    private byte[] hash;
 
     @Override
     public void onLoad() {
@@ -96,10 +103,13 @@ public class AnimationEnginePlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Successfully loaded " + models.size() + " models!");
 
         try {
-            ResourceExportMethodFactory.createExporter(
+            JsonObject response = new JsonParser().parse(ResourceExportMethodFactory.createExporter(
                     getDataFolder(),
                     getConfig().getString("pack.generate", "file:hephaestus-generated.zip")
-            ).export(models);
+            ).export(models).toString()).getAsJsonObject();
+
+            url = response.get("url").getAsString();
+            hash = Streams.getBytesFromHex(response.get("hash").getAsString());
 
             models.forEach(model -> {
                 getLogger().info("Registered model " + model.getName());
@@ -153,6 +163,8 @@ public class AnimationEnginePlugin extends JavaPlugin {
         CommandManager commandManager = new BukkitCommandManager(this.getName());
 
         commandManager.registerCommands(commandBuilder.fromClass(new HephaestusCommand()));
+
+        Bukkit.getPluginManager().registerEvents(new ResourcePackApplyListener(this, url, hash), this);
     }
 
     public ModelRegistry getModelRegistry() {
