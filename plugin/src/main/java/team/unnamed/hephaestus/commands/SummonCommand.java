@@ -30,7 +30,9 @@ public class SummonCommand implements CommandClass {
     public void animate(
             @Sender Player player,
             String viewId,
-            String animationName
+            String animationName,
+            @OptArg Integer priority,
+            @OptArg Integer transitionTicks
     ) {
         ModelView view = views.get(viewId);
         if (view == null) {
@@ -42,7 +44,8 @@ public class SummonCommand implements CommandClass {
             player.sendMessage("§cUnknown animation");
             return;
         }
-        view.playAnimation(animation);
+
+        view.playAnimation(animation, priority == null ? 0 : priority, transitionTicks == null ? 0 : transitionTicks);
     }
 
     @Command(names = "summon")

@@ -11,5 +11,4 @@ public class AdaptionModule_v1_16_R3 implements AdaptionModule {
     public ModelViewRenderer createRenderer(ModelViewAnimator animator) {
         return new ModelViewRenderer_v1_16_R3(animator);
     }
-
 }

@@ -72,16 +72,4 @@ public class ModelAnimation {
                 ", animationsByBoneName=" + animationsByBoneName +
                 '}';
     }
-
-    public static ModelAnimation merge(ModelAnimation base, ModelAnimation animation) {
-        Map<String, ModelBoneAnimation> boneAnimations = new HashMap<>(base.getAnimationsByBoneName());
-        boneAnimations.putAll(animation.getAnimationsByBoneName());
-        return new ModelAnimation(
-                base.getName() + animation.getName(),
-                base.isLoop() || animation.isLoop(),
-                Math.max(base.getAnimationLength(), animation.getAnimationLength()),
-                boneAnimations
-        );
-    }
-
 }

@@ -41,5 +41,6 @@ Hephaestus engine allows for flexibility while modeling and handling animations 
 - [Neerixx](https://github.com/Neerixx)
 # Known bugs or misbehaviours
 The next list are the known bugs that must be resolved at some point:
-- Animations do not transition in between eachother
-- Animations are not able to overlap each other
+
+- ~~Animations do not transition in between eachother~~
+- ~~Animations are not able to overlap each other~~

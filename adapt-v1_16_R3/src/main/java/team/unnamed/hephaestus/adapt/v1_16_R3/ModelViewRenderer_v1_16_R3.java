@@ -8,15 +8,14 @@ import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewController;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 
-public class ModelViewRenderer_v1_16_R3
-        implements ModelViewRenderer {
+public class ModelViewRenderer_v1_16_R3 implements ModelViewRenderer {
 
     private final ModelViewController controller;
     private final ModelViewAnimator animator;
 
     public ModelViewRenderer_v1_16_R3(ModelViewAnimator animator) {
-        this.controller = new ModelViewController_v1_16_R3();
         this.animator = animator;
+        this.controller = new ModelViewController_v1_16_R3();
     }
 
     @Override
@@ -25,5 +24,4 @@ public class ModelViewRenderer_v1_16_R3
         view.show();
         return view;
     }
-
 }

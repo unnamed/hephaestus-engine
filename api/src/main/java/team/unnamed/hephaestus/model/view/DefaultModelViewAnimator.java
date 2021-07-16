@@ -5,8 +5,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import team.unnamed.hephaestus.model.ModelBone;
-import team.unnamed.hephaestus.model.animation.FrameProvider;
-import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
@@ -20,8 +18,8 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
     }
 
     @Override
-    public int animate(ModelView entity, ModelAnimation animation) {
-        return new AnimationTask(entity, animation)
+    public int animate(ModelView entity) {
+        return new AnimationTask(entity)
                 .runTaskTimerAsynchronously(plugin, 0L, 1L)
                 .getTaskId();
     }
@@ -29,11 +27,9 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
     static class AnimationTask extends BukkitRunnable {
 
         private final ModelView entity;
-        private final ModelAnimation animation;
 
-        public AnimationTask(ModelView entity, ModelAnimation animation) {
+        public AnimationTask(ModelView entity) {
             this.entity = entity;
-            this.animation = animation;
         }
 
         private void updateBone(
@@ -41,15 +37,15 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
                 ModelBone parent,
                 ModelBone bone,
                 EulerAngle parentRotation,
-                Vector3Float parentPosition,
-                float tick
+                Vector3Float parentPosition
         ) {
 
-            Vector3Float framePosition = FrameProvider.providePosition(tick, animation, bone)
+
+            Vector3Float framePosition = entity.getAnimationQueue().currentPosition(bone)
                     .divide(16)
                     .multiply(1, 1, -1);
 
-            EulerAngle frameRotation = FrameProvider.provideRotation(tick, animation, bone);
+            EulerAngle frameRotation = entity.getAnimationQueue().currentRotation(bone);
 
             Vector3Float defaultPosition = bone.getOffset().multiply(1, 1, -1);
             EulerAngle defaultRotation = bone.getRotation().toEuler();
@@ -86,23 +82,14 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
                         bone,
                         component,
                         globalRotation,
-                        globalPosition,
-                        tick
+                        globalPosition
                 );
             }
         }
 
         @Override
         public void run() {
-
-            if (entity.getTick() > animation.getAnimationLength()) {
-                if (animation.isLoop()) {
-                    entity.resetTick();
-                } else {
-                    cancel();
-                    return;
-                }
-            }
+            entity.getAnimationQueue().incrementTick();
 
             double bodyYaw = Math.toRadians(this.entity.getLocation().getYaw());
 
@@ -112,12 +99,9 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
                         null,
                         bone,
                         EulerAngle.ZERO,
-                        Vector3Float.ZERO,
-                        entity.getTick()
+                        Vector3Float.ZERO
                 );
             }
-
-            entity.increaseTick();
         }
     }
 }
