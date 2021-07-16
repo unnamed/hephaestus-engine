@@ -28,6 +28,8 @@ import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelReader;
 import team.unnamed.hephaestus.resourcepack.ResourceExportMethodFactory;
+import team.unnamed.hephaestus.resourcepack.ResourceExporter;
+import team.unnamed.hephaestus.resourcepack.ResourceExports;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -103,13 +105,21 @@ public class AnimationEnginePlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "Successfully loaded " + models.size() + " models!");
 
         try {
-            JsonObject response = new JsonParser().parse(ResourceExportMethodFactory.createExporter(
-                    getDataFolder(),
-                    getConfig().getString("pack.generate", "file:hephaestus-generated.zip")
-            ).export(models).toString()).getAsJsonObject();
+            ResourceExporter<?> resourceExporter = ResourceExportMethodFactory.createExporter(
+                    this.getDataFolder(),
+                    this.getConfig().getString("pack.generate", "file:hephaestus-generated.zip")
+            );
 
-            url = response.get("url").getAsString();
-            hash = Streams.getBytesFromHex(response.get("hash").getAsString());
+            if (resourceExporter instanceof ResourceExports.HttpExporter) {
+                JsonObject response = new JsonParser().parse(
+                        resourceExporter.export(models).toString()
+                ).getAsJsonObject();
+
+                url = response.get("url").getAsString();
+                hash = Streams.getBytesFromHex(response.get("hash").getAsString());
+            } else {
+                resourceExporter.export(models);
+            }
 
             models.forEach(model -> {
                 getLogger().info("Registered model " + model.getName());
@@ -164,7 +174,9 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
         commandManager.registerCommands(commandBuilder.fromClass(new HephaestusCommand()));
 
-        Bukkit.getPluginManager().registerEvents(new ResourcePackApplyListener(this, url, hash), this);
+        if (url != null && hash != null) {
+            Bukkit.getPluginManager().registerEvents(new ResourcePackApplyListener(this, url, hash), this);
+        }
     }
 
     public ModelRegistry getModelRegistry() {
