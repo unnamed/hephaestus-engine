@@ -187,7 +187,10 @@ public final class ResourceExports {
                     try (ZipInputStream input = new ZipInputStream(new FileInputStream(target))) {
                         ZipEntry entry;
                         while ((entry = input.getNextEntry()) != null) {
-                            output.putNextEntry(new ZipEntry(entry.getName()));
+                            ZipEntry putEntry = new ZipEntry(entry.getName());
+                            putEntry.setTime(0L);
+                            output.putNextEntry(putEntry);
+
                             Streams.pipe(input, output);
                             output.closeEntry();
                         }

@@ -13,6 +13,7 @@ import team.unnamed.hephaestus.io.Streams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,18 @@ public class ZipResourcePackWriter
         this("hephaestus");
     }
 
+    /**
+     * Invokes {@link ZipOutputStream#putNextEntry} using
+     * some default {@link ZipEntry} properties to avoid
+     * creating different ZIPs when the resource pack is
+     * the same (So hash doesn't change)
+     */
+    private void putNext(ZipOutputStream output, String entryName) throws IOException {
+        ZipEntry entry = new ZipEntry(entryName);
+        entry.setTime(0L);
+        output.putNextEntry(entry);
+    }
+
     @Override
     public List<Model> write(OutputStream stream, List<Model> models) throws IOException {
         this.applyCustomModelData(models);
@@ -55,12 +68,12 @@ public class ZipResourcePackWriter
         try {
 
             // write the pack data
-            output.putNextEntry(new ZipEntry("pack.mcmeta"));
+            putNext(output, "pack.mcmeta");
             Streams.writeUTF(output, PACK_METADATA);
             output.closeEntry();
 
             // write the resource pack icon
-            output.putNextEntry(new ZipEntry("pack.png"));
+            putNext(output, "pack.png");
             InputStream iconPng = getClass().getClassLoader().getResourceAsStream("unnamed.png");
             if (iconPng != null) {
                 Streams.pipe(iconPng, output);
@@ -78,8 +91,8 @@ public class ZipResourcePackWriter
                     Streamable data = texture.getValue();
 
                     // write the texture
-                    output.putNextEntry(new ZipEntry("assets/" + namespace
-                            + "/textures/" + modelName + "/" + textureName));
+                    putNext(output, "assets/" + namespace
+                            + "/textures/" + modelName + "/" + textureName);
                     try (InputStream input = data.openIn()) {
                         Streams.pipe(input, output);
                     }
@@ -98,19 +111,20 @@ public class ZipResourcePackWriter
                             )
                     );
 
-                    output.putNextEntry(new ZipEntry(
+                    putNext(
+                            output,
                             "assets/" + namespace + "/models/"
                                     + modelName
                                     +  "/" + bone.getName()
                                     + ".json"
-                    ));
+                    );
 
                     Streams.writeUTF(output, json.toString());
                     output.closeEntry();
                 }
             }
 
-            output.putNextEntry(new ZipEntry("assets/minecraft/models/item/bone.json"));
+            putNext(output, "assets/minecraft/models/item/bone.json");
             Streams.writeUTF(output, gson.toJson(new JavaItem(overrides)));
             output.closeEntry();
         } finally {
