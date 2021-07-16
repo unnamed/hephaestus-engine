@@ -28,7 +28,7 @@ Add the dependency into your  `<dependencies>`  tag (`pom.xml`)
 - Cube rotations are limited by increments of 22.5 from -45 to 45
 - Bones cannot be larger than 48x48x48
 # Recommended format
-Hephaestus engine allows for flexibility while modeling and handling animations but there is a recommended format to follow when modeling. You should start with a root bone and have the rest of the model as it's descendant. Here's an example on how our iconic pegasus model is made:
+Hephaestus engine allows for flexibility while modeling and handling animations but there is a recommended format to follow when modeling. You should start with a root bone and have the rest of the model as it's descendant. Here's an example on how the iconic pegasus model is made:
 
 ![Pegasus](pegasus-format.png)
 # Features
