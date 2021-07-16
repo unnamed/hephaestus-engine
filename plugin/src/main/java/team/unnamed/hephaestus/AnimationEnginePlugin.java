@@ -58,11 +58,11 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        /*try {
+        try {
             this.saveDefaultModels();
         } catch (IOException exception) {
             exception.printStackTrace();
-        }*/
+        }
 
         modelRegistry = new ModelRegistry();
         AdaptionModule module = AdaptionModuleFactory.create();
@@ -193,8 +193,11 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
     private void saveDefaultModels() throws IOException {
         File modelsDirectory = new File(this.getDataFolder(), "models");
+        if (modelsDirectory.exists()) {
+            return;
+        }
 
-        if (!modelsDirectory.exists() && !modelsDirectory.mkdirs()) {
+        if (!modelsDirectory.mkdirs()) {
             throw new IllegalStateException("Cannot create models folder");
         }
 
