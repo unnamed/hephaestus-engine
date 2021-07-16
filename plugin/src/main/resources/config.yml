@@ -27,7 +27,7 @@ pack:
     #     -> Generates a resource pack as a file (ZIP)
     # -> mergezipfile:filename
     #     -> Similar to file:filename but if the file exists,
-    #        it will merge the contents instead of overriding
+    #        it will merge the contents instead of overwriting
     #        them (ZIP)
     # -> upload:authorization:url
     #     -> Uploads the resource pack to the given URL (ZIP)
