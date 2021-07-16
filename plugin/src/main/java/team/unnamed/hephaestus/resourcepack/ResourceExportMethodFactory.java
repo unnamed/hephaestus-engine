@@ -19,6 +19,7 @@ public final class ResourceExportMethodFactory {
         String method = args[0].toLowerCase();
 
         switch (method) {
+            case "mergezipfile":
             case "file": {
                 if (args.length < 2) {
                     throw new IllegalArgumentException(
@@ -28,7 +29,8 @@ public final class ResourceExportMethodFactory {
                 }
 
                 String filename = String.join(":", Arrays.copyOfRange(args, 1, args.length));
-                return ResourceExports.newFileExporter(new File(folder, filename));
+                return ResourceExports.newFileExporter(new File(folder, filename))
+                        .setMergeZip(method.equals("mergezipfile"));
             }
             case "upload": {
                 if (args.length < 3) {
