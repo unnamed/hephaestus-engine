@@ -11,6 +11,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Utility class containing some default resource
@@ -144,6 +147,7 @@ public final class ResourceExports {
 
         private final File target;
         private ResourcePackWriter writer;
+        private boolean mergeZip;
 
         public FileExporter(File target) {
             this.target = target;
@@ -158,6 +162,17 @@ public final class ResourceExports {
             return this;
         }
 
+        /**
+         * Set to true if the export must open a
+         * {@link ZipOutputStream} if the {@code target}
+         * file exists. If it exists, it will read its
+         * entries and put them in the output
+         */
+        public FileExporter setMergeZip(boolean mergeZip) {
+            this.mergeZip = mergeZip;
+            return this;
+        }
+
         @Override
         public File export(List<Model> models) throws IOException {
             if (!target.exists() && !target.createNewFile()) {
@@ -167,9 +182,24 @@ public final class ResourceExports {
                 // use the ZipResourcePackWriter by default
                 writer = new ZipResourcePackWriter();
             }
-            try (OutputStream output
-                         = new BufferedOutputStream(new FileOutputStream(target))) {
-                writer.write(output, models);
+            if (mergeZip && target.exists()) {
+                try (ZipOutputStream output = new ZipOutputStream(new FileOutputStream(target))) {
+                    try (ZipInputStream input = new ZipInputStream(new FileInputStream(target))) {
+                        ZipEntry entry;
+                        while ((entry = input.getNextEntry()) != null) {
+                            output.putNextEntry(new ZipEntry(entry.getName()));
+                            Streams.pipe(input, output);
+                            output.closeEntry();
+                        }
+                    }
+
+                    writer.write(output, models);
+                }
+            } else {
+                try (OutputStream output
+                             = new BufferedOutputStream(new FileOutputStream(target))) {
+                    writer.write(output, models);
+                }
             }
             return target;
         }
