@@ -35,6 +35,10 @@ Hephaestus engine allows for flexibility while modeling and handling animations 
 - Deploys Blockbench models into game-ready texture packs
 - Plays animations
 - Parses molang in keyframes *(TODO)*
+# Credits
+- [BiConsumer](https://github.com/BiConsumer)
+- [Yusshu](https://github.com/yusshu)
+- [Neerixx](https://github.com/Neerixx)
 # Known bugs or misbehaviours
 The next list are the known bugs that must be resolved at some point:
 - Animations do not transition in between eachother
