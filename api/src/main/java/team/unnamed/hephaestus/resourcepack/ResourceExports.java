@@ -183,7 +183,19 @@ public final class ResourceExports {
                 writer = new ZipResourcePackWriter();
             }
             if (mergeZip && target.exists()) {
-                try (ZipOutputStream output = new ZipOutputStream(new FileOutputStream(target))) {
+
+                File tmpTarget = new File(
+                        target.getParentFile(),
+                        Long.toHexString(System.nanoTime()) + ".tmp"
+                );
+
+                if (!tmpTarget.createNewFile()) {
+                    throw new IOException(
+                            "Cannot generate temporary file to write the merged output"
+                    );
+                }
+
+                try (ZipOutputStream output = new ZipOutputStream(new FileOutputStream(tmpTarget))) {
                     try (ZipInputStream input = new ZipInputStream(new FileInputStream(target))) {
                         ZipEntry entry;
                         while ((entry = input.getNextEntry()) != null) {
@@ -197,6 +209,15 @@ public final class ResourceExports {
                     }
 
                     writer.write(output, models);
+                }
+
+                // delete old file
+                if (!target.delete()) {
+                    throw new IOException("Cannot delete original ZIP file");
+                }
+
+                if (!tmpTarget.renameTo(target)) {
+                    throw new IOException("Cannot move temporary file to original ZIP file");
                 }
             } else {
                 try (OutputStream output
