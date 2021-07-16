@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -12,12 +14,12 @@ import java.util.zip.ZipOutputStream;
  * Extension for {@link ZipOutputStream}
  * to ease the write for some data objects
  */
-public class ZippedDataOutputStream
+public class ZipDataOutputStream
         extends ZipOutputStream {
 
     private final Gson gson;
 
-    public ZippedDataOutputStream(
+    public ZipDataOutputStream(
             OutputStream out,
             Gson gson
     ) {

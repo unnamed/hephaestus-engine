@@ -9,12 +9,11 @@ import team.unnamed.hephaestus.model.ModelDescription;
 import team.unnamed.hephaestus.resourcepack.java.JavaItem;
 import team.unnamed.hephaestus.serialize.GsonFactory;
 import team.unnamed.hephaestus.io.Streams;
-import team.unnamed.hephaestus.io.ZippedDataOutputStream;
+import team.unnamed.hephaestus.io.ZipDataOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class ZipResourcePackWriter
     public List<Model> write(OutputStream stream, List<Model> models) throws IOException {
         this.applyCustomModelData(models);
 
-        ZippedDataOutputStream output = new ZippedDataOutputStream(stream, gson);
+        ZipDataOutputStream output = new ZipDataOutputStream(stream, gson);
 
         try {
 
