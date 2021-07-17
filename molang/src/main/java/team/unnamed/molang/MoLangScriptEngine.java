@@ -38,7 +38,7 @@ public class MoLangScriptEngine
     public Object eval(Reader reader, ScriptContext context) throws ScriptException {
         try {
             Bindings bindings = createBindings();
-            bindings.put("query", Bind.QUERY_BINDING);
+            // bindings.put("query", Bind.QUERY_BINDING);
             bindings.put("math", Bind.MATH_BINDING);
 
             // temporal

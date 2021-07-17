@@ -7,6 +7,8 @@ jar {
 
 dependencies {
     implementation project(':hephaestus-api')
+    implementation project(':hephaestus-molang')
+
     implementation 'org.jetbrains:annotations:20.1.0'
     implementation 'me.fixeddev:commandflow-bukkit:0.4.0'
     compileOnly 'org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT'

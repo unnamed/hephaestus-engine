@@ -6,7 +6,8 @@ import me.fixeddev.commandflow.annotated.annotation.SubCommandClasses;
 
 @Command(names = {"hephaestus"}, permission = "hephaestus.admin")
 @SubCommandClasses({
-        SummonCommand.class
+        SummonCommand.class,
+        EvalCommand.class
 })
 public class HephaestusCommand implements CommandClass {
 }
