@@ -90,6 +90,10 @@ public class ZipResourcePackWriter
                     String textureName = texture.getKey();
                     Streamable data = texture.getValue();
 
+                    if (!textureName.endsWith(".png")) {
+                        textureName += ".png";
+                    }
+
                     // write the texture
                     putNext(output, "assets/" + namespace
                             + "/textures/" + modelName + "/" + textureName);
