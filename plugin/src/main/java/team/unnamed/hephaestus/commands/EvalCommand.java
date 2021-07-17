@@ -2,11 +2,13 @@ package team.unnamed.hephaestus.commands;
 
 import me.fixeddev.commandflow.annotated.CommandClass;
 import me.fixeddev.commandflow.annotated.annotation.Command;
+import me.fixeddev.commandflow.annotated.annotation.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import team.unnamed.molang.MoLangScriptEngineFactory;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,12 +22,12 @@ public class EvalCommand implements CommandClass {
     private final ScriptEngine scriptEngine;
 
     public EvalCommand() {
-        ScriptEngineManager engineManager = new ScriptEngineManager();
-        this.scriptEngine = engineManager.getEngineByName("molang");
+        ScriptEngineFactory factory = new MoLangScriptEngineFactory();
+        this.scriptEngine = factory.getScriptEngine();
     }
 
     @Command(names = "eval")
-    public void eval(CommandSender sender, String script) {
+    public void eval(CommandSender sender, @Text String script) {
 
         if (sender instanceof Player) {
             UUID id = ((Player) sender).getUniqueId();
