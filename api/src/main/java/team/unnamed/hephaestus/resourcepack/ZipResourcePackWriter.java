@@ -22,26 +22,22 @@ import java.util.zip.ZipOutputStream;
 public class ZipResourcePackWriter
         implements ResourcePackWriter {
 
-    private static final int PACK_FORMAT = 6;
-    private static final String PACK_METADATA = "{\n" +
-            "  \"pack\": {\n" +
-            "    \"pack_format\": " + PACK_FORMAT + ",\n" +
-            "    \"description\": \"Hephaestus custom generated resource pack\"\n" +
-            "  }\n" +
-            "}";
-
+    private final String packMetadata;
     private final String namespace;
+
     private final Gson gson;
     private final ModelGeometryTransformer transformer;
 
-    public ZipResourcePackWriter(String namespace) {
+    public ZipResourcePackWriter(String namespace, int packFormat, String description) {
         this.namespace = namespace;
         this.gson = GsonFactory.createDefault();
         this.transformer = new ModelGeometryTransformer(namespace);
+        this.packMetadata = "{ \"pack\": { \"pack_format\": "
+                + packFormat + ", \"description\": \"" + description + "\" } }";
     }
 
     public ZipResourcePackWriter() {
-        this("hephaestus");
+        this("hephaestus", 6, "Hephaestus custom generated resource pack");
     }
 
     /**
@@ -68,7 +64,7 @@ public class ZipResourcePackWriter
 
             // write the pack data
             putNext(output, "pack.mcmeta");
-            Streams.writeUTF(output, PACK_METADATA);
+            Streams.writeUTF(output, packMetadata);
             output.closeEntry();
 
             // write the resource pack icon
