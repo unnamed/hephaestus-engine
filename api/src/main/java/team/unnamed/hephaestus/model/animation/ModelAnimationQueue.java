@@ -96,16 +96,27 @@ public class ModelAnimationQueue {
         return frameRotation;
     }
 
-    public List<QueuedAnimation> getQueuedAnimations() {
-        return queuedAnimations;
-    }
 
     public void pushAnimation(ModelAnimation animation, int priority, int transitionTicks) {
         queuedAnimations.add(new QueuedAnimation(animation, priority, transitionTicks));
     }
 
+    public void clear() {
+        this.queuedAnimations.clear();
+    }
+
+    public void removeAnimation(String name) {
+        this.queuedAnimations.removeIf(
+                animation -> animation.getName().equals(name)
+        );
+    }
+
     public void incrementTick() {
         this.queuedAnimations.forEach(QueuedAnimation::incrementTick);
+    }
+
+    public List<QueuedAnimation> getQueuedAnimations() {
+        return queuedAnimations;
     }
 
     private QueuedAnimation getAnimationForBone(ModelBone bone) {

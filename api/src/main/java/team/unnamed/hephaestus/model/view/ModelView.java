@@ -1,5 +1,6 @@
 package team.unnamed.hephaestus.model.view;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
@@ -99,12 +100,35 @@ public class ModelView {
         this.animationQueue.pushAnimation(animation, priority, transitionTicks);
     }
 
+    public void stopAnimation(String name) {
+        this.animationQueue.removeAnimation(name);
+
+        if (this.animationQueue.getQueuedAnimations().isEmpty() && this.taskId != 0) {
+            Bukkit.getScheduler().cancelTask(this.taskId);
+            this.taskId= 0;
+        }
+    };
+
+    public void stopAllAnimations() {
+        this.animationQueue.clear();
+
+        if (this.taskId != 0) {
+            Bukkit.getScheduler().cancelTask(this.taskId);
+            this.taskId= 0;
+        }
+    }
+
     public void show() {
         controller.show(this);
     }
 
     public void hide() {
         controller.hide(this);
+
+        if (this.taskId != 0) {
+            Bukkit.getScheduler().cancelTask(this.taskId);
+            this.taskId= 0;
+        }
     }
 
     public void teleport(Location newLocation) {
