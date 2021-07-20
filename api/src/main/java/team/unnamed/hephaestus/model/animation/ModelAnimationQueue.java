@@ -22,7 +22,7 @@ public class ModelAnimationQueue {
         QueuedAnimation animation = this.getAnimationForBone(bone);
 
         if (animation == null) {
-            return Vector3Float.ZERO;
+            return bonesLastPosition.getOrDefault(bone, Vector3Float.ZERO);
         }
 
         ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
@@ -61,7 +61,7 @@ public class ModelAnimationQueue {
         QueuedAnimation animation = this.getAnimationForBone(bone);
 
         if (animation == null) {
-            return EulerAngle.ZERO;
+            return bonesLastRotation.getOrDefault(bone, EulerAngle.ZERO);
         }
 
         ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
