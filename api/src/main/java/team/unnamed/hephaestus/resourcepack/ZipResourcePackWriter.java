@@ -1,20 +1,16 @@
 package team.unnamed.hephaestus.resourcepack;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelDescription;
-import team.unnamed.hephaestus.resourcepack.java.JavaItem;
-import team.unnamed.hephaestus.serialize.GsonFactory;
 import team.unnamed.hephaestus.io.Streams;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -23,26 +19,20 @@ import java.util.zip.ZipOutputStream;
 public class ZipResourcePackWriter
         implements ResourcePackWriter {
 
-    private static final int PACK_FORMAT = 6;
-    private static final String PACK_METADATA = "{\n" +
-            "  \"pack\": {\n" +
-            "    \"pack_format\": " + PACK_FORMAT + ",\n" +
-            "    \"description\": \"Hephaestus custom generated resource pack\"\n" +
-            "  }\n" +
-            "}";
-
+    private final String packMetadata;
     private final String namespace;
-    private final Gson gson;
+
     private final ModelGeometryTransformer transformer;
 
-    public ZipResourcePackWriter(String namespace) {
+    public ZipResourcePackWriter(String namespace, int packFormat, String description) {
         this.namespace = namespace;
-        this.gson = GsonFactory.createDefault();
         this.transformer = new ModelGeometryTransformer(namespace);
+        this.packMetadata = "{ \"pack\": { \"pack_format\": "
+                + packFormat + ", \"description\": \"" + description + "\" } }";
     }
 
     public ZipResourcePackWriter() {
-        this("hephaestus");
+        this("hephaestus", 6, "Hephaestus custom generated resource pack");
     }
 
     /**
@@ -69,7 +59,7 @@ public class ZipResourcePackWriter
 
             // write the pack data
             putNext(output, "pack.mcmeta");
-            Streams.writeUTF(output, PACK_METADATA);
+            Streams.writeUTF(output, packMetadata);
             output.closeEntry();
 
             // write the resource pack icon
@@ -80,7 +70,7 @@ public class ZipResourcePackWriter
             }
             output.closeEntry();
 
-            List<JavaItem.Override> overrides = new ArrayList<>();
+            JsonArray overrides = new JsonArray();
 
             for (Model model : models) {
                 ModelDescription description = model.getGeometry().getDescription();
@@ -107,13 +97,14 @@ public class ZipResourcePackWriter
 
                     JsonObject json = transformer.toJavaJson(model, description, bone);
 
-                    overrides.add(new JavaItem.Override(
-                                    bone.getCustomModelData(),
-                                    namespace + ":"
-                                            + modelName
-                                            + "/" + bone.getName()
-                            )
-                    );
+                    JsonObject overridePredicate = new JsonObject();
+                    overridePredicate.addProperty("custom_model_data", bone.getCustomModelData());
+
+                    JsonObject override = new JsonObject();
+                    override.add("predicate", overridePredicate);
+                    override.addProperty("model", namespace + ":" + modelName + "/" + bone.getName());
+
+                    overrides.add(override);
 
                     putNext(
                             output,
@@ -129,7 +120,14 @@ public class ZipResourcePackWriter
             }
 
             putNext(output, "assets/minecraft/models/item/bone.json");
-            Streams.writeUTF(output, gson.toJson(new JavaItem(overrides)));
+            Streams.writeUTF(
+                    output,
+                    "{"
+                            + "\"parent\": \"item/handheld\","
+                            + "\"textures\": { \"layer0\": \"item/bone\" },"
+                            + "\"overrides\": " + overrides
+                            + "}"
+            );
             output.closeEntry();
         } finally {
             // finish but don't close
