@@ -106,11 +106,9 @@ public class ModelAnimationQueue {
     }
 
     public void removeAnimation(String name) {
-        this.queuedAnimations.forEach(animation-> {
-            if (animation.getName().equals(name)) {
-                queuedAnimations.remove(animation);
-            }
-        });
+        this.queuedAnimations.removeIf(
+                animation -> animation.getName().equals(name)
+        );
     }
 
     public void incrementTick() {
