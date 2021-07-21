@@ -1,7 +1,20 @@
 package team.unnamed.hephaestus.adapt.v1_16_R3;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.server.v1_16_R3.DataWatcher;
+import net.minecraft.server.v1_16_R3.DataWatcherObject;
+import net.minecraft.server.v1_16_R3.DataWatcherRegistry;
+import net.minecraft.server.v1_16_R3.EntityArmorStand;
+import net.minecraft.server.v1_16_R3.EntityTypes;
+import net.minecraft.server.v1_16_R3.EnumItemSlot;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntity;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityEquipment;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityTeleport;
+import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_16_R3.Vector3f;
+import net.minecraft.server.v1_16_R3.WorldServer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -99,6 +112,7 @@ public class ModelViewController_v1_16_R3
     }
 
     private void teleportBonesRecursively(
+            double yaw,
             ModelView view,
             Location location,
             ModelBone bone,
@@ -110,11 +124,10 @@ public class ModelViewController_v1_16_R3
         Objects.requireNonNull(world);
 
         // location computing
+        Vector3Float position = bone.getOffset().multiply(1, 1, -1).add(offset);
         Vector3Float relativePos = Vectors.rotateAroundY(
-                bone.getOffset()
-                        .multiply(1, 1, -1)
-                        .add(offset),
-                Math.toRadians(location.getYaw())
+                position,
+                yaw
         );
 
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
@@ -126,27 +139,44 @@ public class ModelViewController_v1_16_R3
                 location.getPitch()
         );
 
-        Packets.send(
-                view.getViewer(),
-                new PacketPlayOutEntityTeleport(entity)
-        );
+        if (Math.abs(relativePos.getX()) <= 8
+                && Math.abs(relativePos.getY()) <= 8
+                && Math.abs(relativePos.getZ()) <= 8) {
+            Packets.send(
+                    view.getViewer(),
+                    new PacketPlayOutEntity.PacketPlayOutRelEntityMove(
+                            entity.getId(),
+                            (short) (relativePos.getX() * 4096),
+                            (short) (relativePos.getY() * 4096),
+                            (short) (relativePos.getZ() * 4096),
+                            false // idk what this does
+                    )
+            );
+        } else {
+            Packets.send(
+                    view.getViewer(),
+                    new PacketPlayOutEntityTeleport(entity)
+            );
+        }
 
-        view.getEntities().put(bone.getName(), entity);
+
 
         for (ModelBone component : bone.getBones()) {
             teleportBonesRecursively(
+                    yaw,
                     view,
                     location,
                     component,
-                    offset.add(bone.getOffset().multiply(1, 1, -1))
+                    position
             );
         }
     }
 
     @Override
     public void teleport(ModelView view, Location location) {
+        double yaw = Math.toRadians(location.getYaw());
         for (ModelBone bone : view.getModel().getGeometry().getBones()) {
-            teleportBonesRecursively(view, location, bone, Vector3Float.ZERO);
+            teleportBonesRecursively(yaw, view, location, bone, Vector3Float.ZERO);
         }
     }
 
