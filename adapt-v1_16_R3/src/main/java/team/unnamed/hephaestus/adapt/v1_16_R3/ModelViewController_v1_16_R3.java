@@ -15,12 +15,15 @@ import net.minecraft.server.v1_16_R3.PacketPlayOutEntityTeleport;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
 import net.minecraft.server.v1_16_R3.Vector3f;
 import net.minecraft.server.v1_16_R3.WorldServer;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.util.EulerAngle;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.view.ModelView;
@@ -71,11 +74,12 @@ public class ModelViewController_v1_16_R3
         entity.setInvisible(true);
 
         org.bukkit.inventory.ItemStack item = new org.bukkit.inventory.ItemStack(Material.LEATHER_HORSE_ARMOR);
-        ItemMeta meta = item.getItemMeta();
+        LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
 
         // fuck @Nullable again
         Objects.requireNonNull(meta);
 
+        meta.setColor(Color.WHITE);
         meta.setCustomModelData(bone.getCustomModelData());
         item.setItemMeta(meta);
 
@@ -190,6 +194,42 @@ public class ModelViewController_v1_16_R3
     public void hide(ModelView view) {
         for (ModelBone bone : view.getModel().getGeometry().getBones()) {
             hideBone(view, bone);
+        }
+    }
+
+    private void colorizeBone(ModelView view, ModelBone bone, Color color) {
+        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
+
+        ItemStack item = new ItemStack(Material.LEATHER_HORSE_ARMOR);
+        LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+
+        // fuck @Nullable for third time
+        Objects.requireNonNull(meta);
+
+        meta.setCustomModelData(bone.getCustomModelData());
+        meta.setColor(color);
+        item.setItemMeta(meta);
+
+        Packets.send(
+                view.getViewer(),
+                new PacketPlayOutEntityEquipment(
+                        entity.getId(),
+                        Collections.singletonList(new Pair<>(
+                                EnumItemSlot.HEAD,
+                                CraftItemStack.asNMSCopy(item)
+                        ))
+                )
+        );
+
+        for (ModelBone child : bone.getBones()) {
+            colorizeBone(view, child, color);
+        }
+    }
+
+    @Override
+    public void colorize(ModelView view, Color color) {
+        for (ModelBone bone : view.getModel().getGeometry().getBones()) {
+            colorizeBone(view, bone, color);
         }
     }
 

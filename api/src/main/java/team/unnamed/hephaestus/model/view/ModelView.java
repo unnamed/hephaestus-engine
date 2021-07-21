@@ -1,6 +1,7 @@
 package team.unnamed.hephaestus.model.view;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.util.EulerAngle;
@@ -116,6 +117,10 @@ public class ModelView {
             Bukkit.getScheduler().cancelTask(this.taskId);
             this.taskId= 0;
         }
+    }
+
+    public void colorize(Color color) {
+        controller.colorize(this, color);
     }
 
     public void show() {

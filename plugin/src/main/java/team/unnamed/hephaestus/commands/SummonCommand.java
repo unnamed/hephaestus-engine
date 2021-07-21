@@ -4,6 +4,7 @@ import me.fixeddev.commandflow.annotated.CommandClass;
 import me.fixeddev.commandflow.annotated.annotation.Command;
 import me.fixeddev.commandflow.annotated.annotation.OptArg;
 import me.fixeddev.commandflow.bukkit.annotation.Sender;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.model.Model;
@@ -24,6 +25,23 @@ public class SummonCommand implements CommandClass {
 
     public SummonCommand(ModelViewRenderer renderer) {
         this.renderer = renderer;
+    }
+
+    @Command(names = "colorize")
+    public void colorize(
+            @Sender Player player,
+            String viewId,
+            int red,
+            int green,
+            int blue
+    ) {
+        ModelView view = views.get(viewId);
+        if (view == null) {
+            player.sendMessage("§cUnknown view");
+            return;
+        }
+
+        view.colorize(Color.fromRGB(red, green, blue));
     }
 
     @Command(names = "animate")
