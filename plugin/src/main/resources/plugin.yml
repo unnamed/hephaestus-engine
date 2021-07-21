@@ -2,4 +2,4 @@ main: team.unnamed.hephaestus.AnimationEnginePlugin
 name: Hephaestus
 version: 0.1.0
 authors: [BiConsumer, Yusshu, NotFixedDev]
-api-version: 1.13
+api-version: 1.14
