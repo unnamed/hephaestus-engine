@@ -7,7 +7,6 @@ import com.google.gson.JsonPrimitive;
 import team.unnamed.hephaestus.model.*;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
-import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.MoreMath;
 
@@ -112,33 +111,22 @@ public class ModelGeometryTransformer {
             JsonObject faces = new JsonObject();
             FacedTextureBound[] bounds = cube.getTextureBounds();
 
-            float ratio = 16.0F / description.getTextureWidth();
+            float widthRatio = 16.0F / description.getTextureWidth();
+            float heightRatio = 16.0F / description.getTextureHeight();
+
             for (TextureFace face : TextureFace.values()) {
                 FacedTextureBound bound = bounds[face.ordinal()];
-                float[] uv;
 
                 if (bound == null) {
                     continue;
                 }
 
-                Vector2Int boundFrom = bound.getBounds();
-                Vector2Int boundSize = bound.getSize();
-
-                float sX = boundFrom.getX() * ratio;
-                float sY = boundFrom.getY() * ratio;
-
-                float eX = (boundFrom.getX() + boundSize.getX()) * ratio;
-                float eY = (boundFrom.getY() + boundSize.getY()) * ratio;
-
-                if (face != TextureFace.UP) {
-                    if (face != TextureFace.DOWN) {
-                        uv = new float[] {sX, sY, eX, eY};
-                    } else {
-                        uv = new float[] {sX, eY, eX, sY};
-                    }
-                } else {
-                    uv = new float[] {eX, eY, sX, sY};
-                }
+                float[] uv = new float[] {
+                        bound.getBounds()[0] * widthRatio,
+                        bound.getBounds()[1] * heightRatio,
+                        bound.getBounds()[2] * widthRatio,
+                        bound.getBounds()[3] * heightRatio
+                };
 
                 JsonObject javaFace = new JsonObject();
                 javaFace.add("uv", toJsonArray(uv));

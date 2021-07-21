@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import team.unnamed.hephaestus.model.*;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
-import team.unnamed.hephaestus.struct.Vector2Int;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Serialization;
 
@@ -78,33 +77,16 @@ public class BlockbenchModelGeometryReader {
                 int textureId = textureElement.isJsonNull() ? -1 : textureElement.getAsInt();
 
                 JsonArray uvJson = faceJson.get("uv").getAsJsonArray();
+                float[] bounds = {
+                        uvJson.get(0).getAsFloat(),
+                        uvJson.get(1).getAsFloat(),
+                        uvJson.get(2).getAsFloat(),
+                        uvJson.get(3).getAsFloat()
+                };
 
-                Vector2Int uvBounds = new Vector2Int(
-                        uvJson.get(0).getAsInt(),
-                        uvJson.get(1).getAsInt()
-                );
-
-                Vector2Int uvSize = new Vector2Int(
-                        uvJson.get(2).getAsInt() - uvJson.get(0).getAsInt(),
-                        uvJson.get(3).getAsInt() - uvJson.get(1).getAsInt()
-                );
-
-                if (face == TextureFace.UP || face == TextureFace.DOWN) {
-                    uvBounds = new Vector2Int(
-                            uvJson.get(2).getAsInt(),
-                            uvJson.get(3).getAsInt()
-                    );
-
-                    uvSize = new Vector2Int(
-                            uvJson.get(0).getAsInt() - uvJson.get(2).getAsInt(),
-                            uvJson.get(1).getAsInt() - uvJson.get(3).getAsInt()
-                    );
-                }
-
-                if (uvBounds.getX() != 0 || uvBounds.getY() != 0 || uvSize.getX() != 0 || uvSize.getY() != 0) {
+                if (bounds[0] != 0 || bounds[1] != 0 || bounds[2] != 0 || bounds[3] != 0) {
                     textureBounds[face.ordinal()] = new FacedTextureBound(
-                            uvBounds,
-                            uvSize,
+                            bounds,
                             textureId
                     );
                 }

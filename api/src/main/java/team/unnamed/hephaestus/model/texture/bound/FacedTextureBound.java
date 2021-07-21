@@ -1,7 +1,6 @@
 package team.unnamed.hephaestus.model.texture.bound;
 
-import team.unnamed.hephaestus.struct.Vector2Int;
-
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -12,25 +11,18 @@ import java.util.Objects;
 public class FacedTextureBound {
 
     /** The origin coordinates */
-    private final Vector2Int bounds;
-    /** The size (origin + size = end coordinates) */
-    private final Vector2Int size;
+    private final float[] bounds;
 
     /** Texture id used when exporting */
     private final int textureId;
 
-    public FacedTextureBound(Vector2Int bounds, Vector2Int size, int textureId) {
+    public FacedTextureBound(float[] bounds, int textureId) {
         this.bounds = bounds;
-        this.size = size;
         this.textureId = textureId;
     }
 
-    public Vector2Int getBounds() {
+    public float[] getBounds() {
         return bounds;
-    }
-
-    public Vector2Int getSize() {
-        return size;
     }
 
     public int getTextureId() {
@@ -42,20 +34,21 @@ public class FacedTextureBound {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FacedTextureBound that = (FacedTextureBound) o;
-        return bounds.equals(that.bounds)
-                && size.equals(that.size);
+        return textureId == that.textureId && Arrays.equals(bounds, that.bounds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bounds, size);
+        int result = Objects.hash(textureId);
+        result = 31 * result + Arrays.hashCode(bounds);
+        return result;
     }
 
     @Override
     public String toString() {
         return "FacedTextureBound{" +
-                "bounds=" + bounds +
-                ", size=" + size +
+                "bounds=" + Arrays.toString(bounds) +
+                ", textureId=" + textureId +
                 '}';
     }
 }
