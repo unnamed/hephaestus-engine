@@ -136,18 +136,18 @@ public class ModelAnimationQueue {
             }
         }
 
-        if (realAnimation != null && !realAnimation.isTransitioned() && realAnimation.getTick() > realAnimation.getTransitionTicks()) {
+        if (realAnimation != null && !realAnimation.isTransitioned() && realAnimation.getTick() >= realAnimation.getTransitionTicks()) {
             realAnimation.setTransitioned();
             realAnimation.resetTick();
         }
 
-        if (realAnimation != null && realAnimation.isTransitioned() && realAnimation.getTick() > realAnimation.getAnimationLength()) {
-            realAnimation.resetTick();
+        if (realAnimation != null && realAnimation.isTransitioned() && realAnimation.getTick() >= realAnimation.getAnimationLength()) {
             if (!realAnimation.isLoop()) {
                 queuedAnimations.remove(realAnimation);
+                return getAnimationForBone(bone);
+            } else {
+                realAnimation.resetTick();
             }
-
-            return getAnimationForBone(bone);
         }
 
         return realAnimation;
