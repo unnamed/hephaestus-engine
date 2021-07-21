@@ -70,7 +70,7 @@ public class ModelViewController_v1_16_R3
         entity.setSmall(true);
         entity.setInvisible(true);
 
-        org.bukkit.inventory.ItemStack item = new org.bukkit.inventory.ItemStack(Material.BONE);
+        org.bukkit.inventory.ItemStack item = new org.bukkit.inventory.ItemStack(Material.LEATHER_HORSE_ARMOR);
         ItemMeta meta = item.getItemMeta();
 
         // fuck @Nullable again
@@ -158,8 +158,6 @@ public class ModelViewController_v1_16_R3
                     new PacketPlayOutEntityTeleport(entity)
             );
         }
-
-
 
         for (ModelBone component : bone.getBones()) {
             teleportBonesRecursively(

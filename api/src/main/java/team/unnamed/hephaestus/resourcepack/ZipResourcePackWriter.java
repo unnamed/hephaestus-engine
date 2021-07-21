@@ -119,12 +119,12 @@ public class ZipResourcePackWriter
                 }
             }
 
-            putNext(output, "assets/minecraft/models/item/bone.json");
+            putNext(output, "assets/minecraft/models/item/leather_horse_armor.json");
             Streams.writeUTF(
                     output,
                     "{"
                             + "\"parent\": \"item/handheld\","
-                            + "\"textures\": { \"layer0\": \"item/bone\" },"
+                            + "\"textures\": { \"layer0\": \"item/leather_horse_armor\" },"
                             + "\"overrides\": " + overrides
                             + "}"
             );
