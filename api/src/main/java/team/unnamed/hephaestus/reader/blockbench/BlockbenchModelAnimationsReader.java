@@ -43,6 +43,7 @@ public class BlockbenchModelAnimationsReader {
 
                 List<KeyFrame> rotationFrames = new ArrayList<>();
                 List<KeyFrame> positionFrames = new ArrayList<>();
+                List<KeyFrame> sizeFrames = new ArrayList<>();
 
                 for (JsonElement keyFrameElement : boneAnimationJson.get("keyframes").getAsJsonArray()) {
                     JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
@@ -62,6 +63,9 @@ public class BlockbenchModelAnimationsReader {
                     );
 
                     switch (channel) {
+                        case "scale":
+                            sizeFrames.add(keyFrame);
+                            break;
                         case "rotation":
                             rotationFrames.add(keyFrame);
                             break;
@@ -71,7 +75,7 @@ public class BlockbenchModelAnimationsReader {
                     }
                 }
 
-                boneAnimations.put(boneName, new ModelBoneAnimation(positionFrames, rotationFrames));
+                boneAnimations.put(boneName, new ModelBoneAnimation(positionFrames, rotationFrames, sizeFrames));
             }
 
             animations.put(name, new ModelAnimation(name, loop, length, boneAnimations));
