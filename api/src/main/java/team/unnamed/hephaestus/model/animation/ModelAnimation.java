@@ -17,8 +17,8 @@ public class ModelAnimation {
     /** Determines if the animation is infinite */
     private final boolean loop;
 
-    /** Determines the animation length */
-    private final float animationLength;
+    /** Determines the animation length in ticks */
+    private final int animationLength;
 
     /** Contains all the bone animations using the bone names as key */
     private final Map<String, ModelBoneAnimation> animationsByBoneName;
@@ -26,7 +26,7 @@ public class ModelAnimation {
     public ModelAnimation(
             String name,
             boolean loop,
-            float animationLength,
+            int animationLength,
             Map<String, ModelBoneAnimation> animationsByBoneName
     ) {
         this.name = name;
@@ -43,7 +43,7 @@ public class ModelAnimation {
         return loop;
     }
 
-    public float getAnimationLength() {
+    public int getAnimationLength() {
         return animationLength;
     }
 

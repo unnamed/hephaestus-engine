@@ -31,7 +31,7 @@ public class BlockbenchModelAnimationsReader {
 
             String name = animationJson.get("name").getAsString();
             boolean loop = animationJson.get("loop").getAsString().equals("loop");
-            float length = Math.round(animationJson.get("length").getAsFloat()*20);
+            int length = Math.round(animationJson.get("length").getAsFloat()*20);
 
             Map<String, ModelBoneAnimation> boneAnimations = new HashMap<>();
             for (Map.Entry<String, JsonElement> boneAnimationEntry : animationJson.get("animators")

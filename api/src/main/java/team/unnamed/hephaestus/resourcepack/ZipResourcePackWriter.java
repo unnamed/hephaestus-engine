@@ -7,10 +7,14 @@ import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelDescription;
 import team.unnamed.hephaestus.io.Streams;
+import team.unnamed.hephaestus.model.animation.KeyFrame;
+import team.unnamed.hephaestus.model.animation.ModelAnimation;
+import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -49,7 +53,7 @@ public class ZipResourcePackWriter
 
     @Override
     public List<Model> write(OutputStream stream, List<Model> models) throws IOException {
-        this.applyCustomModelData(models);
+        int lastData = this.applyCustomModelData(models);
 
         ZipOutputStream output = stream instanceof ZipOutputStream
                 ? (ZipOutputStream) stream
@@ -92,7 +96,7 @@ public class ZipResourcePackWriter
                     }
                     output.closeEntry();
                 }
-                // then write all the model bones
+                // write all the model bones
                 for (ModelBone bone : this.transformer.getAllBones(model.getGeometry())) {
 
                     JsonObject json = transformer.toJavaJson(model, description, bone);
@@ -117,6 +121,20 @@ public class ZipResourcePackWriter
                     Streams.writeUTF(output, json.toString());
                     output.closeEntry();
                 }
+
+                // TODO: write all the animation size changes
+                for (ModelAnimation animation : model.getAnimations().values()) {
+                    for (String boneName : animation.getAnimationsByBoneName().keySet()) {
+                        ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(boneName);
+
+                        List<KeyFrame> sizeFrames = boneAnimation.getSizeFrames();
+
+                        Map<Integer, Integer> modelDataByTick = new HashMap<>();
+                        for (int tick = 0; tick <= animation.getAnimationLength(); tick++) {
+                            modelDataByTick.put(tick, lastData++);
+                        }
+                    }
+                }
             }
 
             putNext(output, "assets/minecraft/models/item/leather_horse_armor.json");
@@ -137,13 +155,14 @@ public class ZipResourcePackWriter
         return models;
     }
 
-    public void applyCustomModelData(List<Model> models) {
+    public int applyCustomModelData(List<Model> models) {
         int data = 1;
         for (Model model : models) {
             for (ModelBone bone : transformer.getAllBones(model.getGeometry())) {
                 bone.setCustomModelData(data++);
             }
         }
-    }
 
+        return data;
+    }
 }
