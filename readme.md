@@ -44,3 +44,4 @@ The next list are the known bugs that must be resolved at some point:
 
 - ~~Animations do not transition in between eachother~~
 - ~~Animations are not able to overlap each other~~
+- Scale frames in animations are not rendered
