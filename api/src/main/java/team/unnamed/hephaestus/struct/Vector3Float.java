@@ -14,6 +14,7 @@ import java.util.Objects;
 public class Vector3Float {
 
     public static Vector3Float ZERO = new Vector3Float(0, 0, 0);
+    public static Vector3Float ONE = new Vector3Float(1, 1, 1);
 
     private final float x;
     private final float y;

@@ -12,15 +12,16 @@ public class ModelBoneAnimation {
 
     private final List<KeyFrame> positionFrames;
     private final List<KeyFrame> rotationFrames;
-    private final List<KeyFrame> sizeFrames;
+    private final List<KeyFrame> scaleFrames;
 
     public ModelBoneAnimation(
             List<KeyFrame> positionFrames,
             List<KeyFrame> rotationFrames,
-            List<KeyFrame> sizeFrames) {
+            List<KeyFrame> scaleFrames
+    ) {
         this.positionFrames = positionFrames;
         this.rotationFrames = rotationFrames;
-        this.sizeFrames = sizeFrames;
+        this.scaleFrames = scaleFrames;
     }
 
     public List<KeyFrame> getPositionFrames() {
@@ -31,8 +32,8 @@ public class ModelBoneAnimation {
         return rotationFrames;
     }
 
-    public List<KeyFrame> getSizeFrames() {
-        return sizeFrames;
+    public List<KeyFrame> getScaleFrames() {
+        return scaleFrames;
     }
 
     @Override
@@ -40,12 +41,12 @@ public class ModelBoneAnimation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ModelBoneAnimation that = (ModelBoneAnimation) o;
-        return positionFrames.equals(that.positionFrames) && rotationFrames.equals(that.rotationFrames) && sizeFrames.equals(that.sizeFrames);
+        return positionFrames.equals(that.positionFrames) && rotationFrames.equals(that.rotationFrames) && scaleFrames.equals(that.scaleFrames);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(positionFrames, rotationFrames, sizeFrames);
+        return Objects.hash(positionFrames, rotationFrames, scaleFrames);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class ModelBoneAnimation {
         return "ModelBoneAnimation{" +
                 "positionFrames=" + positionFrames +
                 ", rotationFrames=" + rotationFrames +
-                ", sizeFrames=" + sizeFrames +
+                ", sizeFrames=" + scaleFrames +
                 '}';
     }
 }

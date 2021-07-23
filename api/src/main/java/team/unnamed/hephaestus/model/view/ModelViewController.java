@@ -20,6 +20,8 @@ public interface ModelViewController {
 
     void teleportBone(ModelView view, ModelBone bone, Location location);
 
+    void updateBoneModelData(ModelView view, ModelBone bone, int modelData);
+
     void setBonePose(ModelView view, ModelBone bone, EulerAngle angle);
 
 }

@@ -4,8 +4,10 @@ import org.bukkit.util.EulerAngle;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.hephaestus.util.KeyFrames;
 import team.unnamed.hephaestus.util.Vectors;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,14 +29,14 @@ public class ModelAnimationQueue {
 
         ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
 
-        KeyFrame previousPositionFrame = this.getPrevious(animation.getTick(), boneAnimation.getPositionFrames());
-        KeyFrame nextPositionFrame = this.getNext(animation.getTick(), boneAnimation.getPositionFrames());
+        KeyFrame previousPositionFrame = KeyFrames.getPrevious(animation.getTick(), boneAnimation.getPositionFrames());
+        KeyFrame nextPositionFrame = KeyFrames.getNext(animation.getTick(), boneAnimation.getPositionFrames());
 
         Vector3Float framePosition = previousPositionFrame.getValue();
         if (!animation.isTransitioned()) {
             float ratio = (float) animation.getTick() / (float) animation.getTransitionTicks();
 
-            Vector3Float initialPosition = getPrevious(0, boneAnimation.getPositionFrames()).getValue();
+            Vector3Float initialPosition = KeyFrames.getPrevious(0, boneAnimation.getPositionFrames()).getValue();
 
             framePosition = Vectors.lerp(
                     bonesLastPosition.getOrDefault(bone, Vector3Float.ZERO),
@@ -66,14 +68,14 @@ public class ModelAnimationQueue {
 
         ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
 
-        KeyFrame previousRotationFrame = this.getPrevious(animation.getTick(), boneAnimation.getRotationFrames());
-        KeyFrame nextRotationFrame = this.getNext(animation.getTick(), boneAnimation.getRotationFrames());
+        KeyFrame previousRotationFrame = KeyFrames.getPrevious(animation.getTick(), boneAnimation.getRotationFrames());
+        KeyFrame nextRotationFrame = KeyFrames.getNext(animation.getTick(), boneAnimation.getRotationFrames());
 
         EulerAngle frameRotation = previousRotationFrame.getValue().toEuler();
         if (!animation.isTransitioned()) {
             float ratio = (float) animation.getTick() / (float) animation.getTransitionTicks();
 
-            EulerAngle initialRotation = getPrevious(0, boneAnimation.getRotationFrames()).getValue().toEuler();
+            EulerAngle initialRotation = KeyFrames.getPrevious(0, boneAnimation.getRotationFrames()).getValue().toEuler();
 
             frameRotation = Quaternion.lerp(
                     bonesLastRotation.getOrDefault(bone, EulerAngle.ZERO),
@@ -96,6 +98,16 @@ public class ModelAnimationQueue {
         return frameRotation;
     }
 
+    public int currentModelData(ModelBone bone) {
+        QueuedAnimation animation = this.getAnimationForBone(bone);
+
+        if (animation == null) {
+            return bone.getCustomModelData();
+        }
+
+        return animation.getModelData().getOrDefault(bone.getName(), Collections.emptyMap())
+                .getOrDefault(animation.getTick(), -1);
+    }
 
     public void pushAnimation(ModelAnimation animation, int priority, int transitionTicks) {
         queuedAnimations.add(new QueuedAnimation(animation, priority, transitionTicks));
@@ -151,40 +163,6 @@ public class ModelAnimationQueue {
         }
 
         return realAnimation;
-    }
-
-    private KeyFrame getNext(float tick, List<KeyFrame> frames) {
-        KeyFrame selectedFrame = null;
-        for (KeyFrame frame : frames) {
-            if (frame.getPosition() > tick){
-                if (selectedFrame == null) {
-                    selectedFrame = frame;
-                } else if (frame.getPosition() < selectedFrame.getPosition()) {
-                    selectedFrame = frame;
-                }
-            }
-        }
-
-        return selectedFrame;
-    }
-
-    private KeyFrame getPrevious(float tick, List<KeyFrame> frames) {
-        KeyFrame selectedFrame = null;
-        for (KeyFrame frame : frames) {
-            if (frame.getPosition() <= tick) {
-                if (selectedFrame == null) {
-                    selectedFrame = frame;
-                } else if (frame.getPosition() > selectedFrame.getPosition()) {
-                    selectedFrame = frame;
-                }
-            }
-        }
-
-        if (selectedFrame == null) {
-            return new KeyFrame(0, new Vector3Float(0, 0, 0));
-        }
-
-        return selectedFrame;
     }
 
     static class QueuedAnimation extends ModelAnimation {

@@ -10,6 +10,9 @@ import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
+import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.hephaestus.util.KeyFrames;
+import team.unnamed.hephaestus.util.Vectors;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +52,89 @@ public class ZipResourcePackWriter
         ZipEntry entry = new ZipEntry(entryName);
         entry.setTime(0L);
         output.putNextEntry(entry);
+    }
+
+    private int writeScaleKeyFrames(
+            ZipOutputStream output,
+            JsonArray overrides,
+            ModelAnimation animation,
+            Model model,
+            int tick,
+            ModelBone bone,
+            Vector3Float sizeProduct,
+            int lastData
+    ) throws IOException {
+
+        ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
+
+        Vector3Float size;
+
+        if (boneAnimation == null) {
+            size = Vector3Float.ONE;
+        } else {
+            List<KeyFrame> frames = boneAnimation.getScaleFrames();
+            KeyFrame previous = KeyFrames.getPrevious(tick, frames, Vector3Float.ONE);
+            KeyFrame next = KeyFrames.getNext(tick, frames);
+            if (next == null) {
+                size = previous.getValue();
+            } else {
+                float ratio = (tick - previous.getPosition())
+                        / (next.getPosition() - previous.getPosition());
+                size = Vectors.lerp(
+                        previous.getValue(),
+                        next.getValue(),
+                        ratio
+                );
+            }
+        }
+
+        sizeProduct = sizeProduct.multiply(size);
+
+        if (!sizeProduct.equals(Vector3Float.ONE)) {
+            lastData++;
+
+            String modelName = model.getName() + "/" + bone.getName() + "-" + lastData;
+
+            JsonObject overridePredicate = new JsonObject();
+            overridePredicate.addProperty("custom_model_data", lastData);
+
+            JsonObject override = new JsonObject();
+            override.add("predicate", overridePredicate);
+            override.addProperty("model", namespace + ":" + modelName);
+            overrides.add(override);
+
+            putNext(
+                    output,
+                    "assets/" + namespace + "/models/"
+                            + modelName
+                            + ".json"
+            );
+
+            double displayScale = ModelGeometryTransformer.DISPLAY_SCALE;
+            Streams.writeUTF(
+                    output,
+                    "{ " +
+                            "\"parent\": \"" + namespace + ":" + model.getName() + "/" + bone.getName() + "\"," +
+                            "\"display\": {" +
+                                "\"head\": {" +
+                                    "\"scale\": [" + (displayScale * sizeProduct.getX())
+                                            + ", " + (displayScale * sizeProduct.getY())
+                                            + ", " + (displayScale * sizeProduct.getZ())
+                                            + "]" +
+                                "}" +
+                            "}" +
+                        "}"
+            );
+            output.closeEntry();
+
+            animation.getModelData().computeIfAbsent(bone.getName(), k -> new HashMap<>())
+                    .put(tick, lastData);
+        }
+
+        for (ModelBone child : bone.getBones()) {
+            lastData = writeScaleKeyFrames(output, overrides, animation, model, tick, child, sizeProduct, lastData);
+        }
+        return lastData;
     }
 
     @Override
@@ -122,16 +208,19 @@ public class ZipResourcePackWriter
                     output.closeEntry();
                 }
 
-                // TODO: write all the animation size changes
                 for (ModelAnimation animation : model.getAnimations().values()) {
-                    for (String boneName : animation.getAnimationsByBoneName().keySet()) {
-                        ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(boneName);
-
-                        List<KeyFrame> sizeFrames = boneAnimation.getSizeFrames();
-
-                        Map<Integer, Integer> modelDataByTick = new HashMap<>();
+                    for (ModelBone bone : model.getGeometry().getBones()) {
                         for (int tick = 0; tick <= animation.getAnimationLength(); tick++) {
-                            modelDataByTick.put(tick, lastData++);
+                            lastData = writeScaleKeyFrames(
+                                    output,
+                                    overrides,
+                                    animation,
+                                    model,
+                                    tick,
+                                    bone,
+                                    Vector3Float.ONE,
+                                    lastData
+                            );
                         }
                     }
                 }

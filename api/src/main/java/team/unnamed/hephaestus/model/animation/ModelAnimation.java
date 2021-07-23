@@ -23,6 +23,8 @@ public class ModelAnimation {
     /** Contains all the bone animations using the bone names as key */
     private final Map<String, ModelBoneAnimation> animationsByBoneName;
 
+    private final Map<String, Map<Integer, Integer>> modelData = new HashMap<>();
+
     public ModelAnimation(
             String name,
             boolean loop,
@@ -33,6 +35,10 @@ public class ModelAnimation {
         this.loop = loop;
         this.animationLength = animationLength;
         this.animationsByBoneName = animationsByBoneName;
+    }
+
+    public Map<String, Map<Integer, Integer>> getModelData() {
+        return modelData;
     }
 
     public String getName() {

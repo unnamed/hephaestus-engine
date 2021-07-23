@@ -46,6 +46,7 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
                     .multiply(1, 1, -1);
 
             EulerAngle frameRotation = entity.getAnimationQueue().currentRotation(bone);
+            int modelData = entity.getAnimationQueue().currentModelData(bone);
 
             Vector3Float defaultPosition = bone.getOffset().multiply(1, 1, -1);
             EulerAngle defaultRotation = bone.getRotation().toEuler();
@@ -75,6 +76,9 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
 
             entity.teleportBone(bone, worldPosition);
             entity.setBonePose(bone, globalRotation);
+            if (modelData != -1) {
+                entity.updateBoneModelData(bone, modelData);
+            }
 
             for (ModelBone component : bone.getBones()) {
                 this.updateBone(

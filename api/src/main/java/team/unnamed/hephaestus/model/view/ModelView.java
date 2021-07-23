@@ -145,6 +145,10 @@ public class ModelView {
         controller.setBonePose(this, bone, angle);
     }
 
+    public void updateBoneModelData(ModelBone bone, int modelData) {
+        controller.updateBoneModelData(this, bone, modelData);
+    }
+
     public void teleportBone(ModelBone bone, Location location) {
         controller.teleportBone(this, bone, location);
     }
