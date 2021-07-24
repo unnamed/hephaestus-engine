@@ -7,10 +7,7 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.KeyFrames;
 import team.unnamed.hephaestus.util.Vectors;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ModelAnimationQueue {
@@ -101,8 +98,9 @@ public class ModelAnimationQueue {
     public int currentModelData(ModelBone bone) {
         QueuedAnimation animation = this.getAnimationForBone(bone);
 
+        //TODO: IF NULL SHOULD STILL UPDATE USING THE PARENT'S TICK
         if (animation == null) {
-            return bone.getCustomModelData();
+            return -1;
         }
 
         return animation.getModelData().getOrDefault(bone.getName(), Collections.emptyMap())
@@ -167,6 +165,8 @@ public class ModelAnimationQueue {
 
     static class QueuedAnimation extends ModelAnimation {
 
+        private final Map<String, Map<Integer, Integer>> modelData;
+
         private final int priority;
         private final int transitionTicks;
         private boolean transitioned;
@@ -179,9 +179,15 @@ public class ModelAnimationQueue {
                     animation.getAnimationLength(),
                     animation.getAnimationsByBoneName()
             );
+            this.modelData = animation.getModelData();
             this.priority = priority;
             this.transitionTicks = transitionTicks;
             this.transitioned = transitionTicks == 0;
+        }
+
+        @Override
+        public Map<String, Map<Integer, Integer>> getModelData() {
+            return this.modelData;
         }
 
         public int getPriority() {

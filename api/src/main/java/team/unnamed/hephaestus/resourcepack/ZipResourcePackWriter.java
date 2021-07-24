@@ -93,7 +93,7 @@ public class ZipResourcePackWriter
         if (!sizeProduct.equals(Vector3Float.ONE)) {
             lastData++;
 
-            String modelName = model.getName() + "/" + bone.getName() + "-" + lastData;
+            String modelName = model.getName() + "/frames/" + bone.getName() + "-" + lastData;
 
             JsonObject overridePredicate = new JsonObject();
             overridePredicate.addProperty("custom_model_data", lastData);
