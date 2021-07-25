@@ -1,8 +1,6 @@
 package team.unnamed.hephaestus.io;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 /**
  * Represents any object that can be
@@ -28,6 +26,37 @@ public interface Streamable {
         throw new UnsupportedOperationException(
                 "This data source doesn't support writes"
         );
+    }
+
+    /**
+     * Creates a {@link Streamable} from a resource.
+     * @param loader The class loader holding the resource
+     * @param name The resource name
+     */
+    static Streamable ofResource(ClassLoader loader, String name) {
+        return () -> loader.getResourceAsStream(name);
+    }
+
+    /**
+     * Creates a {@link Streamable} representing the
+     * given {@code file}. Assumes that the file is
+     * readable and writable.
+     * @param file The wrapped file
+     */
+    static Streamable ofFile(File file) {
+        return new Streamable() {
+
+            @Override
+            public InputStream openIn() throws IOException {
+                return new FileInputStream(file);
+            }
+
+            @Override
+            public OutputStream openOut() throws IOException {
+                return new FileOutputStream(file);
+            }
+
+        };
     }
 
 }
