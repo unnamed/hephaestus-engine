@@ -14,6 +14,7 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.KeyFrames;
 import team.unnamed.hephaestus.util.Vectors;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,20 +27,22 @@ import java.util.zip.ZipOutputStream;
 public class ZipResourcePackWriter
         implements ResourcePackWriter {
 
-    private final String packMetadata;
     private final String namespace;
+    @Nullable private final ResourcePackInfo packInfo;
 
     private final ModelGeometryTransformer transformer;
 
-    public ZipResourcePackWriter(String namespace, int packFormat, String description) {
+    public ZipResourcePackWriter(
+            String namespace,
+            @Nullable ResourcePackInfo packInfo
+    ) {
         this.namespace = namespace;
+        this.packInfo = packInfo;
         this.transformer = new ModelGeometryTransformer(namespace);
-        this.packMetadata = "{ \"pack\": { \"pack_format\": "
-                + packFormat + ", \"description\": \"" + description + "\" } }";
     }
 
     public ZipResourcePackWriter() {
-        this("hephaestus", 6, "Hephaestus custom generated resource pack");
+        this("hephaestus", new ResourcePackInfo(6, "Hephaestus generated", null));
     }
 
     /**
@@ -147,18 +150,30 @@ public class ZipResourcePackWriter
 
         try {
 
-            // write the pack data
-            putNext(output, "pack.mcmeta");
-            Streams.writeUTF(output, packMetadata);
-            output.closeEntry();
+            if (packInfo != null) {
+                // write the pack data
+                putNext(output, "pack.mcmeta");
+                Streams.writeUTF(
+                        output,
+                        "{ " +
+                            "\"pack\":{" +
+                                "\"pack_format\":" + packInfo.getFormat() + "," +
+                                "\"description\":\"" + packInfo.getDescription() + "\"" +
+                            "}" +
+                        "}"
+                );
+                output.closeEntry();
 
-            // write the resource pack icon
-            putNext(output, "pack.png");
-            InputStream iconPng = getClass().getClassLoader().getResourceAsStream("unnamed.png");
-            if (iconPng != null) {
-                Streams.pipe(iconPng, output);
+                Streamable icon = packInfo.getIcon();
+                if (icon != null) {
+                    // write the resource pack icon
+                    putNext(output, "pack.png");
+                    try (InputStream iconInput = icon.openIn()) {
+                        Streams.pipe(iconInput, output);
+                    }
+                    output.closeEntry();
+                }
             }
-            output.closeEntry();
 
             JsonArray overrides = new JsonArray();
 
