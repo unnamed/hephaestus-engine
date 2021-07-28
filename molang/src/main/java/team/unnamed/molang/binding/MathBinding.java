@@ -25,7 +25,7 @@ public class MathBinding
         bindCallable("atan2", args -> Math.atan2(toDouble(args[0]), toDouble(args[1])));
         bindCallable("ceil", args -> Math.ceil(toDouble(args[0])));
         bindCallable("clamp", args -> Math.max(Math.min(toDouble(args[0]), toDouble(args[2])), toDouble(args[1])));
-        bindCallable("cos", args -> Math.toDegrees(Math.cos(toRadians(args[0]))));
+        bindCallable("cos", args -> Math.cos(toRadians(args[0])));
         bindCallable("die_roll", args -> {
             int amount = (int) toDouble(args[0]);
             int low = (int) (toDouble(args[1]) * DECIMAL_PART);
@@ -49,7 +49,7 @@ public class MathBinding
         bindCallable("pow", args -> Math.pow(toDouble(args[0]), toDouble(args[1])));
         // TODO: random, random_integer
         bindCallable("round", args -> Math.round(toDouble(args[0])));
-        bindCallable("sin", args -> Math.toDegrees(Math.sin(toRadians(args[0]))));
+        bindCallable("sin", args -> Math.sin(toRadians(args[0])));
         bindCallable("sqrt", args -> Math.sqrt(toDouble(args[0])));
         // TODO: trunc
     }
