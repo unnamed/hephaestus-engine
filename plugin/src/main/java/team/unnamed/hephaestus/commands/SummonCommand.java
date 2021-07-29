@@ -9,9 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.view.ModelViewAnimator;
-import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.model.view.ModelView;
+import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +24,17 @@ public class SummonCommand implements CommandClass {
 
     public SummonCommand(ModelViewRenderer renderer) {
         this.renderer = renderer;
+    }
+
+    @Command(names = "teleport")
+    public void teleport(@Sender Player player, String viewId) {
+        ModelView view = views.get(viewId);
+        if (view == null) {
+            player.sendMessage("§cUnknown view");
+            return;
+        }
+
+        view.teleport(player.getLocation());
     }
 
     @Command(names = "colorize")

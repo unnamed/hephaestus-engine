@@ -1,20 +1,7 @@
 package team.unnamed.hephaestus.adapt.v1_16_R3;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.server.v1_16_R3.DataWatcher;
-import net.minecraft.server.v1_16_R3.DataWatcherObject;
-import net.minecraft.server.v1_16_R3.DataWatcherRegistry;
-import net.minecraft.server.v1_16_R3.EntityArmorStand;
-import net.minecraft.server.v1_16_R3.EntityTypes;
-import net.minecraft.server.v1_16_R3.EnumItemSlot;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntity;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityEquipment;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityTeleport;
-import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_16_R3.Vector3f;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -147,25 +134,10 @@ public class ModelViewController_v1_16_R3
                 location.getPitch()
         );
 
-        if (Math.abs(relativePos.getX()) <= 8
-                && Math.abs(relativePos.getY()) <= 8
-                && Math.abs(relativePos.getZ()) <= 8) {
-            Packets.send(
-                    view.getViewer(),
-                    new PacketPlayOutEntity.PacketPlayOutRelEntityMove(
-                            entity.getId(),
-                            (short) (relativePos.getX() * 4096),
-                            (short) (relativePos.getY() * 4096),
-                            (short) (relativePos.getZ() * 4096),
-                            false // idk what this does
-                    )
-            );
-        } else {
-            Packets.send(
-                    view.getViewer(),
-                    new PacketPlayOutEntityTeleport(entity)
-            );
-        }
+        Packets.send(
+                view.getViewer(),
+                new PacketPlayOutEntityTeleport(entity)
+        );
 
         for (ModelBone component : bone.getBones()) {
             teleportBonesRecursively(

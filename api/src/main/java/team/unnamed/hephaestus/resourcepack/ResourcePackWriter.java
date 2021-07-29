@@ -2,7 +2,6 @@ package team.unnamed.hephaestus.resourcepack;
 
 import team.unnamed.hephaestus.model.Model;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;

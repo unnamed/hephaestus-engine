@@ -3,14 +3,20 @@ package team.unnamed.hephaestus.reader.blockbench;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import team.unnamed.hephaestus.model.*;
+import team.unnamed.hephaestus.model.ModelBone;
+import team.unnamed.hephaestus.model.ModelCube;
+import team.unnamed.hephaestus.model.ModelDescription;
+import team.unnamed.hephaestus.model.ModelGeometry;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Serialization;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Converts JSON to {@link ModelGeometry}

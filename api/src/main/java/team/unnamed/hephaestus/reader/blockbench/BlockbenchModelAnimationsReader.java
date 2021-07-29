@@ -8,7 +8,10 @@ import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Serialization;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Converts JSON to {@link ModelAnimation}

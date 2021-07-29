@@ -51,7 +51,7 @@ public class ModelView {
         this.viewer = viewer;
         this.location = location;
 
-        this.taskId = 0;
+        this.taskId = -1;
     }
 
     public ModelAnimationQueue getAnimationQueue() {
@@ -95,7 +95,7 @@ public class ModelView {
     }
 
     public void playAnimation(ModelAnimation animation, int priority, int transitionTicks) {
-        if (this.taskId == 0) {
+        if (this.taskId == -1) {
             this.taskId = this.animator.animate(this);
         }
         this.animationQueue.pushAnimation(animation, priority, transitionTicks);
@@ -104,18 +104,18 @@ public class ModelView {
     public void stopAnimation(String name) {
         this.animationQueue.removeAnimation(name);
 
-        if (this.animationQueue.getQueuedAnimations().isEmpty() && this.taskId != 0) {
+        if (this.animationQueue.getQueuedAnimations().isEmpty() && this.taskId != -1) {
             Bukkit.getScheduler().cancelTask(this.taskId);
-            this.taskId= 0;
+            this.taskId = -1;
         }
     };
 
     public void stopAllAnimations() {
         this.animationQueue.clear();
 
-        if (this.taskId != 0) {
+        if (this.taskId != -1) {
             Bukkit.getScheduler().cancelTask(this.taskId);
-            this.taskId= 0;
+            this.taskId = -1;
         }
     }
 
@@ -130,15 +130,18 @@ public class ModelView {
     public void hide() {
         controller.hide(this);
 
-        if (this.taskId != 0) {
+        if (this.taskId != -1) {
             Bukkit.getScheduler().cancelTask(this.taskId);
-            this.taskId= 0;
+            this.taskId = -1;
         }
     }
 
     public void teleport(Location newLocation) {
         this.location = newLocation.clone();
-        controller.teleport(this, this.location);
+
+        if (this.taskId == -1) {
+            controller.teleport(this, this.location);
+        }
     }
 
     public void setBonePose(ModelBone bone, EulerAngle angle) {

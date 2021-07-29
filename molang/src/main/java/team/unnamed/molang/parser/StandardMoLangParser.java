@@ -1,16 +1,10 @@
 package team.unnamed.molang.parser;
 
 import team.unnamed.molang.context.ParseContext;
-import team.unnamed.molang.expression.CallExpression;
-import team.unnamed.molang.expression.Expression;
-import team.unnamed.molang.expression.IdentifierExpression;
-import team.unnamed.molang.expression.LiteralExpression;
-import team.unnamed.molang.expression.BinaryExpression;
-import team.unnamed.molang.expression.NegationExpression;
+import team.unnamed.molang.expression.*;
 
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

@@ -7,7 +7,10 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.KeyFrames;
 import team.unnamed.hephaestus.util.Vectors;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ModelAnimationQueue {
