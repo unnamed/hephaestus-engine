@@ -130,7 +130,9 @@ public class ModelGeometryTransformer {
 
                 JsonObject javaFace = new JsonObject();
                 javaFace.add("uv", toJsonArray(uv));
-                javaFace.addProperty("texture", "#" + bound.getTextureId());
+                if (bound.getTextureId() != -1) {
+                    javaFace.addProperty("texture", "#" + bound.getTextureId());
+                }
                 javaFace.addProperty("tintindex", 0);
 
                 faces.add(face.name().toLowerCase(), javaFace);

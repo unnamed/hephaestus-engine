@@ -80,7 +80,9 @@ public class BlockbenchModelGeometryReader {
                 JsonObject faceJson = faceEntry.getValue().getAsJsonObject();
 
                 JsonElement textureElement = faceJson.get("texture");
-                int textureId = textureElement.isJsonNull() ? -1 : textureElement.getAsInt();
+                int textureId = (textureElement == null || textureElement.isJsonNull())
+                        ? -1
+                        : textureElement.getAsInt();
 
                 JsonArray uvJson = faceJson.get("uv").getAsJsonArray();
                 float[] bounds = {
