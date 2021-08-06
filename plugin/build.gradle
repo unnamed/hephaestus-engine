@@ -9,12 +9,15 @@ dependencies {
     implementation project(':hephaestus-api')
     implementation project(':hephaestus-molang')
 
-    implementation 'org.jetbrains:annotations:20.1.0'
+    implementation 'org.jetbrains:annotations:21.0.1'
     implementation 'me.fixeddev:commandflow-bukkit:0.4.0'
-    compileOnly 'org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT'
 
     // adaption modules
-    ['v1_16_R3'].forEach {
+    [
+            'v1_16_R3',
+            'v1_17_R1'
+    ].forEach {
         implementation project(":hephaestus-adapt-$it")
     }
 }
