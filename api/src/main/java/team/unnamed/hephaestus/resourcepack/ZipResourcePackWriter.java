@@ -119,14 +119,14 @@ public class ZipResourcePackWriter
                     "{ " +
                             "\"parent\": \"" + namespace + ":" + model.getName() + "/" + bone.getName() + "\"," +
                             "\"display\": {" +
-                                "\"head\": {" +
-                                    "\"scale\": [" + (displayScale * sizeProduct.getX())
-                                            + ", " + (displayScale * sizeProduct.getY())
-                                            + ", " + (displayScale * sizeProduct.getZ())
-                                            + "]" +
-                                "}" +
+                            "\"head\": {" +
+                            "\"scale\": [" + (displayScale * sizeProduct.getX())
+                            + ", " + (displayScale * sizeProduct.getY())
+                            + ", " + (displayScale * sizeProduct.getZ())
+                            + "]" +
                             "}" +
-                        "}"
+                            "}" +
+                            "}"
             );
             output.closeEntry();
 
@@ -156,11 +156,11 @@ public class ZipResourcePackWriter
                 Streams.writeUTF(
                         output,
                         "{ " +
-                            "\"pack\":{" +
+                                "\"pack\":{" +
                                 "\"pack_format\":" + packInfo.getFormat() + "," +
                                 "\"description\":\"" + packInfo.getDescription() + "\"" +
-                            "}" +
-                        "}"
+                                "}" +
+                                "}"
                 );
                 output.closeEntry();
 

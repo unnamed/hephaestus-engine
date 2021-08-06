@@ -273,7 +273,7 @@ public class ModelViewController_v1_17_R1
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
         DataWatcher watcher = new DataWatcher(null);
         watcher.register(
-                new DataWatcherObject<>(15, DataWatcherRegistry.k),
+                new DataWatcherObject<>(16, DataWatcherRegistry.k),
                 new Vector3f(
                         (float) Math.toDegrees(angle.getX()),
                         (float) Math.toDegrees(angle.getY()),
