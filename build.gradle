@@ -6,8 +6,7 @@ subprojects {
     version '0.1.0'
 
     compileJava {
-        sourceCompatibility = 16
-        targetCompatibility = 16
+        options.release.set(16)
     }
 
     repositories {
