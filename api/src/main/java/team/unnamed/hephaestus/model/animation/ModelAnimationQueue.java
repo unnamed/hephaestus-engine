@@ -38,6 +38,10 @@ public class ModelAnimationQueue {
 
             Vector3Float initialPosition = KeyFrames.getPrevious(0, boneAnimation.getPositionFrames()).getValue();
 
+            if (animation.getName().equals("awaken")) {
+                System.out.println(bone.getName() + " -> " + bonesLastPosition.containsKey(bone));
+            }
+
             framePosition = Vectors.lerp(
                     bonesLastPosition.getOrDefault(bone, Vector3Float.ZERO),
                     initialPosition,
@@ -53,6 +57,8 @@ public class ModelAnimationQueue {
                     nextPositionFrame.getValue(),
                     ratio
             );
+            bonesLastPosition.put(bone, framePosition);
+        } else {
             bonesLastPosition.put(bone, framePosition);
         }
 
@@ -92,6 +98,8 @@ public class ModelAnimationQueue {
                     nextRotationFrame.getValue().toEuler(),
                     ratio
             );
+            bonesLastRotation.put(bone, frameRotation);
+        } else {
             bonesLastRotation.put(bone, frameRotation);
         }
 
