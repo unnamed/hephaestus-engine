@@ -39,13 +39,14 @@ public class ModelView {
     public ModelView(
             ModelViewController controller,
             ModelViewAnimator animator,
+            ModelAnimationQueue animationQueue,
             Model model,
             Player viewer,
             Location location
     ) {
         this.controller = controller;
         this.animator = animator;
-        this.animationQueue = new ModelAnimationQueue();
+        this.animationQueue = animationQueue;
 
         this.model = model;
         this.viewer = viewer;

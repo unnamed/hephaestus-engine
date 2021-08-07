@@ -166,7 +166,7 @@ public class ModelAnimationQueue {
         return realAnimation;
     }
 
-    static class QueuedAnimation extends ModelAnimation {
+    public static class QueuedAnimation extends ModelAnimation {
 
         private final Map<String, Map<Integer, Integer>> modelData;
 
