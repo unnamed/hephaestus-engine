@@ -39,9 +39,6 @@ public class ModelViewController_v1_17_R1
     ) {
         World world = location.getWorld();
 
-        // fuck @Nullable
-        Objects.requireNonNull(world);
-
         // location computing
         Vector3Float relativePos = Vectors.rotateAroundY(
                 bone.getOffset()
@@ -51,6 +48,7 @@ public class ModelViewController_v1_17_R1
         );
 
         // spawning the bone armorstand
+        // noinspection ConstantConditions
         WorldServer worldServer = ((CraftWorld) world).getHandle();
         EntityArmorStand entity = new EntityArmorStand(EntityTypes.c, worldServer);
 
@@ -70,9 +68,7 @@ public class ModelViewController_v1_17_R1
         ItemStack item = new ItemStack(Material.LEATHER_HORSE_ARMOR);
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
 
-        // fuck @Nullable again
-        Objects.requireNonNull(meta);
-
+        // noinspection ConstantConditions
         meta.setColor(Color.WHITE);
         meta.setCustomModelData(bone.getCustomModelData());
         item.setItemMeta(meta);
@@ -121,10 +117,6 @@ public class ModelViewController_v1_17_R1
             ModelBone bone,
             Vector3Float offset
     ) {
-        World world = location.getWorld();
-
-        // fuck @Nullable
-        Objects.requireNonNull(world);
 
         // location computing
         Vector3Float position = bone.getOffset().multiply(1, 1, -1).add(offset);
@@ -187,9 +179,7 @@ public class ModelViewController_v1_17_R1
         ItemStack item = new ItemStack(Material.LEATHER_HORSE_ARMOR);
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
 
-        // fuck @Nullable for third time
-        Objects.requireNonNull(meta);
-
+        // noinspection ConstantConditions
         meta.setCustomModelData(bone.getCustomModelData());
         meta.setColor(color);
         item.setItemMeta(meta);
@@ -244,9 +234,7 @@ public class ModelViewController_v1_17_R1
         ItemStack item = nmsItem == null ? new ItemStack(Material.LEATHER_HORSE_ARMOR) : CraftItemStack.asBukkitCopy(nmsItem);
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
 
-        // fuck @Nullable for third time
-        Objects.requireNonNull(meta);
-
+        // noinspection ConstantConditions
         meta.setCustomModelData(modelData);
         if (nmsItem == null) {
             meta.setColor(Color.WHITE);
