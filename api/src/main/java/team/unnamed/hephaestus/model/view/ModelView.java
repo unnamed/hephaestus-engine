@@ -120,6 +120,12 @@ public class ModelView {
         }
     }
 
+    public void animate() {
+        if (this.taskId == -1) {
+            this.taskId = this.animator.animate(this);
+        }
+    }
+
     public void colorize(Color color) {
         controller.colorize(this, color);
     }
