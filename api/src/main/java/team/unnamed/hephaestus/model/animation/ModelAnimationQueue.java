@@ -102,10 +102,19 @@ public class ModelAnimationQueue {
         return frameRotation;
     }
 
-    public int currentModelData(ModelBone bone) {
-        QueuedAnimation animation = this.getAnimationForBone(bone);
+    private QueuedAnimation findRecursively(ModelBone bone) {
+        QueuedAnimation queuedAnimation = this.getAnimationForBone(bone);
 
-        //TODO: IF NULL SHOULD STILL UPDATE USING THE PARENT'S TICK
+        if (queuedAnimation == null && bone.getParent() != null) {
+            queuedAnimation = findRecursively(bone.getParent());
+        }
+
+        return queuedAnimation;
+    }
+
+    public int currentModelData(ModelBone bone) {
+        QueuedAnimation animation = this.findRecursively(bone);
+
         if (animation == null) {
             return -1;
         }
