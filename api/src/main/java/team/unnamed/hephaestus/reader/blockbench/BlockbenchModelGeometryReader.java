@@ -12,6 +12,7 @@ import team.unnamed.hephaestus.model.texture.bound.TextureFace;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Serialization;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,7 +113,7 @@ public class BlockbenchModelGeometryReader {
         List<ModelBone> bones = new ArrayList<>();
         json.get("outliner").getAsJsonArray().forEach(boneElement -> {
             if (boneElement.isJsonObject()) {
-                bones.add(createBone(cubeIdMap, boneElement.getAsJsonObject()));
+                bones.add(createBone(null, cubeIdMap, boneElement.getAsJsonObject()));
             }
         });
 
@@ -123,7 +124,7 @@ public class BlockbenchModelGeometryReader {
         return (float) (Math.round(number * 100.0) / 100.0);
     }
 
-    private ModelBone createBone(Map<String, ModelCube> cubeIdMap, JsonObject json) {
+    private ModelBone createBone(@Nullable ModelBone parent, Map<String, ModelCube> cubeIdMap, JsonObject json) {
         String name = json.get("name").getAsString();
         Vector3Float pivot = Serialization.getVector3FloatFromJson(json.get("origin")).multiply(-1, 1, 1);
         Vector3Float rotation = json.get("rotation") == null
@@ -132,15 +133,16 @@ public class BlockbenchModelGeometryReader {
 
         List<ModelCube> cubes = new ArrayList<>();
         List<ModelBone> bones = new ArrayList<>();
+        ModelBone bone = new ModelBone(parent, name, pivot, rotation, bones, cubes);
 
         json.get("children").getAsJsonArray().forEach(componentElement -> {
             if (componentElement.isJsonObject()) {
-                bones.add(createBone(cubeIdMap, componentElement.getAsJsonObject()));
+                bones.add(createBone(bone, cubeIdMap, componentElement.getAsJsonObject()));
             } else {
                 cubes.add(cubeIdMap.get(componentElement.getAsString()));
             }
         });
 
-        return new ModelBone(name, pivot, rotation, bones, cubes);
+        return bone;
     }
 }

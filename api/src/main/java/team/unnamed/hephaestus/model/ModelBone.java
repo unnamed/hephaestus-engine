@@ -2,6 +2,7 @@ package team.unnamed.hephaestus.model;
 
 import team.unnamed.hephaestus.struct.Vector3Float;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -10,6 +11,7 @@ import java.util.List;
  */
 public class ModelBone implements ModelComponent {
 
+    @Nullable private final ModelBone parent;
     private final String name;
     private final Vector3Float pivot;
     private final Vector3Float rotation;
@@ -24,7 +26,15 @@ public class ModelBone implements ModelComponent {
 
     private int customModelData;
 
-    public ModelBone(String name, Vector3Float pivot, Vector3Float rotation, List<ModelBone> bones, List<ModelCube> cubes) {
+    public ModelBone(
+            @Nullable ModelBone parent,
+            String name,
+            Vector3Float pivot,
+            Vector3Float rotation,
+            List<ModelBone> bones,
+            List<ModelCube> cubes
+    ) {
+        this.parent = parent;
         this.name = name;
         this.pivot = pivot;
         this.rotation = rotation;
@@ -32,6 +42,11 @@ public class ModelBone implements ModelComponent {
         this.cubes = cubes;
         this.scaledPivot = pivot.divide(16);
         this.offset = Vector3Float.ZERO;
+    }
+
+    @Nullable
+    public ModelBone getParent() {
+        return parent;
     }
 
     public Vector3Float getOffset() {
