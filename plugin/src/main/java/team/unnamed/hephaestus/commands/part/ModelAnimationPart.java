@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-//TODO: MAKE THIS WORK
 public class ModelAnimationPart implements ArgumentPart {
 
     private final ModelRegistry modelRegistry;
