@@ -229,11 +229,6 @@ public class ZipResourcePackWriter
             for (Model model : models) {
                 for (ModelAnimation animation : model.getAnimations().values()) {
                     for (ModelBone bone : model.getGeometry().getBones()) {
-                        ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
-                        if (boneAnimation != null && boneAnimation.getScaleFrames().isEmpty()) {
-                            continue;
-                        }
-
                         for (int tick = 0; tick <= animation.getAnimationLength(); tick++) {
                             lastData = writeScaleKeyFrames(
                                     output,
