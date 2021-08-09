@@ -6,7 +6,8 @@ rootProject.name = 'hephaestus-engine'
     'plugin',
     // adaption modules
     'adapt-v1_16_R3',
-    'adapt-v1_17_R1'
+    'adapt-v1_17_R1',
+    'adapt-v1_14_R1'
 ].forEach {
     include it
     // Add 'hephaestus' as prefix for all subprojects

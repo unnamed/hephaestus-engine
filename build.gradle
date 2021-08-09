@@ -6,7 +6,7 @@ subprojects {
     version '0.1.0'
 
     compileJava {
-        options.release.set(16)
+        options.release.set(8)
     }
 
     repositories {

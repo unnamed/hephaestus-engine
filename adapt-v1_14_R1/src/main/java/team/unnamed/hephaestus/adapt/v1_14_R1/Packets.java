@@ -1,8 +1,8 @@
-package team.unnamed.hephaestus.adapt.v1_16_R3;
+package team.unnamed.hephaestus.adapt.v1_14_R1;
 
-import net.minecraft.server.v1_16_R3.Packet;
-import net.minecraft.server.v1_16_R3.PlayerConnection;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import net.minecraft.server.v1_14_R1.Packet;
+import net.minecraft.server.v1_14_R1.PlayerConnection;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
