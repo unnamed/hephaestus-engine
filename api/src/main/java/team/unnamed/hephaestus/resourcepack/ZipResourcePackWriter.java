@@ -137,6 +137,7 @@ public class ZipResourcePackWriter
         for (ModelBone child : bone.getBones()) {
             lastData = writeScaleKeyFrames(output, overrides, animation, model, tick, child, sizeProduct, lastData);
         }
+
         return lastData;
     }
 
@@ -222,9 +223,17 @@ public class ZipResourcePackWriter
                     Streams.writeUTF(output, json.toString());
                     output.closeEntry();
                 }
+            }
 
+            // write all the scale frame data
+            for (Model model : models) {
                 for (ModelAnimation animation : model.getAnimations().values()) {
                     for (ModelBone bone : model.getGeometry().getBones()) {
+                        ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
+                        if (boneAnimation != null && boneAnimation.getScaleFrames().isEmpty()) {
+                            continue;
+                        }
+
                         for (int tick = 0; tick <= animation.getAnimationLength(); tick++) {
                             lastData = writeScaleKeyFrames(
                                     output,
