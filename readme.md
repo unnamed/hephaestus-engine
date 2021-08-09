@@ -37,7 +37,7 @@ Hephaestus engine allows for flexibility while modeling and handling animations 
 - Deploys Blockbench models into game-ready texture packs
 - Plays animations
 - Parses molang in keyframes *(TODO)*
-- Supports[scale frames](https://github.com/unnamed/hephaestus-engine#scale-frames)
+- Supports [scale frames](https://github.com/unnamed/hephaestus-engine#scale-frames)
 ## Scale Frames
 Scale frames are now supported! They however are still not recommended as they need some improvements and positioning correction. You are still free to try them out and give us feedback on our [discord](https://discord.gg/TKhvvRK6aA)!
 ## Credits
