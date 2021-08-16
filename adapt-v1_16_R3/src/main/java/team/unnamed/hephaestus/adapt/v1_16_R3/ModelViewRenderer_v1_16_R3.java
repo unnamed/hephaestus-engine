@@ -9,6 +9,8 @@ import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewController;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 
+import java.util.Collection;
+
 public class ModelViewRenderer_v1_16_R3 implements ModelViewRenderer {
 
     private final ModelViewController controller;
@@ -20,8 +22,20 @@ public class ModelViewRenderer_v1_16_R3 implements ModelViewRenderer {
     }
 
     @Override
-    public ModelView render(Player viewer, Model model, Location location, ModelAnimationQueue animationQueue) {
-        ModelView view = new ModelView(controller, animator, animationQueue, model, viewer, location);
+    public ModelView render(
+            Model model,
+            Location location,
+            ModelAnimationQueue animationQueue,
+            Collection<? extends Player> viewers
+    ) {
+        ModelView view = new ModelView(
+                controller,
+                animator,
+                animationQueue,
+                model,
+                viewers,
+                location
+        );
         view.show();
         return view;
     }

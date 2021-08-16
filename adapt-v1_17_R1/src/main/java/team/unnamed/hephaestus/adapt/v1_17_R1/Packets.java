@@ -25,4 +25,19 @@ public final class Packets {
             connection.sendPacket(packet);
         }
     }
+
+    /**
+     * Sends the given {@code packets} to all the
+     * specified {@code players}
+     */
+    public static void send(Iterable<? extends Player> players, Packet<?>... packets) {
+        for (Player player : players) {
+            PlayerConnection connection = ((CraftPlayer) player)
+                    .getHandle().b;
+            for (Packet<?> packet : packets) {
+                connection.sendPacket(packet);
+            }
+        }
+    }
+
 }

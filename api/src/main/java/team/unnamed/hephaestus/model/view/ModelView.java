@@ -10,6 +10,7 @@ import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelAnimationQueue;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +25,7 @@ public class ModelView {
 
     private final Model model;
 
-    private final Player viewer;
+    private final Collection<? extends Player> viewers;
 
     private Location location;
 
@@ -41,7 +42,7 @@ public class ModelView {
             ModelViewAnimator animator,
             ModelAnimationQueue animationQueue,
             Model model,
-            Player viewer,
+            Collection<? extends Player> viewers,
             Location location
     ) {
         this.controller = controller;
@@ -49,7 +50,7 @@ public class ModelView {
         this.animationQueue = animationQueue;
 
         this.model = model;
-        this.viewer = viewer;
+        this.viewers = viewers;
         this.location = location;
 
         this.taskId = -1;
@@ -63,8 +64,8 @@ public class ModelView {
         return model;
     }
 
-    public Player getViewer() {
-        return viewer;
+    public Collection<? extends Player> getViewers() {
+        return viewers;
     }
 
     public Location getLocation() {

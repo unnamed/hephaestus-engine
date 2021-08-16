@@ -85,7 +85,7 @@ public class SummonCommand implements CommandClass {
         Location location = player.getLocation();
 
         String id = Integer.toHexString(ThreadLocalRandom.current().nextInt(0xFFFFFFF));
-        ModelView entity = renderer.render(player, model, location);
+        ModelView entity = renderer.render(model, location, player);
         views.put(id, entity);
         player.sendMessage("Model '" + model.getName() + "' summoned. Id: " + id);
 

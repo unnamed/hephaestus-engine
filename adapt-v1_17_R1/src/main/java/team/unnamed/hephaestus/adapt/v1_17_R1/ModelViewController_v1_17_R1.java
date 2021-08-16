@@ -26,7 +26,6 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Collections;
-import java.util.Objects;
 
 public class ModelViewController_v1_17_R1
         implements ModelViewController {
@@ -79,7 +78,7 @@ public class ModelViewController_v1_17_R1
         entity.setSlot(EnumItemSlot.f, nmsItem, true);
 
         Packets.send(
-                view.getViewer(),
+                view.getViewers(),
                 new PacketPlayOutSpawnEntityLiving(entity),
                 new PacketPlayOutEntityMetadata(entity.getId(), entity.getDataWatcher(), true),
                 new PacketPlayOutEntityEquipment(
@@ -135,7 +134,7 @@ public class ModelViewController_v1_17_R1
         );
 
         Packets.send(
-                view.getViewer(),
+                view.getViewers(),
                 new PacketPlayOutEntityTeleport(entity)
         );
 
@@ -160,7 +159,7 @@ public class ModelViewController_v1_17_R1
 
     private void hideBone(ModelView view, ModelBone bone) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
-        Packets.send(view.getViewer(), new PacketPlayOutEntityDestroy(entity.getId()));
+        Packets.send(view.getViewers(), new PacketPlayOutEntityDestroy(entity.getId()));
         for (ModelBone component : bone.getBones()) {
             hideBone(view, component);
         }
@@ -189,7 +188,7 @@ public class ModelViewController_v1_17_R1
         entity.setSlot(EnumItemSlot.f, nmsItem, true);
 
         Packets.send(
-                view.getViewer(),
+                view.getViewers(),
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
                         Collections.singletonList(new Pair<>(
@@ -221,7 +220,7 @@ public class ModelViewController_v1_17_R1
                 location.getYaw(),
                 location.getPitch()
         );
-        Packets.send(view.getViewer(), new PacketPlayOutEntityTeleport(entity));
+        Packets.send(view.getViewers(), new PacketPlayOutEntityTeleport(entity));
     }
 
     @Override
@@ -245,7 +244,7 @@ public class ModelViewController_v1_17_R1
         entity.setSlot(EnumItemSlot.f, nmsItem, true);
 
         Packets.send(
-                view.getViewer(),
+                view.getViewers(),
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
                         Collections.singletonList(new Pair<>(
@@ -268,6 +267,6 @@ public class ModelViewController_v1_17_R1
                         (float) Math.toDegrees(angle.getZ())
                 )
         );
-        Packets.send(view.getViewer(), new PacketPlayOutEntityMetadata(entity.getId(), watcher, true));
+        Packets.send(view.getViewers(), new PacketPlayOutEntityMetadata(entity.getId(), watcher, true));
     }
 }
