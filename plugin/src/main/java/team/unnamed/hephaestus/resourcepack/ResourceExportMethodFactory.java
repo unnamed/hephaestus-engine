@@ -26,7 +26,7 @@ public final class ResourceExportMethodFactory {
                 "Hephaestus generated",
                 Streamable.ofResource(
                         ResourceExportMethodFactory.class.getClassLoader(),
-                        "unnamed.png"
+                        "hephaestus.png"
                 )
         );
         ResourcePackWriter writer = new ZipResourcePackWriter("hephaestus", info);
