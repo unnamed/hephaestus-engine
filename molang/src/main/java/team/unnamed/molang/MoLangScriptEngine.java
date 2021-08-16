@@ -5,7 +5,13 @@ import team.unnamed.molang.context.EvalContext;
 import team.unnamed.molang.expression.Expression;
 import team.unnamed.molang.parser.MoLangParser;
 
-import javax.script.*;
+import javax.script.AbstractScriptEngine;
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;

@@ -12,8 +12,7 @@ subprojects {
     repositories {
         mavenLocal()
         maven { url 'https://repo.codemc.io/repository/nms/' }
-        maven { url 'https://repo.unnamed.team/repository/unnamed-releases/' }
-        maven { url 'https://repo.unnamed.team/repository/unnamed-snapshots/' }
+        maven { url 'https://repo.unnamed.team/repository/unnamed-public/' }
         mavenCentral()
     }
 
