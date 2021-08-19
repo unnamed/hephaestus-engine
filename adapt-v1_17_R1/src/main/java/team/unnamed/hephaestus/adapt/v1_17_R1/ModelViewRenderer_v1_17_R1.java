@@ -27,7 +27,7 @@ public class ModelViewRenderer_v1_17_R1 implements ModelViewRenderer {
             Model model,
             Location location,
             ModelAnimationQueue animationQueue,
-            Collection<? extends Player> viewers
+            Collection<Player> viewers
     ) {
         ModelView view = new ModelView(
                 controller,

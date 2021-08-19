@@ -9,7 +9,6 @@ import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewController;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class ModelViewRenderer_v1_14_R1 implements ModelViewRenderer {
@@ -27,7 +26,7 @@ public class ModelViewRenderer_v1_14_R1 implements ModelViewRenderer {
             Model model,
             Location location,
             ModelAnimationQueue animationQueue,
-            Collection<? extends Player> viewers
+            Collection<Player> viewers
     ) {
         ModelView view = new ModelView(
                 controller,

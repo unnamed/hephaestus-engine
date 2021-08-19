@@ -25,7 +25,7 @@ public class ModelView {
 
     private final Model model;
 
-    private final Collection<? extends Player> viewers;
+    private final Collection<Player> viewers;
 
     private Location location;
 
@@ -42,7 +42,7 @@ public class ModelView {
             ModelViewAnimator animator,
             ModelAnimationQueue animationQueue,
             Model model,
-            Collection<? extends Player> viewers,
+            Collection<Player> viewers,
             Location location
     ) {
         this.controller = controller;
@@ -64,7 +64,7 @@ public class ModelView {
         return model;
     }
 
-    public Collection<? extends Player> getViewers() {
+    public Collection<Player> getViewers() {
         return viewers;
     }
 
@@ -133,6 +133,18 @@ public class ModelView {
 
     public void show() {
         controller.show(this);
+    }
+
+    public void addViewer(Player player) {
+        if (viewers.add(player)) {
+            controller.showIndividually(this, player);
+        }
+    }
+
+    public void removeViewer(Player player) {
+        if (viewers.remove(player)) {
+            controller.hideIndividually(this, player);
+        }
     }
 
     public void hide() {

@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.util.EulerAngle;
@@ -175,16 +176,18 @@ public class ModelViewController_v1_17_R1
     private void colorizeBone(ModelView view, ModelBone bone, Color color) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
 
-        ItemStack item = new ItemStack(Material.LEATHER_HORSE_ARMOR);
+       net.minecraft.world.item.ItemStack nmsItem
+                = entity.getEquipment(EnumItemSlot.f);
+
+        ItemStack item = nmsItem == null ? new ItemStack(Material.LEATHER_HORSE_ARMOR) : CraftItemStack.asBukkitCopy(nmsItem);
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
 
-        // noinspection ConstantConditions
-        meta.setCustomModelData(bone.getCustomModelData());
+        //noinspection ConstantConditions
         meta.setColor(color);
         item.setItemMeta(meta);
 
-        net.minecraft.world.item.ItemStack nmsItem =
-                CraftItemStack.asNMSCopy(item);
+        nmsItem = CraftItemStack.asNMSCopy(item);
+
         entity.setSlot(EnumItemSlot.f, nmsItem, true);
 
         Packets.send(
@@ -268,5 +271,57 @@ public class ModelViewController_v1_17_R1
                 )
         );
         Packets.send(view.getViewers(), new PacketPlayOutEntityMetadata(entity.getId(), watcher, true));
+    }
+
+    private void showBoneIndividually(
+            ModelView view,
+            ModelBone bone,
+            Player player
+    ) {
+        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
+
+        Packets.send(
+                player,
+                new PacketPlayOutSpawnEntityLiving(entity),
+                new PacketPlayOutEntityMetadata(entity.getId(), entity.getDataWatcher(), true),
+                new PacketPlayOutEntityEquipment(
+                        entity.getId(),
+                        Collections.singletonList(new Pair<>(
+                                EnumItemSlot.f,
+                                entity.getEquipment(EnumItemSlot.f)
+                        ))
+                )
+        );
+
+        for (ModelBone child : bone.getBones()) {
+            showBoneIndividually(view, child, player);
+        }
+    }
+
+    private void hideBoneIndividually(
+            ModelView view,
+            ModelBone bone,
+            Player player
+    ) {
+        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
+        Packets.send(player, new PacketPlayOutEntityDestroy(entity.getId()));
+
+        for (ModelBone child : bone.getBones()) {
+            hideBoneIndividually(view, child, player);
+        }
+    }
+
+    @Override
+    public void showIndividually(ModelView view, Player player) {
+        for (ModelBone bone : view.getModel().getGeometry().getBones()) {
+            showBoneIndividually(view, bone, player);
+        }
+    }
+
+    @Override
+    public void hideIndividually(ModelView view, Player player) {
+        for (ModelBone bone : view.getModel().getGeometry().getBones()) {
+            hideBoneIndividually(view, bone, player);
+        }
     }
 }

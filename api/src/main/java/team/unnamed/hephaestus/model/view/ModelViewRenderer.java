@@ -5,8 +5,10 @@ import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimationQueue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 /** Responsible of spawning {@link Model} */
 public interface ModelViewRenderer {
@@ -19,13 +21,14 @@ public interface ModelViewRenderer {
             Model model,
             Location location,
             ModelAnimationQueue animationQueue,
-            Collection<? extends Player> viewers
+            Collection<Player> viewers
     );
+
 
     default ModelView render(
             Model model,
             Location location,
-            Collection<? extends Player> viewers
+            Collection<Player> viewers
     ) {
         return render(model, location, new ModelAnimationQueue(), viewers);
     }
@@ -45,6 +48,21 @@ public interface ModelViewRenderer {
             Player... viewers
     ) {
         return render(model, location, Arrays.asList(viewers));
+    }
+
+    default ModelView render(
+            Model model,
+            Location location
+    ) {
+        return render(model, location, new ArrayList<>());
+    }
+
+    default ModelView render(
+            Model model,
+            Location location,
+            ModelAnimationQueue animationQueue
+    ) {
+       return this.render(model, location, animationQueue, new ArrayList<>());
     }
 
 }
