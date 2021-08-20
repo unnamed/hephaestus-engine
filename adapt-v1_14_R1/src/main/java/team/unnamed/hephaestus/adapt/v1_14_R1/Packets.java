@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 /**
  * Utility class for packets, specific
- * for v1_16_R3 minecraft server version
+ * for v1_14_R1 minecraft server version
  */
 public final class Packets {
 
