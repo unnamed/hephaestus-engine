@@ -26,8 +26,15 @@ public class MultiZipStreamable implements Streamable {
                 ? (ZipOutputStream) stream
                 : new ZipOutputStream(stream);
 
-        for (Streamable streamable : streamables) {
-            streamable.transfer(output);
+        try {
+            for (Streamable streamable : streamables) {
+                streamable.transfer(output);
+            }
+        } finally {
+            if (stream != output) {
+                // finish but don't close
+                output.finish();
+            }
         }
     }
 }
