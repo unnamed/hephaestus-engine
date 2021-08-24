@@ -83,7 +83,7 @@ public final class ResourceExports {
         }
 
         @Override
-        public String export(Collection<Streamable> data) throws IOException {
+        public String export(Streamable data) throws IOException {
 
             if (fileName == null) {
                 // use 'resourcepack' as default name
@@ -112,9 +112,7 @@ public final class ResourceExports {
                                 + "Content-Type: application/octet-stream; charset=utf-8" + LINE_FEED + LINE_FEED
                 );
 
-                for (Streamable streamable : data) {
-                    streamable.transfer(output);
-                }
+                data.transfer(output);
 
                 Streams.writeUTF(
                         output,
@@ -169,7 +167,7 @@ public final class ResourceExports {
         }
 
         @Override
-        public File export(Collection<Streamable> data) throws IOException {
+        public File export(Streamable data) throws IOException {
             if (!target.exists() && !target.createNewFile()) {
                 throw new IOException("Failed to create target resource pack file");
             }
@@ -199,9 +197,7 @@ public final class ResourceExports {
                         }
                     }
 
-                    for (Streamable streamable : data) {
-                        streamable.transfer(output);
-                    }
+                    data.transfer(output);
                 }
 
                 // delete old file
@@ -214,9 +210,7 @@ public final class ResourceExports {
                 }
             } else {
                 try (OutputStream output = new BufferedOutputStream(new FileOutputStream(target))) {
-                    for (Streamable streamable : data) {
-                        streamable.transfer(output);
-                    }
+                    data.transfer(output);
                 }
             }
 
