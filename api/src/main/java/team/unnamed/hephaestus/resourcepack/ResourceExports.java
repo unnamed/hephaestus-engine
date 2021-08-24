@@ -1,5 +1,6 @@
 package team.unnamed.hephaestus.resourcepack;
 
+import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.model.Model;
 
@@ -15,7 +16,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -28,8 +32,8 @@ import java.util.zip.ZipOutputStream;
  */
 public final class ResourceExports {
 
-	private ResourceExports() {
-	}
+    private ResourceExports() {
+    }
 
     /**
      * Fluent-style class for exporting resource
@@ -39,35 +43,34 @@ public final class ResourceExports {
             implements ResourceExporter<String> {
 
         private static final String BOUNDARY = "HephaestusBoundary";
-
         private static final String LINE_FEED = "\r\n";
 
-	    private final URL url;
-	    private String authorization;
-	    private ResourcePackWriter writer;
-	    private String fileName;
+        private final URL url;
+        private final Map<String, String> headers;
+        private String fileName;
 
-	    public HttpExporter(String url)
+        public HttpExporter(String url)
                 throws MalformedURLException {
-	        this.url = new URL(url);
+            this.url = new URL(url);
+            this.headers = new HashMap<>();;
         }
 
         /**
          * Sets the authorization token for this
          * exporter class
          */
-	    public HttpExporter setAuthorization(@Nullable String authorization) {
-	        this.authorization = authorization;
-	        return this;
+        public HttpExporter setAuthorization(@Nullable String authorization) {
+            return setProperty("Authorization", authorization);
         }
 
         /**
-         * Sets the resource pack writer for this
-         * exporter
+         * Sets a request property for the export
+         * @param name The property name
+         * @param value The property value
          */
-        public HttpExporter setWriter(@Nullable ResourcePackWriter writer) {
-	        this.writer = writer;
-	        return this;
+        public HttpExporter setProperty(String name, String value) {
+            headers.put(name, value);
+            return this;
         }
 
         /**
@@ -80,12 +83,7 @@ public final class ResourceExports {
         }
 
         @Override
-        public String export(List<Model> models) throws IOException {
-
-            if (writer == null) {
-                // use the ZipResourcePackWriter by default
-                writer = new ZipResourcePackWriter();
-            }
+        public String export(Collection<Streamable> data) throws IOException {
 
             if (fileName == null) {
                 // use 'resourcepack' as default name
@@ -103,20 +101,20 @@ public final class ResourceExports {
             connection.setRequestProperty("Charset", "utf-8");
             connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
 
-            if (authorization != null) {
-                connection.setRequestProperty("Authorization", authorization);
-            }
+            headers.forEach(connection::setRequestProperty);
 
             // write http request body
             try (OutputStream output = connection.getOutputStream()) {
                 Streams.writeUTF(
                         output,
                         "--" + BOUNDARY + LINE_FEED
-                        + "Content-Disposition: form-data; name=\"" + fileName + "\"; filename=\"" + fileName + "\"" + LINE_FEED
-                        + "Content-Type: application/octet-stream; charset=utf-8" + LINE_FEED + LINE_FEED
+                                + "Content-Disposition: form-data; name=\"" + fileName + "\"; filename=\"" + fileName + "\"" + LINE_FEED
+                                + "Content-Type: application/octet-stream; charset=utf-8" + LINE_FEED + LINE_FEED
                 );
 
-                writer.write(output, models);
+                for (Streamable streamable : data) {
+                    streamable.transfer(output);
+                }
 
                 Streams.writeUTF(
                         output,
@@ -142,7 +140,7 @@ public final class ResourceExports {
      */
     public static HttpExporter newHttpExporter(String url)
             throws MalformedURLException {
-	    return new HttpExporter(url);
+        return new HttpExporter(url);
     }
 
     /**
@@ -153,20 +151,10 @@ public final class ResourceExports {
             implements ResourceExporter<File> {
 
         private final File target;
-        private ResourcePackWriter writer;
         private boolean mergeZip;
 
         public FileExporter(File target) {
             this.target = target;
-        }
-
-        /**
-         * Sets the resource pack writer for this
-         * exporter
-         */
-        public FileExporter setWriter(@Nullable ResourcePackWriter writer) {
-            this.writer = writer;
-            return this;
         }
 
         /**
@@ -181,13 +169,9 @@ public final class ResourceExports {
         }
 
         @Override
-        public File export(List<Model> models) throws IOException {
+        public File export(Collection<Streamable> data) throws IOException {
             if (!target.exists() && !target.createNewFile()) {
                 throw new IOException("Failed to create target resource pack file");
-            }
-            if (writer == null) {
-                // use the ZipResourcePackWriter by default
-                writer = new ZipResourcePackWriter();
             }
             if (mergeZip && target.exists()) {
 
@@ -215,7 +199,9 @@ public final class ResourceExports {
                         }
                     }
 
-                    writer.write(output, models);
+                    for (Streamable streamable : data) {
+                        streamable.transfer(output);
+                    }
                 }
 
                 // delete old file
@@ -227,14 +213,15 @@ public final class ResourceExports {
                     throw new IOException("Cannot move temporary file to original ZIP file");
                 }
             } else {
-                try (OutputStream output
-                             = new BufferedOutputStream(new FileOutputStream(target))) {
-                    writer.write(output, models);
+                try (OutputStream output = new BufferedOutputStream(new FileOutputStream(target))) {
+                    for (Streamable streamable : data) {
+                        streamable.transfer(output);
+                    }
                 }
             }
+
             return target;
         }
-
     }
 
     /**
@@ -244,5 +231,4 @@ public final class ResourceExports {
     public static FileExporter newFileExporter(File file) {
         return new FileExporter(file);
     }
-
 }

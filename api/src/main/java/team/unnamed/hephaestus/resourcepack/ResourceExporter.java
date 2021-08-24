@@ -1,9 +1,10 @@
 package team.unnamed.hephaestus.resourcepack;
 
-import team.unnamed.hephaestus.model.Model;
+import team.unnamed.hephaestus.io.Streamable;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Interface for exporting resources packs,
@@ -12,9 +13,13 @@ import java.util.List;
  */
 public interface ResourceExporter<T> {
 
+    default T export(Streamable... data) throws IOException {
+        return export(Arrays.asList(data));
+    }
+
     /**
-     * Exports the given {@code models},
+     * Exports the given {@code data},
      */
-    T export(List<Model> models) throws IOException;
+    T export(Collection<Streamable> data) throws IOException;
 
 }

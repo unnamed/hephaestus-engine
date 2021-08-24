@@ -18,31 +18,36 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ZipResourcePackWriter
-        implements ResourcePackWriter {
+public class ZipModelResourcePackWriter
+        implements Streamable {
 
+
+    private final Collection<Model> models;
     private final String namespace;
     @Nullable private final ResourcePackInfo packInfo;
 
     private final ModelGeometryTransformer transformer;
 
-    public ZipResourcePackWriter(
+    public ZipModelResourcePackWriter(
+            Collection<Model> models,
             String namespace,
             @Nullable ResourcePackInfo packInfo
     ) {
+        this.models = models;
         this.namespace = namespace;
         this.packInfo = packInfo;
         this.transformer = new ModelGeometryTransformer(namespace);
     }
 
-    public ZipResourcePackWriter() {
-        this("hephaestus", new ResourcePackInfo(6, "Hephaestus generated", null));
+    public ZipModelResourcePackWriter(Collection<Model> models) {
+        this(models, "hephaestus", new ResourcePackInfo(6, "Hephaestus generated", null));
     }
 
     /**
@@ -141,8 +146,15 @@ public class ZipResourcePackWriter
         return lastData;
     }
 
+    /**
+     * Transfers the resource pack information to the
+     * given {@code output}
+     *
+     * <strong>Note that, as specified in {@link Streamable#transfer},
+     * this method won't close the given {@code output}</strong>
+     */
     @Override
-    public List<Model> write(OutputStream stream, List<Model> models) throws IOException {
+    public void transfer(OutputStream stream) throws IOException {
         int lastData = this.applyCustomModelData(models);
 
         ZipOutputStream output = stream instanceof ZipOutputStream
@@ -167,11 +179,8 @@ public class ZipResourcePackWriter
 
                 Streamable icon = packInfo.getIcon();
                 if (icon != null) {
-                    // write the resource pack icon
                     putNext(output, "pack.png");
-                    try (InputStream iconInput = icon.openIn()) {
-                        Streams.pipe(iconInput, output);
-                    }
+                    icon.transfer(output);
                     output.closeEntry();
                 }
             }
@@ -256,14 +265,14 @@ public class ZipResourcePackWriter
             );
             output.closeEntry();
         } finally {
-            // finish but don't close
-            output.finish();
+            if (stream != output) {
+                // finish but don't close
+                output.finish();
+            }
         }
-
-        return models;
     }
 
-    public int applyCustomModelData(List<Model> models) {
+    public int applyCustomModelData(Collection<Model> models) {
         int data = 1;
         for (Model model : models) {
             for (ModelBone bone : transformer.getAllBones(model.getGeometry())) {
