@@ -20,17 +20,6 @@ public final class ResourceExportMethodFactory {
         String[] args = format.split(":");
         String method = args[0].toLowerCase();
 
-        // TODO: This is temporal, it should be customizable
-        ResourcePackInfo info = new ResourcePackInfo(
-                6,
-                "Hephaestus generated",
-                Streamable.ofResource(
-                        ResourceExportMethodFactory.class.getClassLoader(),
-                        "hephaestus.png"
-                )
-        );
-        ResourcePackWriter writer = new ZipResourcePackWriter("hephaestus", info);
-
         switch (method) {
             case "mergezipfile":
             case "file": {
@@ -43,7 +32,6 @@ public final class ResourceExportMethodFactory {
 
                 String filename = String.join(":", Arrays.copyOfRange(args, 1, args.length));
                 return ResourceExports.newFileExporter(new File(folder, filename))
-                        .setWriter(writer)
                         .setMergeZip(method.equals("mergezipfile"));
             }
             case "upload": {
@@ -61,7 +49,6 @@ public final class ResourceExportMethodFactory {
                 }
 
                 return ResourceExports.newHttpExporter(url)
-                        .setWriter(writer)
                         .setAuthorization(authorization);
             }
             default: {
@@ -72,5 +59,4 @@ public final class ResourceExportMethodFactory {
             }
         }
     }
-
 }

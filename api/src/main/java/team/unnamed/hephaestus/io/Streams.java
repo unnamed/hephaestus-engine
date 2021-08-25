@@ -1,6 +1,7 @@
 package team.unnamed.hephaestus.io;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,6 +12,7 @@ import java.util.Base64;
 /**
  * Utility class for working with
  * {@link InputStream}s and {@link OutputStream}s
+ * @author yusshu (Andre Roldan)
  */
 public final class Streams {
 
@@ -84,6 +86,30 @@ public final class Streams {
     }
 
     /**
+     * Reads a string from the given {@code input}.
+     * The resulting string must have the given
+     * {@code length}.
+     */
+    public static String readString(
+            InputStream input,
+            int length
+    ) throws IOException {
+        char[] data = new char[length];
+        for (int i = 0; i < length; i++) {
+            int byte1 = input.read();
+            int byte2 = input.read();
+            if ((byte1 | byte2) < 0) {
+                // if byte1 or byte2 is -1
+                // we reached the eof
+                throw new EOFException();
+            } else {
+                data[i] = (char) ((byte1 << 8) + byte2);
+            }
+        }
+        return new String(data);
+    }
+
+    /**
      * Creates a {@link ByteArrayInputStream} for reading
      * the given {@code string} using the specified {@code charset}
      */
@@ -101,5 +127,4 @@ public final class Streams {
         InputStream original = fromString(string, charset);
         return Base64.getDecoder().wrap(original);
     }
-
 }
