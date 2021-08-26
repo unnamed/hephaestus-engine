@@ -6,7 +6,7 @@ dependencies {
     api project(':model:runtime')
     implementation project(':molang')
 
-    implementation 'org.jetbrains:annotations:21.0.1'
+    implementation 'org.jetbrains:annotations:22.0.0'
     implementation 'me.fixeddev:commandflow-bukkit:0.4.0'
     compileOnly 'org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT'
 
