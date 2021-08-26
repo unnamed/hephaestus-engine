@@ -1,12 +1,6 @@
-jar {
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-}
-
 dependencies {
-    implementation project(':hephaestus-api')
-    implementation project(':hephaestus-molang')
+    api project(':model:runtime')
+    implementation project(':molang')
 
     implementation 'org.jetbrains:annotations:21.0.1'
     implementation 'me.fixeddev:commandflow-bukkit:0.4.0'
@@ -19,6 +13,6 @@ dependencies {
             'v1_16_R3',
             'v1_17_R1'
     ].forEach {
-        implementation project(":hephaestus-adapt-$it")
+        implementation project(":model:adapt:$it")
     }
 }
