@@ -12,6 +12,7 @@ import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.reader.ModelReader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -71,7 +72,12 @@ public class BlockbenchModelReader implements ModelReader {
             }
 
             String base64Source = source.substring(BASE_64_PREFIX.length());
-            textures.put(name, () -> Streams.fromBase64(base64Source, StandardCharsets.UTF_8));
+            textures.put(name, new Streamable() {
+                @Override
+                public InputStream openIn() {
+                    return Streams.fromBase64(base64Source, StandardCharsets.UTF_8);
+                }
+            });
         }
 
         return new Model(

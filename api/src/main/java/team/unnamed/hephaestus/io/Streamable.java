@@ -1,5 +1,6 @@
 package team.unnamed.hephaestus.io;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,6 +13,8 @@ import java.io.OutputStream;
  * read or written using {@link InputStream}
  * and {@link OutputStream}, some implementations
  * may not support reading or writing
+ *
+ * @author yusshu (Andre Roldan)
  */
 public interface Streamable {
 
@@ -20,7 +23,11 @@ public interface Streamable {
      * data from this data source instance
      * @throws IOException If opening fails
      */
-    InputStream openIn() throws IOException;
+    default InputStream openIn() throws IOException {
+        throw new UnsupportedOperationException(
+                "This data source doesn't support reads"
+        );
+    }
 
     /**
      * Opens a {@link OutputStream} for writing
@@ -34,12 +41,45 @@ public interface Streamable {
     }
 
     /**
+     * Transfers the data from this streamable object
+     * to the given {@code output}.
+     *
+     * <strong>This isn't a shortcut method for transferring
+     * {@link Streamable#openIn()} information to the given
+     * {@code output}, however, it's the default behavior</strong>
+     *
+     * <strong>Note that the support of this method
+     * doesn't always indicate the support of the
+     * {@link Streamable#openIn()} method</strong>
+     *
+     * <strong>The method implementations should not
+     * close the given {@code output}</strong>
+     *
+     * @throws IOException If writing fails
+     */
+    default void transfer(OutputStream output) throws IOException {
+        try (InputStream input = openIn()) {
+            Streams.pipe(input, output);
+        }
+    }
+
+    /**
      * Creates a {@link Streamable} from a resource.
      * @param loader The class loader holding the resource
      * @param name The resource name
      */
     static Streamable ofResource(ClassLoader loader, String name) {
-        return () -> loader.getResourceAsStream(name);
+        return new Streamable() {
+            @Override
+            public InputStream openIn() throws IOException {
+                InputStream input = loader.getResourceAsStream(name);
+                if (input == null) {
+                    throw new IllegalStateException("Resource '"
+                            + name + "' doesn't exist");
+                }
+                return input;
+            }
+        };
     }
 
     /**
@@ -61,6 +101,21 @@ public interface Streamable {
                 return new FileOutputStream(file);
             }
 
+        };
+    }
+
+    /**
+     * Creates a read-only {@link Streamable} representing
+     * the given {@code bytes}. Doesn't support writing and
+     * doesn't modify the bytes
+     * @param bytes the wrapped bytes
+     */
+    static Streamable ofBytes(byte[] bytes) {
+        return new Streamable() {
+            @Override
+            public InputStream openIn() {
+                return new ByteArrayInputStream(bytes);
+            }
         };
     }
 
