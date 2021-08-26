@@ -2,6 +2,7 @@ package team.unnamed.hephaestus.resourcepack;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.model.Model;
@@ -14,7 +15,6 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.KeyFrames;
 import team.unnamed.hephaestus.util.Vectors;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,7 +27,6 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipModelResourcePackWriter
         implements Streamable {
-
 
     private final Collection<Model> models;
     private final String namespace;
