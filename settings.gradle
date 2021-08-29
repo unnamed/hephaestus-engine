@@ -1,7 +1,6 @@
 rootProject.name = 'hephaestus-engine'
 
 include 'common'
-include 'molang'
 include 'plugin'
 
 //

@@ -2,9 +2,15 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
+repositories {
+    mavenLocal()
+    maven { url = 'https://repo.unnamed.team/repository/unnamed-public/' }
+    mavenCentral()
+}
+
 dependencies {
     api project(':model:runtime')
-    implementation project(':molang')
+    implementation "team.unnamed:molang:0.1.0"
 
     implementation 'org.jetbrains:annotations:22.0.0'
     implementation 'me.fixeddev:commandflow-bukkit:0.4.0'
