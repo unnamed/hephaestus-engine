@@ -19,6 +19,7 @@ import team.unnamed.hephaestus.commands.SummonCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
 import team.unnamed.hephaestus.io.Streams;
+import team.unnamed.hephaestus.io.TreeStreamables;
 import team.unnamed.hephaestus.listener.ResourcePackApplyListener;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
@@ -111,16 +112,15 @@ public class AnimationEnginePlugin extends JavaPlugin {
                     this.getConfig().getString("pack.generate", "file:hephaestus-generated.zip")
             );
 
-            // TODO: This will throw an error since the OutputStream instances aren't TreeOutputStreams
             if (resourceExporter instanceof ResourceExports.HttpExporter) {
                 JsonObject response = new JsonParser().parse(
-                        resourceExporter.export(new ModelResourcePackWriter(models)).toString()
+                        resourceExporter.export(TreeStreamables.transferringZip(new ModelResourcePackWriter(models))).toString()
                 ).getAsJsonObject();
 
                 url = response.get("url").getAsString();
                 hash = Streams.getBytesFromHex(response.get("hash").getAsString());
             } else {
-                resourceExporter.export(new ModelResourcePackWriter(models));
+                resourceExporter.export(TreeStreamables.transferringZip(new ModelResourcePackWriter(models)));
             }
 
             models.forEach(model -> {
