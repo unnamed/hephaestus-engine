@@ -173,11 +173,18 @@ public class ModelViewController_v1_17_R1
         }
     }
 
-    private void colorizeBone(ModelView view, ModelBone bone, Color color) {
-        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
+    private void colorizeBoneAndChildren(ModelView view, ModelBone bone, Color color) {
+        colorizeBone(view, bone.getName(), color);
+        for (ModelBone child : bone.getBones()) {
+            colorizeBoneAndChildren(view, child, color);
+        }
+    }
 
-       net.minecraft.world.item.ItemStack nmsItem
-                = entity.getEquipment(EnumItemSlot.f);
+    @Override
+    public void colorizeBone(ModelView view, String boneName, Color color) {
+        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(boneName);
+
+        net.minecraft.world.item.ItemStack nmsItem = entity.getEquipment(EnumItemSlot.f);
 
         ItemStack item = nmsItem == null ? new ItemStack(Material.LEATHER_HORSE_ARMOR) : CraftItemStack.asBukkitCopy(nmsItem);
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
@@ -200,16 +207,12 @@ public class ModelViewController_v1_17_R1
                         ))
                 )
         );
-
-        for (ModelBone child : bone.getBones()) {
-            colorizeBone(view, child, color);
-        }
     }
 
     @Override
     public void colorize(ModelView view, Color color) {
         for (ModelBone bone : view.getModel().getGeometry().getBones()) {
-            colorizeBone(view, bone, color);
+            colorizeBoneAndChildren(view, bone, color);
         }
     }
 

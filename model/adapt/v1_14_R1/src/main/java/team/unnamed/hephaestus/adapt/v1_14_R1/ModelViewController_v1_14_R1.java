@@ -157,8 +157,9 @@ public class ModelViewController_v1_14_R1
         }
     }
 
-    private void colorizeBone(ModelView view, ModelBone bone, Color color) {
-        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
+    @Override
+    public void colorizeBone(ModelView view, String boneName, Color color) {
+        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(boneName);
 
         net.minecraft.server.v1_14_R1.ItemStack nmsItem
                 = entity.getEquipment(EnumItemSlot.HEAD);
@@ -182,16 +183,19 @@ public class ModelViewController_v1_14_R1
                         nmsItem
                 )
         );
+    }
 
+    private void colorizeBoneAndChildren(ModelView view, ModelBone bone, Color color) {
+        colorizeBone(view, bone.getName(), color);
         for (ModelBone child : bone.getBones()) {
-            colorizeBone(view, child, color);
+            colorizeBoneAndChildren(view, child, color);
         }
     }
 
     @Override
     public void colorize(ModelView view, Color color) {
         for (ModelBone bone : view.getModel().getGeometry().getBones()) {
-            colorizeBone(view, bone, color);
+            colorizeBoneAndChildren(view, bone, color);
         }
     }
 

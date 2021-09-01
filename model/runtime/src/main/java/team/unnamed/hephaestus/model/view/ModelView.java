@@ -132,6 +132,14 @@ public class ModelView {
         controller.colorize(this, color);
     }
 
+    public void colorizeBone(ModelBone bone, Color color) {
+        controller.colorizeBone(this, bone.getName(), color);
+    }
+
+    public void colorizeBone(String boneName, Color color) {
+        controller.colorizeBone(this, boneName, color);
+    }
+
     public void show() {
         controller.show(this);
     }

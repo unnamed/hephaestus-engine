@@ -19,6 +19,12 @@ public interface ModelViewController {
      */
     void colorize(ModelView view, Color color);
 
+    /**
+     * Colorizes the {@code bone} for the specified
+     * {@code view} using the provided {@code color}
+     */
+    void colorizeBone(ModelView view, String boneName, Color color);
+
     void teleportBone(ModelView view, ModelBone bone, Location location);
 
     void updateBoneModelData(ModelView view, ModelBone bone, int modelData);
