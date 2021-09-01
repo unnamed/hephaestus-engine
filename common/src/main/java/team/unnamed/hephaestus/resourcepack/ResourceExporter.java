@@ -1,7 +1,5 @@
 package team.unnamed.hephaestus.resourcepack;
 
-import team.unnamed.hephaestus.io.Streamable;
-
 import java.io.IOException;
 
 /**
@@ -14,6 +12,6 @@ public interface ResourceExporter<T> {
     /**
      * Exports the given {@code data},
      */
-    T export(Streamable data) throws IOException;
+    T export(ResourcePackWriter writer) throws IOException;
 
 }

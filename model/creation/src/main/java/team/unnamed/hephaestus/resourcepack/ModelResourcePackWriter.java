@@ -18,14 +18,13 @@ import team.unnamed.hephaestus.util.Vectors;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ModelResourcePackWriter
-        implements Streamable {
+        implements ResourcePackWriter {
 
     private final Collection<Model> models;
     private final String namespace;
@@ -139,18 +138,9 @@ public class ModelResourcePackWriter
      * this method won't close the given {@code output}</strong>
      */
     @Override
-    public void transfer(OutputStream stream) throws IOException {
-
-        if (!(stream instanceof TreeOutputStream)) {
-            /* TODO: Maybe we can remove the 'implements Streamable'
-                to make this type-safe and detect errors at compile-time,
-                not at run-time */
-            throw new IllegalArgumentException("Cannot write resource " +
-                    "pack into a non-tree-based output stream");
-        }
+    public void write(TreeOutputStream output) throws IOException {
 
         int lastData = this.applyCustomModelData(models);
-        TreeOutputStream output = (TreeOutputStream) stream;
 
         if (packInfo != null) {
             // write the pack data

@@ -1,7 +1,6 @@
 package team.unnamed.hephaestus.resourcepack;
 
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.io.TreeOutputStream;
 
@@ -81,7 +80,7 @@ public final class ResourceExports {
         }
 
         @Override
-        public String export(Streamable data) throws IOException {
+        public String export(ResourcePackWriter writer) throws IOException {
 
             if (fileName == null) {
                 // use 'resourcepack' as default name
@@ -106,11 +105,17 @@ public final class ResourceExports {
                 Streams.writeUTF(
                         output,
                         "--" + BOUNDARY + LINE_FEED
-                                + "Content-Disposition: form-data; name=\"" + fileName + "\"; filename=\"" + fileName + "\"" + LINE_FEED
-                                + "Content-Type: application/octet-stream; charset=utf-8" + LINE_FEED + LINE_FEED
+                                + "Content-Disposition: form-data; name=\"" + fileName + "\"; filename=\""
+                                + fileName + "\"" + LINE_FEED + "Content-Type: application/octet-stream;" +
+                                " charset=utf-8" + LINE_FEED + LINE_FEED
                 );
 
-                data.transfer(output);
+                TreeOutputStream treeOutput = TreeOutputStream.forZip(new ZipOutputStream(output));
+                try {
+                    writer.write(treeOutput);
+                } finally {
+                    treeOutput.finish();
+                }
 
                 Streams.writeUTF(
                         output,
@@ -165,7 +170,7 @@ public final class ResourceExports {
         }
 
         @Override
-        public File export(Streamable data) throws IOException {
+        public File export(ResourcePackWriter writer) throws IOException {
             if (!target.exists() && !target.createNewFile()) {
                 throw new IOException("Failed to create target resource pack file");
             }
@@ -182,20 +187,19 @@ public final class ResourceExports {
                     );
                 }
 
-                try (ZipOutputStream output = new ZipOutputStream(new FileOutputStream(tmpTarget))) {
+                try (TreeOutputStream output = TreeOutputStream.forZip(
+                        new ZipOutputStream(new FileOutputStream(tmpTarget))
+                )) {
                     try (ZipInputStream input = new ZipInputStream(new FileInputStream(target))) {
                         ZipEntry entry;
                         while ((entry = input.getNextEntry()) != null) {
-                            ZipEntry putEntry = new ZipEntry(entry.getName());
-                            putEntry.setTime(0L);
-                            output.putNextEntry(putEntry);
-
+                            output.useEntry(entry.getName());
                             Streams.pipe(input, output);
                             output.closeEntry();
                         }
                     }
 
-                    data.transfer(output);
+                    writer.write(output);
                 }
 
                 // delete old file
@@ -207,8 +211,10 @@ public final class ResourceExports {
                     throw new IOException("Cannot move temporary file to original ZIP file");
                 }
             } else {
-                try (OutputStream output = new BufferedOutputStream(new FileOutputStream(target))) {
-                    data.transfer(output);
+                try (TreeOutputStream output = TreeOutputStream.forZip(
+                        new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(target))))
+                ) {
+                    writer.write(output);
                 }
             }
 
@@ -230,8 +236,8 @@ public final class ResourceExports {
      */
     public static ResourceExporter<Void> newTreeExporter(File root) {
         return data -> {
-            try (OutputStream output = TreeOutputStream.forFolder(root)) {
-                data.transfer(output);
+            try (TreeOutputStream output = TreeOutputStream.forFolder(root)) {
+                data.write(output);
             }
             return null;
         };
