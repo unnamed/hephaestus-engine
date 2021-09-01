@@ -32,7 +32,16 @@ pack:
     # -> upload:authorization:url
     #     -> Uploads the resource pack to the given URL (ZIP)
     #     -> Use 'none' as authorization if no authorization
-    generate: "file:hephaestus-generated.zip"
+    # -> into:folderName
+    #     -> Writes the resource pack as files into the given
+    #        folder name, if it doesn't start with '/', it will
+    #        be inside the plugin (Hephaestus/) folder, if it
+    #        starts with '@', it will be inside the plugins folder
+    #        Examples:
+    #        -> @OtherPlugin/resourcepack
+    #        -> /home/user/server/resourcepack/
+    #        -> resourcepack
+    generate: "into:resourcepack"
 
 # Scripting configuration
 script:

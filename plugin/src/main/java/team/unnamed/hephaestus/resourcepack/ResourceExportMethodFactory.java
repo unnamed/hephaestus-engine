@@ -51,6 +51,21 @@ public final class ResourceExportMethodFactory {
                 return ResourceExports.newHttpExporter(url)
                         .setAuthorization(authorization);
             }
+            case "into": {
+                if (args.length < 2) {
+                    throw new IllegalArgumentException(
+                            "Invalid format for file tree export: '"
+                                    + format + "'. Use: 'into:folder'"
+                    );
+                }
+
+                String folderFormat = args[1];
+                File targetFolder = folderFormat.startsWith("/")
+                        ? new File(folderFormat)
+                        : new File(folder, folderFormat);
+
+                return ResourceExports.newTreeExporter(targetFolder);
+            }
             default: {
                 throw new IllegalArgumentException(
                         "Invalid format: '" + format + "', unknown export"

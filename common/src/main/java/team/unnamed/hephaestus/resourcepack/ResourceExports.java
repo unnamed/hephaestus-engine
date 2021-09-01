@@ -3,6 +3,7 @@ package team.unnamed.hephaestus.resourcepack;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
+import team.unnamed.hephaestus.io.TreeOutputStream;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -222,4 +223,18 @@ public final class ResourceExports {
     public static FileExporter newFileExporter(File file) {
         return new FileExporter(file);
     }
+
+    /**
+     * Creates a new file-tree exporter, the resources
+     * will be exported into the given {@code root} folder
+     */
+    public static ResourceExporter<Void> newTreeExporter(File root) {
+        return data -> {
+            try (OutputStream output = TreeOutputStream.forFolder(root)) {
+                data.transfer(output);
+            }
+            return null;
+        };
+    }
+
 }
