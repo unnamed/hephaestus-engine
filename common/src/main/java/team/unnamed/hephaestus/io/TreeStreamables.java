@@ -24,7 +24,9 @@ public final class TreeStreamables {
 
             @Override
             public void transfer(OutputStream output) throws IOException {
-                TreeOutputStream treeOutput = TreeOutputStream.forZip(new ZipOutputStream(output));
+                TreeOutputStream treeOutput = output instanceof TreeOutputStream
+                        ? (TreeOutputStream) output
+                        : TreeOutputStream.forZip(new ZipOutputStream(output));
                 try {
                     for (Streamable component : components) {
                         component.transfer(treeOutput);

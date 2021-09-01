@@ -135,13 +135,20 @@ public abstract class TreeOutputStream
         public void useEntry(String name) throws IOException {
             this.closeEntry(); // close the previous entry
             File file = new File(root, name);
-            if (!file.exists() && !file.createNewFile()) {
-                // this should never happen since we've already
-                // checked for the file existence, if something
-                // fails, it should throw an exception, not return
-                // false
-                throw new IOException("Couldn't create" +
-                        " entry file");
+            if (!file.exists()) {
+                File parent = file.getParentFile();
+                if (!parent.exists() && !parent.mkdirs()) {
+                    throw new IOException("Cannot create " +
+                            "entry folder");
+                }
+                if (!file.createNewFile()) {
+                    // this should never happen since we've already
+                    // checked for the file existence, if something
+                    // fails, it should throw an exception, not return
+                    // false
+                    throw new IOException("Cannot create" +
+                            " entry file");
+                }
             }
             this.entry = new FileOutputStream(file);
         }
