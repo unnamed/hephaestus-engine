@@ -5,7 +5,7 @@ import team.unnamed.hephaestus.io.Streamable;
 
 /**
  * Resource pack information, contains extra information
- * that can be omitted by a {@link ResourcePackWriter}
+ * that can be omitted by a resource pack writer
  */
 public class ResourcePackInfo {
 

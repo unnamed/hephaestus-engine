@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
+import team.unnamed.hephaestus.io.TreeOutputStream;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelDescription;
@@ -22,10 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-public class ZipModelResourcePackWriter
+public class ModelResourcePackWriter
         implements Streamable {
 
     private final Collection<Model> models;
@@ -34,7 +33,7 @@ public class ZipModelResourcePackWriter
 
     private final ModelGeometryTransformer transformer;
 
-    public ZipModelResourcePackWriter(
+    public ModelResourcePackWriter(
             Collection<Model> models,
             String namespace,
             @Nullable ResourcePackInfo packInfo
@@ -45,24 +44,12 @@ public class ZipModelResourcePackWriter
         this.transformer = new ModelGeometryTransformer(namespace);
     }
 
-    public ZipModelResourcePackWriter(Collection<Model> models) {
+    public ModelResourcePackWriter(Collection<Model> models) {
         this(models, "hephaestus", new ResourcePackInfo(6, "Hephaestus generated", null));
     }
 
-    /**
-     * Invokes {@link ZipOutputStream#putNextEntry} using
-     * some default {@link ZipEntry} properties to avoid
-     * creating different ZIPs when the resource pack is
-     * the same (So hash doesn't change)
-     */
-    private void putNext(ZipOutputStream output, String entryName) throws IOException {
-        ZipEntry entry = new ZipEntry(entryName);
-        entry.setTime(0L);
-        output.putNextEntry(entry);
-    }
-
     private int writeScaleKeyFrames(
-            ZipOutputStream output,
+            TreeOutputStream output,
             JsonArray overrides,
             ModelAnimation animation,
             Model model,
@@ -110,8 +97,7 @@ public class ZipModelResourcePackWriter
             override.addProperty("model", namespace + ":" + modelName);
             overrides.add(override);
 
-            putNext(
-                    output,
+            output.useEntry(
                     "assets/" + namespace + "/models/"
                             + modelName
                             + ".json"
@@ -154,121 +140,118 @@ public class ZipModelResourcePackWriter
      */
     @Override
     public void transfer(OutputStream stream) throws IOException {
+
+        if (!(stream instanceof TreeOutputStream)) {
+            /* TODO: Maybe we can remove the 'implements Streamable'
+                to make this type-safe and detect errors at compile-time,
+                not at run-time */
+            throw new IllegalArgumentException("Cannot write resource " +
+                    "pack into a non-tree-based output stream");
+        }
+
         int lastData = this.applyCustomModelData(models);
+        TreeOutputStream output = (TreeOutputStream) stream;
 
-        ZipOutputStream output = stream instanceof ZipOutputStream
-                ? (ZipOutputStream) stream
-                : new ZipOutputStream(stream);
-
-        try {
-
-            if (packInfo != null) {
-                // write the pack data
-                putNext(output, "pack.mcmeta");
-                Streams.writeUTF(
-                        output,
-                        "{ " +
-                                "\"pack\":{" +
-                                "\"pack_format\":" + packInfo.getFormat() + "," +
-                                "\"description\":\"" + packInfo.getDescription() + "\"" +
-                                "}" +
-                                "}"
-                );
-                output.closeEntry();
-
-                Streamable icon = packInfo.getIcon();
-                if (icon != null) {
-                    putNext(output, "pack.png");
-                    icon.transfer(output);
-                    output.closeEntry();
-                }
-            }
-
-            JsonArray overrides = new JsonArray();
-
-            for (Model model : models) {
-                ModelDescription description = model.getGeometry().getDescription();
-                String modelName = model.getName();
-
-                for (Map.Entry<String, Streamable> texture : model.getTextures().entrySet()) {
-                    String textureName = texture.getKey();
-                    Streamable data = texture.getValue();
-
-                    if (!textureName.endsWith(".png")) {
-                        textureName += ".png";
-                    }
-
-                    // write the texture
-                    putNext(output, "assets/" + namespace
-                            + "/textures/" + modelName + "/" + textureName);
-                    try (InputStream input = data.openIn()) {
-                        Streams.pipe(input, output);
-                    }
-                    output.closeEntry();
-                }
-                // write all the model bones
-                for (ModelBone bone : this.transformer.getAllBones(model.getGeometry())) {
-
-                    JsonObject json = transformer.toJavaJson(model, description, bone);
-
-                    JsonObject overridePredicate = new JsonObject();
-                    overridePredicate.addProperty("custom_model_data", bone.getCustomModelData());
-
-                    JsonObject override = new JsonObject();
-                    override.add("predicate", overridePredicate);
-                    override.addProperty("model", namespace + ":" + modelName + "/" + bone.getName());
-
-                    overrides.add(override);
-
-                    putNext(
-                            output,
-                            "assets/" + namespace + "/models/"
-                                    + modelName
-                                    +  "/" + bone.getName()
-                                    + ".json"
-                    );
-
-                    Streams.writeUTF(output, json.toString());
-                    output.closeEntry();
-                }
-            }
-
-            // write all the scale frame data
-            for (Model model : models) {
-                for (ModelAnimation animation : model.getAnimations().values()) {
-                    for (ModelBone bone : model.getGeometry().getBones()) {
-                        for (int tick = 0; tick <= animation.getAnimationLength(); tick++) {
-                            lastData = writeScaleKeyFrames(
-                                    output,
-                                    overrides,
-                                    animation,
-                                    model,
-                                    tick,
-                                    bone,
-                                    Vector3Float.ONE,
-                                    lastData
-                            );
-                        }
-                    }
-                }
-            }
-
-            putNext(output, "assets/minecraft/models/item/leather_horse_armor.json");
+        if (packInfo != null) {
+            // write the pack data
+            output.useEntry("pack.mcmeta");
             Streams.writeUTF(
                     output,
-                    "{"
-                            + "\"parent\": \"item/handheld\","
-                            + "\"textures\": { \"layer0\": \"item/leather_horse_armor\" },"
-                            + "\"overrides\": " + overrides
-                            + "}"
+                    "{ " +
+                            "\"pack\":{" +
+                            "\"pack_format\":" + packInfo.getFormat() + "," +
+                            "\"description\":\"" + packInfo.getDescription() + "\"" +
+                            "}" +
+                            "}"
             );
             output.closeEntry();
-        } finally {
-            if (stream != output) {
-                // finish but don't close
-                output.finish();
+
+            Streamable icon = packInfo.getIcon();
+            if (icon != null) {
+                output.useEntry("pack.png");
+                icon.transfer(output);
+                output.closeEntry();
             }
         }
+
+        JsonArray overrides = new JsonArray();
+
+        for (Model model : models) {
+            ModelDescription description = model.getGeometry().getDescription();
+            String modelName = model.getName();
+
+            for (Map.Entry<String, Streamable> texture : model.getTextures().entrySet()) {
+                String textureName = texture.getKey();
+                Streamable data = texture.getValue();
+
+                if (!textureName.endsWith(".png")) {
+                    textureName += ".png";
+                }
+
+                // write the texture
+                output.useEntry("assets/" + namespace
+                        + "/textures/" + modelName + "/" + textureName);
+                try (InputStream input = data.openIn()) {
+                    Streams.pipe(input, output);
+                }
+                output.closeEntry();
+            }
+            // write all the model bones
+            for (ModelBone bone : this.transformer.getAllBones(model.getGeometry())) {
+
+                JsonObject json = transformer.toJavaJson(model, description, bone);
+
+                JsonObject overridePredicate = new JsonObject();
+                overridePredicate.addProperty("custom_model_data", bone.getCustomModelData());
+
+                JsonObject override = new JsonObject();
+                override.add("predicate", overridePredicate);
+                override.addProperty("model", namespace + ":" + modelName + "/" + bone.getName());
+
+                overrides.add(override);
+
+                output.useEntry(
+                        "assets/" + namespace + "/models/"
+                                + modelName
+                                +  "/" + bone.getName()
+                                + ".json"
+                );
+
+                Streams.writeUTF(output, json.toString());
+                output.closeEntry();
+            }
+        }
+
+        // write all the scale frame data
+        for (Model model : models) {
+            for (ModelAnimation animation : model.getAnimations().values()) {
+                for (ModelBone bone : model.getGeometry().getBones()) {
+                    for (int tick = 0; tick <= animation.getAnimationLength(); tick++) {
+                        lastData = writeScaleKeyFrames(
+                                output,
+                                overrides,
+                                animation,
+                                model,
+                                tick,
+                                bone,
+                                Vector3Float.ONE,
+                                lastData
+                        );
+                    }
+                }
+            }
+        }
+
+        output.useEntry("assets/minecraft/models/item/leather_horse_armor.json");
+        Streams.writeUTF(
+                output,
+                "{"
+                        + "\"parent\": \"item/handheld\","
+                        + "\"textures\": { \"layer0\": \"item/leather_horse_armor\" },"
+                        + "\"overrides\": " + overrides
+                        + "}"
+        );
+        output.closeEntry();
     }
 
     public int applyCustomModelData(Collection<Model> models) {
@@ -278,7 +261,7 @@ public class ZipModelResourcePackWriter
                 bone.setCustomModelData(data++);
             }
         }
-
         return data;
     }
+
 }
