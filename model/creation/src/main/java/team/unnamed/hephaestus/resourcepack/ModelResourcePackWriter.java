@@ -2,7 +2,6 @@ package team.unnamed.hephaestus.resourcepack;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.io.TreeOutputStream;
@@ -28,23 +27,20 @@ public class ModelResourcePackWriter
 
     private final Collection<Model> models;
     private final String namespace;
-    @Nullable private final ResourcePackInfo packInfo;
 
     private final ModelGeometryTransformer transformer;
 
     public ModelResourcePackWriter(
             Collection<Model> models,
-            String namespace,
-            @Nullable ResourcePackInfo packInfo
+            String namespace
     ) {
         this.models = models;
         this.namespace = namespace;
-        this.packInfo = packInfo;
         this.transformer = new ModelGeometryTransformer(namespace);
     }
 
     public ModelResourcePackWriter(Collection<Model> models) {
-        this(models, "hephaestus", new ResourcePackInfo(6, "Hephaestus generated", null));
+        this(models, "hephaestus");
     }
 
     private int writeScaleKeyFrames(
@@ -141,28 +137,6 @@ public class ModelResourcePackWriter
     public void write(TreeOutputStream output) throws IOException {
 
         int lastData = this.applyCustomModelData(models);
-
-        if (packInfo != null) {
-            // write the pack data
-            output.useEntry("pack.mcmeta");
-            Streams.writeUTF(
-                    output,
-                    "{ " +
-                            "\"pack\":{" +
-                            "\"pack_format\":" + packInfo.getFormat() + "," +
-                            "\"description\":\"" + packInfo.getDescription() + "\"" +
-                            "}" +
-                            "}"
-            );
-            output.closeEntry();
-
-            Streamable icon = packInfo.getIcon();
-            if (icon != null) {
-                output.useEntry("pack.png");
-                icon.transfer(output);
-                output.closeEntry();
-            }
-        }
 
         JsonArray overrides = new JsonArray();
 
