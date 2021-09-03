@@ -60,9 +60,16 @@ public final class ResourceExportMethodFactory {
                 }
 
                 String folderFormat = args[1];
-                File targetFolder = folderFormat.startsWith("/")
-                        ? new File(folderFormat)
-                        : new File(folder, folderFormat);
+                File targetFolder;
+
+                if (folderFormat.startsWith("/")) {
+                    targetFolder = new File(folderFormat);
+                } else if (folderFormat.startsWith("@")) {
+                    targetFolder = new File(folderFormat.substring(1));
+                } else {
+                    File pluginsFolder = folder.getParentFile();
+                    targetFolder = new File(pluginsFolder, folderFormat);
+                }
 
                 return ResourceExports.newTreeExporter(targetFolder);
             }
