@@ -3,6 +3,7 @@ package team.unnamed.hephaestus.resourcepack;
 import team.unnamed.hephaestus.io.TreeOutputStream;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Responsible for writing assets for a Minecraft resource pack,
@@ -26,12 +27,21 @@ public interface ResourcePackWriter {
      * by other {@code writers}. The {@link ResourcePackWriter#write}
      * method is invoked for all the given writers
      */
-    static ResourcePackWriter compose(ResourcePackWriter... writers) {
+    static ResourcePackWriter compose(Iterable<? extends ResourcePackWriter> writers) {
         return output -> {
             for (ResourcePackWriter writer : writers) {
                 writer.write(output);
             }
         };
+    }
+
+    /**
+     * Creates a {@link ResourcePackWriter} instance compound
+     * by other {@code writers}. The {@link ResourcePackWriter#write}
+     * method is invoked for all the given writers
+     */
+    static ResourcePackWriter compose(ResourcePackWriter... writers) {
+        return compose(Arrays.asList(writers));
     }
 
 }
