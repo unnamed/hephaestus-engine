@@ -2,6 +2,7 @@ package team.unnamed.hephaestus.reader.blockbench;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import team.unnamed.hephaestus.model.ModelDataCursor;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
@@ -18,9 +19,9 @@ import java.util.Map;
  * <p>The Blockbench format is explicitly supported
  *  by the Blockbench model editor</p>
  */
-public class BlockbenchModelAnimationsReader {
+public class BBModelAnimationReader {
 
-    public Map<String, ModelAnimation> read(JsonObject json) {
+    public Map<String, ModelAnimation> read(ModelDataCursor cursor, JsonObject json) {
 
         Map<String, ModelAnimation> animations = new HashMap<>();
 
@@ -37,11 +38,13 @@ public class BlockbenchModelAnimationsReader {
             int length = Math.round(animationJson.get("length").getAsFloat()*20);
 
             if (!animationJson.has("animators")) {
-                animations.put(name, new ModelAnimation(name, loop, length, new HashMap<>()));
+                animations.put(name, new ModelAnimation(name, loop, length, new HashMap<>(), new HashMap<>()));
                 continue;
             }
 
             Map<String, ModelBoneAnimation> boneAnimations = new HashMap<>();
+            Map<String, Map<Integer, Integer>> modelData = new HashMap<>();
+
             for (Map.Entry<String, JsonElement> boneAnimationEntry : animationJson.get("animators")
                     .getAsJsonObject()
                     .entrySet()) {
@@ -71,22 +74,28 @@ public class BlockbenchModelAnimationsReader {
                     );
 
                     switch (channel) {
-                        case "scale":
+                        case "scale": {
                             sizeFrames.add(keyFrame);
+                            // scale require a special treatment
+                            modelData.computeIfAbsent(boneName, k -> new HashMap<>())
+                                    .put((int) time, cursor.next());
                             break;
-                        case "rotation":
+                        }
+                        case "rotation": {
                             rotationFrames.add(keyFrame);
                             break;
-                        case "position":
+                        }
+                        case "position": {
                             positionFrames.add(keyFrame);
                             break;
+                        }
                     }
                 }
 
                 boneAnimations.put(boneName, new ModelBoneAnimation(positionFrames, rotationFrames, sizeFrames));
             }
 
-            animations.put(name, new ModelAnimation(name, loop, length, boneAnimations));
+            animations.put(name, new ModelAnimation(name, loop, length, boneAnimations, modelData));
         }
 
         return animations;

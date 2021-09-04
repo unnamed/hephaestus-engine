@@ -1,14 +1,13 @@
 package team.unnamed.hephaestus.model.animation;
 
-import team.unnamed.hephaestus.model.ModelComponent;
+import team.unnamed.hephaestus.model.ModelBone;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * Class that represents a model animation,
- * applied to the {@link ModelComponent} objects
+ * applied to the {@link ModelBone} objects
  */
 public class ModelAnimation {
 
@@ -23,18 +22,20 @@ public class ModelAnimation {
     /** Contains all the bone animations using the bone names as key */
     private final Map<String, ModelBoneAnimation> animationsByBoneName;
 
-    private final Map<String, Map<Integer, Integer>> modelData = new HashMap<>();
+    private final Map<String, Map<Integer, Integer>> modelData;
 
     public ModelAnimation(
             String name,
             boolean loop,
             int animationLength,
-            Map<String, ModelBoneAnimation> animationsByBoneName
+            Map<String, ModelBoneAnimation> animationsByBoneName,
+            Map<String, Map<Integer, Integer>> modelData
     ) {
         this.name = name;
         this.loop = loop;
         this.animationLength = animationLength;
         this.animationsByBoneName = animationsByBoneName;
+        this.modelData = modelData;
     }
 
     public Map<String, Map<Integer, Integer>> getModelData() {

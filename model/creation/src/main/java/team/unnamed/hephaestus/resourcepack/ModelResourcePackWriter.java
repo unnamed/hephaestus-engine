@@ -5,19 +5,20 @@ import com.google.gson.JsonObject;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.io.TreeOutputStream;
-import team.unnamed.hephaestus.model.Model;
-import team.unnamed.hephaestus.model.ModelBone;
-import team.unnamed.hephaestus.model.ModelDescription;
+import team.unnamed.hephaestus.model.ModelAsset;
+import team.unnamed.hephaestus.model.ModelBoneAsset;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.hephaestus.util.Bones;
 import team.unnamed.hephaestus.util.KeyFrames;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +26,13 @@ import java.util.Map;
 public class ModelResourcePackWriter
         implements ResourcePackWriter {
 
-    private final Collection<Model> models;
+    private final Collection<ModelAsset> models;
     private final String namespace;
 
     private final ModelGeometryTransformer transformer;
 
     public ModelResourcePackWriter(
-            Collection<Model> models,
+            Collection<ModelAsset> models,
             String namespace
     ) {
         this.models = models;
@@ -39,19 +40,18 @@ public class ModelResourcePackWriter
         this.transformer = new ModelGeometryTransformer(namespace);
     }
 
-    public ModelResourcePackWriter(Collection<Model> models) {
+    public ModelResourcePackWriter(Collection<ModelAsset> models) {
         this(models, "hephaestus");
     }
 
-    private int writeScaleKeyFrames(
+    private void writeScaleKeyFrames(
             TreeOutputStream output,
             JsonArray overrides,
             ModelAnimation animation,
-            Model model,
+            ModelAsset model,
             int tick,
-            ModelBone bone,
-            Vector3Float sizeProduct,
-            int lastData
+            ModelBoneAsset bone,
+            Vector3Float sizeProduct
     ) throws IOException {
 
         ModelBoneAnimation boneAnimation = animation.getAnimationsByBoneName().get(bone.getName());
@@ -80,12 +80,12 @@ public class ModelResourcePackWriter
         sizeProduct = sizeProduct.multiply(size);
 
         if (!sizeProduct.equals(Vector3Float.ONE)) {
-            lastData++;
+            int data = animation.getModelData().getOrDefault(bone.getName(), Collections.emptyMap()).get(tick);
 
-            String modelName = model.getName() + "/frames/" + bone.getName() + "-" + lastData;
+            String modelName = model.getName() + "/frames/" + bone.getName() + "-" + data;
 
             JsonObject overridePredicate = new JsonObject();
-            overridePredicate.addProperty("custom_model_data", lastData);
+            overridePredicate.addProperty("custom_model_data", data);
 
             JsonObject override = new JsonObject();
             override.add("predicate", overridePredicate);
@@ -114,16 +114,11 @@ public class ModelResourcePackWriter
                             "}"
             );
             output.closeEntry();
-
-            animation.getModelData().computeIfAbsent(bone.getName(), k -> new HashMap<>())
-                    .put(tick, lastData);
         }
 
-        for (ModelBone child : bone.getBones()) {
-            lastData = writeScaleKeyFrames(output, overrides, animation, model, tick, child, sizeProduct, lastData);
+        for (ModelBoneAsset child : bone.getBones()) {
+            writeScaleKeyFrames(output, overrides, animation, model, tick, child, sizeProduct);
         }
-
-        return lastData;
     }
 
     /**
@@ -136,12 +131,9 @@ public class ModelResourcePackWriter
     @Override
     public void write(TreeOutputStream output) throws IOException {
 
-        int lastData = this.applyCustomModelData(models);
-
         JsonArray overrides = new JsonArray();
 
-        for (Model model : models) {
-            ModelDescription description = model.getGeometry().getDescription();
+        for (ModelAsset model : models) {
             String modelName = model.getName();
 
             for (Map.Entry<String, Streamable> texture : model.getTextures().entrySet()) {
@@ -161,9 +153,9 @@ public class ModelResourcePackWriter
                 output.closeEntry();
             }
             // write all the model bones
-            for (ModelBone bone : this.transformer.getAllBones(model.getGeometry())) {
+            for (ModelBoneAsset bone : Bones.getAllBones(model)) {
 
-                JsonObject json = transformer.toJavaJson(model, description, bone);
+                JsonObject json = transformer.toJavaJson(model, bone);
 
                 JsonObject overridePredicate = new JsonObject();
                 overridePredicate.addProperty("custom_model_data", bone.getCustomModelData());
@@ -187,19 +179,18 @@ public class ModelResourcePackWriter
         }
 
         // write all the scale frame data
-        for (Model model : models) {
+        for (ModelAsset model : models) {
             for (ModelAnimation animation : model.getAnimations().values()) {
-                for (ModelBone bone : model.getGeometry().getBones()) {
+                for (ModelBoneAsset bone : model.getBones()) {
                     for (int tick = 0; tick <= animation.getAnimationLength(); tick++) {
-                        lastData = writeScaleKeyFrames(
+                         writeScaleKeyFrames(
                                 output,
                                 overrides,
                                 animation,
                                 model,
                                 tick,
                                 bone,
-                                Vector3Float.ONE,
-                                lastData
+                                Vector3Float.ONE
                         );
                     }
                 }
@@ -216,16 +207,6 @@ public class ModelResourcePackWriter
                         + "}"
         );
         output.closeEntry();
-    }
-
-    public int applyCustomModelData(Collection<Model> models) {
-        int data = 1;
-        for (Model model : models) {
-            for (ModelBone bone : transformer.getAllBones(model.getGeometry())) {
-                bone.setCustomModelData(data++);
-            }
-        }
-        return data;
     }
 
 }

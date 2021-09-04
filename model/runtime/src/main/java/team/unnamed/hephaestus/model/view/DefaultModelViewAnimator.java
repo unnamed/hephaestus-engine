@@ -97,7 +97,7 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
 
             double bodyYaw = Math.toRadians(this.entity.getLocation().getYaw());
 
-            for (ModelBone bone : this.entity.getModel().getGeometry().getBones()) {
+            for (ModelBone bone : this.entity.getModel().getBones()) {
                 this.updateBone(
                         bodyYaw,
                         null,

@@ -4,18 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import team.unnamed.hephaestus.model.Model;
-import team.unnamed.hephaestus.model.ModelBone;
+import team.unnamed.hephaestus.model.ModelAsset;
+import team.unnamed.hephaestus.model.ModelBoneAsset;
 import team.unnamed.hephaestus.model.ModelCube;
-import team.unnamed.hephaestus.model.ModelDescription;
-import team.unnamed.hephaestus.model.ModelGeometry;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.MoreMath;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static team.unnamed.hephaestus.util.MoreMath.shrink;
 
@@ -28,21 +23,6 @@ public class ModelGeometryTransformer {
 
     public ModelGeometryTransformer(String namespace) {
         this.namespace = namespace;
-    }
-
-    public List<ModelBone> getAllBones(ModelGeometry model) {
-        List<ModelBone> bones = new ArrayList<>(model.getBones());
-        model.getBones().forEach(bone -> bones.addAll(this.getBoneBones(bone)));
-        return bones;
-    }
-
-    private List<ModelBone> getBoneBones(ModelBone bone) {
-        List<ModelBone> bones = new ArrayList<>();
-        for (ModelBone component : bone.getBones()) {
-            bones.add(component);
-            bones.addAll(getBoneBones(component));
-        }
-        return bones;
     }
 
     private JsonArray toJsonArray(float... vector) {
@@ -61,7 +41,7 @@ public class ModelGeometryTransformer {
         return array;
     }
 
-    public JsonObject toJavaJson(Model model, ModelDescription description, ModelBone bone) {
+    public JsonObject toJavaJson(ModelAsset model, ModelBoneAsset bone) {
 
         JsonArray elements = new JsonArray();
         Vector3Float bonePivot = bone.getPivot();
@@ -115,8 +95,8 @@ public class ModelGeometryTransformer {
             JsonObject faces = new JsonObject();
             FacedTextureBound[] bounds = cube.getTextureBounds();
 
-            float widthRatio = 16.0F / description.getTextureWidth();
-            float heightRatio = 16.0F / description.getTextureHeight();
+            float widthRatio = 16.0F / model.getTextureWidth();
+            float heightRatio = 16.0F / model.getTextureHeight();
 
             for (TextureFace face : TextureFace.values()) {
                 FacedTextureBound bound = bounds[face.ordinal()];
@@ -165,20 +145,15 @@ public class ModelGeometryTransformer {
             elements.add(cubeJson);
         }
 
-        Vector3Float scaledPivot = bone.getPivot().divide(16);
-        for (ModelBone child : bone.getBones()) {
-            child.computeOffsets(scaledPivot);
-        }
-
         JsonObject textures = new JsonObject();
-        model.getGeometry().getTextureMap().forEach((id, name) ->
-                textures.addProperty(id.toString(), namespace + ':' + model.getName() + "/" + name));
+        model.getTextureMapping().forEach((id, name) ->
+            textures.addProperty(id.toString(), namespace + ':' + model.getName() + '/' + name));
 
         JsonObject modelJson = new JsonObject();
         modelJson.addProperty("file_name", bone.getName());
         modelJson.add("texture_size", toJsonArray(
-                description.getTextureWidth(),
-                description.getTextureHeight()
+                model.getTextureWidth(),
+                model.getTextureHeight()
         ));
         modelJson.add("textures", textures);
         modelJson.add("elements", elements);

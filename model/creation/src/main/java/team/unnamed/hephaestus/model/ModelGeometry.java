@@ -13,38 +13,45 @@ import java.util.Map;
 public class ModelGeometry {
 
     private final List<ModelBone> bones;
-    private ModelDescription description;
-    private Map<Integer, String> textureMap;
+    private final List<ModelBoneAsset> bonesAssets;
 
-    public ModelGeometry(ModelDescription description, List<ModelBone> bones, Map<Integer, String> textureMap) {
-        this.description = description;
+    private final int textureWidth;
+    private final int textureHeight;
+    private final Map<Integer, String> textureMap;
+
+    public ModelGeometry(
+            int textureWidth,
+            int textureHeight,
+            List<ModelBone> bones,
+            List<ModelBoneAsset> bonesAssets,
+            Map<Integer, String> textureMap
+    ) {
+        this.textureWidth = textureWidth;
+        this.textureHeight = textureHeight;
         this.bones = bones;
+        this.bonesAssets = bonesAssets;
         this.textureMap = textureMap;
     }
 
-    @Nullable
-    public ModelDescription getDescription() {
-        return description;
+    public int getTextureWidth() {
+        return textureWidth;
+    }
+
+    public int getTextureHeight() {
+        return textureHeight;
     }
 
     public List<ModelBone> getBones() {
         return bones;
     }
 
+    public List<ModelBoneAsset> getBonesAssets() {
+        return bonesAssets;
+    }
+
     @Nullable
     public Map<Integer, String> getTextureMap() {
         return textureMap;
-    }
-
-    /**
-     * Discards the information used only for
-     * resource pack generation from this geometry
-     * instance
-     */
-    public void discardResourcePackData() {
-        this.description = null;
-        this.textureMap = null;
-        bones.forEach(ModelBone::discardResourcePackData);
     }
 
 }

@@ -7,6 +7,8 @@ import com.google.gson.JsonParser;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.model.Model;
+import team.unnamed.hephaestus.model.ModelAsset;
+import team.unnamed.hephaestus.model.ModelDataCursor;
 import team.unnamed.hephaestus.model.ModelGeometry;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.reader.ModelReader;
@@ -20,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BlockbenchModelReader implements ModelReader {
+public class BBModelReader implements ModelReader {
 
     private static final String BASE_64_PREFIX = "data:image/png;base64,";
     private static final JsonParser JSON_PARSER = new JsonParser();
@@ -33,14 +35,21 @@ public class BlockbenchModelReader implements ModelReader {
             "3.6"
     );
 
-    private final BlockbenchModelGeometryReader geometryReader = new BlockbenchModelGeometryReader();
-    private final BlockbenchModelAnimationsReader animationsReader = new BlockbenchModelAnimationsReader();
+    private final BBModelGeometryReader geometryReader = new BBModelGeometryReader();
+    private final BBModelAnimationReader animationsReader = new BBModelAnimationReader();
+
+    private final ModelDataCursor cursor;
+
+    public BBModelReader(ModelDataCursor cursor) {
+        this.cursor = cursor;
+    }
+
+    public BBModelReader() {
+        this(new ModelDataCursor(1));
+    }
 
     @Override
     public Model read(String modelName, Reader reader) throws IOException {
-
-        ModelGeometry geometry;
-        Map<String, ModelAnimation> animations;
 
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
         JsonElement formatVersionElement = json.get("meta").getAsJsonObject().get("format_version");
@@ -52,8 +61,8 @@ public class BlockbenchModelReader implements ModelReader {
             throw new IOException("Provided JSON doesn't have a valid format version");
         }
 
-        geometry = geometryReader.read(json);
-        animations = animationsReader.read(json);
+        ModelGeometry geometry = geometryReader.read(cursor, json);
+        Map<String, ModelAnimation> animations = animationsReader.read(cursor, json);
 
         JsonArray texturesJson = json.get("textures").getAsJsonArray();
         Map<String, Streamable> textures = new HashMap<>();
@@ -82,9 +91,16 @@ public class BlockbenchModelReader implements ModelReader {
 
         return new Model(
                 modelName,
-                geometry,
-                animations,
-                textures
+                geometry.getBones(),
+                new ModelAsset(
+                        modelName,
+                        geometry.getTextureWidth(),
+                        geometry.getTextureHeight(),
+                        textures,
+                        geometry.getTextureMap(),
+                        geometry.getBonesAssets(),
+                        animations
+                )
         );
     }
 }

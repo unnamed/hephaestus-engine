@@ -9,39 +9,43 @@ import java.util.List;
  * It's a model cube holder, a {@link ModelCube}
  * composite, util to make rotations over the pivot
  */
-public class ModelBone implements ModelComponent {
+public class ModelBone {
 
     @Nullable private final ModelBone parent;
     private final String name;
-    private final Vector3Float pivot;
     private final Vector3Float rotation;
 
     private final List<ModelBone> bones;
-    private List<ModelCube> cubes;
+    private final Vector3Float offset;
+    private ModelBoneAsset asset;
 
-    // cached pivot divided by 16, used to compute the
-    // offset, that's divided by 16 too
-    private final Vector3Float scaledPivot;
-    private Vector3Float offset;
-
-    private int customModelData;
+    private final int customModelData;
+    private final boolean hasCubes;
 
     public ModelBone(
             @Nullable ModelBone parent,
             String name,
-            Vector3Float pivot,
             Vector3Float rotation,
             List<ModelBone> bones,
-            List<ModelCube> cubes
+            Vector3Float offset,
+            ModelBoneAsset asset
     ) {
         this.parent = parent;
         this.name = name;
-        this.pivot = pivot;
         this.rotation = rotation;
         this.bones = bones;
-        this.cubes = cubes;
-        this.scaledPivot = pivot.divide(16);
-        this.offset = Vector3Float.ZERO;
+        this.offset = offset;
+        this.asset = asset;
+
+        // data from 'asset' that will persist after calling
+        // discardResourcePackData()
+        this.customModelData = asset.getCustomModelData();
+        this.hasCubes = asset.getCubes().size() > 0;
+    }
+
+    @Nullable
+    public ModelBoneAsset getAsset() {
+        return asset;
     }
 
     @Nullable
@@ -53,28 +57,16 @@ public class ModelBone implements ModelComponent {
         return offset;
     }
 
-    public void computeOffsets(Vector3Float offset) {
-        this.offset = scaledPivot.subtract(offset);
-        for (ModelBone bone : bones) {
-            bone.computeOffsets(scaledPivot);
-        }
-    }
-
     public int getCustomModelData() {
         return customModelData;
     }
 
-    public void setCustomModelData(int customModelData) {
-        this.customModelData = customModelData;
+    public boolean hasCubes() {
+        return hasCubes;
     }
 
     public String getName() {
         return name;
-    }
-
-    @Override
-    public Vector3Float getPivot() {
-        return pivot;
     }
 
     public Vector3Float getRotation() {
@@ -85,12 +77,11 @@ public class ModelBone implements ModelComponent {
         return bones;
     }
 
-    public List<ModelCube> getCubes() {
-        return cubes;
-    }
-
     public void discardResourcePackData() {
-        this.cubes = null;
+        this.asset = null;
+        for (ModelBone bone : bones) {
+            bone.discardResourcePackData();
+        }
     }
 
 }

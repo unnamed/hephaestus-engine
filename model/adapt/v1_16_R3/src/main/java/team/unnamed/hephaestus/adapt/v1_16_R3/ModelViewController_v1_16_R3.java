@@ -97,7 +97,7 @@ public class ModelViewController_v1_16_R3
 
     @Override
     public void show(ModelView view) {
-        for (ModelBone bone : view.getModel().getGeometry().getBones()) {
+        for (ModelBone bone : view.getModel().getBones()) {
             summonBone(view, view.getLocation(), bone, Vector3Float.ZERO);
         }
     }
@@ -145,7 +145,7 @@ public class ModelViewController_v1_16_R3
     @Override
     public void teleport(ModelView view, Location location) {
         double yaw = Math.toRadians(location.getYaw());
-        for (ModelBone bone : view.getModel().getGeometry().getBones()) {
+        for (ModelBone bone : view.getModel().getBones()) {
             teleportBonesRecursively(yaw, view, location, bone, Vector3Float.ZERO);
         }
     }
@@ -160,7 +160,7 @@ public class ModelViewController_v1_16_R3
 
     @Override
     public void hide(ModelView view) {
-        for (ModelBone bone : view.getModel().getGeometry().getBones()) {
+        for (ModelBone bone : view.getModel().getBones()) {
             hideBone(view, bone);
         }
     }
@@ -202,7 +202,7 @@ public class ModelViewController_v1_16_R3
 
     @Override
     public void colorize(ModelView view, Color color) {
-        for (ModelBone bone : view.getModel().getGeometry().getBones()) {
+        for (ModelBone bone : view.getModel().getBones()) {
             colorizeBoneAndChildren(view, bone, color);
         }
     }
@@ -307,14 +307,14 @@ public class ModelViewController_v1_16_R3
 
     @Override
     public void showIndividually(ModelView view, Player player) {
-        for (ModelBone bone : view.getModel().getGeometry().getBones()) {
+        for (ModelBone bone : view.getModel().getBones()) {
             showBoneIndividually(view, bone, player);
         }
     }
 
     @Override
     public void hideIndividually(ModelView view, Player player) {
-        for (ModelBone bone : view.getModel().getGeometry().getBones()) {
+        for (ModelBone bone : view.getModel().getBones()) {
             hideBoneIndividually(view, bone, player);
         }
     }

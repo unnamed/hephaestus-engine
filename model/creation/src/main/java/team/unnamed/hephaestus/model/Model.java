@@ -1,42 +1,37 @@
 package team.unnamed.hephaestus.model;
 
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
+import java.util.List;
 import java.util.Map;
 
 public class Model {
 
     private final String name;
+    private final List<ModelBone> bones;
+    private ModelAsset asset;
     private final Map<String, ModelAnimation> animations;
-    private final ModelGeometry geometry;
-
-    /**
-     * Map containing the model textures, it must
-     * be discarded after resource pack generation
-     * TODO: Exposing invalid values is a bit inconsistent
-     */
-    private Map<String, Streamable> textures;
 
     public Model(
             String name,
-            ModelGeometry geometry,
-            Map<String, ModelAnimation> animations,
-            Map<String, Streamable> textures
+            List<ModelBone> bones,
+            ModelAsset asset
     ) {
         this.name = name;
-        this.geometry = geometry;
-        this.animations = animations;
-        this.textures = textures;
+        this.bones = bones;
+        this.asset = asset;
+        // data from 'asset' that will persist after calling
+        // discardResourcePackData()
+        this.animations = asset.getAnimations();
     }
 
     public String getName() {
         return name;
     }
 
-    public ModelGeometry getGeometry() {
-        return geometry;
+    public List<ModelBone> getBones() {
+        return bones;
     }
 
     public Map<String, ModelAnimation> getAnimations() {
@@ -44,8 +39,8 @@ public class Model {
     }
 
     @Nullable
-    public Map<String, Streamable> getTextures() {
-        return textures;
+    public ModelAsset getAsset() {
+        return asset;
     }
 
     /**
@@ -54,8 +49,10 @@ public class Model {
      * model instance
      */
     public void discardResourcePackData() {
-        this.textures = null;
-        this.geometry.discardResourcePackData();
+        this.asset = null;
+        for (ModelBone bone : bones) {
+            bone.discardResourcePackData();
+        }
     }
 
 }

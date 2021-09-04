@@ -9,10 +9,9 @@ import java.util.Objects;
 
 /**
  * Represents the most basic component
- * of a model, similar to the Bedrock
- * Model Geometry Cube
+ * of a model, a movable piece of a model
  */
-public class ModelCube implements ModelComponent {
+public class ModelCube {
 
     /** The origin of the cube */
     private final Vector3Float origin;
@@ -50,7 +49,6 @@ public class ModelCube implements ModelComponent {
         return origin;
     }
 
-    @Override
     public Vector3Float getPivot() {
         return pivot;
     }

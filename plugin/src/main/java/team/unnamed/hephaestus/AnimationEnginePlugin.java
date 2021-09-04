@@ -18,19 +18,23 @@ import team.unnamed.hephaestus.commands.HephaestusCommand;
 import team.unnamed.hephaestus.commands.SummonCommand;
 import team.unnamed.hephaestus.commands.part.ModelAnimationPart;
 import team.unnamed.hephaestus.commands.part.ModelPart;
+import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.listener.ResourcePackApplyListener;
 import team.unnamed.hephaestus.model.Model;
+import team.unnamed.hephaestus.model.ModelAsset;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.view.DefaultModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.reader.ModelReader;
-import team.unnamed.hephaestus.reader.blockbench.BlockbenchModelReader;
+import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.resourcepack.ResourceExportMethodFactory;
 import team.unnamed.hephaestus.resourcepack.ResourceExporter;
-import team.unnamed.hephaestus.resourcepack.ResourceExports;
 import team.unnamed.hephaestus.resourcepack.ModelResourcePackWriter;
+import team.unnamed.hephaestus.resourcepack.ResourcePackInfo;
+import team.unnamed.hephaestus.resourcepack.ResourcePackInfoWriter;
+import team.unnamed.hephaestus.resourcepack.ResourcePackWriter;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -71,7 +75,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         animator = new DefaultModelViewAnimator(this);
         renderer = module.createRenderer(animator);
 
-        ModelReader modelReader = new BlockbenchModelReader();
+        ModelReader modelReader = new BBModelReader();
 
         File modelsDirectory = new File(this.getDataFolder(), "models");
 
@@ -111,15 +115,23 @@ public class AnimationEnginePlugin extends JavaPlugin {
                     this.getConfig().getString("pack.generate", "file:hephaestus-generated.zip")
             );
 
-            if (resourceExporter instanceof ResourceExports.HttpExporter) {
-                JsonObject response = new JsonParser().parse(
-                        resourceExporter.export(new ModelResourcePackWriter(models)).toString()
-                ).getAsJsonObject();
+            List<ModelAsset> modelAssets = new ArrayList<>();
+            for (Model model : models) {
+                modelAssets.add(model.getAsset());
+            }
+            Object response = resourceExporter.export(ResourcePackWriter.compose(
+                    new ResourcePackInfoWriter(new ResourcePackInfo(
+                            7,
+                            "Hephaestus-generated resource pack",
+                            Streamable.ofResource(getClass().getClassLoader(), "hephaestus.png")
+                    )),
+                    new ModelResourcePackWriter(modelAssets)
+            ));
 
-                url = response.get("url").getAsString();
-                hash = Streams.getBytesFromHex(response.get("hash").getAsString());
-            } else {
-                resourceExporter.export(new ModelResourcePackWriter(models));
+            if (response instanceof String) {
+                JsonObject json = new JsonParser().parse(response.toString()).getAsJsonObject();
+                url = json.get("url").getAsString();
+                hash = Streams.getBytesFromHex(json.get("hash").getAsString());
             }
 
             models.forEach(model -> {

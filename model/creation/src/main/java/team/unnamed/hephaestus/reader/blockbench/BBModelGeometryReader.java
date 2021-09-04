@@ -5,8 +5,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.model.ModelBone;
+import team.unnamed.hephaestus.model.ModelBoneAsset;
 import team.unnamed.hephaestus.model.ModelCube;
-import team.unnamed.hephaestus.model.ModelDescription;
+import team.unnamed.hephaestus.model.ModelDataCursor;
 import team.unnamed.hephaestus.model.ModelGeometry;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
@@ -24,9 +25,9 @@ import java.util.Map;
  * <p>The Blockbench format is explicitly supported
  *  by the Blockbench model editor</p>
  */
-public class BlockbenchModelGeometryReader {
+public class BBModelGeometryReader {
 
-    public ModelGeometry read(JsonObject json) throws IOException {
+    public ModelGeometry read(ModelDataCursor cursor, JsonObject json) throws IOException {
 
         JsonObject meta = json.get("meta").getAsJsonObject();
         JsonElement boxUv = meta.get("box_uv");
@@ -39,10 +40,6 @@ public class BlockbenchModelGeometryReader {
         }
 
         JsonObject resolutionJson = json.getAsJsonObject("resolution");
-        ModelDescription description = new ModelDescription(
-                resolutionJson.get("width").getAsInt(),
-                resolutionJson.get("height").getAsInt()
-        );
 
         Map<Integer, String> textureMap = new HashMap<>();
         JsonArray textureArray = json.get("textures").getAsJsonArray();
@@ -111,33 +108,75 @@ public class BlockbenchModelGeometryReader {
         }
 
         List<ModelBone> bones = new ArrayList<>();
+        List<ModelBoneAsset> bonesAssets = new ArrayList<>();
+
         json.get("outliner").getAsJsonArray().forEach(boneElement -> {
             if (boneElement.isJsonObject()) {
-                bones.add(createBone(null, cubeIdMap, boneElement.getAsJsonObject()));
+                ModelBone bone = createBone(
+                        cursor,
+                        Vector3Float.ZERO,
+                        null,
+                        cubeIdMap,
+                        boneElement.getAsJsonObject()
+                );
+                bones.add(bone);
+                bonesAssets.add(bone.getAsset());
             }
         });
 
-        return new ModelGeometry(description, bones, textureMap);
+        return new ModelGeometry(
+                resolutionJson.get("width").getAsInt(),
+                resolutionJson.get("height").getAsInt(),
+                bones,
+                bonesAssets,
+                textureMap
+        );
     }
 
     private float round(float number) {
         return (float) (Math.round(number * 100.0) / 100.0);
     }
 
-    private ModelBone createBone(@Nullable ModelBone parent, Map<String, ModelCube> cubeIdMap, JsonObject json) {
+    private ModelBone createBone(
+            ModelDataCursor cursor,
+            Vector3Float parentScaledPivot,
+            @Nullable ModelBone parent,
+            Map<String, ModelCube> cubeIdMap,
+            JsonObject json
+    ) {
         String name = json.get("name").getAsString();
         Vector3Float pivot = Serialization.getVector3FloatFromJson(json.get("origin")).multiply(-1, 1, 1);
         Vector3Float rotation = json.get("rotation") == null
                 ? Vector3Float.ZERO
                 : Serialization.getVector3FloatFromJson(json.get("rotation"));
 
+        Vector3Float scaledPivot = pivot.divide(16);
+        Vector3Float offset = scaledPivot.subtract(parentScaledPivot);
+
         List<ModelCube> cubes = new ArrayList<>();
         List<ModelBone> bones = new ArrayList<>();
-        ModelBone bone = new ModelBone(parent, name, pivot, rotation, bones, cubes);
+        List<ModelBoneAsset> boneAssets = new ArrayList<>();
+
+        ModelBone bone = new ModelBone(
+                parent,
+                name,
+                rotation,
+                bones,
+                offset,
+                new ModelBoneAsset(
+                        name,
+                        pivot,
+                        cursor.next(),
+                        cubes,
+                        boneAssets
+                )
+        );
 
         json.get("children").getAsJsonArray().forEach(componentElement -> {
             if (componentElement.isJsonObject()) {
-                bones.add(createBone(bone, cubeIdMap, componentElement.getAsJsonObject()));
+                ModelBone child = createBone(cursor, scaledPivot, bone, cubeIdMap, componentElement.getAsJsonObject());
+                bones.add(child);
+                boneAssets.add(child.getAsset());
             } else {
                 cubes.add(cubeIdMap.get(componentElement.getAsString()));
             }
