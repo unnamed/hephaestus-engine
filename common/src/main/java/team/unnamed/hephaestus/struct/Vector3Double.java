@@ -171,7 +171,7 @@ public class Vector3Double {
 
     @Override
     public String toString() {
-        return "Vector3Float {" +
+        return "Vector3Double {" +
                 "x=" + x +
                 ", y=" + y +
                 ", z=" + z +
