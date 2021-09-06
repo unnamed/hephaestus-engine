@@ -24,6 +24,7 @@ public class ModelViewController_v1_16_R3
         implements ModelViewController {
 
     private void summonBone(
+            double yawRadians,
             ModelView view,
             Location location,
             ModelBone bone,
@@ -32,11 +33,10 @@ public class ModelViewController_v1_16_R3
         World world = location.getWorld();
 
         // location computing
+        Vector3Float position = bone.getOffset().multiply(1, 1, -1).add(offset);
         Vector3Float relativePos = Vectors.rotateAroundY(
-                bone.getOffset()
-                        .multiply(1, 1, -1)
-                        .add(offset),
-                Math.toRadians(location.getYaw())
+                position,
+                yawRadians
         );
 
         // spawning the bone armorstand
@@ -87,23 +87,26 @@ public class ModelViewController_v1_16_R3
 
         for (ModelBone component : bone.getBones()) {
             summonBone(
+                    yawRadians,
                     view,
                     location,
                     component,
-                    offset.add(bone.getOffset().multiply(1, 1, -1))
+                    position
             );
         }
     }
 
     @Override
     public void show(ModelView view) {
+        Location location = view.getLocation();
+        double yaw = Math.toRadians(location.getYaw());
         for (ModelBone bone : view.getModel().getBones()) {
-            summonBone(view, view.getLocation(), bone, Vector3Float.ZERO);
+            summonBone(yaw, view, location, bone, Vector3Float.ZERO);
         }
     }
 
     private void teleportBonesRecursively(
-            double yaw,
+            double yawRadians,
             ModelView view,
             Location location,
             ModelBone bone,
@@ -114,7 +117,7 @@ public class ModelViewController_v1_16_R3
         Vector3Float position = bone.getOffset().multiply(1, 1, -1).add(offset);
         Vector3Float relativePos = Vectors.rotateAroundY(
                 position,
-                yaw
+                yawRadians
         );
 
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
@@ -133,7 +136,7 @@ public class ModelViewController_v1_16_R3
 
         for (ModelBone component : bone.getBones()) {
             teleportBonesRecursively(
-                    yaw,
+                    yawRadians,
                     view,
                     location,
                     component,
