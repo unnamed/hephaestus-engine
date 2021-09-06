@@ -193,7 +193,8 @@ public class ModelAnimationQueue {
                     animation.getName(),
                     animation.isLoop(),
                     animation.getAnimationLength(),
-                    animation.getAnimationsByBoneName()
+                    animation.getAnimationsByBoneName(),
+                    animation.getModelData()
             );
             this.modelData = animation.getModelData();
             this.priority = priority;
