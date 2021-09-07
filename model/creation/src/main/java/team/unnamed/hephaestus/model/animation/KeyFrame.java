@@ -13,15 +13,15 @@ import java.util.Objects;
  */
 public class KeyFrame {
 
-    private final float position;
+    private final int position;
     private final Vector3Float value;
 
-    public KeyFrame(float position, Vector3Float value) {
+    public KeyFrame(int position, Vector3Float value) {
         this.position = position;
         this.value = value;
     }
 
-    public float getPosition() {
+    public int getPosition() {
         return position;
     }
 

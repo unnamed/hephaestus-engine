@@ -70,7 +70,7 @@ public class BBModelAnimationReader {
                     Vector3Float value = new Vector3Float(x, y, z);
 
                     String channel = keyframeJson.get("channel").getAsString();
-                    float time = Math.round(keyframeJson.get("time").getAsFloat()*20);
+                    int time = Math.round(keyframeJson.get("time").getAsFloat() * 20);
                     KeyFrame keyFrame = new KeyFrame(
                             time,
                             value
@@ -82,17 +82,17 @@ public class BBModelAnimationReader {
                             Map<Integer, Integer> boneData = modelData.computeIfAbsent(boneName, k -> new HashMap<>());
 
                             if (lastSizeFrame != null) {
-                                float previous = lastSizeFrame.getPosition();
-                                float current = keyFrame.getPosition();
+                                int previous = lastSizeFrame.getPosition();
+                                int current = keyFrame.getPosition();
 
-                                for (float i = previous; i < current; i++) {
-                                    float ratio = (i - previous) / (current - previous);
+                                for (int i = previous; i < current; i++) {
+                                    float ratio = (float) (i - previous) / (float) (current - previous);
                                     Vector3Float size = Vectors.lerp(lastSizeFrame.getValue(), keyFrame.getValue(), ratio);
                                     sizeFrames.add(new KeyFrame(i, size));
-                                    boneData.put((int) i, cursor.next());
+                                    boneData.put(i, cursor.next());
                                 }
                             } else {
-                                boneData.put((int) keyFrame.getPosition(), cursor.next());
+                                boneData.put(keyFrame.getPosition(), cursor.next());
                                 sizeFrames.add(keyFrame);
                             }
                             lastSizeFrame = keyFrame;

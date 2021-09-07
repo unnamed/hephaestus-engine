@@ -44,9 +44,8 @@ public class ModelAnimationQueue {
                     ratio
             );
         } else if (nextPositionFrame != null) {
-            float ratio = (
-                    animation.getTick() - previousPositionFrame.getPosition()
-            ) / (nextPositionFrame.getPosition() - previousPositionFrame.getPosition());
+            float ratio = (float) (animation.getTick() - previousPositionFrame.getPosition())
+                    / (float) (nextPositionFrame.getPosition() - previousPositionFrame.getPosition());
 
             framePosition = Vectors.lerp(
                     previousPositionFrame.getValue(),
@@ -85,9 +84,8 @@ public class ModelAnimationQueue {
                     ratio
             );
         } else if (nextRotationFrame != null) {
-            float ratio = (
-                    animation.getTick() - previousRotationFrame.getPosition()
-            ) / (nextRotationFrame.getPosition() - previousRotationFrame.getPosition());
+            float ratio = (float) (animation.getTick() - previousRotationFrame.getPosition())
+                    / (float) (nextRotationFrame.getPosition() - previousRotationFrame.getPosition());
 
             frameRotation = Quaternion.lerp(
                     Vectors.toRadians(previousRotationFrame.getValue()),
