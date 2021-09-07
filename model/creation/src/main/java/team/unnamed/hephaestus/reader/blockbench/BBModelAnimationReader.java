@@ -8,6 +8,7 @@ import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Serialization;
+import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +57,8 @@ public class BBModelAnimationReader {
                 List<KeyFrame> positionFrames = new ArrayList<>();
                 List<KeyFrame> sizeFrames = new ArrayList<>();
 
+                KeyFrame lastSizeFrame = null;
+
                 for (JsonElement keyFrameElement : boneAnimationJson.get("keyframes").getAsJsonArray()) {
                     JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
                     JsonObject dataPoint = keyframeJson.get("data_points").getAsJsonArray().get(0).getAsJsonObject();
@@ -75,10 +78,24 @@ public class BBModelAnimationReader {
 
                     switch (channel) {
                         case "scale": {
-                            sizeFrames.add(keyFrame);
                             // scale require a special treatment
-                            modelData.computeIfAbsent(boneName, k -> new HashMap<>())
-                                    .put((int) time, cursor.next());
+                            Map<Integer, Integer> boneData = modelData.computeIfAbsent(boneName, k -> new HashMap<>());
+
+                            if (lastSizeFrame != null) {
+                                float previous = lastSizeFrame.getPosition();
+                                float current = keyFrame.getPosition();
+
+                                for (float i = previous; i < current; i++) {
+                                    float ratio = (i - previous) / (current - previous);
+                                    Vector3Float size = Vectors.lerp(lastSizeFrame.getValue(), keyFrame.getValue(), ratio);
+                                    sizeFrames.add(new KeyFrame(i, size));
+                                    boneData.put((int) i, cursor.next());
+                                }
+                            } else {
+                                boneData.put((int) keyFrame.getPosition(), cursor.next());
+                                sizeFrames.add(keyFrame);
+                            }
+                            lastSizeFrame = keyFrame;
                             break;
                         }
                         case "rotation": {

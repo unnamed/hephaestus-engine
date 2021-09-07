@@ -13,7 +13,6 @@ import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Bones;
 import team.unnamed.hephaestus.util.KeyFrames;
-import team.unnamed.hephaestus.util.Vectors;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,24 +61,14 @@ public class ModelResourcePackWriter
         } else {
             List<KeyFrame> frames = boneAnimation.getScaleFrames();
             KeyFrame previous = KeyFrames.getPrevious(tick, frames, Vector3Float.ONE);
-            KeyFrame next = KeyFrames.getNext(tick, frames);
-            if (next == null) {
-                size = previous.getValue();
-            } else {
-                float ratio = (tick - previous.getPosition())
-                        / (next.getPosition() - previous.getPosition());
-                size = Vectors.lerp(
-                        previous.getValue(),
-                        next.getValue(),
-                        ratio
-                );
-            }
+            size = previous.getValue();
         }
 
         sizeProduct = sizeProduct.multiply(size);
+        int data;
 
-        if (!sizeProduct.equals(Vector3Float.ONE)) {
-            int data = animation.getModelData().getOrDefault(bone.getName(), Collections.emptyMap()).get(tick);
+        if (!sizeProduct.equals(Vector3Float.ONE)
+                && (data = animation.getModelData().getOrDefault(bone.getName(), Collections.emptyMap()).getOrDefault(tick, -1)) != -1) {
 
             String modelName = model.getName() + "/frames/" + bone.getName() + "-" + data;
 

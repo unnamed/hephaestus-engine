@@ -16,6 +16,16 @@ public class ModelDataCursor {
 
     /**
      * Returns the next custom model data
+     * without modifying it
+     */
+    public int getNext() {
+        return cursor;
+    }
+
+    /**
+     * Returns the next custom model data
+     * and adds one to it for the next custom
+     * model data
      */
     public int next() {
         return cursor++;
