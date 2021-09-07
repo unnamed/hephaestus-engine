@@ -171,11 +171,7 @@ public class Vector3Double {
 
     @Override
     public String toString() {
-        return "Vector3Double {" +
-                "x=" + x +
-                ", y=" + y +
-                ", z=" + z +
-                '}';
+        return "[" + x + ", " + y + ", " + z + ']';
     }
 
 }

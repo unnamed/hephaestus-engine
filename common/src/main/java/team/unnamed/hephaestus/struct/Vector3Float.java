@@ -171,11 +171,7 @@ public class Vector3Float {
 
     @Override
     public String toString() {
-        return "Vector3Float {" +
-                "x=" + x +
-                ", y=" + y +
-                ", z=" + z +
-                '}';
+        return "[" + x + ", " + y + ", " + z + ']';
     }
 
 }
