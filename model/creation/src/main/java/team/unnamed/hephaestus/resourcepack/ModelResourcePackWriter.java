@@ -1,7 +1,7 @@
 package team.unnamed.hephaestus.resourcepack;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.io.TreeOutputStream;
@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ModelResourcePackWriter
         implements ResourcePackWriter {
@@ -42,9 +44,36 @@ public class ModelResourcePackWriter
         this(models, "hephaestus");
     }
 
+    private static class ItemOverride implements Comparable<ItemOverride> {
+
+        private final int customModelData;
+        private final String model;
+
+        public ItemOverride(int customModelData, String model) {
+            this.customModelData = customModelData;
+            this.model = model;
+        }
+
+        @Override
+        public int compareTo(@NotNull ModelResourcePackWriter.ItemOverride other) {
+            return Integer.compare(customModelData, other.customModelData);
+        }
+
+        @Override
+        public String toString() {
+            return "{ " +
+                    "\"predicate\": { " +
+                        "\"custom_model_data\": " + customModelData +
+                    " }," +
+                    "\"model\": \"" + model + "\" " +
+                    "}";
+        }
+
+    }
+
     private void writeScaleKeyFrames(
             TreeOutputStream output,
-            JsonArray overrides,
+            Set<ItemOverride> overrides,
             ModelAnimation animation,
             ModelAsset model,
             int tick,
@@ -75,10 +104,7 @@ public class ModelResourcePackWriter
             JsonObject overridePredicate = new JsonObject();
             overridePredicate.addProperty("custom_model_data", data);
 
-            JsonObject override = new JsonObject();
-            override.add("predicate", overridePredicate);
-            override.addProperty("model", namespace + ":" + modelName);
-            overrides.add(override);
+            overrides.add(new ItemOverride(data, namespace + ':' + modelName));
 
             output.useEntry(
                     "assets/" + namespace + "/models/"
@@ -119,7 +145,7 @@ public class ModelResourcePackWriter
     @Override
     public void write(TreeOutputStream output) throws IOException {
 
-        JsonArray overrides = new JsonArray();
+        Set<ItemOverride> overrides = new TreeSet<>();
 
         for (ModelAsset model : models) {
             String modelName = model.getName();
@@ -148,11 +174,10 @@ public class ModelResourcePackWriter
                 JsonObject overridePredicate = new JsonObject();
                 overridePredicate.addProperty("custom_model_data", bone.getCustomModelData());
 
-                JsonObject override = new JsonObject();
-                override.add("predicate", overridePredicate);
-                override.addProperty("model", namespace + ":" + modelName + "/" + bone.getName());
-
-                overrides.add(override);
+                overrides.add(new ItemOverride(
+                        bone.getCustomModelData(),
+                        namespace + ':' + modelName + '/' + bone.getName()
+                ));
 
                 output.useEntry(
                         "assets/" + namespace + "/models/"
