@@ -101,9 +101,6 @@ public class ModelResourcePackWriter
 
             String modelName = model.getName() + "/frames/" + bone.getName() + "-" + data;
 
-            JsonObject overridePredicate = new JsonObject();
-            overridePredicate.addProperty("custom_model_data", data);
-
             overrides.add(new ItemOverride(data, namespace + ':' + modelName));
 
             output.useEntry(
@@ -170,9 +167,6 @@ public class ModelResourcePackWriter
             for (ModelBoneAsset bone : Bones.getAllBones(model)) {
 
                 JsonObject json = transformer.toJavaJson(model, bone);
-
-                JsonObject overridePredicate = new JsonObject();
-                overridePredicate.addProperty("custom_model_data", bone.getCustomModelData());
 
                 overrides.add(new ItemOverride(
                         bone.getCustomModelData(),
