@@ -85,9 +85,16 @@ public class BBModelAnimationReader {
                                 int previous = lastSizeFrame.getPosition();
                                 int current = keyFrame.getPosition();
 
-                                for (int i = previous; i < current; i++) {
+                                Vector3Float lerpPrevious = null;
+                                for (int i = previous + 1; i < current; i++) {
                                     float ratio = (float) (i - previous) / (float) (current - previous);
                                     Vector3Float size = Vectors.lerp(lastSizeFrame.getValue(), keyFrame.getValue(), ratio);
+
+                                    if (size.equals(lerpPrevious)) {
+                                        continue;
+                                    }
+
+                                    lerpPrevious = size;
                                     sizeFrames.add(new KeyFrame(i, size));
                                     boneData.put(i, cursor.next());
                                 }

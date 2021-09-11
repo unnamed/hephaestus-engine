@@ -56,6 +56,10 @@ public class ModelResourcePackWriter
 
         @Override
         public int compareTo(@NotNull ModelResourcePackWriter.ItemOverride other) {
+            if (customModelData == other.customModelData
+                && !model.equals(other.model)) {
+                System.out.println("duplicate " + model + " == " + other.model + " = " + customModelData);
+            }
             return Integer.compare(customModelData, other.customModelData);
         }
 
