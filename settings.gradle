@@ -6,14 +6,17 @@ include 'plugin'
 //
 // Model Subprojects
 //
-include ':model:runtime'
 include ':model:creation'
 
+//
+// Model Bukkit runtime
+//
+include ":model:runtime-bukkit:core"
 [
         'v1_14_R1',
         'v1_15_R1',
         'v1_16_R3',
         'v1_17_R1'
 ].forEach {
-    include ":model:adapt:$it"
+    include ":model:runtime-bukkit:adapt-$it"
 }
