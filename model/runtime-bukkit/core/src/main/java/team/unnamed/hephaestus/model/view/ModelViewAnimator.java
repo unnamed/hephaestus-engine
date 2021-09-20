@@ -11,6 +11,6 @@ public interface ModelViewAnimator {
      * {@code view} with the specified {@code animation}.
      * @return The created task id
      */
-    int animate(ModelView view);
+    int animate(BukkitModelView view);
 
 }

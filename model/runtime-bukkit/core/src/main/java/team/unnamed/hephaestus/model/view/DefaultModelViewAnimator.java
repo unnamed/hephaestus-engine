@@ -18,7 +18,7 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
     }
 
     @Override
-    public int animate(ModelView entity) {
+    public int animate(BukkitModelView entity) {
         return new AnimationTask(entity)
                 .runTaskTimerAsynchronously(plugin, 0L, 1L)
                 .getTaskId();
@@ -26,9 +26,9 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
 
     static class AnimationTask extends BukkitRunnable {
 
-        private final ModelView entity;
+        private final BukkitModelView entity;
 
-        public AnimationTask(ModelView entity) {
+        public AnimationTask(BukkitModelView entity) {
             this.entity = entity;
         }
 

@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.util.EulerAngle;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
@@ -15,7 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ModelView {
+public class BukkitModelView implements ModelView {
 
     private final static int DEFAULT_PRIORITY = 0;
     private final static int DEFAULT_TRANSITION_TIME = 8;
@@ -38,7 +37,7 @@ public class ModelView {
      */
     private final Map<String, Object> entities = new HashMap<>();
 
-    public ModelView(
+    public BukkitModelView(
             ModelViewController controller,
             ModelViewAnimator animator,
             ModelAnimationQueue animationQueue,
@@ -81,6 +80,7 @@ public class ModelView {
         return entities;
     }
 
+    @Override
     public void playAnimation(String animationName){
         this.playAnimation(animationName, DEFAULT_PRIORITY, DEFAULT_TRANSITION_TIME);
     }
@@ -93,6 +93,7 @@ public class ModelView {
         playAnimation(animation, priority, transitionTicks);
     }
 
+    @Override
     public void playAnimation(ModelAnimation animation) {
         this.playAnimation(animation, DEFAULT_PRIORITY, DEFAULT_TRANSITION_TIME);
     }
@@ -104,15 +105,20 @@ public class ModelView {
         this.animationQueue.pushAnimation(animation, priority, transitionTicks);
     }
 
-    public void stopAnimation(String name) {
+    @Override
+    public boolean stopAnimation(String name) {
         this.animationQueue.removeAnimation(name);
 
         if (this.animationQueue.getQueuedAnimations().isEmpty() && this.taskId != -1) {
             Bukkit.getScheduler().cancelTask(this.taskId);
             this.taskId = -1;
         }
-    };
 
+        // TODO:
+        return true;
+    }
+
+    @Override
     public void stopAllAnimations() {
         this.animationQueue.clear();
 
@@ -132,12 +138,22 @@ public class ModelView {
         controller.colorize(this, color);
     }
 
+    @Override
+    public void colorize(int r, int g, int b) {
+        controller.colorize(this, Color.fromRGB(r, g, b));
+    }
+
     public void colorizeBone(ModelBone bone, Color color) {
         controller.colorizeBone(this, bone.getName(), color);
     }
 
     public void colorizeBone(String boneName, Color color) {
         controller.colorizeBone(this, boneName, color);
+    }
+
+    @Override
+    public void colorizeBone(String name, int r, int g, int b) {
+        controller.colorizeBone(this, name, Color.fromRGB(r, g, b));
     }
 
     public void show() {

@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import team.unnamed.hephaestus.model.ModelBone;
-import team.unnamed.hephaestus.model.view.ModelView;
+import team.unnamed.hephaestus.model.view.BukkitModelView;
 import team.unnamed.hephaestus.model.view.ModelViewController;
 import team.unnamed.hephaestus.struct.Vector3Double;
 import team.unnamed.hephaestus.struct.Vector3Float;
@@ -22,7 +22,7 @@ public class ModelViewController_v1_14_R1
 
     private void summonBone(
             double yawRadians,
-            ModelView view,
+            BukkitModelView view,
             Location location,
             ModelBone bone,
             Vector3Float offset
@@ -92,7 +92,7 @@ public class ModelViewController_v1_14_R1
     }
 
     @Override
-    public void show(ModelView view) {
+    public void show(BukkitModelView view) {
         Location location = view.getLocation();
         double yawRadians = Math.toRadians(location.getYaw());
         for (ModelBone bone : view.getModel().getBones()) {
@@ -102,7 +102,7 @@ public class ModelViewController_v1_14_R1
 
     private void teleportBonesRecursively(
             double yawRadians,
-            ModelView view,
+            BukkitModelView view,
             Location location,
             ModelBone bone,
             Vector3Float offset
@@ -138,14 +138,14 @@ public class ModelViewController_v1_14_R1
     }
 
     @Override
-    public void teleport(ModelView view, Location location) {
+    public void teleport(BukkitModelView view, Location location) {
         double yaw = Math.toRadians(location.getYaw());
         for (ModelBone bone : view.getModel().getBones()) {
             teleportBonesRecursively(yaw, view, location, bone, Vector3Float.ZERO);
         }
     }
 
-    private void hideBone(ModelView view, ModelBone bone) {
+    private void hideBone(BukkitModelView view, ModelBone bone) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
         Packets.send(view.getViewers(), new PacketPlayOutEntityDestroy(entity.getId()));
         for (ModelBone component : bone.getBones()) {
@@ -154,14 +154,14 @@ public class ModelViewController_v1_14_R1
     }
 
     @Override
-    public void hide(ModelView view) {
+    public void hide(BukkitModelView view) {
         for (ModelBone bone : view.getModel().getBones()) {
             hideBone(view, bone);
         }
     }
 
     @Override
-    public void colorizeBone(ModelView view, String boneName, Color color) {
+    public void colorizeBone(BukkitModelView view, String boneName, Color color) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(boneName);
 
         net.minecraft.server.v1_14_R1.ItemStack nmsItem
@@ -188,7 +188,7 @@ public class ModelViewController_v1_14_R1
         );
     }
 
-    private void colorizeBoneAndChildren(ModelView view, ModelBone bone, Color color) {
+    private void colorizeBoneAndChildren(BukkitModelView view, ModelBone bone, Color color) {
         colorizeBone(view, bone.getName(), color);
         for (ModelBone child : bone.getBones()) {
             colorizeBoneAndChildren(view, child, color);
@@ -196,14 +196,14 @@ public class ModelViewController_v1_14_R1
     }
 
     @Override
-    public void colorize(ModelView view, Color color) {
+    public void colorize(BukkitModelView view, Color color) {
         for (ModelBone bone : view.getModel().getBones()) {
             colorizeBoneAndChildren(view, bone, color);
         }
     }
 
     @Override
-    public void teleportBone(ModelView view, ModelBone bone, Location location) {
+    public void teleportBone(BukkitModelView view, ModelBone bone, Location location) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
         entity.setLocation(
                 location.getX(),
@@ -217,7 +217,7 @@ public class ModelViewController_v1_14_R1
     }
 
     @Override
-    public void updateBoneModelData(ModelView view, ModelBone bone, int modelData) {
+    public void updateBoneModelData(BukkitModelView view, ModelBone bone, int modelData) {
 
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
         net.minecraft.server.v1_14_R1.ItemStack nmsItem
@@ -247,7 +247,7 @@ public class ModelViewController_v1_14_R1
     }
 
     @Override
-    public void setBonePose(ModelView view, ModelBone bone, Vector3Double angle) {
+    public void setBonePose(BukkitModelView view, ModelBone bone, Vector3Double angle) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
         DataWatcher watcher = new DataWatcher(null);
         watcher.register(
@@ -262,7 +262,7 @@ public class ModelViewController_v1_14_R1
     }
 
     private void showBoneIndividually(
-            ModelView view,
+            BukkitModelView view,
             ModelBone bone,
             Player player
     ) {
@@ -285,7 +285,7 @@ public class ModelViewController_v1_14_R1
     }
 
     private void hideBoneIndividually(
-            ModelView view,
+            BukkitModelView view,
             ModelBone bone,
             Player player
     ) {
@@ -298,14 +298,14 @@ public class ModelViewController_v1_14_R1
     }
 
     @Override
-    public void showIndividually(ModelView view, Player player) {
+    public void showIndividually(BukkitModelView view, Player player) {
         for (ModelBone bone : view.getModel().getBones()) {
             showBoneIndividually(view, bone, player);
         }
     }
 
     @Override
-    public void hideIndividually(ModelView view, Player player) {
+    public void hideIndividually(BukkitModelView view, Player player) {
         for (ModelBone bone : view.getModel().getBones()) {
            hideBoneIndividually(view, bone, player);
         }

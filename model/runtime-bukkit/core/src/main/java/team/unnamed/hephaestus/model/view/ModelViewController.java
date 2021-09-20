@@ -8,31 +8,31 @@ import team.unnamed.hephaestus.struct.Vector3Double;
 
 public interface ModelViewController {
 
-    void show(ModelView view);
+    void show(BukkitModelView view);
 
-    void hide(ModelView view);
+    void hide(BukkitModelView view);
 
-    void teleport(ModelView view, Location location);
+    void teleport(BukkitModelView view, Location location);
 
     /**
      * Colorizes the entity with the given {@code color}
      */
-    void colorize(ModelView view, Color color);
+    void colorize(BukkitModelView view, Color color);
 
     /**
      * Colorizes the {@code bone} for the specified
      * {@code view} using the provided {@code color}
      */
-    void colorizeBone(ModelView view, String boneName, Color color);
+    void colorizeBone(BukkitModelView view, String boneName, Color color);
 
-    void teleportBone(ModelView view, ModelBone bone, Location location);
+    void teleportBone(BukkitModelView view, ModelBone bone, Location location);
 
-    void updateBoneModelData(ModelView view, ModelBone bone, int modelData);
+    void updateBoneModelData(BukkitModelView view, ModelBone bone, int modelData);
 
-    void setBonePose(ModelView view, ModelBone bone, Vector3Double angle);
+    void setBonePose(BukkitModelView view, ModelBone bone, Vector3Double angle);
 
-    void showIndividually(ModelView view, Player player);
+    void showIndividually(BukkitModelView view, Player player);
 
-    void hideIndividually(ModelView view, Player player);
+    void hideIndividually(BukkitModelView view, Player player);
 
 }

@@ -16,7 +16,7 @@ public interface ModelViewRenderer {
      * Spawns the bones of the given {@code model}
      * @return The living model entity
      */
-    ModelView render(
+    BukkitModelView render(
             Model model,
             Location location,
             ModelAnimationQueue animationQueue,
@@ -24,7 +24,7 @@ public interface ModelViewRenderer {
     );
 
 
-    default ModelView render(
+    default BukkitModelView render(
             Model model,
             Location location,
             Collection<Player> viewers
@@ -32,7 +32,7 @@ public interface ModelViewRenderer {
         return render(model, location, new ModelAnimationQueue(), viewers);
     }
 
-    default ModelView render(
+    default BukkitModelView render(
             Model model,
             Location location,
             ModelAnimationQueue animationQueue,
@@ -41,7 +41,7 @@ public interface ModelViewRenderer {
         return render(model, location, animationQueue, Arrays.asList(viewers));
     }
 
-    default ModelView render(
+    default BukkitModelView render(
             Model model,
             Location location,
             Player... viewers
@@ -49,14 +49,14 @@ public interface ModelViewRenderer {
         return render(model, location, Arrays.asList(viewers));
     }
 
-    default ModelView render(
+    default BukkitModelView render(
             Model model,
             Location location
     ) {
         return render(model, location, new ArrayList<>());
     }
 
-    default ModelView render(
+    default BukkitModelView render(
             Model model,
             Location location,
             ModelAnimationQueue animationQueue

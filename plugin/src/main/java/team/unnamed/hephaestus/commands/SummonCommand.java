@@ -9,7 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.view.ModelView;
+import team.unnamed.hephaestus.model.view.BukkitModelView;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public class SummonCommand implements CommandClass {
 
     private final ModelViewRenderer renderer;
     // temporal
-    private final Map<String, ModelView> views = new HashMap<>();
+    private final Map<String, BukkitModelView> views = new HashMap<>();
 
     public SummonCommand(ModelViewRenderer renderer) {
         this.renderer = renderer;
@@ -28,7 +28,7 @@ public class SummonCommand implements CommandClass {
 
     @Command(names = "teleport")
     public void teleport(@Sender Player player, String viewId) {
-        ModelView view = views.get(viewId);
+        BukkitModelView view = views.get(viewId);
         if (view == null) {
             player.sendMessage("§cUnknown view");
             return;
@@ -45,7 +45,7 @@ public class SummonCommand implements CommandClass {
             int green,
             int blue
     ) {
-        ModelView view = views.get(viewId);
+        BukkitModelView view = views.get(viewId);
         if (view == null) {
             player.sendMessage("§cUnknown view");
             return;
@@ -62,7 +62,7 @@ public class SummonCommand implements CommandClass {
             @OptArg Integer priority,
             @OptArg Integer transitionTicks
     ) {
-        ModelView view = views.get(viewId);
+        BukkitModelView view = views.get(viewId);
         if (view == null) {
             player.sendMessage("§cUnknown view");
             return;
@@ -85,7 +85,7 @@ public class SummonCommand implements CommandClass {
         Location location = player.getLocation();
 
         String id = Integer.toHexString(ThreadLocalRandom.current().nextInt(0xFFFFFFF));
-        ModelView entity = renderer.render(model, location, player);
+        BukkitModelView entity = renderer.render(model, location, player);
         views.put(id, entity);
         player.sendMessage("Model '" + model.getName() + "' summoned. Id: " + id);
 
