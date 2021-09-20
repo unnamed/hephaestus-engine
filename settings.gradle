@@ -20,3 +20,8 @@ include ":model:runtime-bukkit:core"
 ].forEach {
     include ":model:runtime-bukkit:adapt-$it"
 }
+
+//
+// Model Minestom runtime
+//
+include ":model:runtime-minestom"
