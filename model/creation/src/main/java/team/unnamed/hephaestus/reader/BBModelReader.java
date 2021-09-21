@@ -19,7 +19,6 @@ import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.util.Vectors;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +26,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -157,7 +157,8 @@ public class BBModelReader implements ModelReader {
     private void readAnimations(
             JsonObject json,
             Map<String, ModelAnimation> animations
-    ) {
+    ) throws IOException {
+
         for (JsonElement animationElement : json.get("animations").getAsJsonArray()) {
 
             JsonObject animationJson = animationElement.getAsJsonObject();
@@ -172,7 +173,7 @@ public class BBModelReader implements ModelReader {
                 continue;
             }
 
-            Map<String, ModelBoneAnimation> boneAnimations = new HashMap<>();
+            Map<String, ModelBoneAnimation> animators = new HashMap<>();
             Map<String, Map<Integer, Integer>> modelData = new HashMap<>();
 
             for (Map.Entry<String, JsonElement> animatorEntry : animationJson.get("animators")
@@ -184,9 +185,6 @@ public class BBModelReader implements ModelReader {
 
                 List<KeyFrame> rotationFrames = new ArrayList<>();
                 List<KeyFrame> positionFrames = new ArrayList<>();
-                List<KeyFrame> sizeFrames = new ArrayList<>();
-
-                KeyFrame lastSizeFrame = null;
 
                 for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
 
@@ -208,32 +206,9 @@ public class BBModelReader implements ModelReader {
 
                     switch (channel) {
                         case "scale": {
-                            // scale require a special treatment
-                            Map<Integer, Integer> boneData = modelData.computeIfAbsent(boneName, k -> new HashMap<>());
-
-                            if (lastSizeFrame != null) {
-                                int previous = lastSizeFrame.getPosition();
-                                int current = keyFrame.getPosition();
-
-                                Vector3Float lerpPrevious = null;
-                                for (int i = previous + 1; i < current; i++) {
-                                    float ratio = (float) (i - previous) / (float) (current - previous);
-                                    Vector3Float size = Vectors.lerp(lastSizeFrame.getValue(), keyFrame.getValue(), ratio);
-
-                                    if (size.equals(lerpPrevious)) {
-                                        continue;
-                                    }
-
-                                    lerpPrevious = size;
-                                    sizeFrames.add(new KeyFrame(i, size));
-                                    boneData.put(i, cursor.next());
-                                }
-                            } else {
-                                boneData.put(keyFrame.getPosition(), cursor.next());
-                                sizeFrames.add(keyFrame);
-                            }
-                            lastSizeFrame = keyFrame;
-                            break;
+                            // TODO: support scale frames
+                            throw new IOException("Scale frames aren't supported yet." +
+                                    " Check animation " + name + " and bone " + boneName);
                         }
                         case "rotation": {
                             rotationFrames.add(keyFrame);
@@ -246,10 +221,15 @@ public class BBModelReader implements ModelReader {
                     }
                 }
 
-                boneAnimations.put(boneName, new ModelBoneAnimation(positionFrames, rotationFrames, sizeFrames));
+                animators.put(boneName, new ModelBoneAnimation(
+                        positionFrames,
+                        rotationFrames,
+                        Collections.emptyList()
+                ));
             }
 
-            animations.put(name, new ModelAnimation(name, loop, length, boneAnimations, modelData));
+            ModelAnimation animation = new ModelAnimation(name, loop, length, animators, modelData);
+            animations.put(name, animation);
         }
     }
 
