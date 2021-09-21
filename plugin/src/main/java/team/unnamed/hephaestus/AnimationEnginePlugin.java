@@ -28,7 +28,7 @@ import team.unnamed.hephaestus.model.view.DefaultModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.reader.ModelReader;
-import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
+import team.unnamed.hephaestus.reader.BBModelReader;
 import team.unnamed.hephaestus.resourcepack.ResourceExportMethodFactory;
 import team.unnamed.hephaestus.resourcepack.ResourceExporter;
 import team.unnamed.hephaestus.resourcepack.ModelResourcePackWriter;
