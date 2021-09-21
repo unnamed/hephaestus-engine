@@ -316,6 +316,7 @@ public class BBModelReader implements ModelReader {
                 bones.add(bone);
                 bonesAssets.add(bone.getAsset());
             }
+            // TODO: Support elements without a bone
         });
 
         return new ModelGeometry(
