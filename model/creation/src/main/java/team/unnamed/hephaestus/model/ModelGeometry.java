@@ -15,30 +15,16 @@ public class ModelGeometry {
     private final List<ModelBone> bones;
     private final List<ModelBoneAsset> bonesAssets;
 
-    private final int textureWidth;
-    private final int textureHeight;
     private final Map<Integer, String> textureMap;
 
     public ModelGeometry(
-            int textureWidth,
-            int textureHeight,
             List<ModelBone> bones,
             List<ModelBoneAsset> bonesAssets,
             Map<Integer, String> textureMap
     ) {
-        this.textureWidth = textureWidth;
-        this.textureHeight = textureHeight;
         this.bones = bones;
         this.bonesAssets = bonesAssets;
         this.textureMap = textureMap;
-    }
-
-    public int getTextureWidth() {
-        return textureWidth;
-    }
-
-    public int getTextureHeight() {
-        return textureHeight;
     }
 
     public List<ModelBone> getBones() {

@@ -65,6 +65,8 @@ public class BBModelReader implements ModelReader {
     public Model read(Reader reader) throws IOException {
 
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
+        JsonObject resolutionJson = json.getAsJsonObject("resolution");
+
         // TODO: we can take the "meta.creation_time" date for generating resource pack
         String modelName = json.get("name").getAsString();
         JsonElement formatVersionElement = json.get("meta").getAsJsonObject().get("format_version");
@@ -109,8 +111,8 @@ public class BBModelReader implements ModelReader {
                 geometry.getBones(),
                 new ModelAsset(
                         modelName,
-                        geometry.getTextureWidth(),
-                        geometry.getTextureHeight(),
+                        resolutionJson.get("width").getAsInt(),
+                        resolutionJson.get("height").getAsInt(),
                         textures,
                         geometry.getTextureMap(),
                         geometry.getBonesAssets(),
@@ -234,7 +236,6 @@ public class BBModelReader implements ModelReader {
             throw new IOException("Box UV not supported, please turn it off");
         }
 
-        JsonObject resolutionJson = json.getAsJsonObject("resolution");
 
         Map<Integer, String> textureMap = new HashMap<>();
         JsonArray textureArray = json.get("textures").getAsJsonArray();
@@ -320,8 +321,6 @@ public class BBModelReader implements ModelReader {
         });
 
         return new ModelGeometry(
-                resolutionJson.get("width").getAsInt(),
-                resolutionJson.get("height").getAsInt(),
                 bones,
                 bonesAssets,
                 textureMap
