@@ -33,6 +33,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Implementation of {@link ModelReader} to create
+ * {@link Model} instances from <a href="https://blockbench.net">
+ * Blockbench</a>'s <b>.bbmodel</b> files
+ */
 public class BBModelReader implements ModelReader {
 
     private static final String BASE_64_PREFIX = "data:image/png;base64,";
