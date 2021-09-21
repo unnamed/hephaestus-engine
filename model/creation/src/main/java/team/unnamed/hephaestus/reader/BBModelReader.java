@@ -317,10 +317,30 @@ public class BBModelReader implements ModelReader {
         }
     }
 
+    /**
+     * Rounds the given {@code number} up to
+     * two decimals, <a href="https://stackoverflow.com/questions/11701399">
+     * see this question</a>
+     */
     private float round(float number) {
-        return (float) (Math.round(number * 100.0) / 100.0);
+        return (float) (Math.round(number * 100D) / 100D);
     }
 
+    /**
+     * Creates a {@link ModelBone} and {@link ModelBone} from
+     * the given {@code json} object
+     *
+     * @param parentScaledPivot The scaled pivot of the parent bone
+     * @param parent The parent bone, null if it's a root bone
+     * @param cubeIdMap Map containing a relation of the cubes by
+     *                  their identifiers for this model
+     * @param json The json representation for this bone
+     *
+     * @param siblings The sibling bone map, the bone will be put
+     *                 in this map by its name
+     * @param siblingAssets The sibling bone asset map, the asset
+     *                      will be put in this map by its name
+     */
     private void createBone(
             Vector3Float parentScaledPivot,
             @Nullable ModelBone parent,
@@ -331,11 +351,17 @@ public class BBModelReader implements ModelReader {
             Map<String, ModelBoneAsset> siblingAssets
     ) {
         String name = json.get("name").getAsString();
-        Vector3Float pivot = Serialization.getVector3FloatFromJson(json.get("origin")).multiply(-1, 1, 1);
-        Vector3Float rotation = json.get("rotation") == null
+
+        // The pivot of this bone
+        Vector3Float pivot = Serialization.getVector3FloatFromJson(json.get("origin"))
+                .multiply(-1, 1, 1);
+
+        // The initial rotation of this bone
+        Vector3Float rotation = !json.has("rotation")
                 ? Vector3Float.ZERO
                 : Serialization.getVector3FloatFromJson(json.get("rotation"));
 
+        // scaled pivot of the bone (pivot / 16)
         Vector3Float scaledPivot = pivot.divide(16);
         Vector3Float offset = scaledPivot.subtract(parentScaledPivot);
 
@@ -364,8 +390,8 @@ public class BBModelReader implements ModelReader {
             if (childElement.isJsonObject()) {
                 JsonObject childBoneObject = childElement.getAsJsonObject();
                 createBone(
-                        parentScaledPivot,
-                        parent,
+                        scaledPivot,
+                        bone,
                         cubeIdMap,
                         childBoneObject,
 
