@@ -306,19 +306,21 @@ public class BBModelReader implements ModelReader {
         List<ModelBone> bones = new ArrayList<>();
         List<ModelBoneAsset> bonesAssets = new ArrayList<>();
 
-        json.get("outliner").getAsJsonArray().forEach(boneElement -> {
-            if (boneElement.isJsonObject()) {
+        for (JsonElement element : json.get("outliner").getAsJsonArray()) {
+            if (element.isJsonObject()) {
+                // if it's an object, then it represents a bone
                 ModelBone bone = createBone(
                         Vector3Float.ZERO,
                         null,
                         cubeIdMap,
-                        boneElement.getAsJsonObject()
+                        element.getAsJsonObject()
                 );
+
                 bones.add(bone);
                 bonesAssets.add(bone.getAsset());
             }
             // TODO: Support elements without a bone
-        });
+        }
 
         return new ModelGeometry(
                 bones,
@@ -365,15 +367,17 @@ public class BBModelReader implements ModelReader {
                 )
         );
 
-        json.get("children").getAsJsonArray().forEach(componentElement -> {
-            if (componentElement.isJsonObject()) {
-                ModelBone child = createBone(scaledPivot, bone, cubeIdMap, componentElement.getAsJsonObject());
+        for (JsonElement childElement : json.get("children").getAsJsonArray()) {
+            if (childElement.isJsonObject()) {
+                JsonObject childBoneObject = childElement.getAsJsonObject();
+                ModelBone child = createBone(scaledPivot, bone, cubeIdMap, childBoneObject);
                 bones.add(child);
                 boneAssets.add(child.getAsset());
             } else {
-                cubes.add(cubeIdMap.get(componentElement.getAsString()));
+                String cubeId = childElement.getAsString();
+                cubes.add(cubeIdMap.get(cubeId));
             }
-        });
+        }
 
         return bone;
     }
