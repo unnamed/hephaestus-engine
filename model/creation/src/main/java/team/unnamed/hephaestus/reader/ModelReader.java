@@ -7,6 +7,6 @@ import java.io.Reader;
 
 public interface ModelReader {
 
-    Model read(String name, Reader reader) throws IOException;
+    Model read(Reader reader) throws IOException;
 
 }

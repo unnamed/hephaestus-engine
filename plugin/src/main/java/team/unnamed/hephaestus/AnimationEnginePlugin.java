@@ -90,10 +90,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
             for (File modelFile : contents) {
                 if (modelFile.isFile() && modelFile.getName().endsWith(".bbmodel")) {
                     try (Reader reader = new FileReader(modelFile)) {
-                        Model model = modelReader.read(
-                            modelFile.getName().split("\\.")[0],
-                            reader
-                        );
+                        Model model = modelReader.read(reader);
                         this.getLogger().log(Level.INFO, "Loaded model " + model.getName());
                         models.add(model);
                     } catch (IOException exception) {

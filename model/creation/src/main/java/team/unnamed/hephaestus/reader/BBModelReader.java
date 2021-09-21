@@ -57,9 +57,10 @@ public class BBModelReader implements ModelReader {
     }
 
     @Override
-    public Model read(String modelName, Reader reader) throws IOException {
+    public Model read(Reader reader) throws IOException {
 
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
+        String modelName = json.get("name").getAsString();
         JsonElement formatVersionElement = json.get("meta").getAsJsonObject().get("format_version");
 
         if (
