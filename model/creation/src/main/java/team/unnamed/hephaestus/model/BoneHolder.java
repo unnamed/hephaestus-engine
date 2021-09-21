@@ -1,6 +1,6 @@
 package team.unnamed.hephaestus.model;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Abstraction for any class that holds bones
@@ -12,6 +12,6 @@ public interface BoneHolder {
      * Returns the bones that this
      * instance holds
      */
-    List<ModelBoneAsset> getBones();
+    Collection<ModelBoneAsset> getBones();
 
 }

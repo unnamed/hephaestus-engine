@@ -3,19 +3,19 @@ package team.unnamed.hephaestus.model;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 public class Model {
 
     private final String name;
-    private final List<ModelBone> bones;
+    private final Map<String, ModelBone> bones;
     private ModelAsset asset;
     private final Map<String, ModelAnimation> animations;
 
     public Model(
             String name,
-            List<ModelBone> bones,
+            Map<String, ModelBone> bones,
             ModelAsset asset
     ) {
         this.name = name;
@@ -30,7 +30,11 @@ public class Model {
         return name;
     }
 
-    public List<ModelBone> getBones() {
+    public Collection<ModelBone> getBones() {
+        return bones.values();
+    }
+
+    public Map<String, ModelBone> getBoneMap() {
         return bones;
     }
 
@@ -50,7 +54,7 @@ public class Model {
      */
     public void discardResourcePackData() {
         this.asset = null;
-        for (ModelBone bone : bones) {
+        for (ModelBone bone : bones.values()) {
             bone.discardResourcePackData();
         }
     }

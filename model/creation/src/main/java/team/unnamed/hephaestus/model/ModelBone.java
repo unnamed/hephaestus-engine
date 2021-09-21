@@ -3,7 +3,8 @@ package team.unnamed.hephaestus.model;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.struct.Vector3Float;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * It's a model cube holder, a {@link ModelCube}
@@ -15,9 +16,8 @@ public class ModelBone {
     private final String name;
     private final Vector3Float rotation;
 
-    private final List<ModelBone> bones;
+    private final Map<String, ModelBone> bones;
     private final Vector3Float offset;
-    private ModelBoneAsset asset;
 
     private final int customModelData;
     private final boolean hasCubes;
@@ -26,7 +26,7 @@ public class ModelBone {
             @Nullable ModelBone parent,
             String name,
             Vector3Float rotation,
-            List<ModelBone> bones,
+            Map<String, ModelBone> bones,
             Vector3Float offset,
             ModelBoneAsset asset
     ) {
@@ -35,17 +35,11 @@ public class ModelBone {
         this.rotation = rotation;
         this.bones = bones;
         this.offset = offset;
-        this.asset = asset;
 
         // data from 'asset' that will persist after calling
         // discardResourcePackData()
         this.customModelData = asset.getCustomModelData();
         this.hasCubes = asset.getCubes().size() > 0;
-    }
-
-    @Nullable
-    public ModelBoneAsset getAsset() {
-        return asset;
     }
 
     @Nullable
@@ -73,13 +67,16 @@ public class ModelBone {
         return rotation;
     }
 
-    public List<ModelBone> getBones() {
+    public Collection<ModelBone> getBones() {
+        return bones.values();
+    }
+
+    public Map<String, ModelBone> getBoneMap() {
         return bones;
     }
 
     public void discardResourcePackData() {
-        this.asset = null;
-        for (ModelBone bone : bones) {
+        for (ModelBone bone : bones.values()) {
             bone.discardResourcePackData();
         }
     }

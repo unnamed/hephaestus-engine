@@ -2,7 +2,9 @@ package team.unnamed.hephaestus.model;
 
 import team.unnamed.hephaestus.struct.Vector3Float;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class ModelBoneAsset implements BoneHolder {
 
@@ -10,14 +12,14 @@ public class ModelBoneAsset implements BoneHolder {
     private final Vector3Float pivot;
     private final int customModelData;
     private final List<ModelCube> cubes;
-    private final List<ModelBoneAsset> bones;
+    private final Map<String, ModelBoneAsset> bones;
 
     public ModelBoneAsset(
             String name,
             Vector3Float pivot,
             int customModelData,
             List<ModelCube> cubes,
-            List<ModelBoneAsset> bones
+            Map<String, ModelBoneAsset> bones
     ) {
         this.name = name;
         this.pivot = pivot;
@@ -43,7 +45,8 @@ public class ModelBoneAsset implements BoneHolder {
     }
 
     @Override
-    public List<ModelBoneAsset> getBones() {
-        return bones;
+    public Collection<ModelBoneAsset> getBones() {
+        return bones.values();
     }
+
 }

@@ -3,7 +3,7 @@ package team.unnamed.hephaestus.model;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 public class ModelAsset implements BoneHolder {
@@ -14,7 +14,7 @@ public class ModelAsset implements BoneHolder {
     private final Map<String, Streamable> textures;
     private final Map<Integer, String> textureMapping;
     private final Map<String, ModelAnimation> animations;
-    private final List<ModelBoneAsset> bones;
+    private final Map<String, ModelBoneAsset> bones;
 
     public ModelAsset(
             String name,
@@ -22,7 +22,7 @@ public class ModelAsset implements BoneHolder {
             int textureHeight,
             Map<String, Streamable> textures,
             Map<Integer, String> textureMapping,
-            List<ModelBoneAsset> bones,
+            Map<String, ModelBoneAsset> bones,
             Map<String, ModelAnimation> animations
     ) {
         this.name = name;
@@ -59,8 +59,8 @@ public class ModelAsset implements BoneHolder {
     }
 
     @Override
-    public List<ModelBoneAsset> getBones() {
-        return bones;
+    public Collection<ModelBoneAsset> getBones() {
+        return bones.values();
     }
 
 }

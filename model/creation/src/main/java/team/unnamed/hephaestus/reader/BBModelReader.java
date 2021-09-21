@@ -13,7 +13,6 @@ import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelBoneAsset;
 import team.unnamed.hephaestus.model.ModelCube;
 import team.unnamed.hephaestus.model.ModelDataCursor;
-import team.unnamed.hephaestus.model.ModelGeometry;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
@@ -30,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,26 +65,33 @@ public class BBModelReader implements ModelReader {
     public Model read(Reader reader) throws IOException {
 
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
+        JsonObject meta = json.get("meta").getAsJsonObject();
         JsonObject resolutionJson = json.getAsJsonObject("resolution");
 
         // TODO: we can take the "meta.creation_time" date for generating resource pack
         String modelName = json.get("name").getAsString();
-        JsonElement formatVersionElement = json.get("meta").getAsJsonObject().get("format_version");
 
-        if (
-                formatVersionElement == null
-                        || !SUPPORTED_FORMATS.contains(formatVersionElement.getAsString())
-        ) {
+        if (meta.has("format_version")
+                        && !SUPPORTED_FORMATS.contains(meta.get("format_version").getAsString())) {
             throw new IOException("Provided JSON doesn't have a valid format version");
         }
 
-        ModelGeometry geometry = readGeometry(json);
+        if (meta.has("box_uv") && meta.get("box_uv").getAsBoolean()) {
+            throw new IOException("Box UV not supported, please turn it off");
+        }
+
+        Map<String, ModelBone> bones = new LinkedHashMap<>();
+        Map<String, ModelBoneAsset> boneAssets = new LinkedHashMap<>();
         Map<String, ModelAnimation> animations = readAnimations(json);
 
         JsonArray texturesJson = json.get("textures").getAsJsonArray();
-        Map<String, Streamable> textures = new HashMap<>();
 
-        for (JsonElement textureElement : texturesJson) {
+        Map<String, Streamable> textures = new HashMap<>();
+        Map<Integer, String> textureMapping = new HashMap<>();
+
+        for (int index = 0; index < texturesJson.size(); index++) {
+
+            JsonElement textureElement = texturesJson.get(index);
             JsonObject textureJson = textureElement.getAsJsonObject();
 
             String name = textureJson.get("name").getAsString();
@@ -98,6 +105,7 @@ public class BBModelReader implements ModelReader {
             }
 
             String base64Source = source.substring(BASE_64_PREFIX.length());
+            textureMapping.put(index, name);
             textures.put(name, new Streamable() {
                 @Override
                 public InputStream openIn() {
@@ -106,16 +114,18 @@ public class BBModelReader implements ModelReader {
             });
         }
 
+        readElements(json, bones, boneAssets);
+
         return new Model(
                 modelName,
-                geometry.getBones(),
+                bones,
                 new ModelAsset(
                         modelName,
                         resolutionJson.get("width").getAsInt(),
                         resolutionJson.get("height").getAsInt(),
                         textures,
-                        geometry.getTextureMap(),
-                        geometry.getBonesAssets(),
+                        textureMapping,
+                        boneAssets,
                         animations
                 )
         );
@@ -124,8 +134,8 @@ public class BBModelReader implements ModelReader {
     private Map<String, ModelAnimation> readAnimations(JsonObject json) {
 
         Map<String, ModelAnimation> animations = new HashMap<>();
-
         JsonElement animationsElement = json.get("animations");
+
         if (animationsElement == null) {
             return animations;
         }
@@ -224,24 +234,11 @@ public class BBModelReader implements ModelReader {
         return animations;
     }
 
-    private ModelGeometry readGeometry(JsonObject json) throws IOException {
-
-        JsonObject meta = json.get("meta").getAsJsonObject();
-        JsonElement boxUv = meta.get("box_uv");
-
-        if (
-                boxUv == null
-                        || boxUv.getAsBoolean()
-        ) {
-            throw new IOException("Box UV not supported, please turn it off");
-        }
-
-
-        Map<Integer, String> textureMap = new HashMap<>();
-        JsonArray textureArray = json.get("textures").getAsJsonArray();
-        for (int i = 0; i < textureArray.size(); i++) {
-            textureMap.put(i, textureArray.get(i).getAsJsonObject().get("name").getAsString().split("\\.")[0]);
-        }
+    private void readElements(
+            JsonObject json,
+            Map<String, ModelBone> bones,
+            Map<String, ModelBoneAsset> boneAssets
+    ) {
 
         Map<String, ModelCube> cubeIdMap = new HashMap<>();
         JsonArray cubesArray = json.getAsJsonArray("elements");
@@ -303,41 +300,35 @@ public class BBModelReader implements ModelReader {
             ));
         }
 
-        List<ModelBone> bones = new ArrayList<>();
-        List<ModelBoneAsset> bonesAssets = new ArrayList<>();
-
         for (JsonElement element : json.get("outliner").getAsJsonArray()) {
             if (element.isJsonObject()) {
                 // if it's an object, then it represents a bone
-                ModelBone bone = createBone(
+                createBone(
                         Vector3Float.ZERO,
                         null,
                         cubeIdMap,
-                        element.getAsJsonObject()
-                );
+                        element.getAsJsonObject(),
 
-                bones.add(bone);
-                bonesAssets.add(bone.getAsset());
+                        bones,
+                        boneAssets
+                );
             }
             // TODO: Support elements without a bone
         }
-
-        return new ModelGeometry(
-                bones,
-                bonesAssets,
-                textureMap
-        );
     }
 
     private float round(float number) {
         return (float) (Math.round(number * 100.0) / 100.0);
     }
 
-    private ModelBone createBone(
+    private void createBone(
             Vector3Float parentScaledPivot,
             @Nullable ModelBone parent,
             Map<String, ModelCube> cubeIdMap,
-            JsonObject json
+            JsonObject json,
+
+            Map<String, ModelBone> siblings,
+            Map<String, ModelBoneAsset> siblingAssets
     ) {
         String name = json.get("name").getAsString();
         Vector3Float pivot = Serialization.getVector3FloatFromJson(json.get("origin")).multiply(-1, 1, 1);
@@ -349,8 +340,16 @@ public class BBModelReader implements ModelReader {
         Vector3Float offset = scaledPivot.subtract(parentScaledPivot);
 
         List<ModelCube> cubes = new ArrayList<>();
-        List<ModelBone> bones = new ArrayList<>();
-        List<ModelBoneAsset> boneAssets = new ArrayList<>();
+        Map<String, ModelBone> bones = new LinkedHashMap<>();
+        Map<String, ModelBoneAsset> boneAssets = new LinkedHashMap<>();
+
+        ModelBoneAsset asset = new ModelBoneAsset(
+                name,
+                pivot,
+                cursor.next(),
+                cubes,
+                boneAssets
+        );
 
         ModelBone bone = new ModelBone(
                 parent,
@@ -358,28 +357,29 @@ public class BBModelReader implements ModelReader {
                 rotation,
                 bones,
                 offset,
-                new ModelBoneAsset(
-                        name,
-                        pivot,
-                        cursor.next(),
-                        cubes,
-                        boneAssets
-                )
+                asset
         );
 
         for (JsonElement childElement : json.get("children").getAsJsonArray()) {
             if (childElement.isJsonObject()) {
                 JsonObject childBoneObject = childElement.getAsJsonObject();
-                ModelBone child = createBone(scaledPivot, bone, cubeIdMap, childBoneObject);
-                bones.add(child);
-                boneAssets.add(child.getAsset());
+                createBone(
+                        parentScaledPivot,
+                        parent,
+                        cubeIdMap,
+                        childBoneObject,
+
+                        bones,
+                        boneAssets
+                );
             } else {
                 String cubeId = childElement.getAsString();
                 cubes.add(cubeIdMap.get(cubeId));
             }
         }
 
-        return bone;
+        siblings.put(bone.getName(), bone);
+        siblingAssets.put(asset.getName(), asset);
     }
 
 }
