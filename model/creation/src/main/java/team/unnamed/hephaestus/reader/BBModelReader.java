@@ -60,6 +60,7 @@ public class BBModelReader implements ModelReader {
     public Model read(Reader reader) throws IOException {
 
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
+        // TODO: we can take the "meta.creation_time" date for generating resource pack
         String modelName = json.get("name").getAsString();
         JsonElement formatVersionElement = json.get("meta").getAsJsonObject().get("format_version");
 
