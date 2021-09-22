@@ -71,6 +71,15 @@ public class ResourcePackInfo {
     }
 
     /**
+     * Creates a {@link ResourcePackWriter} instance
+     * for writing information from this instance into
+     * a resource pack
+     */
+    public ResourcePackWriter toWriter() {
+        return new ResourcePackInfoWriter(this);
+    }
+
+    /**
      * Converts this {@link ResourcePackInfo} into a
      * fluent {@link ResourcePackInfo.Builder}, note that
      * modifications to the builder do not affect this

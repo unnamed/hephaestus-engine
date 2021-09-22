@@ -117,16 +117,15 @@ public class AnimationEnginePlugin extends JavaPlugin {
                 modelAssets.add(model.getAsset());
             }
             Object response = resourceExporter.export(ResourcePackWriter.compose(
-                    new ResourcePackInfoWriter(
-                            ResourcePackInfo.builder()
-                                    .setFormat(7)
-                                    .setDescription("Hephaestus-generated resource pack")
-                                    .setIcon(Streamable.ofResource(
-                                            getClass().getClassLoader(),
-                                            "hephaestus.png"
-                                    ))
-                                    .build()
-                    ),
+                    ResourcePackInfo.builder()
+                            .setFormat(7)
+                            .setDescription("Hephaestus-generated resource pack")
+                            .setIcon(Streamable.ofResource(
+                                    getClass().getClassLoader(),
+                                    "hephaestus.png"
+                            ))
+                            .build()
+                            .toWriter(),
                     new ModelResourcePackWriter(modelAssets)
             ));
 
