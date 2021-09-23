@@ -3,6 +3,7 @@ package team.unnamed.hephaestus;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -43,14 +44,17 @@ public class ModelViewRegistry {
 
         Preconditions.checkNotNull(world, "world is null!");
 
-        for (Entity entity : world.getNearbyEntities(location, RANGE, RANGE, RANGE)) {
-            if (!(entity instanceof Player)) {
-                // not a player, continue
-                continue;
-            }
+        // TODO: temporal, synchronization must be done by caller
+        Bukkit.getScheduler().runTask(AnimationEnginePlugin.getPlugin(AnimationEnginePlugin.class), () -> {
+            for (Entity entity : world.getNearbyEntities(location, RANGE, RANGE, RANGE)) {
+                if (!(entity instanceof Player)) {
+                    // not a player, continue
+                    continue;
+                }
 
-            view.addViewer((Player) entity);
-        }
+                view.addViewer((Player) entity);
+            }
+        });
     }
 
 }

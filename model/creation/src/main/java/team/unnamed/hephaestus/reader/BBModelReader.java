@@ -75,13 +75,13 @@ public class BBModelReader implements ModelReader {
         String modelName = json.get("name").getAsString();
 
         // check for bbmodel format version
-        if (meta.has("format_version")
+        if (!isNullOrAbsent(meta, "format_version")
                         && !SUPPORTED_FORMATS.contains(meta.get("format_version").getAsString())) {
             throw new IOException("Provided JSON doesn't have a valid format version");
         }
 
         // check for box uv
-        if (meta.has("box_uv") && meta.get("box_uv").getAsBoolean()) {
+        if (!isNullOrAbsent(meta, "box_uv") && meta.get("box_uv").getAsBoolean()) {
             throw new IOException("Box UV not supported, please turn it off");
         }
 
@@ -167,7 +167,7 @@ public class BBModelReader implements ModelReader {
             boolean loop = animationJson.get("loop").getAsBoolean();
             int length = Math.round(parseLenientFloat(animationJson.get("length")) * TICKS_PER_SECOND);
 
-            if (!animationJson.has("animators")) {
+            if (isNullOrAbsent(animationJson, "animators")) {
                 // empty animation, no keyframes of any kind
                 animations.put(name, new ModelAnimation(name, loop, length, new HashMap<>(), new HashMap<>()));
                 continue;
@@ -265,9 +265,9 @@ public class BBModelReader implements ModelReader {
                     round(to.getZ() - from.getZ())
             );
 
-            Vector3Float rotation = cubeJson.has("rotation")
-                    ? getVector3FloatFromJson(cubeJson.get("rotation")).multiply(-1, -1, 1)
-                    : Vector3Float.ZERO;
+            Vector3Float rotation = isNullOrAbsent(cubeJson, "rotation")
+                    ? Vector3Float.ZERO
+                    : getVector3FloatFromJson(cubeJson.get("rotation")).multiply(-1, -1, 1);
 
             FacedTextureBound[] textureBounds = new FacedTextureBound[TextureFace.values().length];
 
@@ -277,9 +277,9 @@ public class BBModelReader implements ModelReader {
                 TextureFace face = TextureFace.valueOf(faceEntry.getKey().toUpperCase());
                 JsonObject faceJson = faceEntry.getValue().getAsJsonObject();
 
-                int textureId = faceJson.has("texture")
-                        ? faceJson.get("texture").getAsInt()
-                        : -1;
+                int textureId = isNullOrAbsent(faceJson, "texture")
+                        ? -1
+                        : faceJson.get("texture").getAsInt();
 
                 JsonArray uvJson = faceJson.get("uv").getAsJsonArray();
                 float[] bounds = {
@@ -329,6 +329,15 @@ public class BBModelReader implements ModelReader {
     }
 
     /**
+     * Determines if a property with the given {@code name}
+     * exists in the specified {@code object} and it's
+     * not null
+     */
+    private boolean isNullOrAbsent(JsonObject object, String name) {
+        return !object.has(name) || object.get(name).isJsonNull();
+    }
+
+    /**
      * Creates a {@link ModelBone} and {@link ModelBone} from
      * the given {@code json} object
      *
@@ -360,9 +369,9 @@ public class BBModelReader implements ModelReader {
                 .multiply(-1, 1, 1);
 
         // The initial rotation of this bone
-        Vector3Float rotation = json.has("rotation")
-                ? getVector3FloatFromJson(json.get("rotation"))
-                : Vector3Float.ZERO;
+        Vector3Float rotation = isNullOrAbsent(json, "rotation")
+                ? Vector3Float.ZERO
+                : getVector3FloatFromJson(json.get("rotation"));
 
         // scaled pivot of the bone (pivot / 16)
         Vector3Float scaledPivot = pivot.divide(16);
