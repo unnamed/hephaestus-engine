@@ -5,6 +5,7 @@ plugins {
 repositories {
     mavenLocal()
     maven { url = 'https://repo.unnamed.team/repository/unnamed-public/' }
+    maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
     mavenCentral()
 }
 
@@ -15,6 +16,7 @@ dependencies {
     implementation 'org.jetbrains:annotations:22.0.0'
     implementation 'me.fixeddev:commandflow-bukkit:0.4.0'
     compileOnly 'org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT'
+    compileOnly 'io.lumine.xikage:MythicMobs:4.9.1'
 
     // adaption modules
     [

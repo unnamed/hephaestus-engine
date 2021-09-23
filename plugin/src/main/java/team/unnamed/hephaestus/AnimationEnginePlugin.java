@@ -27,6 +27,7 @@ import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.view.DefaultModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
+import team.unnamed.hephaestus.mythicmobs.MythicMobsHookListener;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.BBModelReader;
 import team.unnamed.hephaestus.resourcepack.ResourceExportMethodFactory;
@@ -191,6 +192,8 @@ public class AnimationEnginePlugin extends JavaPlugin {
         if (url != null && hash != null) {
             Bukkit.getPluginManager().registerEvents(new ResourcePackApplyListener(this, url, hash), this);
         }
+
+        Bukkit.getPluginManager().registerEvents(new MythicMobsHookListener(modelRegistry, new ModelViewRegistry(), renderer), this);
     }
 
     public ModelRegistry getModelRegistry() {
