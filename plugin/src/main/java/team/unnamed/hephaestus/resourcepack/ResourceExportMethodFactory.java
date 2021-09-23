@@ -1,7 +1,5 @@
 package team.unnamed.hephaestus.resourcepack;
 
-import team.unnamed.hephaestus.io.Streamable;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
