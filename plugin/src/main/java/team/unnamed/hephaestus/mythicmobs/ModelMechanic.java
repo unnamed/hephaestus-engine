@@ -20,7 +20,7 @@ public class ModelMechanic
         extends SkillMechanic
         implements ITargetedEntitySkill {
 
-    private static final float ARMORSTAND_HEIGHT = 0.725F;
+    private static final float ARMORSTAND_HEIGHT = 0.726F;
 
     private final ModelRegistry registry;
     private final ModelViewRegistry viewRegistry;
@@ -52,6 +52,7 @@ public class ModelMechanic
 
         BukkitModelView view = renderer.render(model, entity.getLocation());
         viewRegistry.register(view);
+        view.playAnimation("walk");
         // TODO: don't use a task per model
         Bukkit.getScheduler().runTaskTimerAsynchronously(
                 AnimationEnginePlugin.getPlugin(AnimationEnginePlugin.class),
