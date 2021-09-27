@@ -54,9 +54,6 @@ public class Model {
      */
     public void discardResourcePackData() {
         this.asset = null;
-        for (ModelBone bone : bones.values()) {
-            bone.discardResourcePackData();
-        }
     }
 
 }

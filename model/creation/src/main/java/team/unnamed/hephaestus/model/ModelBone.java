@@ -20,7 +20,6 @@ public class ModelBone {
     private final Vector3Float offset;
 
     private final int customModelData;
-    private final boolean hasCubes;
 
     public ModelBone(
             @Nullable ModelBone parent,
@@ -28,18 +27,14 @@ public class ModelBone {
             Vector3Float rotation,
             Map<String, ModelBone> bones,
             Vector3Float offset,
-            ModelBoneAsset asset
+            int customModelData
     ) {
         this.parent = parent;
         this.name = name;
         this.rotation = rotation;
         this.bones = bones;
         this.offset = offset;
-
-        // data from 'asset' that will persist after calling
-        // discardResourcePackData()
-        this.customModelData = asset.getCustomModelData();
-        this.hasCubes = asset.getCubes().size() > 0;
+        this.customModelData = customModelData;
     }
 
     @Nullable
@@ -53,10 +48,6 @@ public class ModelBone {
 
     public int getCustomModelData() {
         return customModelData;
-    }
-
-    public boolean hasCubes() {
-        return hasCubes;
     }
 
     public String getName() {
@@ -73,12 +64,6 @@ public class ModelBone {
 
     public Map<String, ModelBone> getBoneMap() {
         return bones;
-    }
-
-    public void discardResourcePackData() {
-        for (ModelBone bone : bones.values()) {
-            bone.discardResourcePackData();
-        }
     }
 
 }

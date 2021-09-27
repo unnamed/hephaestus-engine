@@ -384,7 +384,7 @@ public class BBModelReader implements ModelReader {
         // instantiate bone and asset with empty and mutable
         // cubes, bones and assets, they'll be filled later
         ModelBoneAsset asset = new ModelBoneAsset(name, pivot, cursor.next(), cubes, boneAssets);
-        ModelBone bone = new ModelBone(parent, name, rotation, bones, offset, asset);
+        ModelBone bone = new ModelBone(parent, name, rotation, bones, offset, asset.getCustomModelData());
 
         for (JsonElement childElement : json.get("children").getAsJsonArray()) {
             if (childElement.isJsonObject()) {
