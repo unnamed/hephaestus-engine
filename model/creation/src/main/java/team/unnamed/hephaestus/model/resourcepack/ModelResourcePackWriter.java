@@ -12,7 +12,6 @@ import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.resourcepack.ResourcePackWriter;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.model.util.Bones;
 import team.unnamed.hephaestus.model.util.KeyFrames;
 
 import java.io.IOException;
@@ -133,6 +132,36 @@ public class ModelResourcePackWriter
         }
     }
 
+    private void writeBoneCubes(
+            TreeOutputStream output,
+            ModelAsset model,
+            Collection<ItemOverride> overrides,
+            Collection<ModelBoneAsset> assets
+    ) throws IOException {
+        for (ModelBoneAsset bone : assets) {
+
+            JsonObject json = transformer.toJavaJson(model, bone);
+
+            overrides.add(new ItemOverride(
+                    bone.getCustomModelData(),
+                    namespace + ':' + model.getName() + '/' + bone.getName()
+            ));
+
+            output.useEntry(
+                    "assets/" + namespace + "/models/"
+                            + model.getName()
+                            +  "/" + bone.getName()
+                            + ".json"
+            );
+
+            Streams.writeUTF(output, json.toString());
+            output.closeEntry();
+
+            // write children
+            writeBoneCubes(output, model, overrides, assets);
+        }
+    }
+
     /**
      * Transfers the resource pack information to the
      * given {@code output}
@@ -146,8 +175,6 @@ public class ModelResourcePackWriter
         Set<ItemOverride> overrides = new TreeSet<>();
 
         for (ModelAsset model : models) {
-            String modelName = model.getName();
-
             for (Map.Entry<String, Streamable> texture : model.getTextures().entrySet()) {
                 String textureName = texture.getKey();
                 Streamable data = texture.getValue();
@@ -158,32 +185,14 @@ public class ModelResourcePackWriter
 
                 // write the texture
                 output.useEntry("assets/" + namespace
-                        + "/textures/" + modelName + "/" + textureName);
+                        + "/textures/" + model.getName() + "/" + textureName);
                 try (InputStream input = data.openIn()) {
                     Streams.pipe(input, output);
                 }
                 output.closeEntry();
             }
             // write all the model bones
-            for (ModelBoneAsset bone : Bones.getAllBones(model)) {
-
-                JsonObject json = transformer.toJavaJson(model, bone);
-
-                overrides.add(new ItemOverride(
-                        bone.getCustomModelData(),
-                        namespace + ':' + modelName + '/' + bone.getName()
-                ));
-
-                output.useEntry(
-                        "assets/" + namespace + "/models/"
-                                + modelName
-                                +  "/" + bone.getName()
-                                + ".json"
-                );
-
-                Streams.writeUTF(output, json.toString());
-                output.closeEntry();
-            }
+            writeBoneCubes(output, model, overrides, model.getBones());
         }
 
         // write all the scale frame data
