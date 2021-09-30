@@ -32,9 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static team.unnamed.hephaestus.model.util.Serialization.getVector3FloatFromJson;
-import static team.unnamed.hephaestus.model.util.Serialization.parseLenientFloat;
-
 /**
  * Implementation of {@link ModelReader} to create
  * {@link Model} instances from <a href="https://blockbench.net">
@@ -420,6 +417,34 @@ public class BBModelReader implements ModelReader {
 
         siblings.put(bone.getName(), bone);
         siblingAssets.put(asset.getName(), asset);
+    }
+
+    /**
+     * Checks if the given {@code element} is a
+     * string, if yes, it replaces the commas (,)
+     * by dots and invokes {@link Float#parseFloat}
+     * to parse the float, if not, it just calls
+     * {@link JsonElement#getAsFloat()}
+     */
+    private static float parseLenientFloat(JsonElement element) {
+        return element.getAsJsonPrimitive().isString()
+                ? Float.parseFloat(element.getAsString().replace(',', '.'))
+                : element.getAsFloat();
+    }
+
+    /**
+     * Constructs a {@link Vector3Float} from
+     * a {@link JsonElement} (must be a
+     * {@link JsonArray}) by checking its elements
+     * [x, y, z]
+     */
+    private static Vector3Float getVector3FloatFromJson(JsonElement element) {
+        JsonArray array = element.getAsJsonArray();
+        return new Vector3Float(
+                array.get(0).getAsFloat(),
+                array.get(1).getAsFloat(),
+                array.get(2).getAsFloat()
+        );
     }
 
 }
