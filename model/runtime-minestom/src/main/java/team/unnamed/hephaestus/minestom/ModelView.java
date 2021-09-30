@@ -25,9 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-/**
- *
- */
 public class ModelView extends LivingEntity {
 
     private final Map<String, Entity> bones = new HashMap<>();
