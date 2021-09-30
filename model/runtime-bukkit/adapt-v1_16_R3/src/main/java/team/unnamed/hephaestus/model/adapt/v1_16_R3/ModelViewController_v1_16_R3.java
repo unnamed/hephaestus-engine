@@ -1,12 +1,13 @@
-package team.unnamed.hephaestus.adapt.v1_15_R1;
+package team.unnamed.hephaestus.model.adapt.v1_16_R3;
 
-import net.minecraft.server.v1_15_R1.*;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.server.v1_16_R3.*;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -17,7 +18,9 @@ import team.unnamed.hephaestus.struct.Vector3Double;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
-public class ModelViewController_v1_15_R1
+import java.util.Collections;
+
+public class ModelViewController_v1_16_R3
         implements ModelViewController {
 
     private void summonBone(
@@ -62,10 +65,10 @@ public class ModelViewController_v1_15_R1
         meta.setCustomModelData(bone.getCustomModelData());
         item.setItemMeta(meta);
 
-        net.minecraft.server.v1_15_R1.ItemStack nmsItem =
+        net.minecraft.server.v1_16_R3.ItemStack nmsItem =
                 CraftItemStack.asNMSCopy(item);
 
-        entity.setSlot(EnumItemSlot.HEAD, nmsItem);
+        entity.setSlot(EnumItemSlot.HEAD, nmsItem, true);
 
         Packets.send(
                 view.getViewers(),
@@ -73,8 +76,10 @@ public class ModelViewController_v1_15_R1
                 new PacketPlayOutEntityMetadata(entity.getId(), entity.getDataWatcher(), true),
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
-                        EnumItemSlot.HEAD,
-                        nmsItem
+                        Collections.singletonList(new Pair<>(
+                                EnumItemSlot.HEAD,
+                                nmsItem
+                        ))
                 )
         );
 
@@ -94,9 +99,9 @@ public class ModelViewController_v1_15_R1
     @Override
     public void show(BukkitModelView view) {
         Location location = view.getLocation();
-        double yawRadians = Math.toRadians(location.getYaw());
+        double yaw = Math.toRadians(location.getYaw());
         for (ModelBone bone : view.getModel().getBones()) {
-            summonBone(yawRadians, view, location, bone, Vector3Float.ZERO);
+            summonBone(yaw, view, location, bone, Vector3Float.ZERO);
         }
     }
 
@@ -167,7 +172,7 @@ public class ModelViewController_v1_15_R1
     public void colorizeBone(BukkitModelView view, String boneName, Color color) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(boneName);
 
-        net.minecraft.server.v1_15_R1.ItemStack nmsItem
+        net.minecraft.server.v1_16_R3.ItemStack nmsItem
                 = entity.getEquipment(EnumItemSlot.HEAD);
 
         ItemStack item = nmsItem == null ? new ItemStack(Material.LEATHER_HORSE_ARMOR) : CraftItemStack.asBukkitCopy(nmsItem);
@@ -183,8 +188,10 @@ public class ModelViewController_v1_15_R1
                 view.getViewers(),
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
-                        EnumItemSlot.HEAD,
-                        nmsItem
+                        Collections.singletonList(new Pair<>(
+                                EnumItemSlot.HEAD,
+                                nmsItem
+                        ))
                 )
         );
     }
@@ -220,7 +227,7 @@ public class ModelViewController_v1_15_R1
     public void updateBoneModelData(BukkitModelView view, ModelBone bone, int modelData) {
 
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
-        net.minecraft.server.v1_15_R1.ItemStack nmsItem
+        net.minecraft.server.v1_16_R3.ItemStack nmsItem
                 = entity.getEquipment(EnumItemSlot.HEAD);
 
         ItemStack item = nmsItem == null ? new ItemStack(Material.LEATHER_HORSE_ARMOR) : CraftItemStack.asBukkitCopy(nmsItem);
@@ -234,14 +241,16 @@ public class ModelViewController_v1_15_R1
         item.setItemMeta(meta);
 
         nmsItem = CraftItemStack.asNMSCopy(item);
-        entity.setSlot(EnumItemSlot.HEAD, nmsItem);
+        entity.setSlot(EnumItemSlot.HEAD, nmsItem, true);
 
         Packets.send(
                 view.getViewers(),
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
-                        EnumItemSlot.HEAD,
-                        nmsItem
+                        Collections.singletonList(new Pair<>(
+                                EnumItemSlot.HEAD,
+                                nmsItem
+                        ))
                 )
         );
     }
@@ -274,8 +283,10 @@ public class ModelViewController_v1_15_R1
                 new PacketPlayOutEntityMetadata(entity.getId(), entity.getDataWatcher(), true),
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
-                        EnumItemSlot.HEAD,
-                        entity.getEquipment(EnumItemSlot.HEAD)
+                        Collections.singletonList(new Pair<>(
+                                EnumItemSlot.HEAD,
+                                entity.getEquipment(EnumItemSlot.HEAD)
+                        ))
                 )
         );
 

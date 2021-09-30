@@ -1,13 +1,13 @@
-package team.unnamed.hephaestus.adapt.v1_16_R3;
+package team.unnamed.hephaestus.model.adapt.v1_15_R1;
 
-import net.minecraft.server.v1_16_R3.Packet;
-import net.minecraft.server.v1_16_R3.PlayerConnection;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import net.minecraft.server.v1_15_R1.Packet;
+import net.minecraft.server.v1_15_R1.PlayerConnection;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
  * Utility class for packets, specific
- * for v1_16_R3 minecraft server version
+ * for v1_15_R1 minecraft server version
  */
 public final class Packets {
 

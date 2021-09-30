@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.adapt.v1_14_R1;
+package team.unnamed.hephaestus.model.adapt.v1_16_R3;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,14 +11,14 @@ import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 
 import java.util.Collection;
 
-public class ModelViewRenderer_v1_14_R1 implements ModelViewRenderer {
+public class ModelViewRenderer_v1_16_R3 implements ModelViewRenderer {
 
     private final ModelViewController controller;
     private final ModelViewAnimator animator;
 
-    public ModelViewRenderer_v1_14_R1(ModelViewAnimator animator) {
+    public ModelViewRenderer_v1_16_R3(ModelViewAnimator animator) {
         this.animator = animator;
-        this.controller = new ModelViewController_v1_14_R1();
+        this.controller = new ModelViewController_v1_16_R3();
     }
 
     @Override

@@ -1,13 +1,13 @@
-package team.unnamed.hephaestus.adapt.v1_17_R1;
+package team.unnamed.hephaestus.model.adapt.v1_14_R1;
 
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.server.network.PlayerConnection;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
+import net.minecraft.server.v1_14_R1.Packet;
+import net.minecraft.server.v1_14_R1.PlayerConnection;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
  * Utility class for packets, specific
- * for v1_17_R1 minecraft server version
+ * for v1_14_R1 minecraft server version
  */
 public final class Packets {
 
@@ -20,7 +20,7 @@ public final class Packets {
      */
     public static void send(Player player, Packet<?>... packets) {
         PlayerConnection connection = ((CraftPlayer) player)
-                .getHandle().b;
+                .getHandle().playerConnection;
         for (Packet<?> packet : packets) {
             connection.sendPacket(packet);
         }
@@ -33,7 +33,7 @@ public final class Packets {
     public static void send(Iterable<? extends Player> players, Packet<?>... packets) {
         for (Player player : players) {
             PlayerConnection connection = ((CraftPlayer) player)
-                    .getHandle().b;
+                    .getHandle().playerConnection;
             for (Packet<?> packet : packets) {
                 connection.sendPacket(packet);
             }

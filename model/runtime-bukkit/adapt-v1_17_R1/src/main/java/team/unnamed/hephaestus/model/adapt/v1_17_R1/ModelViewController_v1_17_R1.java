@@ -1,13 +1,21 @@
-package team.unnamed.hephaestus.adapt.v1_16_R3;
+package team.unnamed.hephaestus.model.adapt.v1_17_R1;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.core.Vector3f;
+import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.syncher.DataWatcher;
+import net.minecraft.network.syncher.DataWatcherObject;
+import net.minecraft.network.syncher.DataWatcherRegistry;
+import net.minecraft.server.level.WorldServer;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EnumItemSlot;
+import net.minecraft.world.entity.decoration.EntityArmorStand;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -20,7 +28,7 @@ import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Collections;
 
-public class ModelViewController_v1_16_R3
+public class ModelViewController_v1_17_R1
         implements ModelViewController {
 
     private void summonBone(
@@ -42,7 +50,7 @@ public class ModelViewController_v1_16_R3
         // spawning the bone armorstand
         // noinspection ConstantConditions
         WorldServer worldServer = ((CraftWorld) world).getHandle();
-        EntityArmorStand entity = new EntityArmorStand(EntityTypes.ARMOR_STAND, worldServer);
+        EntityArmorStand entity = new EntityArmorStand(EntityTypes.c, worldServer);
 
         entity.setLocation(
                 location.getX() + relativePos.getX(),
@@ -65,10 +73,10 @@ public class ModelViewController_v1_16_R3
         meta.setCustomModelData(bone.getCustomModelData());
         item.setItemMeta(meta);
 
-        net.minecraft.server.v1_16_R3.ItemStack nmsItem =
+        net.minecraft.world.item.ItemStack nmsItem =
                 CraftItemStack.asNMSCopy(item);
 
-        entity.setSlot(EnumItemSlot.HEAD, nmsItem, true);
+        entity.setSlot(EnumItemSlot.f, nmsItem, true);
 
         Packets.send(
                 view.getViewers(),
@@ -77,7 +85,7 @@ public class ModelViewController_v1_16_R3
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
                         Collections.singletonList(new Pair<>(
-                                EnumItemSlot.HEAD,
+                                EnumItemSlot.f,
                                 nmsItem
                         ))
                 )
@@ -99,9 +107,9 @@ public class ModelViewController_v1_16_R3
     @Override
     public void show(BukkitModelView view) {
         Location location = view.getLocation();
-        double yaw = Math.toRadians(location.getYaw());
+        double yawRadians = Math.toRadians(location.getYaw());
         for (ModelBone bone : view.getModel().getBones()) {
-            summonBone(yaw, view, location, bone, Vector3Float.ZERO);
+            summonBone(yawRadians, view, location, bone, Vector3Float.ZERO);
         }
     }
 
@@ -115,10 +123,7 @@ public class ModelViewController_v1_16_R3
 
         // location computing
         Vector3Float position = bone.getOffset().multiply(1, 1, -1).add(offset);
-        Vector3Float relativePos = Vectors.rotateAroundY(
-                position,
-                yawRadians
-        );
+        Vector3Float relativePos = Vectors.rotateAroundY(position, yawRadians);
 
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
         entity.setLocation(
@@ -168,12 +173,18 @@ public class ModelViewController_v1_16_R3
         }
     }
 
+    private void colorizeBoneAndChildren(BukkitModelView view, ModelBone bone, Color color) {
+        colorizeBone(view, bone.getName(), color);
+        for (ModelBone child : bone.getBones()) {
+            colorizeBoneAndChildren(view, child, color);
+        }
+    }
+
     @Override
     public void colorizeBone(BukkitModelView view, String boneName, Color color) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(boneName);
 
-        net.minecraft.server.v1_16_R3.ItemStack nmsItem
-                = entity.getEquipment(EnumItemSlot.HEAD);
+        net.minecraft.world.item.ItemStack nmsItem = entity.getEquipment(EnumItemSlot.f);
 
         ItemStack item = nmsItem == null ? new ItemStack(Material.LEATHER_HORSE_ARMOR) : CraftItemStack.asBukkitCopy(nmsItem);
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
@@ -184,23 +195,18 @@ public class ModelViewController_v1_16_R3
 
         nmsItem = CraftItemStack.asNMSCopy(item);
 
+        entity.setSlot(EnumItemSlot.f, nmsItem, true);
+
         Packets.send(
                 view.getViewers(),
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
                         Collections.singletonList(new Pair<>(
-                                EnumItemSlot.HEAD,
+                                EnumItemSlot.f,
                                 nmsItem
                         ))
                 )
         );
-    }
-
-    private void colorizeBoneAndChildren(BukkitModelView view, ModelBone bone, Color color) {
-        colorizeBone(view, bone.getName(), color);
-        for (ModelBone child : bone.getBones()) {
-            colorizeBoneAndChildren(view, child, color);
-        }
     }
 
     @Override
@@ -227,13 +233,13 @@ public class ModelViewController_v1_16_R3
     public void updateBoneModelData(BukkitModelView view, ModelBone bone, int modelData) {
 
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
-        net.minecraft.server.v1_16_R3.ItemStack nmsItem
-                = entity.getEquipment(EnumItemSlot.HEAD);
+        net.minecraft.world.item.ItemStack nmsItem
+                = entity.getEquipment(EnumItemSlot.f);
 
         ItemStack item = nmsItem == null ? new ItemStack(Material.LEATHER_HORSE_ARMOR) : CraftItemStack.asBukkitCopy(nmsItem);
         LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
 
-        //noinspection ConstantConditions
+        // noinspection ConstantConditions
         meta.setCustomModelData(modelData);
         if (nmsItem == null) {
             meta.setColor(Color.WHITE);
@@ -241,14 +247,14 @@ public class ModelViewController_v1_16_R3
         item.setItemMeta(meta);
 
         nmsItem = CraftItemStack.asNMSCopy(item);
-        entity.setSlot(EnumItemSlot.HEAD, nmsItem, true);
+        entity.setSlot(EnumItemSlot.f, nmsItem, true);
 
         Packets.send(
                 view.getViewers(),
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
                         Collections.singletonList(new Pair<>(
-                                EnumItemSlot.HEAD,
+                                EnumItemSlot.f,
                                 nmsItem
                         ))
                 )
@@ -260,7 +266,7 @@ public class ModelViewController_v1_16_R3
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
         DataWatcher watcher = new DataWatcher(null);
         watcher.register(
-                new DataWatcherObject<>(15, DataWatcherRegistry.k),
+                new DataWatcherObject<>(16, DataWatcherRegistry.k),
                 new Vector3f(
                         (float) Math.toDegrees(angle.getX()),
                         (float) Math.toDegrees(angle.getY()),
@@ -284,8 +290,8 @@ public class ModelViewController_v1_16_R3
                 new PacketPlayOutEntityEquipment(
                         entity.getId(),
                         Collections.singletonList(new Pair<>(
-                                EnumItemSlot.HEAD,
-                                entity.getEquipment(EnumItemSlot.HEAD)
+                                EnumItemSlot.f,
+                                entity.getEquipment(EnumItemSlot.f)
                         ))
                 )
         );

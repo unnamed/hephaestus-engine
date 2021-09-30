@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.adapt;
+package team.unnamed.hephaestus.model.adapt;
 
 import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;

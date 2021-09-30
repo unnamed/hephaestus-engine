@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.adapt.v1_14_R1;
+package team.unnamed.hephaestus.model.adapt.v1_14_R1;
 
 import net.minecraft.server.v1_14_R1.*;
 import org.bukkit.Color;

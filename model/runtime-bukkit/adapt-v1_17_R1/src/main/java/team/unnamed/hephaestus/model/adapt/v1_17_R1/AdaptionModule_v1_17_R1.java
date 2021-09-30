@@ -1,6 +1,6 @@
-package team.unnamed.hephaestus.adapt.v1_17_R1;
+package team.unnamed.hephaestus.model.adapt.v1_17_R1;
 
-import team.unnamed.hephaestus.adapt.AdaptionModule;
+import team.unnamed.hephaestus.model.adapt.AdaptionModule;
 import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 
