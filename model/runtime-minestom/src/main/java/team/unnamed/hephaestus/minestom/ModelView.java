@@ -6,6 +6,7 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
+import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
@@ -62,6 +63,7 @@ public class ModelView extends LivingEntity {
         ModelAnimation animation = model.getAnimations().get(animationName);
         Check.notNull(animation, "Unknown animation");
 
+        animationQueue.pushAnimation(animation, 10, 10);
         animator.animate(this);
     }
 
@@ -125,12 +127,29 @@ public class ModelView extends LivingEntity {
     }
 
     @Override
+    protected boolean addViewer0(@NotNull Player player) {
+        if (super.addViewer0(player)) {
+            bones.forEach((name, entity) -> entity.addViewer(player));
+        }
+        return false;
+    }
+
+    @Override
+    protected boolean removeViewer0(@NotNull Player player) {
+        if (super.removeViewer0(player)) {
+            bones.forEach((name, entity) -> entity.removeViewer(player));
+        }
+        return false;
+    }
+
+    @Override
     public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
         return super.setInstance(instance, spawnPosition)
                 .thenAccept(ignored -> {
-                    double yaw = Math.toRadians(spawnPosition.yaw());
+                    // create the bone entities
+                    double yawRadians = Math.toRadians(spawnPosition.yaw());
                     for (ModelBone bone : model.getBones()) {
-                        summonBone(yaw, spawnPosition, bone, Vector3Float.ZERO);
+                        summonBone(yawRadians, spawnPosition, bone, Vector3Float.ZERO);
                     }
                 });
     }

@@ -164,7 +164,7 @@ public class BBModelReader implements ModelReader {
             JsonObject animationJson = animationElement.getAsJsonObject();
 
             String name = animationJson.get("name").getAsString();
-            boolean loop = animationJson.get("loop").getAsBoolean();
+            boolean loop = animationJson.get("loop").getAsString().equals("loop");
             int length = Math.round(parseLenientFloat(animationJson.get("length")) * TICKS_PER_SECOND);
 
             if (isNullOrAbsent(animationJson, "animators")) {

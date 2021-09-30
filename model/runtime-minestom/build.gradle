@@ -5,11 +5,13 @@ repositories {
     mavenCentral()
 }
 
-compileJava {
-    options.release.set(16)
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(16))
+    }
 }
 
 dependencies {
     api project(':model:creation')
-    compileOnly 'com.github.Minestom:Minestom:d53ef36586'
+    api 'com.github.Minestom:Minestom:d53ef36586'
 }

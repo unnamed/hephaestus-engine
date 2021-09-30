@@ -165,12 +165,15 @@ public class ModelAnimationQueue {
         }
 
         if (realAnimation != null && !realAnimation.isTransitioned() && realAnimation.getTick() >= realAnimation.getTransitionTicks()) {
+            System.out.println("skeree");
             realAnimation.setTransitioned();
             realAnimation.resetTick();
         }
 
         if (realAnimation != null && realAnimation.isTransitioned() && realAnimation.getTick() >= realAnimation.getAnimationLength()) {
+            System.out.println("a");
             if (!realAnimation.isLoop()) {
+                System.out.println("not loop");
                 queuedAnimations.remove(realAnimation);
                 return getAnimationForBone(bone);
             } else {
