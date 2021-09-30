@@ -123,6 +123,30 @@ public class ModelView extends LivingEntity {
         }
     }
 
+    private void teleportBone(
+            double yawRadians,
+            Pos pos,
+            ModelBone bone,
+            Vector3Float parentOffset
+    ) {
+        Vector3Float offset = bone.getOffset()
+                .multiply(1, 1, -1)
+                .add(parentOffset);
+        Vector3Float relativePosition = Vectors.rotateAroundY(offset, yawRadians);
+        Entity entity = bones.get(bone.getName());
+
+        if (entity != null) {
+            entity.teleport(pos.add(
+                    relativePosition.getX(),
+                    relativePosition.getY(),
+                    relativePosition.getZ()
+            ));
+        }
+        for (ModelBone child : bone.getBones()) {
+            this.teleportBone(yawRadians, pos, child, offset);
+        }
+    }
+
     @Override
     protected boolean addViewer0(@NotNull Player player) {
         if (super.addViewer0(player)) {
@@ -147,6 +171,16 @@ public class ModelView extends LivingEntity {
                     double yawRadians = Math.toRadians(spawnPosition.yaw());
                     for (ModelBone bone : model.getBones()) {
                         summonBone(yawRadians, spawnPosition, bone, Vector3Float.ZERO);
+                    }
+                });
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position) {
+        return super.teleport(position)
+                .thenRun(() -> {
+                    for (ModelBone bone : this.getModel().getBones()) {
+                        teleportBone(Math.toRadians(position.yaw()), position, bone, Vector3Float.ZERO);
                     }
                 });
     }
