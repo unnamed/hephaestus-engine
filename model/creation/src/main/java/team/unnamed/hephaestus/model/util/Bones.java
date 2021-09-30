@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.util;
+package team.unnamed.hephaestus.model.util;
 
 import team.unnamed.hephaestus.model.BoneHolder;
 import team.unnamed.hephaestus.model.ModelBoneAsset;

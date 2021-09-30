@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.util;
+package team.unnamed.hephaestus.model.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

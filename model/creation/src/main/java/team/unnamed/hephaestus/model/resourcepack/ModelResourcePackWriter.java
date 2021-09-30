@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.resourcepack;
+package team.unnamed.hephaestus.model.resourcepack;
 
 import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
@@ -10,9 +10,10 @@ import team.unnamed.hephaestus.model.ModelBoneAsset;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
+import team.unnamed.hephaestus.resourcepack.ResourcePackWriter;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.util.Bones;
-import team.unnamed.hephaestus.util.KeyFrames;
+import team.unnamed.hephaestus.model.util.Bones;
+import team.unnamed.hephaestus.model.util.KeyFrames;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.resourcepack;
+package team.unnamed.hephaestus.model.resourcepack;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

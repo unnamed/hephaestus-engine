@@ -4,7 +4,7 @@ import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Double;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.util.KeyFrames;
+import team.unnamed.hephaestus.model.util.KeyFrames;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Collections;

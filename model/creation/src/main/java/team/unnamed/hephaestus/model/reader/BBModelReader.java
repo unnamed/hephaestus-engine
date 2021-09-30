@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.reader;
+package team.unnamed.hephaestus.model.reader;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -32,8 +32,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static team.unnamed.hephaestus.util.Serialization.getVector3FloatFromJson;
-import static team.unnamed.hephaestus.util.Serialization.parseLenientFloat;
+import static team.unnamed.hephaestus.model.util.Serialization.getVector3FloatFromJson;
+import static team.unnamed.hephaestus.model.util.Serialization.parseLenientFloat;
 
 /**
  * Implementation of {@link ModelReader} to create

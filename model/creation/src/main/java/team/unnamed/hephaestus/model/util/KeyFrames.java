@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.util;
+package team.unnamed.hephaestus.model.util;
 
 import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.struct.Vector3Float;

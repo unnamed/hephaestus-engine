@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.reader;
+package team.unnamed.hephaestus.model.reader;
 
 import team.unnamed.hephaestus.model.Model;
 
