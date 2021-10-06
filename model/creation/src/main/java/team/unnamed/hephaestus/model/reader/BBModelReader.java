@@ -14,6 +14,8 @@ import team.unnamed.hephaestus.model.ModelBoneAsset;
 import team.unnamed.hephaestus.model.ModelCube;
 import team.unnamed.hephaestus.model.ModelDataCursor;
 import team.unnamed.hephaestus.model.animation.KeyFrame;
+import team.unnamed.hephaestus.model.animation.KeyFrameList;
+import team.unnamed.hephaestus.model.animation.MemoizedKeyFrameList;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
@@ -180,8 +182,7 @@ public class BBModelReader implements ModelReader {
                 JsonObject animatorJson = animatorEntry.getValue().getAsJsonObject();
                 String boneName = animatorJson.get("name").getAsString();
 
-                List<KeyFrame> rotationFrames = new ArrayList<>();
-                List<KeyFrame> positionFrames = new ArrayList<>();
+                KeyFrameList frames = new MemoizedKeyFrameList() /* TODO: */;
 
                 for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
 

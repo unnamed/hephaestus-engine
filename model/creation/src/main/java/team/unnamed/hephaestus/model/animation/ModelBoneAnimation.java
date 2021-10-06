@@ -1,6 +1,5 @@
 package team.unnamed.hephaestus.model.animation;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -10,30 +9,10 @@ import java.util.Objects;
  */
 public class ModelBoneAnimation {
 
-    private final List<KeyFrame> positionFrames;
-    private final List<KeyFrame> rotationFrames;
-    private final List<KeyFrame> scaleFrames;
+    private final KeyFrameList frames;
 
-    public ModelBoneAnimation(
-            List<KeyFrame> positionFrames,
-            List<KeyFrame> rotationFrames,
-            List<KeyFrame> scaleFrames
-    ) {
-        this.positionFrames = positionFrames;
-        this.rotationFrames = rotationFrames;
-        this.scaleFrames = scaleFrames;
-    }
-
-    public List<KeyFrame> getPositionFrames() {
-        return positionFrames;
-    }
-
-    public List<KeyFrame> getRotationFrames() {
-        return rotationFrames;
-    }
-
-    public List<KeyFrame> getScaleFrames() {
-        return scaleFrames;
+    public ModelBoneAnimation(KeyFrameList frames) {
+        this.frames = frames;
     }
 
     @Override
