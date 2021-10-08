@@ -2,6 +2,14 @@ package team.unnamed.hephaestus.struct;
 
 import java.util.Objects;
 
+/**
+ * Immutable representation of a 4-element quaternion
+ * represented by a 64-bit floating point x, y, z and
+ * w coordinates.
+ *
+ * <p>See <a href="https://en.wikipedia.org/wiki/Quaternion">
+ *     Quaternion in Wikipedia</a></p>
+ */
 public class Quaternion {
 
     private final double x;
@@ -61,6 +69,19 @@ public class Quaternion {
         );
     }
 
+    /**
+     * Multiplies this quaternion rotations with the given
+     * {@code other} quaternion rotations
+     *
+     * <p>This method doesn't modify the current {@code this}
+     * quaternion instance, since it's immutable, it returns
+     * a new fresh quaternion instance as a result of the
+     * operation</p>
+     *
+     * <p>See 'Multiplication of basis elements' section in
+     * <a href="https://en.wikipedia.org/wiki/Quaternion">
+     *     Wikipedia</a></p>
+     */
     public Quaternion multiply(Quaternion other) {
         return new Quaternion(
                 x * other.w + w * other.x + y * other.z - z * other.y,
@@ -70,21 +91,46 @@ public class Quaternion {
         );
     }
 
+    /**
+     * Creates a {@link Quaternion} representation of the given
+     * {@code euler} angles (in radians)
+     */
     public static Quaternion fromEuler(Vector3Double euler) {
-        double cosX = Math.cos(euler.getX() / 2D);
-        double cosY = Math.cos(euler.getY() / -2D);
-        double cosZ = Math.cos(euler.getZ() / 2D);
-        double sinX = Math.sin(euler.getX() / 2D);
-        double sinY = Math.sin(euler.getY() / -2D);
-        double sinZ = Math.sin(euler.getZ() / 2D);
+
+        // based on https://www.javatips.net/api/rotation-vector
+        // -compass-master/RotationVectorCompass/src/com/adamrat
+        // ana/rotationvectorcompass/math/Quaternion.java
+
+        // common values
+        double halfX = euler.getX() / 2D;
+        double negHalfY = euler.getY() / -2D;
+        double halfZ = euler.getZ() / 2D;
+
+        // compute cos
+        double cosX = Math.cos(halfX);
+        double cosY = Math.cos(negHalfY);
+        double cosZ = Math.cos(halfZ);
+
+        // compute sin
+        double sinX = Math.sin(halfX);
+        double sinY = Math.sin(negHalfY);
+        double sinZ = Math.sin(halfZ);
+
+        // common values
+        double sinXCosY = sinX * cosY;
+        double cosXSinY = cosX * sinY;
+        double cosXCosY = cosX * cosY;
+        double sinXSinY = sinX * sinY;
+
         return new Quaternion(
-                sinX * cosY * cosZ + cosX * sinY * sinZ,
-                cosX * sinY * cosZ - sinX * cosY * sinZ,
-                cosX * cosY * sinZ + sinX * sinY * cosZ,
-                cosX * cosY * cosZ - sinX * sinY * sinZ
+                sinXCosY * cosZ + cosXSinY * sinZ,
+                cosXSinY * cosZ - sinXCosY * sinZ,
+                cosXCosY * sinZ + sinXSinY * cosZ,
+                cosXCosY * cosZ - sinXSinY * sinZ
         );
     }
 
+    // TODO: I think these methods should not be in this class!
     public static Vector3Double combine(Vector3Double origin, Vector3Double delta) {
         return fromEuler(origin)
                 .multiply(fromEuler(delta))
