@@ -1,7 +1,5 @@
 package team.unnamed.hephaestus.struct;
 
-import team.unnamed.hephaestus.util.MoreMath;
-
 import java.util.Objects;
 
 public class Quaternion {
@@ -18,22 +16,49 @@ public class Quaternion {
         this.w = w;
     }
 
+    /**
+     * Returns this quaternion represented as an
+     * Euler Angle (in ZXY order) in radians.
+     *
+     * <p>See https://www.euclideanspace.com/maths/
+     * geometry/rotations/conversions/quaternionToEuler
+     * /indexLocal.htm</p>
+     */
     public Vector3Double toEuler() {
+
+        double test = x * z + y * w;
+
+        // singularity at north pole
+        if (test > 0.499) {
+            return new Vector3Double(
+                    Math.atan2(x, w),
+                    Math.PI / 2,
+                    0
+            );
+        }
+
+        // singularity at south pole
+        if (test < -0.499) {
+            return new Vector3Double(
+                    -Math.atan2(x, w),
+                    -Math.PI / 2,
+                    0
+            );
+        }
+
+        double sqx = x * x;
+        double sqy = y * y;
+        double sqz = z * z;
+
         double x2 = x + x;
         double y2 = y + y;
         double z2 = z + z;
-        double test = (x * z2) + (w * y2);
-        double ex;
-        double ez;
-        if (Math.abs(test) < 0.99999) {
-            double yy = y * y2;
-            ex = Math.atan2(-((y * z2) - (w * x2)), 1.0 - ((x * x2) + yy));
-            ez = Math.atan2(-((x * y2) - (w * z2)), 1.0 - (yy + (z * z2)));
-        } else {
-            ex = Math.atan2((y * z2) + (w * x2), 1.0 - ((x * x2) + (z * z2)));
-            ez = 0.0;
-        }
-        return new Vector3Double(ex, -Math.asin(MoreMath.clamp(test, -1, 1)), ez);
+
+        return new Vector3Double(
+                Math.atan2(w * x2 - y * z2, 1 - 2 * (sqx + sqy)),
+                -Math.asin(2 * test),
+                Math.atan2(w * z2 - x * y2, 1 - 2 * (sqz + sqy))
+        );
     }
 
     public Quaternion multiply(Quaternion other) {
