@@ -32,7 +32,7 @@ The normal limitations when creating a java Minecraft model (these do not apply 
 ## Recommended format
 Hephaestus engine allows for flexibility while modeling and handling animations but there is a recommended format to follow when modeling. You should start with a root bone and have the rest of the model as it's descendant. Here's an example on how the iconic pegasus model is made:
 
-![Pegasus](pegasus-format.png)
+![Pegasus](.github/pegasus-format.png)
 ## Features
 - Deploys Blockbench models into game-ready texture packs
 - Plays animations
