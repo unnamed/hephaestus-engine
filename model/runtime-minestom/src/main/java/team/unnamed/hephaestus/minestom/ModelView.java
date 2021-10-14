@@ -16,6 +16,7 @@ import net.minestom.server.utils.validate.Check;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelBone;
+import team.unnamed.hephaestus.model.animation.AnimationQueue;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
 import team.unnamed.hephaestus.struct.Vector3Double;
 import team.unnamed.hephaestus.struct.Vector3Float;
@@ -31,13 +32,13 @@ public class ModelView extends LivingEntity {
 
     private final Model model;
     private final ModelViewAnimator animator;
-    private final ModelAnimationQueue animationQueue;
+    private final AnimationQueue animationQueue;
 
     public ModelView(
             EntityType type,
             Model model,
             ModelViewAnimator animator,
-            ModelAnimationQueue animationQueue
+            AnimationQueue animationQueue
     ) {
         super(type);
         this.model = model;
@@ -52,7 +53,7 @@ public class ModelView extends LivingEntity {
         return model;
     }
 
-    public ModelAnimationQueue getAnimationQueue() {
+    public AnimationQueue getAnimationQueue() {
         return animationQueue;
     }
 
@@ -60,7 +61,7 @@ public class ModelView extends LivingEntity {
         ModelAnimation animation = model.getAnimations().get(animationName);
         Check.notNull(animation, "Unknown animation");
 
-        animationQueue.pushAnimation(animation, 10, 10);
+        animationQueue.pushAnimation(animation);
         animator.animate(this);
     }
 

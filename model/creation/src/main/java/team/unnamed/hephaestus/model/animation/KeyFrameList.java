@@ -1,6 +1,7 @@
 package team.unnamed.hephaestus.model.animation;
 
 import org.jetbrains.annotations.NotNull;
+import team.unnamed.hephaestus.struct.Vector3Float;
 
 import java.util.Iterator;
 
@@ -11,11 +12,10 @@ import java.util.Iterator;
 public interface KeyFrameList extends Iterable<KeyFrame> {
 
     /**
-     * Adds the given {@code frame} to the
-     * specified {@code position} in this
-     * keyframe list
+     * Adds the given {@code value} to the timeline in
+     * the specified {@code tick} and {@code channel}
      */
-    void put(int position, KeyFrame frame);
+    void put(int position, Channel channel, Vector3Float value);
 
     /**
      * Creates an iterator that iterates over
@@ -24,5 +24,11 @@ public interface KeyFrameList extends Iterable<KeyFrame> {
     @NotNull
     @Override
     Iterator<KeyFrame> iterator();
+
+    enum Channel {
+        POSITION,
+        ROTATION,
+        SCALE
+    }
 
 }

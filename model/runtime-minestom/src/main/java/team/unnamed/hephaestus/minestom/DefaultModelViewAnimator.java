@@ -4,6 +4,7 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.utils.time.TimeUnit;
 import team.unnamed.hephaestus.model.ModelBone;
+import team.unnamed.hephaestus.model.animation.KeyFrame;
 import team.unnamed.hephaestus.struct.Quaternion;
 import team.unnamed.hephaestus.struct.Vector3Double;
 import team.unnamed.hephaestus.struct.Vector3Float;
@@ -38,12 +39,12 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
                 Vector3Float parentPosition
         ) {
 
-
-            Vector3Float framePosition = entity.getAnimationQueue().currentPosition(bone)
+            KeyFrame frame = entity.getAnimationQueue().next(bone.getName());
+            Vector3Float framePosition = frame.getPosition()
                     .divide(16)
                     .multiply(1, 1, -1);
 
-            Vector3Double frameRotation = entity.getAnimationQueue().currentRotation(bone);
+            Vector3Float frameRotation = frame.getRotation();
             //int modelData = entity.getAnimationQueue().currentModelData(bone);
 
             Vector3Float defaultPosition = bone.getOffset().multiply(1, 1, -1);
@@ -91,8 +92,6 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
 
         @Override
         public void run() {
-            entity.getAnimationQueue().incrementTick();
-
             double bodyYaw = Math.toRadians(this.entity.getPosition().yaw());
 
             for (ModelBone bone : this.entity.getModel().getBones()) {
