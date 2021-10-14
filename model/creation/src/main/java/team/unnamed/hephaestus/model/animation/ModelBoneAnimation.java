@@ -1,7 +1,5 @@
 package team.unnamed.hephaestus.model.animation;
 
-import java.util.Objects;
-
 /**
  * Represents a bone animation, compound by
  * {@link KeyFrame}. They can be separated by
@@ -20,20 +18,17 @@ public class ModelBoneAnimation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ModelBoneAnimation that = (ModelBoneAnimation) o;
-        return positionFrames.equals(that.positionFrames) && rotationFrames.equals(that.rotationFrames) && scaleFrames.equals(that.scaleFrames);
+        return frames.equals(that.frames);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(positionFrames, rotationFrames, scaleFrames);
+        return frames.hashCode();
     }
 
     @Override
     public String toString() {
-        return "ModelBoneAnimation{" +
-                "positionFrames=" + positionFrames +
-                ", rotationFrames=" + rotationFrames +
-                ", sizeFrames=" + scaleFrames +
-                '}';
+        return "ModelBoneAnimation{" + frames + '}';
     }
+
 }

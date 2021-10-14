@@ -10,6 +10,12 @@ import java.util.Objects;
  */
 public class KeyFrame {
 
+    public static final KeyFrame INITIAL = new KeyFrame(
+            Vector3Float.ZERO,
+            Vector3Float.ZERO,
+            Vector3Float.ONE
+    );
+
     private final Vector3Float position;
     private final Vector3Float rotation;
     private final Vector3Float scale;
