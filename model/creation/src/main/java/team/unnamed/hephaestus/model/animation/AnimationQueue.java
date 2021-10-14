@@ -1,5 +1,6 @@
 package team.unnamed.hephaestus.model.animation;
 
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,11 +28,21 @@ public class AnimationQueue {
 
     private void nextAnimation() {
         animation = animations.pollLast();
+        if (animation != null) {
+            createIterators(animation);
+        }
+    }
+
+    public Iterator<KeyFrame> of(String boneName) {
+        return iterators.getOrDefault(boneName, Collections.emptyIterator());
     }
 
     public KeyFrame next(String boneName) {
         if (animation == null) {
-            return KeyFrame.INITIAL;
+            nextAnimation();
+            if (animation == null) {
+                return KeyFrame.INITIAL;
+            }
         }
         Iterator<KeyFrame> iterator = iterators.get(boneName);
         if (iterator == null) {

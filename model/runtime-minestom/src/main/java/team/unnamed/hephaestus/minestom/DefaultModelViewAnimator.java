@@ -44,7 +44,7 @@ public class DefaultModelViewAnimator implements ModelViewAnimator {
                     .divide(16)
                     .multiply(1, 1, -1);
 
-            Vector3Float frameRotation = frame.getRotation();
+            Vector3Double frameRotation = Vectors.toRadians(frame.getRotation());
             //int modelData = entity.getAnimationQueue().currentModelData(bone);
 
             Vector3Float defaultPosition = bone.getOffset().multiply(1, 1, -1);

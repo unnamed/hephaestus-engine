@@ -90,7 +90,7 @@ public class ModelResourcePackWriter
             output.closeEntry();
 
             // write children
-            writeBoneCubes(output, model, overrides, assets);
+            writeBoneCubes(output, model, overrides, bone.getBones());
         }
     }
 

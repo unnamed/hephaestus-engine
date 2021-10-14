@@ -5,6 +5,7 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,7 +47,11 @@ public class DynamicKeyFrameList implements KeyFrameList {
         Iterator<AnimationEntry>[] iterators = new Iterator[CHANNEL_COUNT];
         for (Channel channel : Channel.values()) {
             int index = channel.ordinal();
-            iterators[index] = entries[index].iterator();
+            List<AnimationEntry> entryList = entries[index];
+            if (entryList == null) {
+                entryList = Collections.emptyList();
+            }
+            iterators[index] = entryList.iterator();
         }
         return new DynamicKeyFrameIterator(iterators);
     }
@@ -92,6 +97,11 @@ public class DynamicKeyFrameList implements KeyFrameList {
                     AnimationEntry entry = iterator.next();
                     nextPositions[index] = entry.pos;
                     nextValues[index] = entry.value;
+
+                    if (entry.pos == 0F) {
+                        // if position is zero, set to previous
+                        previousValues[index] = entry.value;
+                    }
                 }
             }
         }
@@ -103,7 +113,7 @@ public class DynamicKeyFrameList implements KeyFrameList {
             // finishing
             for (Channel channel : Channel.values()) {
                 int index = channel.ordinal();
-                if (tick < nextPositions[index]
+                if (tick <= nextPositions[index]
                         || iterators[index].hasNext()) {
                     return true;
                 }
@@ -121,16 +131,17 @@ public class DynamicKeyFrameList implements KeyFrameList {
             for (Channel channel : Channel.values()) {
                 int index = channel.ordinal();
 
-                Vector3Float next;
+                Vector3Float next = nextValues[index];
                 int nextPos = nextPositions[index];
 
                 Vector3Float previous;
                 int previousPos;
 
                 if (tick > nextPos) {
+
                     // current tick is greater than next position
                     // in this channel, now 'previous' is 'next'
-                    previous = previousValues[index] = nextValues[index];
+                    previous = previousValues[index] = (next == null ? Vector3Float.ZERO : next);
                     previousPos = previousPositions[index] = nextPositions[index];
 
                     // consume 'next'
@@ -145,7 +156,6 @@ public class DynamicKeyFrameList implements KeyFrameList {
                 } else {
                     previousPos = previousPositions[index];
                     previous = previousValues[index];
-                    next = nextValues[index];
                 }
 
                 Vector3Float value;
@@ -153,12 +163,17 @@ public class DynamicKeyFrameList implements KeyFrameList {
                     // if there is no next frame to lerp,
                     // use the previous value
                     value = previous;
+                } else if (tick == previousPos) {
+                    value = previous;
+                } else if (tick == nextPos) {
+                    value = next;
                 } else {
+                    float ratio = (float) (tick - previousPos)
+                            / (float) (nextPos - previousPos);
                     value = Vectors.lerp(
                             previous,
                             next,
-                            (float) (tick - previousPos)
-                                    / (float) (nextPos - previousPos)
+                            ratio
                     );
                 }
 
