@@ -1,6 +1,12 @@
 package team.unnamed.hephaestus.model.animation;
 
-import java.util.Collections;
+import team.unnamed.hephaestus.model.ModelBone;
+import team.unnamed.hephaestus.model.view.ModelView;
+import team.unnamed.hephaestus.struct.Quaternion;
+import team.unnamed.hephaestus.struct.Vector3Double;
+import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.hephaestus.util.Vectors;
+
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,7 +20,12 @@ public class AnimationQueue {
     private int noNext;
 
     private final Deque<ModelAnimation> animations = new LinkedList<>();
+    private final ModelView view;
     private ModelAnimation animation;
+
+    public AnimationQueue(ModelView view) {
+        this.view = view;
+    }
 
     private void createIterators(ModelAnimation animation) {
         iterators.clear();
@@ -33,7 +44,72 @@ public class AnimationQueue {
         }
     }
 
-    public KeyFrame next(String boneName) {
+    private void updateBone(
+            double yaw,
+            ModelBone parent,
+            ModelBone bone,
+            Vector3Double parentRotation,
+            Vector3Float parentPosition
+    ) {
+
+        KeyFrame frame = next(bone.getName());
+        Vector3Float framePosition = frame.getPosition()
+                .divide(16)
+                .multiply(1, 1, -1);
+
+        Vector3Double frameRotation = Vectors.toRadians(frame.getRotation());
+
+        Vector3Float defaultPosition = bone.getOffset().multiply(1, 1, -1);
+        Vector3Double defaultRotation = Vectors.toRadians(bone.getRotation());
+
+        Vector3Float localPosition = framePosition.add(defaultPosition);
+        Vector3Double localRotation = defaultRotation.add(frameRotation.getX(), frameRotation.getY(), frameRotation.getZ());
+
+        Vector3Float globalPosition;
+        Vector3Double globalRotation;
+
+        if (parent == null) {
+            globalPosition = Vectors.rotateAroundY(localPosition, yaw);
+            globalRotation = localRotation;
+        } else {
+            globalPosition = Vectors.rotateAroundY(
+                    Vectors.rotate(localPosition, parentRotation),
+                    yaw
+            ).add(parentPosition);
+            globalRotation = Quaternion.combine(localRotation, parentRotation);
+        }
+
+        view.moveBone(bone.getName(), globalPosition);
+        view.rotateBone(bone.getName(), globalRotation);
+
+        //if (modelData != -1) {
+        //    entity.updateBoneModelData(bone, modelData);
+        //}
+
+        for (ModelBone component : bone.getBones()) {
+            this.updateBone(
+                    yaw,
+                    bone,
+                    component,
+                    globalRotation,
+                    globalPosition
+            );
+        }
+    }
+
+    public void next(double yaw) {
+        for (ModelBone bone : view.getModel().getBones()) {
+            updateBone(
+                    yaw,
+                    null,
+                    bone,
+                    Vector3Double.ZERO,
+                    Vector3Float.ZERO
+            );
+        }
+    }
+
+    private KeyFrame next(String boneName) {
         if (animation == null) {
             nextAnimation();
             if (animation == null) {

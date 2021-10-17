@@ -12,12 +12,12 @@ import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
-import net.minestom.server.utils.validate.Check;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.animation.AnimationQueue;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
+import team.unnamed.hephaestus.model.view.ModelView;
 import team.unnamed.hephaestus.struct.Vector3Double;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
@@ -26,44 +26,107 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class ModelView extends LivingEntity {
+public class MinestomModelView
+        extends LivingEntity
+        implements ModelView {
 
-    private final Map<String, Entity> bones = new HashMap<>();
+    private final Map<String, LivingEntity> bones = new HashMap<>();
 
     private final Model model;
-    private final ModelViewAnimator animator;
     private final AnimationQueue animationQueue;
 
-    public ModelView(
+    public MinestomModelView(
             EntityType type,
-            Model model,
-            ModelViewAnimator animator,
-            AnimationQueue animationQueue
+            Model model
     ) {
         super(type);
         this.model = model;
-        this.animator = animator;
-        this.animationQueue = animationQueue;
+        this.animationQueue = new AnimationQueue(this);
 
         setInvisible(true);
         setNoGravity(true);
     }
 
+    @Override
     public Model getModel() {
         return model;
     }
 
-    public AnimationQueue getAnimationQueue() {
-        return animationQueue;
+    //#region Entire View Handling methods
+    @Override
+    public void colorize(int r, int g, int b) {
+        Color color = new Color(r, g, b);
+        for (LivingEntity entity : bones.values()) {
+            entity.setHelmet(entity.getHelmet().withMeta(
+                    LeatherArmorMeta.class,
+                    meta -> meta.color(color)
+            ));
+        }
+    }
+    //#endregion
+
+    //#region Bone Handling methods
+    @Override
+    public void colorizeBone(String name, int r, int g, int b) {
+        LivingEntity entity = bones.get(name);
+        Color color = new Color(r, g, b);
+        entity.setHelmet(entity.getHelmet().withMeta(
+                LeatherArmorMeta.class,
+                meta -> meta.color(color)
+        ));
     }
 
-    public void animate(String animationName) {
+    @Override
+    public void moveBone(String name, Vector3Float position) {
+        bones.get(name).teleport(getPosition().add(
+                position.getX(),
+                position.getY(),
+                position.getZ()
+        ));
+    }
+
+    @Override
+    public void rotateBone(String name, Vector3Double rotation) {
+        Entity entity = bones.get(name);
+        if (entity != null) {
+            ArmorStandMeta meta = (ArmorStandMeta) entity.getEntityMeta();
+            meta.setHeadRotation(new Vec(
+                    Math.toDegrees(rotation.getX()),
+                    Math.toDegrees(rotation.getY()),
+                    Math.toDegrees(rotation.getZ())
+            ));
+        }
+    }
+    //#endregion
+
+    //#region Animation Handling methods
+    @Override
+    public void playAnimation(String animationName) {
         ModelAnimation animation = model.getAnimations().get(animationName);
-        Check.notNull(animation, "Unknown animation");
-
         animationQueue.pushAnimation(animation);
-        animator.animate(this);
     }
+
+    @Override
+    public void playAnimation(ModelAnimation animation) {
+        animationQueue.pushAnimation(animation);
+    }
+
+    @Override
+    public boolean stopAnimation(String name) {
+        // TODO:
+        return false;
+    }
+
+    @Override
+    public void stopAllAnimations() {
+        // TODO
+    }
+
+    @Override
+    public void tickAnimations() {
+        animationQueue.next(getPosition().yaw());
+    }
+    //#endregion
 
     private void summonBone(double yawRadians, Pos pos, ModelBone bone, Vector3Float parentOffset) {
         Instance instance = this.instance;
@@ -102,25 +165,6 @@ public class ModelView extends LivingEntity {
 
         for (ModelBone child : bone.getBones()) {
             summonBone(yawRadians, pos, child, offset);
-        }
-    }
-
-    public void teleportBone(ModelBone bone, Pos position) {
-        Entity entity = bones.get(bone.getName());
-        if (entity != null) {
-            entity.teleport(position);
-        }
-    }
-
-    public void setBonePose(ModelBone bone, Vector3Double pose) {
-        Entity entity = bones.get(bone.getName());
-        if (entity != null) {
-            ArmorStandMeta meta = (ArmorStandMeta) entity.getEntityMeta();
-            meta.setHeadRotation(new Vec(
-                    Math.toDegrees(pose.getX()),
-                    Math.toDegrees(pose.getY()),
-                    Math.toDegrees(pose.getZ())
-            ));
         }
     }
 

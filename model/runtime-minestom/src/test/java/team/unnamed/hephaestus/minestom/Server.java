@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.io.TreeOutputStream;
 import team.unnamed.hephaestus.model.Model;
-import team.unnamed.hephaestus.model.animation.AnimationQueue;
 import team.unnamed.hephaestus.model.reader.BBModelReader;
 import team.unnamed.hephaestus.model.resourcepack.ModelResourcePackWriter;
 import team.unnamed.hephaestus.resourcepack.ResourcePackInfo;
@@ -79,7 +78,7 @@ public class Server {
             player.setRespawnPoint(new Pos(0, 72, 0));
         });
 
-        Collection<ModelView> views = new HashSet<>();
+        Collection<MinestomModelView> views = new HashSet<>();
 
         /*ModelAnimation a = model.getAnimations().get("walk");
 
@@ -102,8 +101,8 @@ public class Server {
 
             if (message.startsWith("animate ")) {
                 String animation = message.substring("animate ".length()).trim();
-                for (ModelView view : views) {
-                    view.animate(animation);
+                for (MinestomModelView view : views) {
+                    view.playAnimation(animation);
                 }
             }
 
@@ -130,12 +129,15 @@ public class Server {
                 }
 
                 case "spawn" -> {
-                    ModelView view = new ModelView(
+                    MinestomModelView view = new MinestomModelView(
                             EntityType.HORSE,
-                            model,
-                            new DefaultModelViewAnimator(),
-                            new AnimationQueue()
+                            model
                     );
+
+                    MinecraftServer.getSchedulerManager()
+                            .buildTask(view::tickAnimations)
+                            .schedule();
+
                     view.setInstance(
                             Objects.requireNonNull(player.getInstance(), "player instance"),
                             player.getPosition().sub(0, 0.725, 0)
