@@ -1,6 +1,6 @@
 # Hephaestus Engine
-Hephaestus Engine is a library which allows the visualization of [Blockbench](https://blockbench.net)
-models and animations in a Minecraft server by the use of a generated resource pack and armor stands.
+Render and animate models in a Minecraft server by using generated resource packs and client-side entities.
+Can use [Blockbench](https://blockbench.net) format and run on Bukkit and [Minestom](https://minestom.net)
 
 ## Installation
 Latest Snapshot: [![Latest Snapshot](https://img.shields.io/nexus/s/team.unnamed.hephaestus/hephaestus-api.svg?server=https%3A%2F%2Frepo.unnamed.team)](https://repo.unnamed.team/repository/unnamed-snapshots)
