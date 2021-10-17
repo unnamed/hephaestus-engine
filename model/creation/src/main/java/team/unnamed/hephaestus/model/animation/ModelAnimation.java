@@ -20,7 +20,7 @@ public class ModelAnimation {
     private final int animationLength;
 
     /** Contains all the bone animations using the bone names as key */
-    private final Map<String, ModelBoneAnimation> animationsByBoneName;
+    private final Map<String, KeyFrameList> framesByBone;
 
     private final Map<String, Map<Integer, Integer>> modelData;
 
@@ -28,13 +28,13 @@ public class ModelAnimation {
             String name,
             boolean loop,
             int animationLength,
-            Map<String, ModelBoneAnimation> animationsByBoneName,
+            Map<String, KeyFrameList> framesByBone,
             Map<String, Map<Integer, Integer>> modelData
     ) {
         this.name = name;
         this.loop = loop;
         this.animationLength = animationLength;
-        this.animationsByBoneName = animationsByBoneName;
+        this.framesByBone = framesByBone;
         this.modelData = modelData;
     }
 
@@ -54,8 +54,8 @@ public class ModelAnimation {
         return animationLength;
     }
 
-    public Map<String, ModelBoneAnimation> getAnimationsByBoneName() {
-        return animationsByBoneName;
+    public Map<String, KeyFrameList> getAnimationsByBoneName() {
+        return framesByBone;
     }
 
     @Override
@@ -63,12 +63,14 @@ public class ModelAnimation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ModelAnimation that = (ModelAnimation) o;
-        return loop == that.loop && Float.compare(that.animationLength, animationLength) == 0 && Objects.equals(animationsByBoneName, that.animationsByBoneName);
+        return loop == that.loop
+                && Float.compare(that.animationLength, animationLength) == 0
+                && Objects.equals(framesByBone, that.framesByBone);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(loop, animationLength, animationsByBoneName);
+        return Objects.hash(loop, animationLength, framesByBone);
     }
 
     @Override
@@ -76,7 +78,7 @@ public class ModelAnimation {
         return "ModelAnimation{" +
                 "loop=" + loop +
                 ", animationLength=" + animationLength +
-                ", animationsByBoneName=" + animationsByBoneName +
+                ", framesByBone=" + framesByBone +
                 '}';
     }
 }

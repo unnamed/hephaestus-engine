@@ -5,36 +5,46 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 import java.util.Objects;
 
 /**
- * It's an animation keyframe,
- * contains the key-frame point and
- * the current pose (it can be a
- * position, a rotation or something
- * else accepted by {@link ModelBoneAnimation})
+ * Represents an animation keyframe, a point in
+ * the
  */
 public class KeyFrame {
 
-    private final int position;
-    private final Vector3Float value;
+    public static final KeyFrame INITIAL = new KeyFrame(
+            Vector3Float.ZERO,
+            Vector3Float.ZERO,
+            Vector3Float.ONE
+    );
 
-    public KeyFrame(int position, Vector3Float value) {
+    private final Vector3Float position;
+    private final Vector3Float rotation;
+    private final Vector3Float scale;
+
+    public KeyFrame(
+            Vector3Float position,
+            Vector3Float rotation,
+            Vector3Float scale
+    ) {
         this.position = position;
-        this.value = value;
+        this.rotation = rotation;
+        this.scale = scale;
     }
 
-    public int getPosition() {
+    public Vector3Float getPosition() {
         return position;
     }
 
-    public Vector3Float getValue() {
-        return value;
+    public Vector3Float getRotation() {
+        return rotation;
+    }
+
+    public Vector3Float getScale() {
+        return scale;
     }
 
     @Override
     public KeyFrame clone() {
-       return new KeyFrame(
-               this.position,
-               value.clone()
-       );
+       return new KeyFrame(position, rotation, scale);
     }
 
     @Override
@@ -42,20 +52,23 @@ public class KeyFrame {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         KeyFrame keyFrame = (KeyFrame) o;
-        return Float.compare(keyFrame.position, position) == 0
-                && value.equals(keyFrame.value);
+        return position.equals(keyFrame.position)
+                && rotation.equals(keyFrame.rotation)
+                && scale.equals(keyFrame.scale);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, value);
+        return Objects.hash(position, rotation, scale);
     }
 
     @Override
     public String toString() {
         return "KeyFrame{" +
                 "position=" + position +
-                ", value=" + value +
+                ", rotation=" + rotation +
+                ", scale=" + scale +
                 '}';
     }
+
 }

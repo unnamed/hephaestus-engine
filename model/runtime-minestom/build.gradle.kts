@@ -10,6 +10,10 @@ tasks.withType<JavaCompile>() {
 }
 
 dependencies {
+    val minestom = "com.github.Minestom:Minestom:d53ef36586"
+
     api(project(":model:creation"))
-    compileOnly("com.github.Minestom:Minestom:d53ef36586")
+    compileOnly(minestom)
+
+    testImplementation(minestom)
 }

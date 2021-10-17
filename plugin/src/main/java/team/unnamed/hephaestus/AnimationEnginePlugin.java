@@ -24,8 +24,6 @@ import team.unnamed.hephaestus.listener.ResourcePackApplyListener;
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.ModelAsset;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.view.DefaultModelViewAnimator;
-import team.unnamed.hephaestus.model.view.ModelViewAnimator;
 import team.unnamed.hephaestus.model.view.ModelViewRenderer;
 import team.unnamed.hephaestus.mythicmobs.MythicMobsHookListener;
 import team.unnamed.hephaestus.model.reader.ModelReader;
@@ -55,7 +53,6 @@ import java.util.logging.Level;
 public class AnimationEnginePlugin extends JavaPlugin {
 
     private ModelRegistry modelRegistry;
-    private ModelViewAnimator animator;
     private ModelViewRenderer renderer;
 
     private String url;
@@ -72,8 +69,7 @@ public class AnimationEnginePlugin extends JavaPlugin {
         modelRegistry = new ModelRegistry();
         AdaptionModule module = AdaptionModuleFactory.create();
 
-        animator = new DefaultModelViewAnimator(this);
-        renderer = module.createRenderer(animator);
+        renderer = module.createRenderer();
 
         ModelReader modelReader = new BBModelReader();
 
@@ -197,10 +193,6 @@ public class AnimationEnginePlugin extends JavaPlugin {
 
     public ModelRegistry getModelRegistry() {
         return modelRegistry;
-    }
-
-    public ModelViewAnimator getAnimator() {
-        return animator;
     }
 
     public ModelViewRenderer getRenderer() {

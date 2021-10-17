@@ -2,6 +2,8 @@ package team.unnamed.hephaestus.model.view;
 
 import team.unnamed.hephaestus.model.Model;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
+import team.unnamed.hephaestus.struct.Vector3Double;
+import team.unnamed.hephaestus.struct.Vector3Float;
 
 /**
  * Base abstraction for representing a {@link Model}
@@ -18,21 +20,47 @@ public interface ModelView {
      */
     Model getModel();
 
+    //#region Entire View Handling methods
     /**
      * Colorizes this view using the specified
      * {@code r} (red), {@code g} (green) and
      * {@code b} (blue) color components
      */
     void colorize(int r, int g, int b);
+    //#endregion
 
+    //#region Bone Handling methods
     /**
      * Finds the bone with the specified {@code name}
      * and colorizes it using the specified RGB color
      * components
-     * @throws IllegalArgumentException If no bone with
+     * @throws NullPointerException If no bone with
      * the given name is found
      */
     void colorizeBone(String name, int r, int g, int b);
+
+    /**
+     * Teleports the bone with the specified {@code name}
+     * to the given relative {@code position} (added to
+     * the global model position to obtain the global bone
+     * position)
+     * @param name The teleported bone name
+     * @param position The relative target position
+     * @throws NullPointerException If no bone with
+     * the given name is found
+     */
+    void moveBone(String name, Vector3Float position);
+
+    /**
+     * Rotates the bone with the specified {@code name}
+     * to the given {@code rotation}
+     * @param name The rotated bone name
+     * @param rotation The target rotation
+     * @throws NullPointerException If no bone with the
+     * given name is found
+     */
+    void rotateBone(String name, Vector3Double rotation);
+    //#endregion
 
     //#region Animation Handling methods
     /**
@@ -41,8 +69,6 @@ public interface ModelView {
      * instance.
      *
      * @param name The animation name
-     * @throws IllegalArgumentException If the given
-     * animation isn't registered for this model
      * @see Model#getAnimations()
      */
     void playAnimation(String name);
@@ -52,8 +78,6 @@ public interface ModelView {
      * this model view instance
      *
      * @param animation The animation to play
-     * @throws IllegalArgumentException If the given
-     * animation isn't registered for this model
      * @see Model#getAnimations()
      */
     void playAnimation(ModelAnimation animation);
@@ -72,6 +96,12 @@ public interface ModelView {
      * for this model view
      */
     void stopAllAnimations();
+
+    /**
+     * Ticks animations, makes required bones pass
+     * to the next animation frame
+     */
+    void tickAnimations();
     //#endregion
 
 }

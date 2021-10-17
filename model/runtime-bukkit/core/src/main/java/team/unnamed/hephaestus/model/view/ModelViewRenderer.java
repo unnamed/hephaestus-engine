@@ -3,13 +3,12 @@ package team.unnamed.hephaestus.model.view;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.model.Model;
-import team.unnamed.hephaestus.model.animation.ModelAnimationQueue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-/** Responsible of spawning {@link Model} */
+/** Responsible for spawning {@link Model} */
 public interface ModelViewRenderer {
 
     /**
@@ -19,27 +18,8 @@ public interface ModelViewRenderer {
     BukkitModelView render(
             Model model,
             Location location,
-            ModelAnimationQueue animationQueue,
             Collection<Player> viewers
     );
-
-
-    default BukkitModelView render(
-            Model model,
-            Location location,
-            Collection<Player> viewers
-    ) {
-        return render(model, location, new ModelAnimationQueue(), viewers);
-    }
-
-    default BukkitModelView render(
-            Model model,
-            Location location,
-            ModelAnimationQueue animationQueue,
-            Player... viewers
-    ) {
-        return render(model, location, animationQueue, Arrays.asList(viewers));
-    }
 
     default BukkitModelView render(
             Model model,
@@ -54,14 +34,6 @@ public interface ModelViewRenderer {
             Location location
     ) {
         return render(model, location, new ArrayList<>());
-    }
-
-    default BukkitModelView render(
-            Model model,
-            Location location,
-            ModelAnimationQueue animationQueue
-    ) {
-       return this.render(model, location, animationQueue, new ArrayList<>());
     }
 
 }

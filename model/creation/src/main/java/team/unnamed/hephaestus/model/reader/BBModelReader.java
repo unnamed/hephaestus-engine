@@ -13,9 +13,9 @@ import team.unnamed.hephaestus.model.ModelBone;
 import team.unnamed.hephaestus.model.ModelBoneAsset;
 import team.unnamed.hephaestus.model.ModelCube;
 import team.unnamed.hephaestus.model.ModelDataCursor;
-import team.unnamed.hephaestus.model.animation.KeyFrame;
+import team.unnamed.hephaestus.model.animation.DynamicKeyFrameList;
+import team.unnamed.hephaestus.model.animation.KeyFrameList;
 import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.animation.ModelBoneAnimation;
 import team.unnamed.hephaestus.model.texture.bound.FacedTextureBound;
 import team.unnamed.hephaestus.model.texture.bound.TextureFace;
 import team.unnamed.hephaestus.struct.Vector3Float;
@@ -26,7 +26,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -170,7 +169,7 @@ public class BBModelReader implements ModelReader {
                 continue;
             }
 
-            Map<String, ModelBoneAnimation> animators = new HashMap<>();
+            Map<String, KeyFrameList> animators = new HashMap<>();
             Map<String, Map<Integer, Integer>> modelData = new HashMap<>();
 
             for (Map.Entry<String, JsonElement> animatorEntry : animationJson.get("animators")
@@ -180,8 +179,7 @@ public class BBModelReader implements ModelReader {
                 JsonObject animatorJson = animatorEntry.getValue().getAsJsonObject();
                 String boneName = animatorJson.get("name").getAsString();
 
-                List<KeyFrame> rotationFrames = new ArrayList<>();
-                List<KeyFrame> positionFrames = new ArrayList<>();
+                KeyFrameList frames = new DynamicKeyFrameList();
 
                 for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
 
@@ -196,33 +194,17 @@ public class BBModelReader implements ModelReader {
 
                     String channel = keyframeJson.get("channel").getAsString();
                     int time = Math.round(parseLenientFloat(keyframeJson.get("time")) * TICKS_PER_SECOND);
-                    KeyFrame keyFrame = new KeyFrame(
-                            time,
-                            value
-                    );
 
-                    switch (channel) {
-                        case "scale": {
-                            // TODO: support scale frames
-                            throw new IOException("Scale frames aren't supported yet." +
-                                    " Check animation " + name + " and bone " + boneName);
-                        }
-                        case "rotation": {
-                            rotationFrames.add(keyFrame);
-                            break;
-                        }
-                        case "position": {
-                            positionFrames.add(keyFrame);
-                            break;
-                        }
+                    if (channel.equals("scale")) {
+                        // TODO: support scale frames
+                        throw new IOException("Scale frames aren't supported yet." +
+                                " Check animation " + name + " and bone " + boneName);
                     }
+
+                    frames.put(time, KeyFrameList.Channel.valueOf(channel.toUpperCase()), value);
                 }
 
-                animators.put(boneName, new ModelBoneAnimation(
-                        positionFrames,
-                        rotationFrames,
-                        Collections.emptyList()
-                ));
+                animators.put(boneName, frames);
             }
 
             ModelAnimation animation = new ModelAnimation(name, loop, length, animators, modelData);
