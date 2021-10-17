@@ -3,7 +3,7 @@ package team.unnamed.hephaestus.model.adapt;
 import org.bukkit.Bukkit;
 
 /**
- * Responsible of instantiating the {@link AdaptionModule}
+ * Responsible for instantiating the {@link AdaptionModule}
  * depending on the current server version
  */
 public final class AdaptionModuleFactory {

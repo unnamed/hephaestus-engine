@@ -58,9 +58,7 @@ public class SummonCommand implements CommandClass {
     public void animate(
             @Sender Player player,
             String viewId,
-            String animationName,
-            @OptArg Integer priority,
-            @OptArg Integer transitionTicks
+            String animationName
     ) {
         BukkitModelView view = views.get(viewId);
         if (view == null) {
@@ -73,7 +71,7 @@ public class SummonCommand implements CommandClass {
             return;
         }
 
-        view.playAnimation(animation, priority == null ? 0 : priority, transitionTicks == null ? 0 : transitionTicks);
+        view.playAnimation(animation);
     }
 
     @Command(names = "summon")

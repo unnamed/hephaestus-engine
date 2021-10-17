@@ -25,11 +25,11 @@ public interface ModelViewController {
      */
     void colorizeBone(BukkitModelView view, String boneName, Color color);
 
-    void teleportBone(BukkitModelView view, ModelBone bone, Location location);
+    void teleportBone(BukkitModelView view, String boneName, Location location);
 
     void updateBoneModelData(BukkitModelView view, ModelBone bone, int modelData);
 
-    void setBonePose(BukkitModelView view, ModelBone bone, Vector3Double angle);
+    void setBonePose(BukkitModelView view, String boneName, Vector3Double angle);
 
     void showIndividually(BukkitModelView view, Player player);
 

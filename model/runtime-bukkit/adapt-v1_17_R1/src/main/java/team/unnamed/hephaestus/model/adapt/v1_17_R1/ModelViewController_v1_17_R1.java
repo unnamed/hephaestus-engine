@@ -217,8 +217,8 @@ public class ModelViewController_v1_17_R1
     }
 
     @Override
-    public void teleportBone(BukkitModelView view, ModelBone bone, Location location) {
-        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
+    public void teleportBone(BukkitModelView view, String boneName, Location location) {
+        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(boneName);
         entity.setLocation(
                 location.getX(),
                 location.getY(),
@@ -262,8 +262,8 @@ public class ModelViewController_v1_17_R1
     }
 
     @Override
-    public void setBonePose(BukkitModelView view, ModelBone bone, Vector3Double angle) {
-        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.getName());
+    public void setBonePose(BukkitModelView view, String boneName, Vector3Double angle) {
+        EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(boneName);
         DataWatcher watcher = new DataWatcher(null);
         watcher.register(
                 new DataWatcherObject<>(16, DataWatcherRegistry.k),

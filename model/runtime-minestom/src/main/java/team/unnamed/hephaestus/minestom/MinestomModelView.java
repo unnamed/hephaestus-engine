@@ -124,7 +124,7 @@ public class MinestomModelView
 
     @Override
     public void tickAnimations() {
-        animationQueue.next(getPosition().yaw());
+        animationQueue.next(Math.toRadians(getPosition().yaw()));
     }
     //#endregion
 
