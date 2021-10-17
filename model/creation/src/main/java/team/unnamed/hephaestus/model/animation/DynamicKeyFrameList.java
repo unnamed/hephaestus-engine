@@ -137,11 +137,11 @@ public class DynamicKeyFrameList implements KeyFrameList {
                 Vector3Float previous;
                 int previousPos;
 
-                if (tick > nextPos) {
+                if (next != null && tick > nextPos) {
 
                     // current tick is greater than next position
                     // in this channel, now 'previous' is 'next'
-                    previous = previousValues[index] = (next == null ? Vector3Float.ZERO : next);
+                    previous = previousValues[index] = next;
                     previousPos = previousPositions[index] = nextPositions[index];
 
                     // consume 'next'
