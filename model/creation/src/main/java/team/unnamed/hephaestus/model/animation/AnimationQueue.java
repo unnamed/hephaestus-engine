@@ -33,10 +33,6 @@ public class AnimationQueue {
         }
     }
 
-    public Iterator<KeyFrame> of(String boneName) {
-        return iterators.getOrDefault(boneName, Collections.emptyIterator());
-    }
-
     public KeyFrame next(String boneName) {
         if (animation == null) {
             nextAnimation();

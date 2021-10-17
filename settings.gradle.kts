@@ -1,7 +1,7 @@
 rootProject.name = "hephaestus-engine"
 
 include("common")
-include("plugin")
+//include("plugin")
 
 //
 // Model Subprojects
@@ -11,7 +11,7 @@ include(":model:creation")
 //
 // Model Bukkit runtime
 //
-include(":model:runtime-bukkit:core")
+/*include(":model:runtime-bukkit:core")
 
 arrayOf(
         "v1_14_R1",
@@ -20,7 +20,7 @@ arrayOf(
         "v1_17_R1"
 ).forEach {
     include(":model:runtime-bukkit:adapt-$it")
-}
+}*/
 
 //
 // Model Minestom runtime
