@@ -14,6 +14,7 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.batch.ChunkBatch;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.resourcepack.ResourcePack;
+import net.minestom.server.utils.time.TimeUnit;
 import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.io.Streams;
@@ -34,6 +35,7 @@ import java.net.URL;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -119,14 +121,14 @@ public class Server {
                             model
                     );
 
-                    MinecraftServer.getSchedulerManager()
-                            .buildTask(view::tickAnimations)
-                            .schedule();
-
                     view.setInstance(
                             Objects.requireNonNull(player.getInstance(), "player instance"),
                             player.getPosition().sub(0, 0.725, 0)
-                    );
+                    ).thenAccept(ignored ->
+                        MinecraftServer.getSchedulerManager()
+                                .buildTask(view::tickAnimations)
+                                .repeat(Duration.of(1, TimeUnit.SERVER_TICK))
+                                .schedule());
                     views.add(view);
                 }
             }

@@ -33,7 +33,7 @@ public class AnimationQueue {
                 iterators.put(name, list.iterator()));
     }
 
-    public void pushAnimation(ModelAnimation animation) {
+    public synchronized void pushAnimation(ModelAnimation animation) {
         animations.addFirst(animation);
     }
 
@@ -97,7 +97,7 @@ public class AnimationQueue {
         }
     }
 
-    public void next(double yaw) {
+    public synchronized void next(double yaw) {
         for (ModelBone bone : view.getModel().getBones()) {
             updateBone(
                     yaw,
@@ -123,10 +123,10 @@ public class AnimationQueue {
             KeyFrame frame = iterator.next();
             if (!iterator.hasNext()) {
                 if (++noNext >= iterators.size()) {
+                    noNext = 0;
                     // all iterators fully-consumed
                     if (animation.isLoop()) {
                         createIterators(animation);
-                        noNext = 0;
                     } else {
                         nextAnimation();
                     }
