@@ -80,21 +80,6 @@ public class Server {
 
         Collection<MinestomModelView> views = new HashSet<>();
 
-        /*ModelAnimation a = model.getAnimations().get("walk");
-
-        int i = 1;
-        for (String boneName : a.getAnimationsByBoneName().keySet()) {
-            KeyFrameList list = a.getAnimationsByBoneName().get(boneName);
-
-            String indent = Strings.repeat(">", i++);
-            System.out.println(indent + indent);
-            System.out.println(indent + boneName);
-            System.out.println(indent + indent);
-            for (KeyFrame frame : list) {
-                System.out.println(indent + frame);
-            }
-        }*/
-
         eventHandler.addListener(PlayerChatEvent.class, event -> {
             Player player = event.getPlayer();
             String message = event.getMessage().toLowerCase();
