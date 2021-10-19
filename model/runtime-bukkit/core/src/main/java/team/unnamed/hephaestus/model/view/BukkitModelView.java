@@ -110,7 +110,7 @@ public class BukkitModelView implements ModelView {
 
     @Override
     public void stopAllAnimations() {
-        // TODO
+        animationQueue.removeAllAnimations();
     }
 
     @Override

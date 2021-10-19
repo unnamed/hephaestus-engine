@@ -37,6 +37,12 @@ public class AnimationQueue {
         animations.addFirst(animation);
     }
 
+    public synchronized void removeAllAnimations() {
+        animations.clear();
+        animation = null;
+    }
+
+
     private void nextAnimation() {
         animation = animations.pollLast();
         if (animation != null) {

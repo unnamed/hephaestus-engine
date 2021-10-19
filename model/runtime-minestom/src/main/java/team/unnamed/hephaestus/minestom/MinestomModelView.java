@@ -119,7 +119,7 @@ public class MinestomModelView
 
     @Override
     public void stopAllAnimations() {
-        // TODO
+        animationQueue.removeAllAnimations();
     }
 
     @Override
