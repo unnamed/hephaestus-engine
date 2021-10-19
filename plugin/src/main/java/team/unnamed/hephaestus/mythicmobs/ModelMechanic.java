@@ -59,6 +59,7 @@ public class ModelMechanic
                 () -> {
                     // todo: cancel if 'entity' isn't valid anymore
                     view.teleport(entity.getLocation().subtract(0, ARMORSTAND_HEIGHT, 0));
+                    view.tickAnimations();
                 },
                 0L,
                 1L
