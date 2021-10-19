@@ -119,6 +119,16 @@ public class BukkitModelView implements ModelView {
     }
     //#endregion
 
+    /**
+     * Sets the location to the given {@code location}
+     * <strong>This just updates the location in server
+     * side, to update location to viewers, use
+     * {@link BukkitModelView#teleport}</strong>
+     */
+    public void setLocation(Location location) {
+        this.location = location.clone();
+    }
+
     public Collection<Player> getViewers() {
         return viewers;
     }
