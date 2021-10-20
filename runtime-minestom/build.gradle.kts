@@ -5,8 +5,9 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<JavaCompile>() {
-    options.release.set(16)
+tasks.withType<JavaCompile> {
+    sourceCompatibility = "16"
+    targetCompatibility = "16"
 }
 
 dependencies {

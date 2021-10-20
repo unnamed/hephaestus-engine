@@ -2,6 +2,12 @@ plugins {
     id("com.github.johnrengelman.shadow") version("7.0.0")
 }
 
+tasks.withType<JavaCompile> {
+    val version = if (JavaVersion.current() >= JavaVersion.VERSION_16) { "16" } else { "8" }
+    sourceCompatibility = version
+    targetCompatibility = version
+}
+
 repositories {
     mavenLocal()
     maven("https://repo.unnamed.team/repository/unnamed-public/")
@@ -22,9 +28,12 @@ dependencies {
     arrayOf(
             "v1_14_R1",
             "v1_15_R1",
-            "v1_16_R3",
-            "v1_17_R1"
+            "v1_16_R3"
     ).forEach {
-        implementation(project(":runtime-bukkit:adapt-$it"))
+        runtimeOnly(project(":runtime-bukkit:adapt-$it"))
+    }
+
+    if (JavaVersion.current() >= JavaVersion.VERSION_16) {
+        runtimeOnly(project(":runtime-bukkit:adapt-v1_17_R1"))
     }
 }
