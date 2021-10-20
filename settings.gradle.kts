@@ -1,6 +1,6 @@
 rootProject.name = "hephaestus-engine"
 
-include("common")
+include("core")
 include("plugin")
 
 //
