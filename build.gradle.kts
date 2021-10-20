@@ -3,8 +3,8 @@ subprojects {
     apply(plugin = "maven-publish")
 
     tasks.withType<JavaCompile> {
-        sourceCompatibility = "8"
-        targetCompatibility = "8"
+        sourceCompatibility = "16"
+        targetCompatibility = "16"
     }
 
     repositories {
