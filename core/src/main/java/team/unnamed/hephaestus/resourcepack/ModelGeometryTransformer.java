@@ -10,9 +10,6 @@ import team.unnamed.hephaestus.ModelCube;
 import team.unnamed.hephaestus.bound.FacedTextureBound;
 import team.unnamed.hephaestus.bound.TextureFace;
 import team.unnamed.hephaestus.struct.Vector3Float;
-import team.unnamed.hephaestus.util.MoreMath;
-
-import static team.unnamed.hephaestus.util.MoreMath.shrink;
 
 public class ModelGeometryTransformer {
 
@@ -131,14 +128,14 @@ public class ModelGeometryTransformer {
             JsonObject cubeJson = new JsonObject();
             cubeJson.addProperty("name", bone.getName() + "-cube-" + (index++));
             cubeJson.add("from", toJsonArray(
-                    MoreMath.shrink(from[0]),
-                    MoreMath.shrink(from[1]),
-                    MoreMath.shrink(from[2])
+                    shrink(from[0]),
+                    shrink(from[1]),
+                    shrink(from[2])
             ));
             cubeJson.add("to", toJsonArray(
-                    MoreMath.shrink(from[0] + size.getX()),
-                    MoreMath.shrink(from[1] + size.getY()),
-                    MoreMath.shrink(from[2] + size.getZ())
+                    shrink(from[0] + size.getX()),
+                    shrink(from[1] + size.getY()),
+                    shrink(from[2] + size.getZ())
             ));
             cubeJson.add("rotation", rotation);
             cubeJson.add("faces", faces);
@@ -240,6 +237,10 @@ public class ModelGeometryTransformer {
         if (fromValue + offset[i] < -16.0F) {
             offset[i] -= fromValue + offset[i] + 16.0F;
         }
+    }
+
+    private static float shrink(float p) {
+        return 3.2F + 0.6F * p;
     }
 
 }
