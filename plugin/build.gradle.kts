@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    api(project(":model:runtime-bukkit:core"))
+    api(project(":runtime-bukkit:core"))
     implementation("team.unnamed:molang:0.1.0")
 
     implementation("org.jetbrains:annotations:22.0.0")
@@ -25,6 +25,6 @@ dependencies {
             "v1_16_R3",
             "v1_17_R1"
     ).forEach {
-        implementation(project(":model:runtime-bukkit:adapt-$it"))
+        implementation(project(":runtime-bukkit:adapt-$it"))
     }
 }

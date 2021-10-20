@@ -1,7 +1,6 @@
 package team.unnamed.hephaestus;
 
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.model.Model;
 
 import java.util.Collection;
 import java.util.HashMap;

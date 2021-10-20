@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import team.unnamed.hephaestus.ModelRegistry;
 import team.unnamed.hephaestus.ModelViewRegistry;
-import team.unnamed.hephaestus.model.view.ModelViewRenderer;
+import team.unnamed.hephaestus.view.ModelViewRenderer;
 
 public class MythicMobsHookListener implements Listener {
 

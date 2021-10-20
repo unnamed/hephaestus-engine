@@ -6,17 +6,15 @@ import io.lumine.xikage.mythicmobs.skills.ITargetedEntitySkill;
 import io.lumine.xikage.mythicmobs.skills.SkillMechanic;
 import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
 import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderString;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import team.unnamed.hephaestus.AnimationEnginePlugin;
 import team.unnamed.hephaestus.ModelRegistry;
 import team.unnamed.hephaestus.ModelViewRegistry;
-import team.unnamed.hephaestus.model.Model;
-import team.unnamed.hephaestus.model.view.BukkitModelView;
-import team.unnamed.hephaestus.model.view.ModelViewRenderer;
+import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.view.BukkitModelView;
+import team.unnamed.hephaestus.view.ModelViewRenderer;
 
 public class ModelMechanic
         extends SkillMechanic

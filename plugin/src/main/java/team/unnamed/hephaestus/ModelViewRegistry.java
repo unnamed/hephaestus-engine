@@ -8,7 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import team.unnamed.hephaestus.model.view.BukkitModelView;
+import team.unnamed.hephaestus.view.BukkitModelView;
 
 /**
  * Registry for global model views, views

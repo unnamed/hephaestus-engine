@@ -7,10 +7,10 @@ import me.fixeddev.commandflow.bukkit.annotation.Sender;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import team.unnamed.hephaestus.model.Model;
-import team.unnamed.hephaestus.model.animation.ModelAnimation;
-import team.unnamed.hephaestus.model.view.BukkitModelView;
-import team.unnamed.hephaestus.model.view.ModelViewRenderer;
+import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.view.BukkitModelView;
+import team.unnamed.hephaestus.view.ModelViewRenderer;
 
 import java.util.HashMap;
 import java.util.Map;

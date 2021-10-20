@@ -4,14 +4,9 @@ include("common")
 include("plugin")
 
 //
-// Model Subprojects
-//
-include(":model:creation")
-
-//
 // Model Bukkit runtime
 //
-include(":model:runtime-bukkit:core")
+include(":runtime-bukkit:core")
 
 arrayOf(
         "v1_14_R1",
@@ -19,10 +14,10 @@ arrayOf(
         "v1_16_R3",
         "v1_17_R1"
 ).forEach {
-    include(":model:runtime-bukkit:adapt-$it")
+    include(":runtime-bukkit:adapt-$it")
 }
 
 //
 // Model Minestom runtime
 //
-include(":model:runtime-minestom")
+include(":runtime-minestom")
