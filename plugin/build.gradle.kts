@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    api(project(":runtime-bukkit:core"))
+    api(project(":runtime-bukkit"))
     implementation("team.unnamed:molang:0.1.0")
 
     implementation("org.jetbrains:annotations:22.0.0")

@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.model.adapt;
+package team.unnamed.hephaestus.adapt;
 
 import org.bukkit.Bukkit;
 

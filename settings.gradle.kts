@@ -6,7 +6,7 @@ include("plugin")
 //
 // Model Bukkit runtime
 //
-include(":runtime-bukkit:core")
+include(":runtime-bukkit")
 
 arrayOf(
         "v1_14_R1",
