@@ -131,9 +131,7 @@ public class MinestomModelView
     private void summonBone(double yawRadians, Pos pos, ModelBone bone, Vector3Float parentOffset) {
         Instance instance = this.instance;
 
-        Vector3Float offset = bone.getOffset()
-                .multiply(1, 1, -1)
-                .add(parentOffset);
+        Vector3Float offset = bone.getOffset().add(parentOffset);
 
         Vector3Float relativePos = Vectors.rotateAroundY(offset, yawRadians);
 
@@ -174,9 +172,7 @@ public class MinestomModelView
             ModelBone bone,
             Vector3Float parentOffset
     ) {
-        Vector3Float offset = bone.getOffset()
-                .multiply(1, 1, -1)
-                .add(parentOffset);
+        Vector3Float offset = bone.getOffset().add(parentOffset);
         Vector3Float relativePosition = Vectors.rotateAroundY(offset, yawRadians);
         Entity entity = bones.get(bone.getName());
 

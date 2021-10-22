@@ -65,7 +65,7 @@ public class AnimationQueue {
 
         Vector3Double frameRotation = Vectors.toRadians(frame.getRotation());
 
-        Vector3Float defaultPosition = bone.getOffset().multiply(1, 1, -1);
+        Vector3Float defaultPosition = bone.getOffset();
         Vector3Double defaultRotation = Vectors.toRadians(bone.getRotation());
 
         Vector3Float localPosition = framePosition.add(defaultPosition);

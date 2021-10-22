@@ -30,7 +30,7 @@ public class ModelViewController_v1_14_R1
         World world = location.getWorld();
 
         // location computing
-        Vector3Float position = bone.getOffset().multiply(1, 1, -1).add(offset);
+        Vector3Float position = bone.getOffset().add(offset);
         Vector3Float relativePos = Vectors.rotateAroundY(
                 position,
                 yawRadians
@@ -109,7 +109,7 @@ public class ModelViewController_v1_14_R1
     ) {
 
         // location computing
-        Vector3Float position = bone.getOffset().multiply(1, 1, -1).add(offset);
+        Vector3Float position = bone.getOffset().add(offset);
         Vector3Float relativePos = Vectors.rotateAroundY(
                 position,
                 yawRadians
