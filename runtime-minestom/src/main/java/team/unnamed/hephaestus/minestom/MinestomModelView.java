@@ -4,6 +4,7 @@ import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.entity.Player;
@@ -27,7 +28,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class MinestomModelView
-        extends LivingEntity
+        extends EntityCreature
         implements ModelView {
 
     private final Map<String, LivingEntity> bones = new HashMap<>();
