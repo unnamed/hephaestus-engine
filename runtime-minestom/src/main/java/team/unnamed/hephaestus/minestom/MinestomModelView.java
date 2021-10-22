@@ -31,6 +31,8 @@ public class MinestomModelView
         extends EntityCreature
         implements ModelView {
 
+    private static final float ARMORSTAND_HEIGHT = 0.726F;
+
     private final Map<String, LivingEntity> bones = new HashMap<>();
 
     private final Model model;
@@ -81,7 +83,7 @@ public class MinestomModelView
     public void moveBone(String name, Vector3Float position) {
         bones.get(name).teleport(getPosition().add(
                 position.getX(),
-                position.getY(),
+                position.getY() - ARMORSTAND_HEIGHT,
                 position.getZ()
         ));
     }
@@ -210,9 +212,10 @@ public class MinestomModelView
         return super.setInstance(instance, spawnPosition)
                 .thenAccept(ignored -> {
                     // create the bone entities
-                    double yawRadians = Math.toRadians(spawnPosition.yaw());
+                    Pos basePos = spawnPosition.sub(0, ARMORSTAND_HEIGHT, 0);
+                    double yawRadians = Math.toRadians(basePos.yaw());
                     for (ModelBone bone : model.getBones()) {
-                        summonBone(yawRadians, spawnPosition, bone, Vector3Float.ZERO);
+                        summonBone(yawRadians, basePos, bone, Vector3Float.ZERO);
                     }
                 });
     }
@@ -221,8 +224,11 @@ public class MinestomModelView
     public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position) {
         return super.teleport(position)
                 .thenRun(() -> {
+                    Pos basePos = position.sub(0, ARMORSTAND_HEIGHT, 0);
+                    double yawRadians = Math.toRadians(basePos.yaw());
+
                     for (ModelBone bone : this.getModel().getBones()) {
-                        teleportBone(Math.toRadians(position.yaw()), position, bone, Vector3Float.ZERO);
+                        teleportBone(yawRadians, basePos, bone, Vector3Float.ZERO);
                     }
                 });
     }
