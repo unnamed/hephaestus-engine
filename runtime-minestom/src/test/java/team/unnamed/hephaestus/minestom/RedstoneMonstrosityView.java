@@ -5,10 +5,10 @@ import net.minestom.server.entity.ai.goal.RandomStrollGoal;
 
 import java.util.List;
 
-public class RedstoneMonstrosityModel
+public class RedstoneMonstrosityView
         extends MinestomModelView {
 
-    public RedstoneMonstrosityModel() {
+    public RedstoneMonstrosityView() {
         super(EntityType.SLIME, Models.REDSTONE_MONSTROSITY);
         addAIGroup(
                 List.of(

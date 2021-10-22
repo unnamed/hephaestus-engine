@@ -101,7 +101,7 @@ public class Server {
                 }
 
                 case "spawn" -> {
-                    MinestomModelView view = new RedstoneMonstrosityModel();
+                    MinestomModelView view = new RedstoneMonstrosityView();
 
                     view.setInstance(
                             Objects.requireNonNull(player.getInstance(), "player instance"),
