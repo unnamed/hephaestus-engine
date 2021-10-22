@@ -201,6 +201,10 @@ public class BBModelReader implements ModelReader {
                                 " Check animation " + name + " and bone " + boneName);
                     }
 
+                    if (channel.equals("position")) {
+                        value = value.divide(16, 16, -16);
+                    }
+
                     frames.put(time, KeyFrameList.Channel.valueOf(channel.toUpperCase()), value);
                 }
 

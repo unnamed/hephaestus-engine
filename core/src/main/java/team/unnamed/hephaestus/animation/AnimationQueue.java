@@ -59,9 +59,7 @@ public class AnimationQueue {
     ) {
 
         KeyFrame frame = next(bone.getName());
-        Vector3Float framePosition = frame.getPosition()
-                .divide(16)
-                .multiply(1, 1, -1);
+        Vector3Float framePosition = frame.getPosition();
 
         Vector3Double frameRotation = Vectors.toRadians(frame.getRotation());
 
