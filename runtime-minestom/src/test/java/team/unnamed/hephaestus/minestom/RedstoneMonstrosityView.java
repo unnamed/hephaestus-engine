@@ -1,8 +1,9 @@
 package team.unnamed.hephaestus.minestom;
 
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.ai.goal.RandomStrollGoal;
+import net.minestom.server.entity.ai.goal.FollowTargetGoal;
 
+import java.time.Duration;
 import java.util.List;
 
 public class RedstoneMonstrosityView
@@ -12,7 +13,7 @@ public class RedstoneMonstrosityView
         super(EntityType.SLIME, Models.REDSTONE_MONSTROSITY);
         addAIGroup(
                 List.of(
-                        new RandomStrollGoal(this, 5)
+                        new FollowTargetGoal(this, Duration.ofSeconds(2))
                 ),
                 List.of()
         );

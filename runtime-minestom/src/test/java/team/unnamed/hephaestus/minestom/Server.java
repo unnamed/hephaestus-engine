@@ -102,10 +102,11 @@ public class Server {
 
                 case "spawn" -> {
                     MinestomModelView view = new RedstoneMonstrosityView();
+                    view.setTarget(player);
 
                     view.setInstance(
                             Objects.requireNonNull(player.getInstance(), "player instance"),
-                            player.getPosition().sub(0, 0.725, 0)
+                            player.getPosition()
                     );
                     views.add(view);
                 }
