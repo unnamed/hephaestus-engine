@@ -2,7 +2,6 @@ package team.unnamed.hephaestus.minestom;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerChatEvent;
@@ -14,20 +13,15 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.batch.ChunkBatch;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.resourcepack.ResourcePack;
-import net.minestom.server.utils.time.TimeUnit;
 import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.io.TreeOutputStream;
-import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.reader.BBModelReader;
 import team.unnamed.hephaestus.resourcepack.ModelResourcePackWriter;
 import team.unnamed.hephaestus.resourcepack.ResourcePackInfo;
 import team.unnamed.hephaestus.resourcepack.ResourcePackWriter;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -35,7 +29,6 @@ import java.net.URL;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,15 +39,7 @@ import java.util.zip.ZipOutputStream;
 
 public class Server {
 
-    public static void main(String[] args) throws Exception {
-
-        // read model
-        Model model;
-        try (InputStream input = Server.class.getClassLoader()
-                .getResourceAsStream("redstone_monstrosity.bbmodel")) {
-            Objects.requireNonNull(input, "redstone monstrosity");
-            model = new BBModelReader().read(new InputStreamReader(input));
-        }
+    public static void main(String[] args) {
 
         MinecraftServer server = MinecraftServer.init();
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
@@ -104,7 +89,7 @@ public class Server {
                                         .build()
                                         .toWriter(),
                                 new ModelResourcePackWriter(Collections.singletonList(
-                                        model.getAsset()
+                                        Models.REDSTONE_MONSTROSITY.getAsset()
                                 ), "hephaestus")
                         )));
                     } catch (IOException e) {
@@ -116,19 +101,12 @@ public class Server {
                 }
 
                 case "spawn" -> {
-                    MinestomModelView view = new MinestomModelView(
-                            EntityType.HORSE,
-                            model
-                    );
+                    MinestomModelView view = new RedstoneMonstrosityModel();
 
                     view.setInstance(
                             Objects.requireNonNull(player.getInstance(), "player instance"),
                             player.getPosition().sub(0, 0.725, 0)
-                    ).thenAccept(ignored ->
-                        MinecraftServer.getSchedulerManager()
-                                .buildTask(view::tickAnimations)
-                                .repeat(Duration.of(1, TimeUnit.SERVER_TICK))
-                                .schedule());
+                    );
                     views.add(view);
                 }
             }

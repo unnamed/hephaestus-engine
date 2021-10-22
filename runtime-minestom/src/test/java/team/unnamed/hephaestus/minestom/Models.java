@@ -1,6 +1,5 @@
 package team.unnamed.hephaestus.minestom;
 
-import net.minestom.server.network.socket.Server;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.reader.BBModelReader;
 
