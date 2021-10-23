@@ -108,7 +108,8 @@
                                                 for (const key in element.faces) {
                                                     const face = element.faces[key];
                                                     const copy = { uv: face.uv };
-                                                    if (face.texture) copy.texture = face.texture;
+                                                    if (face.texture) copy.texture = Texture.all
+                                                            .findIndex(t => t.uuid === face.texture);
                                                     if (face.tint !== -1) copy.tint = face.tint;
                                                     faces[key] = copy;
                                                 }
