@@ -69,9 +69,32 @@ public interface ModelView {
      * instance.
      *
      * @param name The animation name
+     * @param transitionTicks the amount of ticks for the transition between last animation and the current one
      * @see Model#getAnimations()
      */
-    void playAnimation(String name);
+    void playAnimation(String name, int transitionTicks);
+
+    /**
+     * Finds and plays the animation with the
+     * specified {@code name} for this model view
+     * instance.
+     *
+     * @param name The animation name
+     * @see Model#getAnimations()
+     */
+    default void playAnimation(String name) {
+        playAnimation(name, 0);
+    }
+
+    /**
+     * Plays the given {@code animation} for
+     * this model view instance
+     *
+     * @param animation The animation to play
+     * @param transitionTicks the amount of ticks for the transition between last animation and the current one
+     * @see Model#getAnimations()
+     */
+    void playAnimation(ModelAnimation animation, int transitionTicks);
 
     /**
      * Plays the given {@code animation} for
@@ -80,7 +103,9 @@ public interface ModelView {
      * @param animation The animation to play
      * @see Model#getAnimations()
      */
-    void playAnimation(ModelAnimation animation);
+    default void playAnimation(ModelAnimation animation) {
+        playAnimation(animation, 0);
+    }
 
     /**
      * Stops playing the animation with the
