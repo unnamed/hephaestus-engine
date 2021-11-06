@@ -48,7 +48,8 @@ public class BBModelReader implements ModelReader {
      * versions
      */
     private static final List<String> SUPPORTED_FORMATS = Arrays.asList(
-            "3.6"
+            "3.6",
+            "4.0"
     );
 
     private final ModelDataCursor cursor;
