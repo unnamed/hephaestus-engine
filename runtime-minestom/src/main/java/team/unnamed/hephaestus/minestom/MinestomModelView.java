@@ -7,7 +7,6 @@ import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
-import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
@@ -32,6 +31,12 @@ public class MinestomModelView
         implements ModelView {
 
     private static final float ARMORSTAND_HEIGHT = 0.726F;
+
+    private static ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
+            .meta(new LeatherArmorMeta.Builder()
+                    .color(new Color(0xFFFFFF))
+                    .build())
+            .build();
 
     private final Map<String, LivingEntity> bones = new ConcurrentHashMap<>();
 
@@ -61,8 +66,7 @@ public class MinestomModelView
         Color color = new Color(r, g, b);
         for (LivingEntity entity : bones.values()) {
             entity.setHelmet(entity.getHelmet().withMeta(
-                    LeatherArmorMeta.class,
-                    meta -> meta.color(color)
+                    (LeatherArmorMeta.Builder meta) -> meta.color(color)
             ));
         }
     }
@@ -74,8 +78,7 @@ public class MinestomModelView
         LivingEntity entity = bones.get(name);
         Color color = new Color(r, g, b);
         entity.setHelmet(entity.getHelmet().withMeta(
-                LeatherArmorMeta.class,
-                meta -> meta.color(color)
+                (LeatherArmorMeta.Builder meta) -> meta.color(color)
         ));
     }
 
@@ -146,14 +149,8 @@ public class MinestomModelView
         meta.setSmall(true);
         meta.setInvisible(true);
 
-        ItemStack helmet = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
-                .meta(new LeatherArmorMeta.Builder()
-                        .color(new Color(0xFFFFFF))
-                        .customModelData(bone.getCustomModelData())
-                        .build())
-                .build();
-
-        entity.setHelmet(helmet);
+        entity.setHelmet(BASE_HELMET.withMeta(itemMeta ->
+                itemMeta.customModelData(bone.getCustomModelData())));
 
         // todo: maybe we can just show the bones using addViewer
         entity.setInstance(instance, pos.add(
@@ -189,18 +186,6 @@ public class MinestomModelView
         for (ModelBone child : bone.getBones()) {
             this.teleportBone(yawRadians, pos, child, offset);
         }
-    }
-
-    @Override
-    public void updateNewViewer(@NotNull Player player) {
-        super.updateNewViewer(player);
-        bones.forEach((name, entity) -> entity.addViewer(player));
-    }
-
-    @Override
-    public void updateOldViewer(@NotNull Player player) {
-        super.updateOldViewer(player);
-        bones.forEach((name, entity) -> entity.removeViewer(player));
     }
 
     @Override
