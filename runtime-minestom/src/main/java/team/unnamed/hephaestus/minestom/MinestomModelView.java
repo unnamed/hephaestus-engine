@@ -18,14 +18,14 @@ import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelBone;
 import team.unnamed.hephaestus.animation.AnimationQueue;
 import team.unnamed.hephaestus.animation.ModelAnimation;
-import team.unnamed.hephaestus.view.ModelView;
 import team.unnamed.hephaestus.struct.Vector3Double;
 import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
+import team.unnamed.hephaestus.view.ModelView;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MinestomModelView
         extends EntityCreature
@@ -33,7 +33,7 @@ public class MinestomModelView
 
     private static final float ARMORSTAND_HEIGHT = 0.726F;
 
-    private final Map<String, LivingEntity> bones = new HashMap<>();
+    private final Map<String, LivingEntity> bones = new ConcurrentHashMap<>();
 
     private final Model model;
     private final AnimationQueue animationQueue;
@@ -160,7 +160,7 @@ public class MinestomModelView
                 relativePos.getX(),
                 relativePos.getY(),
                 relativePos.getZ()
-        ));
+        )).join();
 
         bones.put(bone.getName(), entity);
 
@@ -192,19 +192,15 @@ public class MinestomModelView
     }
 
     @Override
-    protected boolean addViewer0(@NotNull Player player) {
-        if (super.addViewer0(player)) {
-            bones.forEach((name, entity) -> entity.addViewer(player));
-        }
-        return false;
+    public void updateNewViewer(@NotNull Player player) {
+        super.updateNewViewer(player);
+        bones.forEach((name, entity) -> entity.addViewer(player));
     }
 
     @Override
-    protected boolean removeViewer0(@NotNull Player player) {
-        if (super.removeViewer0(player)) {
-            bones.forEach((name, entity) -> entity.removeViewer(player));
-        }
-        return false;
+    public void updateOldViewer(@NotNull Player player) {
+        super.updateOldViewer(player);
+        bones.forEach((name, entity) -> entity.removeViewer(player));
     }
 
     @Override
