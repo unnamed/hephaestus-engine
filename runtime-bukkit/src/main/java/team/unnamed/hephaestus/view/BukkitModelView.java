@@ -92,14 +92,14 @@ public class BukkitModelView implements ModelView {
 
     //#region Animation Handling methods
     @Override
-    public void playAnimation(String name) {
+    public void playAnimation(String name, int transitionTicks) {
         ModelAnimation animation = model.getAnimations().get(name);
-        animationQueue.pushAnimation(animation);
+        animationQueue.pushAnimation(animation, transitionTicks);
     }
 
     @Override
-    public void playAnimation(ModelAnimation animation) {
-        animationQueue.pushAnimation(animation);
+    public void playAnimation(ModelAnimation animation, int transitionTicks) {
+        animationQueue.pushAnimation(animation, transitionTicks);
     }
 
     @Override

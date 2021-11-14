@@ -104,14 +104,14 @@ public class MinestomModelView
 
     //#region Animation Handling methods
     @Override
-    public void playAnimation(String animationName) {
+    public void playAnimation(String animationName, int transitionTicks) {
         ModelAnimation animation = model.getAnimations().get(animationName);
-        animationQueue.pushAnimation(animation);
+        animationQueue.pushAnimation(animation, transitionTicks);
     }
 
     @Override
-    public void playAnimation(ModelAnimation animation) {
-        animationQueue.pushAnimation(animation);
+    public void playAnimation(ModelAnimation animation, int transitionTicks) {
+        animationQueue.pushAnimation(animation, transitionTicks);
     }
 
     @Override

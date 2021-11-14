@@ -33,8 +33,47 @@ public class AnimationQueue {
                 iterators.put(name, list.iterator()));
     }
 
-    public synchronized void pushAnimation(ModelAnimation animation) {
+    public synchronized void pushAnimation(ModelAnimation animation, int transitionTicks) {
+        if (transitionTicks <= 0) {
+            animations.addFirst(animation);
+            nextAnimation();
+            return;
+        }
+
+        Map<String, KeyFrameList> framesByBone = new HashMap<>();
+        Map<String, Map<Integer, Integer>> modelData = new HashMap<>();
+
+        lastFrames.forEach((boneName, frame) -> {
+            KeyFrameList keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicKeyFrameList());
+            keyFrames.put(0, KeyFrameList.Channel.POSITION, frame.getPosition());
+            keyFrames.put(0, KeyFrameList.Channel.ROTATION, frame.getRotation());
+            keyFrames.put(0, KeyFrameList.Channel.SCALE, frame.getScale());
+
+            framesByBone.put(boneName, keyFrames);
+        });
+
+        animation.getAnimationsByBoneName().forEach((boneName, frames) -> {
+            Iterator<KeyFrame> iterator = frames.iterator();
+            if (iterator.hasNext()) {
+                KeyFrame firstFrame = frames.iterator().next();
+
+                KeyFrameList keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicKeyFrameList());
+                keyFrames.put(transitionTicks, KeyFrameList.Channel.POSITION, firstFrame.getPosition());
+                keyFrames.put(transitionTicks, KeyFrameList.Channel.ROTATION, firstFrame.getRotation());
+                keyFrames.put(transitionTicks, KeyFrameList.Channel.SCALE, firstFrame.getScale());
+            }
+        });
+
+        animations.addFirst(new ModelAnimation(
+                "generated-transition",
+                false,
+                transitionTicks,
+                framesByBone,
+                modelData
+        ));
+
         animations.addFirst(animation);
+        nextAnimation();
     }
 
     public synchronized void removeAllAnimations() {
@@ -117,7 +156,7 @@ public class AnimationQueue {
         if (animation == null) {
             nextAnimation();
             if (animation == null) {
-                return KeyFrame.INITIAL;
+                return lastFrames.getOrDefault(boneName, KeyFrame.INITIAL);
             }
         }
         Iterator<KeyFrame> iterator = iterators.get(boneName);
