@@ -135,6 +135,11 @@ public class BBModelReader implements ModelReader {
 
             String base64Source = source.substring(BASE_64_PREFIX.length());
 
+            // remove PNG extension
+            if (name.endsWith(".png")) {
+                name = name.substring(0, name.length() - ".png".length());
+            }
+
             // map to index
             textureMappings.put(index, name);
             textures.put(name, new Streamable() {
