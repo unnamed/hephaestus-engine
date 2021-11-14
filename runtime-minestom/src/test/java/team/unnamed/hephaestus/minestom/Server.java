@@ -30,11 +30,11 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipOutputStream;
 
 public class Server {
@@ -65,7 +65,7 @@ public class Server {
             player.setRespawnPoint(new Pos(0, 72, 0));
         });
 
-        Collection<MinestomModelView> views = new HashSet<>();
+        Set<MinestomModelView> views = ConcurrentHashMap.newKeySet();
 
         eventHandler.addListener(PlayerChatEvent.class, event -> {
             Player player = event.getPlayer();
