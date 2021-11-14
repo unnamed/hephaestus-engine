@@ -144,6 +144,7 @@ public class MinestomModelView
         meta.setSilent(true);
         meta.setHasNoGravity(true);
         meta.setSmall(true);
+        meta.setMarker(true);
         meta.setInvisible(true);
 
         ItemStack helmet = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
