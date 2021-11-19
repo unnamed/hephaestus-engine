@@ -5,11 +5,6 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<JavaCompile> {
-    sourceCompatibility = "17"
-    targetCompatibility = "17"
-}
-
 dependencies {
     val minestom = "com.github.Minestom:Minestom:549a9a9b52"
 
