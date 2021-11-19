@@ -32,7 +32,7 @@ public class MinestomModelView
 
     private static final float ARMORSTAND_HEIGHT = 0.726F;
 
-    private static ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
+    private static final ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
             .meta(new LeatherArmorMeta.Builder()
                     .color(new Color(0xFFFFFF))
                     .build())
