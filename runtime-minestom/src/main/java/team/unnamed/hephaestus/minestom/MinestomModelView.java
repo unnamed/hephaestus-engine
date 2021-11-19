@@ -147,7 +147,6 @@ public class MinestomModelView
         meta.setSilent(true);
         meta.setHasNoGravity(true);
         meta.setSmall(true);
-        meta.setMarker(true);
         meta.setInvisible(true);
 
         entity.setHelmet(BASE_HELMET.withMeta(itemMeta ->
