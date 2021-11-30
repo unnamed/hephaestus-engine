@@ -13,8 +13,8 @@ import team.unnamed.hephaestus.struct.Vector3Float;
 
 public class ModelGeometryTransformer {
 
-    public static final float DISPLAY_SCALE = 3.7333333F;
-    public static final float DISPLAY_TRANSLATION_Y = -6.4f;
+    public static final float DISPLAY_SCALE = 2.5F;
+    public static final float DISPLAY_TRANSLATION_Y = -12.8F;
 
     private final String namespace;
 

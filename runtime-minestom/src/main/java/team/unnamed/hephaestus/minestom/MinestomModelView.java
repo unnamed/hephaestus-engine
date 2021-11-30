@@ -30,7 +30,7 @@ public class MinestomModelView
         extends EntityCreature
         implements ModelView {
 
-    private static final float ARMORSTAND_HEIGHT = 0.726F;
+    private static final float ARMORSTAND_HEIGHT = 1.3F;
 
     private static final ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
             .meta(new LeatherArmorMeta.Builder()
@@ -146,7 +146,7 @@ public class MinestomModelView
 
         meta.setSilent(true);
         meta.setHasNoGravity(true);
-        meta.setSmall(true);
+        // meta.setSmall(true);
         meta.setInvisible(true);
 
         entity.setHelmet(BASE_HELMET.withMeta(itemMeta ->

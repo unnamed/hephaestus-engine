@@ -2,9 +2,10 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "maven-publish")
 
-    tasks.withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+    configure<JavaPluginExtension> {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
     }
 
     repositories {
