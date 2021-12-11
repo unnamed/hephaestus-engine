@@ -11,7 +11,12 @@ import team.unnamed.hephaestus.bound.FacedTextureBound;
 import team.unnamed.hephaestus.bound.TextureFace;
 import team.unnamed.hephaestus.struct.Vector3Float;
 
+import java.util.List;
+
 public class ModelGeometryTransformer {
+
+    private static final float BLOCK_SIZE = 16F;
+    private static final float HALF_BLOCK_SIZE = 8F;
 
     public static final float DISPLAY_SCALE = 3.7333333F;
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
@@ -38,18 +43,27 @@ public class ModelGeometryTransformer {
         return array;
     }
 
+    /**
+     * Converts a {@link ModelBoneAsset} (a representation of a model
+     * bone) to a resource-pack ready {@link JsonObject} JSON object
+     *
+     * @param model The model holding the given bone
+     * @param bone The bone to be converted
+     * @return The JSON representation of the bone
+     */
     public JsonObject toJavaJson(ModelAsset model, ModelBoneAsset bone) {
 
         JsonArray elements = new JsonArray();
         Vector3Float bonePivot = bone.getPivot();
-        float deltaX = bonePivot.getX() - 8F;
-        float deltaY = bonePivot.getY() - 8F;
-        float deltaZ = bonePivot.getZ() - 8F;
+        float deltaX = bonePivot.getX() - HALF_BLOCK_SIZE;
+        float deltaY = bonePivot.getY() - HALF_BLOCK_SIZE;
+        float deltaZ = bonePivot.getZ() - HALF_BLOCK_SIZE;
 
-        int index = 0;
+        List<ModelCube> cubes = bone.getCubes();
 
-        for (ModelCube cube : bone.getCubes()) {
+        for (int i = 0; i < cubes.size(); i++) {
 
+            ModelCube cube = cubes.get(i);
             Vector3Float origin = cube.getOrigin();
             Vector3Float cubePivot = cube.getPivot();
             Vector3Float size = cube.getSize();
@@ -75,12 +89,12 @@ public class ModelGeometryTransformer {
             }
 
             if (cubePivot.getX() == 0 && cubePivot.getY() == 0 && cubePivot.getZ() == 0) {
-                rotationOrigin = new float[] { 8, 8, 8 };
+                rotationOrigin = new float[] { HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, HALF_BLOCK_SIZE };
             } else {
                 rotationOrigin = new float[]{
-                        shrink(-cubePivot.getX() + bonePivot.getX() + 8),
-                        shrink(cubePivot.getY() - bonePivot.getY() + 8),
-                        shrink(cubePivot.getZ() - bonePivot.getZ() + 8)
+                        shrink(-cubePivot.getX() + bonePivot.getX() + HALF_BLOCK_SIZE),
+                        shrink(cubePivot.getY() - bonePivot.getY() + HALF_BLOCK_SIZE),
+                        shrink(cubePivot.getZ() - bonePivot.getZ() + HALF_BLOCK_SIZE)
                 };
             }
 
@@ -92,8 +106,8 @@ public class ModelGeometryTransformer {
             JsonObject faces = new JsonObject();
             FacedTextureBound[] bounds = cube.getTextureBounds();
 
-            float widthRatio = 16.0F / model.getTextureWidth();
-            float heightRatio = 16.0F / model.getTextureHeight();
+            float widthRatio = BLOCK_SIZE / model.getTextureWidth();
+            float heightRatio = BLOCK_SIZE / model.getTextureHeight();
 
             for (TextureFace face : TextureFace.values()) {
                 FacedTextureBound bound = bounds[face.ordinal()];
@@ -120,13 +134,13 @@ public class ModelGeometryTransformer {
             }
 
             float[] from = new float[] {
-                    16F - origin.getX() + deltaX - size.getX(),
+                    BLOCK_SIZE - origin.getX() + deltaX - size.getX(),
                     origin.getY() - deltaY,
                     origin.getZ() - deltaZ
             };
 
             JsonObject cubeJson = new JsonObject();
-            cubeJson.addProperty("name", bone.getName() + "-cube-" + (index++));
+            cubeJson.addProperty("name", bone.getName() + "-c-" + i);
             cubeJson.add("from", toJsonArray(
                     shrink(from[0]),
                     shrink(from[1]),
