@@ -202,9 +202,9 @@ public class ModelGeometryTransformer {
 
         if (offset[0] != 0F || offset[1] != 0F || offset[2] != 0F) {
 
-            translation[0] = translation[0] - offset[0] * DISPLAY_SCALE;
-            translation[1] = translation[1] - offset[1] * DISPLAY_SCALE;
-            translation[2] = translation[2] - offset[2] * DISPLAY_SCALE;
+            translation[0] -= offset[0] * DISPLAY_SCALE;
+            translation[1] -= offset[1] * DISPLAY_SCALE;
+            translation[2] -= offset[2] * DISPLAY_SCALE;
 
             if (
                     Math.abs(translation[0]) > 80

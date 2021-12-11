@@ -137,14 +137,6 @@ public class Quaternion {
                 .toEuler();
     }
 
-    public static Vector3Double lerp(Vector3Double a, Vector3Double b, double t) {
-        return new Vector3Double(
-                (b.getX() - a.getX()) * t + a.getX(),
-                (b.getY() - a.getY()) * t + a.getY(),
-                (b.getZ() - a.getZ()) * t + a.getZ()
-        );
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
