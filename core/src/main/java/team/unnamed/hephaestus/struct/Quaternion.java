@@ -130,13 +130,6 @@ public class Quaternion {
         );
     }
 
-    // TODO: I think these methods should not be in this class!
-    public static Vector3Double combine(Vector3Double origin, Vector3Double delta) {
-        return fromEuler(origin)
-                .multiply(fromEuler(delta))
-                .toEuler();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

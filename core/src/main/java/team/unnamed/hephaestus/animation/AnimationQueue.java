@@ -119,7 +119,9 @@ public class AnimationQueue {
                     Vectors.rotate(localPosition, parentRotation),
                     yaw
             ).add(parentPosition);
-            globalRotation = Quaternion.combine(localRotation, parentRotation);
+            globalRotation = Quaternion.fromEuler(localRotation)
+                    .multiply(Quaternion.fromEuler(parentRotation))
+                    .toEuler();
         }
 
         view.moveBone(bone.getName(), globalPosition);
