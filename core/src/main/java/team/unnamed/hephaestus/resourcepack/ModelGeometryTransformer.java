@@ -15,11 +15,24 @@ import java.util.List;
 
 public class ModelGeometryTransformer {
 
+    /**
+     * The size of a block for models, this is the number that
+     * relates Minecraft blocks to our models
+     */
     private static final float BLOCK_SIZE = 16F;
     private static final float HALF_BLOCK_SIZE = BLOCK_SIZE / 2F;
 
-    private static final float LARGE_BLOCK_SIZE = BLOCK_SIZE + 9.6F;
-    private static final float SMALL_BLOCK_SIZE = LARGE_BLOCK_SIZE + 10.97F;
+    /**
+     * The size of a block when using an item model in a
+     * normal-sized armor stand entity
+     */
+    private static final float LARGE_BLOCK_SIZE = 25.6F; // 1.6 times block size
+
+    /**
+     * The size of a block when using an item model in a
+     * small armor stand entity
+     */
+    private static final float SMALL_BLOCK_SIZE = 36.57F; // aprox. 2.3 times block size
 
     private static final float SMALL_RATIO = 0.6F;
 
