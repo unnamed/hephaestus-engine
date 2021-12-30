@@ -19,6 +19,7 @@ public class ModelBone {
     private final Map<String, ModelBone> bones;
     private final Vector3Float offset;
 
+    private final boolean small;
     private final int customModelData;
 
     public ModelBone(
@@ -27,6 +28,7 @@ public class ModelBone {
             Vector3Float rotation,
             Map<String, ModelBone> bones,
             Vector3Float offset,
+            boolean small,
             int customModelData
     ) {
         this.parent = parent;
@@ -34,6 +36,7 @@ public class ModelBone {
         this.rotation = rotation;
         this.bones = bones;
         this.offset = offset;
+        this.small = small;
         this.customModelData = customModelData;
     }
 
@@ -56,6 +59,16 @@ public class ModelBone {
 
     public Vector3Float getRotation() {
         return rotation;
+    }
+
+    /**
+     * Determines whether to use small armor stands
+     * for this bone
+     *
+     * @return True to use small armor stands
+     */
+    public boolean isSmall() {
+        return small;
     }
 
     public Collection<ModelBone> getBones() {
