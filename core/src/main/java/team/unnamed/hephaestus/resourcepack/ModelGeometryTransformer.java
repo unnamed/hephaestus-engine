@@ -19,7 +19,7 @@ public class ModelGeometryTransformer {
     private static final float HALF_BLOCK_SIZE = BLOCK_SIZE / 2F;
 
     private static final float LARGE_BLOCK_SIZE = BLOCK_SIZE + 9.6F;
-    private static final float SMALL_BLOCK_SIZE = LARGE_BLOCK_SIZE + 11F;
+    private static final float SMALL_BLOCK_SIZE = LARGE_BLOCK_SIZE + 10.97F;
 
     private static final float SMALL_RATIO = 0.6F;
 
