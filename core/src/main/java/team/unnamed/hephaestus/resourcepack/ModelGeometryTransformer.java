@@ -16,7 +16,12 @@ import java.util.List;
 public class ModelGeometryTransformer {
 
     private static final float BLOCK_SIZE = 16F;
-    private static final float HALF_BLOCK_SIZE = 8F;
+    private static final float HALF_BLOCK_SIZE = BLOCK_SIZE / 2F;
+
+    private static final float LARGE_BLOCK_SIZE = BLOCK_SIZE + 9.6F;
+    private static final float SMALL_BLOCK_SIZE = LARGE_BLOCK_SIZE + 11F;
+
+    private static final float SMALL_RATIO = 0.6F;
 
     public static final float DISPLAY_SCALE = 3.7333333F;
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
@@ -254,7 +259,7 @@ public class ModelGeometryTransformer {
     }
 
     private static float shrink(float p) {
-        return 3.2F + 0.6F * p;
+        return 3.2F + SMALL_RATIO * p;
     }
 
 }
