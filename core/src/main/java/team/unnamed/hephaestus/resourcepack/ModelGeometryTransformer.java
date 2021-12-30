@@ -100,6 +100,8 @@ public class ModelGeometryTransformer {
                 case "z":
                     angle = cube.getRotation().getZ();
                     break;
+                default:
+                    throw new IllegalArgumentException("Invalid axis: " + axis);
             }
 
             if (angle % 22.5D != 0.0D || angle > 45.0F || angle < -45.0F) {
