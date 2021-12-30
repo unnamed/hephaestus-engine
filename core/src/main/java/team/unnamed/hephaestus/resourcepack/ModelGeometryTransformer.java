@@ -47,30 +47,6 @@ public class ModelGeometryTransformer {
         this.namespace = namespace;
     }
 
-    private JsonArray toJsonArray(float... vector) {
-        JsonArray array = new JsonArray();
-        for (float element : vector) {
-            array.add(element);
-        }
-        return array;
-    }
-
-    private JsonArray toJsonArray(Vector3Float vector) {
-        JsonArray array = new JsonArray();
-        array.add(vector.getX());
-        array.add(vector.getY());
-        array.add(vector.getZ());
-        return array;
-    }
-
-    private JsonArray toJsonArray(int... vector) {
-        JsonArray array = new JsonArray();
-        for (int element : vector) {
-            array.add(element);
-        }
-        return array;
-    }
-
     /**
      * Converts a {@link ModelBoneAsset} (a representation of a model
      * bone) to a resource-pack ready {@link JsonObject} JSON object
@@ -239,7 +215,7 @@ public class ModelGeometryTransformer {
         return modelJson;
     }
 
-    private void addOffset(JsonArray array, float[] offset) {
+    private static void addOffset(JsonArray array, float[] offset) {
         float x = array.get(0).getAsFloat() + offset[0];
         float y = array.get(1).getAsFloat() + offset[1];
         float z = array.get(2).getAsFloat() + offset[2];
@@ -257,7 +233,7 @@ public class ModelGeometryTransformer {
         }
     }
 
-    private void computeOffset(float[] offset, int i, JsonArray from) {
+    private static void computeOffset(float[] offset, int i, JsonArray from) {
         float fromValue = from.get(i).getAsFloat();
         if (fromValue + offset[i] > 32.0F) {
             offset[i] -= fromValue + offset[i] - 32.0F;
@@ -265,6 +241,30 @@ public class ModelGeometryTransformer {
         if (fromValue + offset[i] < -16.0F) {
             offset[i] -= fromValue + offset[i] + 16.0F;
         }
+    }
+
+    private static JsonArray toJsonArray(float... vector) {
+        JsonArray array = new JsonArray();
+        for (float element : vector) {
+            array.add(element);
+        }
+        return array;
+    }
+
+    private static JsonArray toJsonArray(Vector3Float vector) {
+        JsonArray array = new JsonArray();
+        array.add(vector.getX());
+        array.add(vector.getY());
+        array.add(vector.getZ());
+        return array;
+    }
+
+    private static JsonArray toJsonArray(int... vector) {
+        JsonArray array = new JsonArray();
+        for (int element : vector) {
+            array.add(element);
+        }
+        return array;
     }
 
     private static float shrink(float p) {
