@@ -162,6 +162,11 @@ public class BBModelReader implements ModelReader {
             Map<String, ModelAnimation> animations
     ) throws IOException {
 
+        if (!json.has("animations")) {
+            // Model doesn't have animations
+            return;
+        }
+
         for (JsonElement animationElement : json.get("animations").getAsJsonArray()) {
 
             JsonObject animationJson = animationElement.getAsJsonObject();
