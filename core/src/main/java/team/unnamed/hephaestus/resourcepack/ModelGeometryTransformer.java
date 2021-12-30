@@ -7,11 +7,13 @@ import com.google.gson.JsonPrimitive;
 import team.unnamed.hephaestus.ModelAsset;
 import team.unnamed.hephaestus.ModelBoneAsset;
 import team.unnamed.hephaestus.ModelCube;
+import team.unnamed.hephaestus.ModelCubeRotation;
 import team.unnamed.hephaestus.bound.FacedTextureBound;
 import team.unnamed.hephaestus.bound.TextureFace;
 import team.unnamed.hephaestus.struct.Vector3Float;
 
 import java.util.List;
+import java.util.Locale;
 
 public class ModelGeometryTransformer {
 
@@ -53,6 +55,14 @@ public class ModelGeometryTransformer {
         return array;
     }
 
+    private JsonArray toJsonArray(Vector3Float vector) {
+        JsonArray array = new JsonArray();
+        array.add(vector.getX());
+        array.add(vector.getY());
+        array.add(vector.getZ());
+        return array;
+    }
+
     private JsonArray toJsonArray(int... vector) {
         JsonArray array = new JsonArray();
         for (int element : vector) {
@@ -83,45 +93,29 @@ public class ModelGeometryTransformer {
 
             ModelCube cube = cubes.get(i);
             Vector3Float origin = cube.getOrigin();
-            Vector3Float cubePivot = cube.getPivot();
             Vector3Float size = cube.getSize();
+            ModelCubeRotation rotation = cube.getRotation();
+            Vector3Float rotationOrigin = rotation.getOrigin();
 
-            String axis = cube.getRotationAxis();
-
-            float[] rotationOrigin;
-            float angle = 0;
-            switch (axis) {
-                case "x":
-                    angle = -cube.getRotation().getX();
-                    break;
-                case "y":
-                    angle = -cube.getRotation().getY();
-                    break;
-                case "z":
-                    angle = cube.getRotation().getZ();
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid axis: " + axis);
-            }
-
-            if (angle % 22.5D != 0.0D || angle > 45.0F || angle < -45.0F) {
-                throw new IllegalArgumentException("Angle has to be 45 through -45 degrees in 22.5 degree increments");
-            }
-
-            if (cubePivot.getX() == 0 && cubePivot.getY() == 0 && cubePivot.getZ() == 0) {
-                rotationOrigin = new float[] { HALF_BLOCK_SIZE, HALF_BLOCK_SIZE, HALF_BLOCK_SIZE };
+            if (rotationOrigin.equals(Vector3Float.ZERO)) {
+                // rotate at the center
+                rotationOrigin = new Vector3Float(
+                        HALF_BLOCK_SIZE,
+                        HALF_BLOCK_SIZE,
+                        HALF_BLOCK_SIZE
+                );
             } else {
-                rotationOrigin = new float[]{
-                        shrink(-cubePivot.getX() + bonePivot.getX() + HALF_BLOCK_SIZE),
-                        shrink(cubePivot.getY() - bonePivot.getY() + HALF_BLOCK_SIZE),
-                        shrink(cubePivot.getZ() - bonePivot.getZ() + HALF_BLOCK_SIZE)
-                };
+                rotationOrigin = new Vector3Float(
+                        shrink(-rotationOrigin.getX() + bonePivot.getX() + HALF_BLOCK_SIZE),
+                        shrink(rotationOrigin.getY() - bonePivot.getY() + HALF_BLOCK_SIZE),
+                        shrink(rotationOrigin.getZ() - bonePivot.getZ() + HALF_BLOCK_SIZE)
+                );
             }
 
-            JsonObject rotation = new JsonObject();
-            rotation.addProperty("axis", axis);
-            rotation.addProperty("angle", angle);
-            rotation.add("origin", toJsonArray(rotationOrigin));
+            JsonObject rotationJson = new JsonObject();
+            rotationJson.addProperty("axis", rotation.getAxis().name().toLowerCase(Locale.ROOT));
+            rotationJson.addProperty("angle", rotation.getAngle());
+            rotationJson.add("origin", toJsonArray(rotationOrigin));
 
             JsonObject faces = new JsonObject();
             FacedTextureBound[] bounds = cube.getTextureBounds();
@@ -171,7 +165,7 @@ public class ModelGeometryTransformer {
                     shrink(from[1] + size.getY()),
                     shrink(from[2] + size.getZ())
             ));
-            cubeJson.add("rotation", rotation);
+            cubeJson.add("rotation", rotationJson);
             cubeJson.add("faces", faces);
             elements.add(cubeJson);
         }

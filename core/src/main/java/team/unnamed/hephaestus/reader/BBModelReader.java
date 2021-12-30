@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
+import team.unnamed.hephaestus.ModelCubeRotation;
 import team.unnamed.hephaestus.io.Streamable;
 import team.unnamed.hephaestus.io.Streams;
 import team.unnamed.hephaestus.Model;
@@ -258,6 +259,27 @@ public class BBModelReader implements ModelReader {
                     ? Vector3Float.ZERO
                     : getVector3FloatFromJson(cubeJson.get("rotation")).multiply(-1, -1, 1);
 
+            float x = rotation.getX();
+            float y = rotation.getY();
+            float z = rotation.getZ();
+
+            // determine axis and check that it is rotated to a single direction
+            ModelCubeRotation.Axis axis;
+            float angle;
+
+            if ((((x != 0) ? 1 : 0) ^ ((y != 0) ? 1 : 0) ^ ((z != 0) ? 1 : 0)) == 0 && (x != 0 || y != 0)) {
+                throw new UnsupportedOperationException("Cube can't be rotated in multiple axis");
+            } else if (x != 0) {
+                axis = ModelCubeRotation.Axis.X;
+                angle = x;
+            } else if (y != 0) {
+                axis = ModelCubeRotation.Axis.Y;
+                angle = y;
+            } else {
+                axis = ModelCubeRotation.Axis.Z;
+                angle = z;
+            }
+
             FacedTextureBound[] textureBounds = new FacedTextureBound[TextureFace.values().length];
 
             for (Map.Entry<String, JsonElement> faceEntry
@@ -284,7 +306,12 @@ public class BBModelReader implements ModelReader {
             }
 
             String uuid = cubeJson.get("uuid").getAsString();
-            ModelCube cube = new ModelCube(origin, pivot, rotation, size, textureBounds);
+            ModelCube cube = new ModelCube(
+                    origin,
+                    new ModelCubeRotation(axis, pivot, angle),
+                    size,
+                    textureBounds
+            );
 
             cubeIdMap.put(uuid, cube);
         }
