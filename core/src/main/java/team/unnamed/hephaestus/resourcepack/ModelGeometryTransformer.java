@@ -34,7 +34,7 @@ public class ModelGeometryTransformer {
      * The size of a block when using an item model in a
      * small armor stand entity
      */
-    private static final float SMALL_BLOCK_SIZE = 36.57F; // aprox. 2.3 times block size
+    private static final float SMALL_BLOCK_SIZE = 36.57F; // about 2.3 times block size
 
     private static final float SMALL_RATIO = 0.6F;
 
