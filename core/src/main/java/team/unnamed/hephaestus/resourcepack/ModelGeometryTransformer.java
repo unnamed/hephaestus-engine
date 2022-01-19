@@ -24,22 +24,22 @@ public class ModelGeometryTransformer {
     private static final float BLOCK_SIZE = 16F;
     private static final float HALF_BLOCK_SIZE = BLOCK_SIZE / 2F;
 
-    /**
-     * The size of a block when using an item model in a
-     * normal-sized armor stand entity
-     */
-    private static final float LARGE_BLOCK_SIZE = 25.6F; // 1.6 times block size
+    private static final float SMALL_RATIO = BLOCK_SIZE / (BLOCK_SIZE + 9.6F);
+    private static final float LARGE_RATIO = BLOCK_SIZE / (BLOCK_SIZE + 20.57F);
 
-    /**
-     * The size of a block when using an item model in a
-     * small armor stand entity
-     */
-    private static final float SMALL_BLOCK_SIZE = 36.57F; // about 2.3 times block size
+    private static final float SMALL_DISPLAY_SCALE = 3.8095F;
+    private static final float LARGE_DISPLAY_SCALE = 3.7333333F;
 
-    private static final float SMALL_RATIO = 0.6F;
-
-    public static final float DISPLAY_SCALE = 3.7333333F;
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
+
+
+    // from minecraft.fandom.com/wiki/Model#Item_models:
+    // "Values must be between -16 and 32"
+    private static final float CUBE_MIN_BOUND = -16F;
+    private static final float CUBE_MAX_BOUND = 32F;
+
+    private static final float MIN_TRANSLATION = -80F;
+    private static final float MAX_TRANSLATION = 80F;
 
     private final String namespace;
 
@@ -148,7 +148,7 @@ public class ModelGeometryTransformer {
 
         JsonObject textures = new JsonObject();
         model.getTextureMapping().forEach((id, name) ->
-            textures.addProperty(id.toString(), namespace + ':' + model.getName() + '/' + name));
+                textures.addProperty(id.toString(), namespace + ':' + model.getName() + '/' + name));
 
         JsonObject modelJson = new JsonObject();
         modelJson.addProperty("file_name", bone.getName());
@@ -159,7 +159,23 @@ public class ModelGeometryTransformer {
         modelJson.add("textures", textures);
         modelJson.add("elements", elements);
 
-        float[] offset = { 0.0F, 0.0F, 0.0F };
+        float[] offset = computeOffset(elements);
+
+        JsonObject displays = new JsonObject();
+        JsonObject headDisplay = new JsonObject();
+
+        computeTranslation(headDisplay, offset);
+
+        headDisplay.add("rotation", toJsonArray(0, 0, 0));
+        headDisplay.add("scale", toJsonArray(SMALL_DISPLAY_SCALE, SMALL_DISPLAY_SCALE, SMALL_DISPLAY_SCALE));
+        displays.add("head", headDisplay);
+        modelJson.add("display", displays);
+
+        return modelJson;
+    }
+
+    private static float[] computeOffset(JsonArray elements) {
+        float[] offset = {0.0F, 0.0F, 0.0F};
         for (JsonElement cube : elements) {
             JsonObject cubeObject = cube.getAsJsonObject();
             JsonArray from = cubeObject.get("from").getAsJsonArray();
@@ -174,8 +190,8 @@ public class ModelGeometryTransformer {
             JsonArray from = cubeObject.get("from").getAsJsonArray();
             JsonArray to = cubeObject.get("to").getAsJsonArray();
 
-            addOffset(from, offset);
-            addOffset(to, offset);
+            add(from, offset);
+            add(to, offset);
 
             JsonObject rotation = cubeObject.get("rotation").getAsJsonObject();
             JsonArray origin = rotation.get("origin").getAsJsonArray();
@@ -184,38 +200,41 @@ public class ModelGeometryTransformer {
             origin.set(1, new JsonPrimitive(origin.get(1).getAsFloat() + offset[1]));
             origin.set(2, new JsonPrimitive(origin.get(2).getAsFloat() + offset[2]));
         }
-
-        JsonObject displays = new JsonObject();
-
-        JsonObject headDisplay = new JsonObject();
-        float[] translation = new float[] { 0, DISPLAY_TRANSLATION_Y, 0 };
-
-        if (offset[0] != 0F || offset[1] != 0F || offset[2] != 0F) {
-
-            translation[0] -= offset[0] * DISPLAY_SCALE;
-            translation[1] -= offset[1] * DISPLAY_SCALE;
-            translation[2] -= offset[2] * DISPLAY_SCALE;
-
-            if (
-                    Math.abs(translation[0]) > 80
-                            || Math.abs(translation[1]) > 80
-                            || Math.abs(translation[2]) > 80
-            ) {
-                throw new IllegalStateException("Translation value cannot be higher or lower than 80");
-            }
-        }
-
-        headDisplay.add("translation", toJsonArray(translation));
-        headDisplay.add("rotation", toJsonArray(0, 0, 0));
-        headDisplay.add("scale", toJsonArray(DISPLAY_SCALE, DISPLAY_SCALE, DISPLAY_SCALE));
-
-        displays.add("head", headDisplay);
-        modelJson.add("display", displays);
-
-        return modelJson;
+        return offset;
     }
 
-    private static void addOffset(JsonArray array, float[] offset) {
+    private static void computeOffset(float[] offset, int axis, JsonArray from) {
+        float off = offset[axis];
+        float value = from.get(axis).getAsFloat();
+        if (value + off > CUBE_MAX_BOUND) {
+            off -= value + off - CUBE_MAX_BOUND;
+        }
+        if (value + off < CUBE_MIN_BOUND) {
+            off -= value + off - CUBE_MIN_BOUND;
+        }
+        offset[axis] = off;
+    }
+
+    private static void computeTranslation(
+            JsonObject headDisplay,
+            float[] offset
+    ) {
+        float translationX = -offset[0] * SMALL_DISPLAY_SCALE;
+        float translationY = DISPLAY_TRANSLATION_Y - offset[1] * SMALL_DISPLAY_SCALE;
+        float translationZ = -offset[2] * SMALL_DISPLAY_SCALE;
+
+        if (
+                translationX < MIN_TRANSLATION || translationX > MAX_TRANSLATION
+                        || translationY < MIN_TRANSLATION || translationY > MAX_TRANSLATION
+                        || translationZ < MIN_TRANSLATION || translationZ > MAX_TRANSLATION
+        ) {
+            throw new IllegalStateException("Translation out of bounds");
+        }
+
+        headDisplay.add("translation", toJsonArray(translationX, translationY, translationZ));
+    }
+
+    private static void add(JsonArray array, float[] offset) {
         float x = array.get(0).getAsFloat() + offset[0];
         float y = array.get(1).getAsFloat() + offset[1];
         float z = array.get(2).getAsFloat() + offset[2];
@@ -225,21 +244,11 @@ public class ModelGeometryTransformer {
         array.set(2, new JsonPrimitive(z));
 
         if (
-                x > 32.0F || x < -16.0F
-                        || y > 32.0F || y < -16.0F
-                        || z > 32.0F || z < -16.0F
+                x > CUBE_MAX_BOUND || x < CUBE_MIN_BOUND
+                        || y > CUBE_MAX_BOUND || y < CUBE_MIN_BOUND
+                        || z > CUBE_MAX_BOUND || z < CUBE_MIN_BOUND
         ) {
-            throw new IllegalStateException("Cube is not within 48x48x48 boundary");
-        }
-    }
-
-    private static void computeOffset(float[] offset, int i, JsonArray from) {
-        float fromValue = from.get(i).getAsFloat();
-        if (fromValue + offset[i] > 32.0F) {
-            offset[i] -= fromValue + offset[i] - 32.0F;
-        }
-        if (fromValue + offset[i] < -16.0F) {
-            offset[i] -= fromValue + offset[i] + 16.0F;
+            throw new IllegalStateException("Cube out of bounds");
         }
     }
 
@@ -268,7 +277,7 @@ public class ModelGeometryTransformer {
     }
 
     private static float shrink(float p) {
-        return 3.2F + SMALL_RATIO * p;
+        return HALF_BLOCK_SIZE - (SMALL_RATIO * (HALF_BLOCK_SIZE - p));
     }
 
 }
