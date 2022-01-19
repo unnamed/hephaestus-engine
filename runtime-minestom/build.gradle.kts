@@ -8,7 +8,7 @@ repositories {
 dependencies {
     val minestom = "com.github.Minestom:Minestom:549a9a9b52"
 
-    api(project(":core"))
+    api(project(":hephaestus-api"))
     compileOnly(minestom)
 
     testImplementation(minestom)

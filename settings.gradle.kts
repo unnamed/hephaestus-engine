@@ -1,23 +1,21 @@
-rootProject.name = "hephaestus-engine"
+rootProject.name = "hephaestus-parent"
 
-include("core")
-include("plugin")
+includePrefixed("api")
+// includePrefixed("plugin")
 
-//
-// Model Bukkit runtime
-//
-include(":runtime-bukkit")
+// includePrefixed("runtime-bukkit")
+// arrayOf(
+//         "v1_14_R1",
+//         "v1_15_R1",
+//         "v1_16_R3",
+//         "v1_17_R1"
+// ).forEach {
+//     include(":runtime-bukkit:adapt-$it")
+// }
 
-arrayOf(
-        "v1_14_R1",
-        "v1_15_R1",
-        "v1_16_R3",
-        "v1_17_R1"
-).forEach {
-    include(":runtime-bukkit:adapt-$it")
+includePrefixed("runtime-minestom")
+
+fun includePrefixed(name: String) {
+    include("hephaestus-$name")
+    project(":hephaestus-$name").projectDir = file(name)
 }
-
-//
-// Model Minestom runtime
-//
-include(":runtime-minestom")
