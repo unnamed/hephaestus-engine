@@ -33,10 +33,10 @@ import team.unnamed.creative.base.CubeFace;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.base.Vector4Float;
 import team.unnamed.creative.base.Writable;
-import team.unnamed.creative.model.Element;
 import team.unnamed.creative.model.ElementFace;
 import team.unnamed.creative.model.ElementRotation;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.partial.ElementAsset;
 import team.unnamed.hephaestus.partial.ModelAsset;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.partial.BoneAsset;
@@ -268,7 +268,7 @@ public class BBModelReader implements ModelReader {
         // Local map holding relations of cube identifier to
         // cube data, used to get bone cubes in constant time
         // when reading them
-        Map<String, Element> cubeIdMap = new HashMap<>();
+        Map<String, ElementAsset> cubeIdMap = new HashMap<>();
 
         for (JsonElement cubeElement : json.getAsJsonArray("elements")) {
 
@@ -335,13 +335,12 @@ public class BBModelReader implements ModelReader {
             }
 
             String uuid = cubeJson.get("uuid").getAsString();
-            Element cube = Element.builder()
-                    .from(origin)
-                    .to(to)
-                    .rotation(ElementRotation.of(pivot, axis, angle, ElementRotation.DEFAULT_RESCALE))
-                    .faces(faces)
-                    .build();
-
+            ElementAsset cube = new ElementAsset(
+                    from,
+                    to,
+                    ElementRotation.of(pivot, axis, angle, ElementRotation.DEFAULT_RESCALE),
+                    faces
+            );
             cubeIdMap.put(uuid, cube);
         }
 
@@ -391,7 +390,7 @@ public class BBModelReader implements ModelReader {
     private void createBone(
             Vector3Float parentScaledPivot,
             @Nullable Bone parent,
-            Map<String, Element> cubeIdMap,
+            Map<String, ElementAsset> cubeIdMap,
             JsonObject json,
 
             Map<String, Bone> siblings,
@@ -413,7 +412,7 @@ public class BBModelReader implements ModelReader {
         Vector3Float scaledPivot = pivot.divide(16, 16, -16);
         Vector3Float offset = scaledPivot.subtract(parentScaledPivot);
 
-        List<Element> cubes = new ArrayList<>();
+        List<ElementAsset> cubes = new ArrayList<>();
         Map<String, Bone> bones = new LinkedHashMap<>();
         Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
 
@@ -440,7 +439,7 @@ public class BBModelReader implements ModelReader {
                 // if it's a string, it refers to a cube,
                 // find it and add it to the cube map
                 String cubeId = childElement.getAsString();
-                Element cube = cubeIdMap.get(cubeId);
+                ElementAsset cube = cubeIdMap.get(cubeId);
 
                 if (cube == null) {
                     throw new IOException("Bone " + name + " contains " +

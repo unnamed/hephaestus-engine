@@ -43,7 +43,7 @@ import java.util.zip.ZipOutputStream;
 
 public class Server {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         MinecraftServer server = MinecraftServer.init();
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
@@ -71,6 +71,31 @@ public class Server {
 
         Set<MinestomModelView> views = ConcurrentHashMap.newKeySet();
 
+        ModelResourcePackWriter modelWriter = new ModelResourcePackWriter(Collections.singletonList(
+                Models.REDSTONE_MONSTROSITY.asset()
+        ), "hephaestus");
+        new MCPacksHttpExporter()
+                .export(tree -> {
+                    try {
+                        modelWriter.write(tree);
+
+                        tree.write(PackInfo.builder()
+                                .icon(Writable.resource(
+                                        Server.class.getClassLoader(),
+                                        "hephaestus.png"
+                                ))
+                                .meta(Metadata.builder()
+                                        .add(PackMeta.of(
+                                                7,
+                                                "Hephaestus generated resource pack"
+                                        ))
+                                        .build())
+                                .build());
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
+
         eventHandler.addListener(PlayerChatEvent.class, event -> {
             Player player = event.getPlayer();
             String message = event.getMessage().toLowerCase();
@@ -86,10 +111,6 @@ public class Server {
 
                 case "resourcepack" -> {
                     try {
-                        ModelResourcePackWriter modelWriter = new ModelResourcePackWriter(Collections.singletonList(
-                                Models.REDSTONE_MONSTROSITY.asset()
-                        ), "hephaestus");
-
                         player.setResourcePack(
                                 new MCPacksHttpExporter()
                                         .export(tree -> {

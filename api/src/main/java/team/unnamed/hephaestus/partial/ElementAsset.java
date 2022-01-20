@@ -23,53 +23,47 @@
  */
 package team.unnamed.hephaestus.partial;
 
-import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.creative.model.Element;
 
-import java.util.Collection;
-import java.util.List;
+import team.unnamed.creative.base.CubeFace;
+import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.creative.model.ElementFace;
+import team.unnamed.creative.model.ElementRotation;
+
 import java.util.Map;
 
-public class BoneAsset {
+public class ElementAsset {
 
-    private final String name;
-    private final Vector3Float pivot;
-    private final int customModelData;
-    private final List<ElementAsset> cubes;
-    private final Map<String, BoneAsset> bones;
+    private final Vector3Float from;
+    private final Vector3Float to;
+    private final ElementRotation rotation;
+    private final Map<CubeFace, ElementFace> faces;
 
-    public BoneAsset(
-            String name,
-            Vector3Float pivot,
-            int customModelData,
-            List<ElementAsset> cubes,
-            Map<String, BoneAsset> bones
+    public ElementAsset(
+            Vector3Float from,
+            Vector3Float to,
+            ElementRotation rotation,
+            Map<CubeFace, ElementFace> faces
     ) {
-        this.name = name;
-        this.pivot = pivot;
-        this.customModelData = customModelData;
-        this.cubes = cubes;
-        this.bones = bones;
+        this.from = from;
+        this.to = to;
+        this.rotation = rotation;
+        this.faces = faces;
     }
 
-    public String name() {
-        return name;
+    public Vector3Float from() {
+        return from;
     }
 
-    public Vector3Float pivot() {
-        return pivot;
+    public Vector3Float to() {
+        return to;
     }
 
-    public int customModelData() {
-        return customModelData;
+    public ElementRotation rotation() {
+        return rotation;
     }
 
-    public List<ElementAsset> cubes() {
-        return cubes;
-    }
-
-    public Collection<BoneAsset> bones() {
-        return bones.values();
+    public Map<CubeFace, ElementFace> faces() {
+        return faces;
     }
 
 }

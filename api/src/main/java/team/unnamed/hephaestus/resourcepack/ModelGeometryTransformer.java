@@ -26,14 +26,13 @@ package team.unnamed.hephaestus.resourcepack;
 import com.google.gson.JsonObject;
 import net.kyori.adventure.key.Key;
 import team.unnamed.creative.base.Axis3D;
-import team.unnamed.creative.base.CubeFace;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.model.Element;
-import team.unnamed.creative.model.ElementFace;
 import team.unnamed.creative.model.ElementRotation;
 import team.unnamed.creative.model.ItemTransform;
 import team.unnamed.creative.model.Model;
 import team.unnamed.creative.model.ModelTexture;
+import team.unnamed.hephaestus.partial.ElementAsset;
 import team.unnamed.hephaestus.partial.ModelAsset;
 import team.unnamed.hephaestus.partial.BoneAsset;
 
@@ -41,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ModelGeometryTransformer {
 
@@ -87,9 +87,9 @@ public class ModelGeometryTransformer {
         float deltaY = bonePivot.y() - HALF_BLOCK_SIZE;
         float deltaZ = bonePivot.z() - HALF_BLOCK_SIZE;
 
-        List<Element> newElements = new ArrayList<>();
+        List<ElementAsset> unshiftedElements = new ArrayList<>();
 
-        for (Element cube : bone.cubes()) {
+        for (ElementAsset cube : bone.cubes()) {
 
             Vector3Float origin = cube.from();
             Vector3Float to = cube.to();
@@ -114,8 +114,6 @@ public class ModelGeometryTransformer {
 
             ElementRotation newRotation = rotation.origin(rotationOrigin);
 
-            Map<CubeFace, ElementFace> faces = cube.faces();
-
             Vector3Float newFrom = new Vector3Float(
                     unshift(BLOCK_SIZE + deltaX - to.x()),
                     unshift(origin.y() - deltaY),
@@ -126,15 +124,16 @@ public class ModelGeometryTransformer {
                     unshift(to.y() - deltaY),
                     unshift(to.z() - deltaZ)
             );
-            newElements.add(Element.builder()
-                    .from(newFrom)
-                    .to(newTo)
-                    .rotation(newRotation)
-                    .faces(faces)
-                    .build());
+
+            unshiftedElements.add(new ElementAsset(
+                    newFrom,
+                    newTo,
+                    newRotation,
+                    cube.faces()
+            ));
         }
 
-        Vector3Float offset = computeOffset(newElements);
+        Vector3Float offset = computeOffset(unshiftedElements);
 
         Map<ItemTransform.Type, ItemTransform> displays = new HashMap<>();
         ItemTransform headTransform = ItemTransform.builder()
@@ -153,16 +152,22 @@ public class ModelGeometryTransformer {
                 .textures(ModelTexture.builder()
                         .variables(textureMappings)
                         .build())
-                .elements(newElements)
+                .elements(unshiftedElements.stream().map(cube -> Element.builder()
+                        .from(cube.from())
+                        .to(cube.to())
+                        .rotation(cube.rotation())
+                        .faces(cube.faces())
+                        .shade(false)
+                        .build()).collect(Collectors.toList()))
                 .build();
     }
 
-    private static Vector3Float computeOffset(List<Element> elements) {
+    private static Vector3Float computeOffset(List<ElementAsset> elements) {
 
         Vector3Float offset = Vector3Float.ZERO;
 
         // compute offset
-        for (Element cube : elements) {
+        for (ElementAsset cube : elements) {
             Vector3Float from = cube.from();
             Vector3Float to = cube.to();
 
@@ -174,7 +179,7 @@ public class ModelGeometryTransformer {
 
         // apply offset
         for (int i = 0; i < elements.size(); i++) {
-            Element cube = elements.get(i);
+            ElementAsset cube = elements.get(i);
             Vector3Float from = cube.from().add(offset);
             Vector3Float to = cube.to().add(offset);
             ElementRotation rotation = cube.rotation();
@@ -182,13 +187,7 @@ public class ModelGeometryTransformer {
             Vector3Float origin = rotation.origin();
             rotation = rotation.origin(origin.add(offset));
 
-            elements.set(i, Element.builder()
-                    .from(from)
-                    .to(to)
-                    .rotation(rotation)
-                    .shade(cube.shade())
-                    .faces(cube.faces())
-                    .build());
+            elements.set(i, new ElementAsset(from, to, rotation, cube.faces()));
         }
 
         return offset;
