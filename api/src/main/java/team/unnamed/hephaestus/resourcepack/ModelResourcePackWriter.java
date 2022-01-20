@@ -64,7 +64,7 @@ public class ModelResourcePackWriter {
             ModelAsset model,
             Collection<ItemOverride> overrides,
             Collection<BoneAsset> assets
-    ) throws IOException {
+    ) {
         for (BoneAsset bone : assets) {
 
             Key modelKey = Key.key(namespace, model.name() + '/' + bone.name());
@@ -94,10 +94,6 @@ public class ModelResourcePackWriter {
             for (Map.Entry<String, Writable> texture : model.textures().entrySet()) {
                 String textureName = texture.getKey();
                 Writable data = texture.getValue();
-
-                if (!textureName.endsWith(".png")) {
-                    textureName += ".png";
-                }
 
                 Key key = Key.key(namespace, model.name() + '/' + textureName);
 
