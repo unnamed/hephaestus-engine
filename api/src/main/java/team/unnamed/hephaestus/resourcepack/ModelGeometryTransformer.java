@@ -63,12 +63,6 @@ public class ModelGeometryTransformer {
     private static final float MIN_TRANSLATION = -80F;
     private static final float MAX_TRANSLATION = 80F;
 
-    private final String namespace;
-
-    public ModelGeometryTransformer(String namespace) {
-        this.namespace = namespace;
-    }
-
     /**
      * Converts a {@link BoneAsset} (a representation of a model
      * bone) to a resource-pack ready {@link JsonObject} JSON object
@@ -77,7 +71,7 @@ public class ModelGeometryTransformer {
      * @param bone The bone to be converted
      * @return The JSON representation of the bone
      */
-    public Model toCreative(
+    public static Model toCreative(
             Key key,
             ModelAsset model,
             BoneAsset bone
@@ -144,7 +138,7 @@ public class ModelGeometryTransformer {
 
         Map<String, Key> textureMappings = new HashMap<>();
         model.textureMapping().forEach((id, path) ->
-                textureMappings.put(id.toString(), Key.key(namespace, model.name() + '/' + path)));
+                textureMappings.put(id.toString(), Key.key(key.namespace(), model.name() + '/' + path)));
 
         return Model.builder()
                 .key(key)

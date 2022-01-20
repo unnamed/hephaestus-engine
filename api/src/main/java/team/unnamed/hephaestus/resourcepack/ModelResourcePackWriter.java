@@ -47,15 +47,12 @@ public class ModelResourcePackWriter {
     private final Collection<ModelAsset> models;
     private final String namespace;
 
-    private final ModelGeometryTransformer transformer;
-
     public ModelResourcePackWriter(
             Collection<ModelAsset> models,
             String namespace
     ) {
         this.models = models;
         this.namespace = namespace;
-        this.transformer = new ModelGeometryTransformer(namespace);
     }
 
     public ModelResourcePackWriter(Collection<ModelAsset> models) {
@@ -71,7 +68,7 @@ public class ModelResourcePackWriter {
         for (BoneAsset bone : assets) {
 
             Key modelKey = Key.key(namespace, model.name() + '/' + bone.name());
-            Model creativeModel = transformer.toCreative(modelKey, model, bone);
+            Model creativeModel = ModelGeometryTransformer.toCreative(modelKey, model, bone);
 
             overrides.add(ItemOverride.of(
                     modelKey,
