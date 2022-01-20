@@ -336,7 +336,7 @@ public class BBModelReader implements ModelReader {
 
             String uuid = cubeJson.get("uuid").getAsString();
             ElementAsset cube = new ElementAsset(
-                    from,
+                    origin,
                     to,
                     ElementRotation.of(pivot, axis, angle, ElementRotation.DEFAULT_RESCALE),
                     faces
