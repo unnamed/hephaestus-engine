@@ -35,7 +35,7 @@ import team.unnamed.creative.model.ItemTransform;
 import team.unnamed.creative.model.Model;
 import team.unnamed.creative.model.ModelTexture;
 import team.unnamed.hephaestus.partial.ModelAsset;
-import team.unnamed.hephaestus.partial.ModelBoneAsset;
+import team.unnamed.hephaestus.partial.BoneAsset;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,7 +70,7 @@ public class ModelGeometryTransformer {
     }
 
     /**
-     * Converts a {@link ModelBoneAsset} (a representation of a model
+     * Converts a {@link BoneAsset} (a representation of a model
      * bone) to a resource-pack ready {@link JsonObject} JSON object
      *
      * @param model The model holding the given bone
@@ -80,7 +80,7 @@ public class ModelGeometryTransformer {
     public Model toCreative(
             Key key,
             ModelAsset model,
-            ModelBoneAsset bone
+            BoneAsset bone
     ) {
         Vector3Float bonePivot = bone.pivot();
         float deltaX = bonePivot.x() - HALF_BLOCK_SIZE;

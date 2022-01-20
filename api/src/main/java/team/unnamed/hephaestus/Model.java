@@ -33,13 +33,13 @@ import java.util.Map;
 public class Model {
 
     private final String name;
-    private final Map<String, ModelBone> bones;
+    private final Map<String, Bone> bones;
     private ModelAsset asset;
     private final Map<String, ModelAnimation> animations;
 
     public Model(
             String name,
-            Map<String, ModelBone> bones,
+            Map<String, Bone> bones,
             ModelAsset asset
     ) {
         this.name = name;
@@ -54,11 +54,11 @@ public class Model {
         return name;
     }
 
-    public Collection<ModelBone> bones() {
+    public Collection<Bone> bones() {
         return bones.values();
     }
 
-    public Map<String, ModelBone> boneMap() {
+    public Map<String, Bone> boneMap() {
         return bones;
     }
 

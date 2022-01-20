@@ -15,7 +15,7 @@ import net.minestom.server.item.metadata.LeatherArmorMeta;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.ModelBone;
+import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.animation.AnimationQueue;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.util.Vectors;
@@ -91,14 +91,14 @@ public class MinestomModelView
     }
 
     @Override
-    public void rotateBone(String name, Vector3Double rotation) {
+    public void rotateBone(String name, Vector3Float rotation) {
         Entity entity = bones.get(name);
         if (entity != null) {
             ArmorStandMeta meta = (ArmorStandMeta) entity.getEntityMeta();
             meta.setHeadRotation(new Vec(
-                    Math.toDegrees(rotation.getX()),
-                    Math.toDegrees(rotation.getY()),
-                    Math.toDegrees(rotation.getZ())
+                    Math.toDegrees(rotation.x()),
+                    Math.toDegrees(rotation.y()),
+                    Math.toDegrees(rotation.z())
             ));
         }
     }
@@ -133,7 +133,7 @@ public class MinestomModelView
     }
     //#endregion
 
-    private void summonBone(double yawRadians, Pos pos, ModelBone bone, Vector3Float parentOffset) {
+    private void summonBone(double yawRadians, Pos pos, Bone bone, Vector3Float parentOffset) {
         Instance instance = this.instance;
 
         Vector3Float offset = bone.offset().add(parentOffset);
@@ -160,7 +160,7 @@ public class MinestomModelView
 
         bones.put(bone.name(), entity);
 
-        for (ModelBone child : bone.bones()) {
+        for (Bone child : bone.bones()) {
             summonBone(yawRadians, pos, child, offset);
         }
     }
@@ -168,7 +168,7 @@ public class MinestomModelView
     private void teleportBone(
             double yawRadians,
             Pos pos,
-            ModelBone bone,
+            Bone bone,
             Vector3Float parentOffset
     ) {
         Vector3Float offset = bone.offset().add(parentOffset);
@@ -182,7 +182,7 @@ public class MinestomModelView
                     relativePosition.z()
             ));
         }
-        for (ModelBone child : bone.bones()) {
+        for (Bone child : bone.bones()) {
             this.teleportBone(yawRadians, pos, child, offset);
         }
     }
@@ -194,7 +194,7 @@ public class MinestomModelView
                     // create the bone entities
                     Pos basePos = spawnPosition.sub(0, ARMORSTAND_HEIGHT, 0);
                     double yawRadians = Math.toRadians(basePos.yaw());
-                    for (ModelBone bone : model.bones()) {
+                    for (Bone bone : model.bones()) {
                         summonBone(yawRadians, basePos, bone, Vector3Float.ZERO);
                     }
                 });
@@ -207,7 +207,7 @@ public class MinestomModelView
                     Pos basePos = position.sub(0, ARMORSTAND_HEIGHT, 0);
                     double yawRadians = Math.toRadians(basePos.yaw());
 
-                    for (ModelBone bone : this.model().bones()) {
+                    for (Bone bone : this.model().bones()) {
                         teleportBone(yawRadians, basePos, bone, Vector3Float.ZERO);
                     }
                 });

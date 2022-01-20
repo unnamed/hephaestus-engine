@@ -30,20 +30,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class ModelBoneAsset {
+public class BoneAsset {
 
     private final String name;
     private final Vector3Float pivot;
     private final int customModelData;
     private final List<Element> cubes;
-    private final Map<String, ModelBoneAsset> bones;
+    private final Map<String, BoneAsset> bones;
 
-    public ModelBoneAsset(
+    public BoneAsset(
             String name,
             Vector3Float pivot,
             int customModelData,
             List<Element> cubes,
-            Map<String, ModelBoneAsset> bones
+            Map<String, BoneAsset> bones
     ) {
         this.name = name;
         this.pivot = pivot;
@@ -68,7 +68,7 @@ public class ModelBoneAsset {
         return cubes;
     }
 
-    public Collection<ModelBoneAsset> bones() {
+    public Collection<BoneAsset> bones() {
         return bones.values();
     }
 

@@ -33,23 +33,23 @@ import java.util.Map;
  * It's a model cube holder, a {@link team.unnamed.creative.model.Element}
  * composite, util to make rotations over the pivot
  */
-public class ModelBone {
+public class Bone {
 
-    @Nullable private final ModelBone parent;
+    @Nullable private final Bone parent;
     private final String name;
     private final Vector3Float rotation;
 
-    private final Map<String, ModelBone> bones;
+    private final Map<String, Bone> bones;
     private final Vector3Float offset;
 
     private final boolean small;
     private final int customModelData;
 
-    public ModelBone(
-            @Nullable ModelBone parent,
+    public Bone(
+            @Nullable Bone parent,
             String name,
             Vector3Float rotation,
-            Map<String, ModelBone> bones,
+            Map<String, Bone> bones,
             Vector3Float offset,
             boolean small,
             int customModelData
@@ -63,7 +63,7 @@ public class ModelBone {
         this.customModelData = customModelData;
     }
 
-    public @Nullable ModelBone parent() {
+    public @Nullable Bone parent() {
         return parent;
     }
 
@@ -93,11 +93,11 @@ public class ModelBone {
         return small;
     }
 
-    public Collection<ModelBone> bones() {
+    public Collection<Bone> bones() {
         return bones.values();
     }
 
-    public Map<String, ModelBone> boneMap() {
+    public Map<String, Bone> boneMap() {
         return bones;
     }
 

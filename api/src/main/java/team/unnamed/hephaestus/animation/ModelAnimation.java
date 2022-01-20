@@ -23,14 +23,14 @@
  */
 package team.unnamed.hephaestus.animation;
 
-import team.unnamed.hephaestus.ModelBone;
+import team.unnamed.hephaestus.Bone;
 
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * Class that represents a model animation,
- * applied to the {@link ModelBone} objects
+ * applied to the {@link Bone} objects
  */
 public class ModelAnimation {
 

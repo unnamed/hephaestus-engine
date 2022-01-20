@@ -24,7 +24,7 @@
 package team.unnamed.hephaestus.animation;
 
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.ModelBone;
+import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.view.ModelView;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
@@ -112,8 +112,8 @@ public class AnimationQueue {
 
     private void updateBone(
             double yaw,
-            ModelBone parent,
-            ModelBone bone,
+            Bone parent,
+            Bone bone,
             Vector3Float parentRotation,
             Vector3Float parentPosition
     ) {
@@ -152,7 +152,7 @@ public class AnimationQueue {
         //    entity.updateBoneModelData(bone, modelData);
         //}
 
-        for (ModelBone component : bone.bones()) {
+        for (Bone component : bone.bones()) {
             this.updateBone(
                     yaw,
                     bone,
@@ -164,7 +164,7 @@ public class AnimationQueue {
     }
 
     public synchronized void next(double yaw) {
-        for (ModelBone bone : view.model().bones()) {
+        for (Bone bone : view.model().bones()) {
             updateBone(
                     yaw,
                     null,

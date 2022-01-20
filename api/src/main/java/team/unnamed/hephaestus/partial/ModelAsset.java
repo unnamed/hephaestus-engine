@@ -35,13 +35,13 @@ public class ModelAsset {
     private final Map<String, Writable> textures;
     private final Map<Integer, String> textureMapping;
     private final Map<String, ModelAnimation> animations;
-    private final Map<String, ModelBoneAsset> bones;
+    private final Map<String, BoneAsset> bones;
 
     public ModelAsset(
             String name,
             Map<String, Writable> textures,
             Map<Integer, String> textureMapping,
-            Map<String, ModelBoneAsset> bones,
+            Map<String, BoneAsset> bones,
             Map<String, ModelAnimation> animations
     ) {
         this.name = name;
@@ -67,7 +67,7 @@ public class ModelAsset {
         return animations;
     }
 
-    public Collection<ModelBoneAsset> bones() {
+    public Collection<BoneAsset> bones() {
         return bones.values();
     }
 

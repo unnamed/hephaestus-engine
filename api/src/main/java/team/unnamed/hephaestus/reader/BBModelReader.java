@@ -38,8 +38,8 @@ import team.unnamed.creative.model.ElementFace;
 import team.unnamed.creative.model.ElementRotation;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.partial.ModelAsset;
-import team.unnamed.hephaestus.ModelBone;
-import team.unnamed.hephaestus.partial.ModelBoneAsset;
+import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.partial.BoneAsset;
 import team.unnamed.hephaestus.ModelDataCursor;
 import team.unnamed.hephaestus.animation.DynamicKeyFrameList;
 import team.unnamed.hephaestus.animation.KeyFrameList;
@@ -114,8 +114,8 @@ public class BBModelReader implements ModelReader {
         int width = resolution.get("width").getAsInt();
         int height = resolution.get("height").getAsInt();
 
-        Map<String, ModelBone> bones = new LinkedHashMap<>();
-        Map<String, ModelBoneAsset> boneAssets = new LinkedHashMap<>();
+        Map<String, Bone> bones = new LinkedHashMap<>();
+        Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
         Map<String, ModelAnimation> animations = new LinkedHashMap<>();
         Map<String, Writable> textures = new HashMap<>();
         Map<Integer, String> textureMapping = new HashMap<>();
@@ -251,13 +251,13 @@ public class BBModelReader implements ModelReader {
 
     /**
      * Locally reads cubes from the "elements" property from
-     * the given {@code json} object and then reads {@link ModelBone}
-     * and {@link ModelBoneAsset} from the "outliner" property
+     * the given {@code json} object and then reads {@link Bone}
+     * and {@link BoneAsset} from the "outliner" property
      */
     private void readElements(
             JsonObject json,
-            Map<String, ModelBone> bones,
-            Map<String, ModelBoneAsset> boneAssets,
+            Map<String, Bone> bones,
+            Map<String, BoneAsset> boneAssets,
             int textureWidth,
             int textureHeight
     ) throws IOException {
@@ -374,7 +374,7 @@ public class BBModelReader implements ModelReader {
     }
 
     /**
-     * Creates a {@link ModelBone} and {@link ModelBone} from
+     * Creates a {@link Bone} and {@link Bone} from
      * the given {@code json} object
      *
      * @param parentScaledPivot The scaled pivot of the parent bone
@@ -390,12 +390,12 @@ public class BBModelReader implements ModelReader {
      */
     private void createBone(
             Vector3Float parentScaledPivot,
-            @Nullable ModelBone parent,
+            @Nullable Bone parent,
             Map<String, Element> cubeIdMap,
             JsonObject json,
 
-            Map<String, ModelBone> siblings,
-            Map<String, ModelBoneAsset> siblingAssets
+            Map<String, Bone> siblings,
+            Map<String, BoneAsset> siblingAssets
     ) throws IOException {
 
         String name = json.get("name").getAsString();
@@ -414,13 +414,13 @@ public class BBModelReader implements ModelReader {
         Vector3Float offset = scaledPivot.subtract(parentScaledPivot);
 
         List<Element> cubes = new ArrayList<>();
-        Map<String, ModelBone> bones = new LinkedHashMap<>();
-        Map<String, ModelBoneAsset> boneAssets = new LinkedHashMap<>();
+        Map<String, Bone> bones = new LinkedHashMap<>();
+        Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
 
         // instantiate bone and asset with empty and mutable
         // cubes, bones and assets, they'll be filled later
-        ModelBoneAsset asset = new ModelBoneAsset(name, pivot, cursor.next(), cubes, boneAssets);
-        ModelBone bone = new ModelBone(parent, name, rotation, bones, offset, true, asset.customModelData());
+        BoneAsset asset = new BoneAsset(name, pivot, cursor.next(), cubes, boneAssets);
+        Bone bone = new Bone(parent, name, rotation, bones, offset, true, asset.customModelData());
 
         for (JsonElement childElement : json.get("children").getAsJsonArray()) {
             if (childElement.isJsonObject()) {

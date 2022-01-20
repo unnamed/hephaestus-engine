@@ -32,7 +32,7 @@ import team.unnamed.creative.model.Model;
 import team.unnamed.creative.model.ModelTexture;
 import team.unnamed.creative.texture.Texture;
 import team.unnamed.hephaestus.partial.ModelAsset;
-import team.unnamed.hephaestus.partial.ModelBoneAsset;
+import team.unnamed.hephaestus.partial.BoneAsset;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,9 +66,9 @@ public class ModelResourcePackWriter {
             FileTree tree,
             ModelAsset model,
             Collection<ItemOverride> overrides,
-            Collection<ModelBoneAsset> assets
+            Collection<BoneAsset> assets
     ) throws IOException {
-        for (ModelBoneAsset bone : assets) {
+        for (BoneAsset bone : assets) {
 
             Key modelKey = Key.key(namespace, model.name() + '/' + bone.name());
             Model creativeModel = transformer.toCreative(modelKey, model, bone);
