@@ -13,6 +13,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
 import org.jetbrains.annotations.NotNull;
+import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelBone;
 import team.unnamed.hephaestus.animation.AnimationQueue;
@@ -84,9 +85,9 @@ public class MinestomModelView
     @Override
     public void moveBone(String name, Vector3Float position) {
         bones.get(name).teleport(getPosition().add(
-                position.getX(),
-                position.getY() - ARMORSTAND_HEIGHT,
-                position.getZ()
+                position.x(),
+                position.y() - ARMORSTAND_HEIGHT,
+                position.z()
         ));
     }
 
@@ -153,9 +154,9 @@ public class MinestomModelView
 
         // todo: maybe we can just show the bones using addViewer
         entity.setInstance(instance, pos.add(
-                relativePos.getX(),
-                relativePos.getY(),
-                relativePos.getZ()
+                relativePos.x(),
+                relativePos.y(),
+                relativePos.z()
         )).join();
 
         bones.put(bone.getName(), entity);
@@ -177,9 +178,9 @@ public class MinestomModelView
 
         if (entity != null) {
             entity.teleport(pos.add(
-                    relativePosition.getX(),
-                    relativePosition.getY(),
-                    relativePosition.getZ()
+                    relativePosition.x(),
+                    relativePosition.y(),
+                    relativePosition.z()
             ));
         }
         for (ModelBone child : bone.getBones()) {

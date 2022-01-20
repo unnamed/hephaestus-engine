@@ -60,8 +60,6 @@ public class ModelGeometryTransformer {
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
 
 
-    // from minecraft.fandom.com/wiki/Model#Item_models:
-    // "Values must be between -16 and 32"
     private static final float MIN_TRANSLATION = -80F;
     private static final float MAX_TRANSLATION = 80F;
 
