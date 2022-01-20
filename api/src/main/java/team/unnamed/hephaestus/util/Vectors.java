@@ -81,7 +81,7 @@ public final class Vectors {
         return start.add(end.subtract(start).multiply(percent));
     }
 
-    public static Vector3Float combine(Vector3Float origin, Vector3Float delta) {
+    public static Vector3Float combineRotations(Vector3Float origin, Vector3Float delta) {
         return Quaternion.fromEuler(origin)
                 .multiply(Quaternion.fromEuler(delta))
                 .toEuler();

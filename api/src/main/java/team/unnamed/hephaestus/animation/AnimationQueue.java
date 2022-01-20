@@ -139,7 +139,7 @@ public class AnimationQueue {
                     Vectors.rotate(localPosition, parentRotation),
                     yaw
             ).add(parentPosition);
-            globalRotation = Vectors.combine(localRotation, parentRotation);
+            globalRotation = Vectors.combineRotations(localRotation, parentRotation);
         }
 
         view.moveBone(bone.name(), globalPosition);
