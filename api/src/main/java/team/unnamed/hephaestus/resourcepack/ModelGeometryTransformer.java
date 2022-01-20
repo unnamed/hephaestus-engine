@@ -88,13 +88,11 @@ public class ModelGeometryTransformer {
         float deltaZ = bonePivot.z() - HALF_BLOCK_SIZE;
 
         List<Element> newElements = new ArrayList<>();
-        List<Element> cubes = bone.getCubes();
 
-        for (Element cube : cubes) {
+        for (Element cube : bone.getCubes()) {
 
             Vector3Float origin = cube.from();
             Vector3Float to = cube.to();
-            Vector3Float size = to.subtract(origin);
 
             ElementRotation rotation = cube.rotation();
             Vector3Float rotationOrigin = rotation.origin();
@@ -118,21 +116,15 @@ public class ModelGeometryTransformer {
 
             Map<CubeFace, ElementFace> faces = cube.faces();
 
-            float[] from = new float[] {
-                    BLOCK_SIZE - origin.x() + deltaX - size.x(),
-                    origin.y() - deltaY,
-                    origin.z() - deltaZ
-            };
-
             Vector3Float newFrom = new Vector3Float(
-                    unshift(from[0]),
-                    unshift(from[1]),
-                    unshift(from[2])
+                    unshift(BLOCK_SIZE + deltaX - to.x()),
+                    unshift(origin.y() - deltaY),
+                    unshift(origin.z() - deltaZ)
             );
             Vector3Float newTo = new Vector3Float(
-                    unshift(from[0] + size.x()),
-                    unshift(from[1] + size.y()),
-                    unshift(from[2] + size.z())
+                    unshift(-to.x() + BLOCK_SIZE + deltaX),
+                    unshift(to.y() - deltaY),
+                    unshift(to.z() - deltaZ)
             );
             newElements.add(Element.builder()
                     .from(newFrom)
@@ -161,6 +153,7 @@ public class ModelGeometryTransformer {
                 .textures(ModelTexture.builder()
                         .variables(textureMappings)
                         .build())
+                .elements(newElements)
                 .build();
     }
 

@@ -15,6 +15,7 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.resourcepack.ResourcePack;
 import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.NotNull;
+import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.file.FileTree;
 import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
@@ -96,6 +97,10 @@ public class Server {
                                                 modelWriter.write(tree);
 
                                                 tree.write(PackInfo.builder()
+                                                        .icon(Writable.resource(
+                                                                Server.class.getClassLoader(),
+                                                                "hephaestus.png"
+                                                        ))
                                                         .meta(Metadata.builder()
                                                                 .add(PackMeta.of(
                                                                         7,
@@ -213,6 +218,8 @@ public class Server {
 
             // execute request and close, no response expected
             connection.getInputStream().close();
+
+            System.out.println(DOWNLOAD_URL_TEMPLATE.replace("%HASH%", hashString));
 
             return ResourcePack.forced(
                     DOWNLOAD_URL_TEMPLATE.replace("%HASH%", hashString),
