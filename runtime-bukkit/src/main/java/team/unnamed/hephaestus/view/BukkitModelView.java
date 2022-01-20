@@ -3,18 +3,19 @@ package team.unnamed.hephaestus.view;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.ModelBone;
 import team.unnamed.hephaestus.animation.AnimationQueue;
 import team.unnamed.hephaestus.animation.ModelAnimation;
-import team.unnamed.hephaestus.struct.Vector3Double;
-import team.unnamed.hephaestus.struct.Vector3Float;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BukkitModelView implements ModelView {
+import static java.util.Objects.requireNonNull;
+
+public class BukkitModelView implements ModelView<Player> {
 
     private final ModelViewController controller;
     private final AnimationQueue animationQueue;
@@ -31,6 +32,8 @@ public class BukkitModelView implements ModelView {
      */
     private final Map<String, Object> entities = new HashMap<>();
 
+    private ModelInteractListener<Player> interactListener = ModelInteractListener.nop();
+
     public BukkitModelView(
             ModelViewController controller,
             Model model,
@@ -46,7 +49,12 @@ public class BukkitModelView implements ModelView {
     }
 
     @Override
-    public Model getModel() {
+    public void interactListener(ModelInteractListener<Player> interactListener) {
+        this.interactListener = requireNonNull(interactListener, "interactListener");
+    }
+
+    @Override
+    public Model model() {
         return model;
     }
 
@@ -67,8 +75,8 @@ public class BukkitModelView implements ModelView {
         controller.colorizeBone(this, name, Color.fromRGB(r, g, b));
     }
 
-    public void colorizeBone(ModelBone bone, Color color) {
-        controller.colorizeBone(this, bone.getName(), color);
+    public void colorizeBone(Bone bone, Color color) {
+        controller.colorizeBone(this, bone.name(), color);
     }
 
     public void colorizeBone(String boneName, Color color) {
@@ -78,14 +86,14 @@ public class BukkitModelView implements ModelView {
     @Override
     public void moveBone(String name, Vector3Float position) {
         controller.teleportBone(this, name, location.clone().add(
-                position.getX(),
-                position.getY(),
-                position.getZ()
+                position.x(),
+                position.y(),
+                position.z()
         ));
     }
 
     @Override
-    public void rotateBone(String name, Vector3Double rotation) {
+    public void rotateBone(String name, Vector3Float rotation) {
         controller.setBonePose(this, name, rotation);
     }
     //#endregion
@@ -93,7 +101,7 @@ public class BukkitModelView implements ModelView {
     //#region Animation Handling methods
     @Override
     public void playAnimation(String name, int transitionTicks) {
-        ModelAnimation animation = model.getAnimations().get(name);
+        ModelAnimation animation = model.animations().get(name);
         animationQueue.pushAnimation(animation, transitionTicks);
     }
 

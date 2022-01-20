@@ -10,11 +10,8 @@ import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import team.unnamed.hephaestus.ModelBone;
-import team.unnamed.hephaestus.view.BukkitModelView;
-import team.unnamed.hephaestus.view.ModelViewController;
-import team.unnamed.hephaestus.struct.Vector3Double;
-import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Vectors;
 
 public class ModelViewController_v1_14_R1
@@ -24,13 +21,13 @@ public class ModelViewController_v1_14_R1
             double yawRadians,
             BukkitModelView view,
             Location location,
-            ModelBone bone,
+            Bone bone,
             Vector3Float offset
     ) {
         World world = location.getWorld();
 
         // location computing
-        Vector3Float position = bone.getOffset().add(offset);
+        Vector3Float position = bone.offset().add(offset);
         Vector3Float relativePos = Vectors.rotateAroundY(
                 position,
                 yawRadians
@@ -42,9 +39,9 @@ public class ModelViewController_v1_14_R1
         EntityArmorStand entity = new EntityArmorStand(EntityTypes.ARMOR_STAND, worldServer);
 
         entity.setLocation(
-                location.getX() + relativePos.getX(),
-                location.getY() + relativePos.getY(),
-                location.getZ() + relativePos.getZ(),
+                location.getX() + relativePos.x(),
+                location.getY() + relativePos.y(),
+                location.getZ() + relativePos.z(),
                 location.getYaw(),
                 location.getPitch()
         );
@@ -59,7 +56,7 @@ public class ModelViewController_v1_14_R1
 
         // noinspection ConstantConditions
         meta.setColor(Color.WHITE);
-        meta.setCustomModelData(bone.getCustomModelData());
+        meta.setCustomModelData(bone.customModelData());
         item.setItemMeta(meta);
 
         net.minecraft.server.v1_14_R1.ItemStack nmsItem =
@@ -80,7 +77,7 @@ public class ModelViewController_v1_14_R1
 
         view.getEntities().put(bone.getName(), entity);
 
-        for (ModelBone component : bone.getBones()) {
+        for (Bone component : bone.bones()) {
             summonBone(
                     yawRadians,
                     view,
@@ -95,7 +92,7 @@ public class ModelViewController_v1_14_R1
     public void show(BukkitModelView view) {
         Location location = view.getLocation();
         double yawRadians = Math.toRadians(location.getYaw());
-        for (ModelBone bone : view.getModel().getBones()) {
+        for (Bone bone : view.getModel().getBones()) {
             summonBone(yawRadians, view, location, bone, Vector3Float.ZERO);
         }
     }

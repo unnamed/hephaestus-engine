@@ -3,8 +3,8 @@ package team.unnamed.hephaestus.view;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import team.unnamed.hephaestus.ModelBone;
-import team.unnamed.hephaestus.struct.Vector3Double;
+import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.Bone;
 
 public interface ModelViewController {
 
@@ -27,9 +27,9 @@ public interface ModelViewController {
 
     void teleportBone(BukkitModelView view, String boneName, Location location);
 
-    void updateBoneModelData(BukkitModelView view, ModelBone bone, int modelData);
+    void updateBoneModelData(BukkitModelView view, Bone bone, int modelData);
 
-    void setBonePose(BukkitModelView view, String boneName, Vector3Double angle);
+    void setBonePose(BukkitModelView view, String boneName, Vector3Float angle);
 
     void showIndividually(BukkitModelView view, Player player);
 
