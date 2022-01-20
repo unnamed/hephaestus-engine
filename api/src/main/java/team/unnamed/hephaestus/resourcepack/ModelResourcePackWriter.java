@@ -74,10 +74,8 @@ public class ModelResourcePackWriter {
             Model creativeModel = transformer.toCreative(modelKey, model, bone);
 
             overrides.add(ItemOverride.of(
-                    Collections.singletonList(
-                            ItemPredicate.customModelData(bone.getCustomModelData())
-                    ),
-                    modelKey
+                    modelKey,
+                    ItemPredicate.customModelData(bone.getCustomModelData())
             ));
 
             tree.write(creativeModel);
