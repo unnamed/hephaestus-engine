@@ -29,9 +29,12 @@ package team.unnamed.hephaestus.view;
  * {@link ModelView}
  *
  * @param <T> The platform-specific player type
+ * @since 1.0.0
  */
 @FunctionalInterface
 public interface ModelInteractListener<T> {
+
+    ModelInteractListener<?> NOP = (view, player, action) -> {};
 
     /**
      * Method called to handle the interaction between
@@ -40,11 +43,25 @@ public interface ModelInteractListener<T> {
      * @param view The clicked model view
      * @param player The clicker player
      * @param action The click type
+     * @since 1.0.0
      */
     void onInteract(
-            ModelView view,
+            ModelView<T> view,
             T player,
             ActionType action
     );
+
+    /**
+     * Returns a no-operation {@link ModelInteractListener}
+     * instance
+     *
+     * @param <T> The player type
+     * @return The no-op interact listener instance
+     * @since 1.0.0
+     */
+    @SuppressWarnings("unchecked")
+    static <T> ModelInteractListener<T> nop() {
+        return (ModelInteractListener<T>) NOP;
+    }
 
 }

@@ -6,12 +6,9 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.LivingEntity;
+import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Instance;
-import net.minestom.server.item.ItemStack;
-import net.minestom.server.item.Material;
-import net.minestom.server.item.metadata.LeatherArmorMeta;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Model;
@@ -19,28 +16,26 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.animation.AnimationQueue;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.util.Vectors;
+import team.unnamed.hephaestus.view.ModelInteractListener;
 import team.unnamed.hephaestus.view.ModelView;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.util.Objects.requireNonNull;
+
 public class MinestomModelView
         extends EntityCreature
-        implements ModelView {
+        implements ModelView<Player> {
 
     private static final float ARMORSTAND_HEIGHT = 0.726F;
 
-    private static final ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
-            .meta(new LeatherArmorMeta.Builder()
-                    .color(new Color(0xFFFFFF))
-                    .build())
-            .build();
-
-    private final Map<String, LivingEntity> bones = new ConcurrentHashMap<>();
+    private final Map<String, BoneEntity> bones = new ConcurrentHashMap<>();
 
     private final Model model;
     private final AnimationQueue animationQueue;
+    private ModelInteractListener<Player> interactListener = ModelInteractListener.nop();
 
     public MinestomModelView(
             EntityType type,
@@ -59,14 +54,21 @@ public class MinestomModelView
         return model;
     }
 
+    @Override
+    public void interactListener(ModelInteractListener<Player> interactListener) {
+        this.interactListener = requireNonNull(interactListener, "interactListener");
+    }
+
+    ModelInteractListener<Player> interactListener() {
+        return interactListener;
+    }
+
     //#region Entire View Handling methods
     @Override
     public void colorize(int r, int g, int b) {
         Color color = new Color(r, g, b);
-        for (LivingEntity entity : bones.values()) {
-            entity.setHelmet(entity.getHelmet().withMeta(
-                    (LeatherArmorMeta.Builder meta) -> meta.color(color)
-            ));
+        for (BoneEntity entity : bones.values()) {
+            entity.colorize(color);
         }
     }
     //#endregion
@@ -74,11 +76,8 @@ public class MinestomModelView
     //#region Bone Handling methods
     @Override
     public void colorizeBone(String name, int r, int g, int b) {
-        LivingEntity entity = bones.get(name);
-        Color color = new Color(r, g, b);
-        entity.setHelmet(entity.getHelmet().withMeta(
-                (LeatherArmorMeta.Builder meta) -> meta.color(color)
-        ));
+        BoneEntity entity = bones.get(name);
+        entity.colorize(new Color(r, g, b));
     }
 
     @Override
@@ -134,22 +133,11 @@ public class MinestomModelView
     //#endregion
 
     private void summonBone(double yawRadians, Pos pos, Bone bone, Vector3Float parentOffset) {
-        Instance instance = this.instance;
 
         Vector3Float offset = bone.offset().add(parentOffset);
-
         Vector3Float relativePos = Vectors.rotateAroundY(offset, yawRadians);
 
-        LivingEntity entity = new LivingEntity(EntityType.ARMOR_STAND);
-        ArmorStandMeta meta = (ArmorStandMeta) entity.getEntityMeta();
-
-        meta.setSilent(true);
-        meta.setHasNoGravity(true);
-        meta.setSmall(bone.small());
-        meta.setInvisible(true);
-
-        entity.setHelmet(BASE_HELMET.withMeta(itemMeta ->
-                itemMeta.customModelData(bone.customModelData())));
+        BoneEntity entity = new BoneEntity(this, bone);
 
         // todo: maybe we can just show the bones using addViewer
         entity.setInstance(instance, pos.add(
@@ -194,6 +182,7 @@ public class MinestomModelView
                     // create the bone entities
                     Pos basePos = spawnPosition.sub(0, ARMORSTAND_HEIGHT, 0);
                     double yawRadians = Math.toRadians(basePos.yaw());
+
                     for (Bone bone : model.bones()) {
                         summonBone(yawRadians, basePos, bone, Vector3Float.ZERO);
                     }
@@ -207,7 +196,7 @@ public class MinestomModelView
                     Pos basePos = position.sub(0, ARMORSTAND_HEIGHT, 0);
                     double yawRadians = Math.toRadians(basePos.yaw());
 
-                    for (Bone bone : this.model().bones()) {
+                    for (Bone bone : model.bones()) {
                         teleportBone(yawRadians, basePos, bone, Vector3Float.ZERO);
                     }
                 });

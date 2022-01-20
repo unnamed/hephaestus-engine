@@ -31,16 +31,28 @@ import team.unnamed.hephaestus.animation.ModelAnimation;
  * Base abstraction for representing a {@link Model}
  * view, allows multiple viewers and animation playing.
  *
- * Platform un-specific, to use more specific properties,
- * see their implementations in runtime-* projects
+ * Platform independent, to use more specific properties
+ * and avoid using generics, use their implementations in
+ * runtime-* projects
+ *
+ * @param <T> The platform-specific server player type
+ * @since 1.0.0
  */
-public interface ModelView {
+public interface ModelView<T> {
 
     /**
      * Returns the model being viewed
      * from this view instance
      */
     Model model();
+
+    /**
+     * Sets the {@link ModelInteractListener} for
+     * this model view
+     *
+     * @param interactListener The interaction listener
+     */
+    void interactListener(ModelInteractListener<T> interactListener);
 
     //#region Entire View Handling methods
     /**

@@ -69,6 +69,8 @@ public class Server {
             player.setRespawnPoint(new Pos(0, 72, 0));
         });
 
+        ModelClickListener.register(eventHandler);
+
         Set<MinestomModelView> views = ConcurrentHashMap.newKeySet();
 
         ModelResourcePackWriter modelWriter = new ModelResourcePackWriter(Collections.singletonList(
