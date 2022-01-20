@@ -151,7 +151,6 @@ public class ModelGeometryTransformer {
                         .to(cube.to())
                         .rotation(cube.rotation())
                         .faces(cube.faces())
-                        .shade(false)
                         .build()).collect(Collectors.toList()))
                 .build();
     }
