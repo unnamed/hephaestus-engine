@@ -114,7 +114,7 @@ public class ModelGeometryTransformer {
                     unshift(origin.z() - deltaZ)
             );
             Vector3Float newTo = new Vector3Float(
-                    unshift(-to.x() + BLOCK_SIZE + deltaX),
+                    unshift(BLOCK_SIZE + deltaX - origin.x()),
                     unshift(to.y() - deltaY),
                     unshift(to.z() - deltaZ)
             );
