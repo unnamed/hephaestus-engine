@@ -101,6 +101,13 @@ public class Bone {
      * which must be applied to the creative
      * Model representing this bone
      *
+     * <p>Consider this number as a "handle"
+     * or "connection" to the resource-pack
+     * model information</p>
+     *
+     * <strong>This number must be unique in
+     * the resource-pack</strong>
+     *
      * @return The bone custom model data
      */
     public int customModelData() {
