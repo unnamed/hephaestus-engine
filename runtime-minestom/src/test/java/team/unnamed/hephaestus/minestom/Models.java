@@ -16,7 +16,7 @@ public class Models {
         try (InputStream input = Server.class.getClassLoader()
                         .getResourceAsStream("redstone_monstrosity.bbmodel")) {
             Objects.requireNonNull(input, "redstone monstrosity");
-            REDSTONE_MONSTROSITY = new BBModelReader().read(new InputStreamReader(input));
+            REDSTONE_MONSTROSITY = new BBModelReader().read(input);
         } catch (IOException e) {
             throw new ExceptionInInitializerError(e);
         }

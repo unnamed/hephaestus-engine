@@ -26,22 +26,25 @@ package team.unnamed.hephaestus.reader;
 import team.unnamed.hephaestus.Model;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 
 /**
- * Responsible for reading and parsing
- * {@link Model} from a sequence of bytes,
- * structure of models depend on implementation
+ * Responsible for reading and parsing {@link Model} from a
+ * sequence of bytes, structure of models depend on
+ * implementation
+ *
+ * @since 1.0.0
  */
 public interface ModelReader {
 
     /**
      * Reads a model from the given {@code reader}
-     * @param reader The reader used to read and parse
-     *               the {@link Model} instance
+     *
+     * @param input The byte input stream used to read
+     *              and parse the {@link Model} instance
      * @return The parsed model
      * @throws IOException If parsing fails
      */
-    Model read(Reader reader) throws IOException;
+    Model read(InputStream input) throws IOException;
 
 }

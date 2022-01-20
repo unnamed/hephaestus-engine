@@ -46,6 +46,8 @@ import team.unnamed.hephaestus.animation.KeyFrameList;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,8 +90,9 @@ public class BBModelReader implements ModelReader {
     }
 
     @Override
-    public Model read(Reader reader) throws IOException {
+    public Model read(InputStream input) throws IOException {
 
+        Reader reader = new InputStreamReader(input);
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
         JsonObject meta = json.get("meta").getAsJsonObject();
 
