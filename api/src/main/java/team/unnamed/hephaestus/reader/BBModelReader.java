@@ -280,6 +280,7 @@ public class BBModelReader implements ModelReader {
             Vector3Float from = getVector3FloatFromJson(cubeJson.get("from"));
 
             Vector3Float origin = new Vector3Float(-to.x(), from.y(), from.z());
+            to = origin.add(to.subtract(from));
 
             Vector3Float rotation = isNullOrAbsent(cubeJson, "rotation")
                     ? Vector3Float.ZERO
