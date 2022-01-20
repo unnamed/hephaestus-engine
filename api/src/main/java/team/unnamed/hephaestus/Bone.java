@@ -66,22 +66,52 @@ public class Bone {
         this.customModelData = customModelData;
     }
 
+    /**
+     * Returns this bone parent bone
+     *
+     * @return The bone parent
+     */
     public @Nullable Bone parent() {
         return parent;
     }
 
-    public Vector3Float offset() {
-        return offset;
-    }
-
-    public int customModelData() {
-        return customModelData;
-    }
-
+    /**
+     * Returns this bone unique name, bone names
+     * are unique in the {@link Model} scope
+     *
+     * @return The bone name
+     */
     public String name() {
         return name;
     }
 
+    /**
+     * Returns this bone offset, which is, in
+     * other words, the position of this bone
+     * (relative to parent's position)
+     *
+     * @return The bone offset
+     */
+    public Vector3Float offset() {
+        return offset;
+    }
+
+    /**
+     * Returns this bone custom model data,
+     * which must be applied to the creative
+     * Model representing this bone
+     *
+     * @return The bone custom model data
+     */
+    public int customModelData() {
+        return customModelData;
+    }
+
+    /**
+     * Returns this bone initial rotation
+     *
+     * @return The bone initial rotation
+     */
     public Vector3Float rotation() {
         return rotation;
     }
@@ -96,10 +126,21 @@ public class Bone {
         return small;
     }
 
+    /**
+     * Returns this bone child bones
+     *
+     * @return The child bones
+     */
     public Collection<Bone> bones() {
         return bones.values();
     }
 
+    /**
+     * Returns a map of this bone children
+     * bones, keys are bone names
+     *
+     * @return The child bone map
+     */
     public Map<String, Bone> boneMap() {
         return bones;
     }

@@ -30,6 +30,12 @@ import team.unnamed.hephaestus.partial.ModelAsset;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Represents a {@link Bone} compound which also holds
+ * the animations and the resource-pack information
+ *
+ * @since 1.0.0
+ */
 public class Model {
 
     private final String name;
@@ -50,18 +56,42 @@ public class Model {
         this.animations = asset.animations();
     }
 
+    /**
+     * Returns this model's name
+     *
+     * @return The model name
+     */
     public String name() {
         return name;
     }
 
+    /**
+     * Returns a collection of the {@link Bone}
+     * instances that compose this {@link Model}
+     *
+     * @return The model bones
+     */
     public Collection<Bone> bones() {
         return bones.values();
     }
 
+    /**
+     * Returns a map of the {@link Bone} instances
+     * that compose this {@link Model}, the keys
+     * in this map are the bone names
+     *
+     * @return The model bone map
+     */
     public Map<String, Bone> boneMap() {
         return bones;
     }
 
+    /**
+     * Returns a map of the registered animations
+     * for this model, keys are the animation names
+     *
+     * @return The model animations
+     */
     public Map<String, ModelAnimation> animations() {
         return animations;
     }
