@@ -30,8 +30,11 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * It's a model cube holder, a {@link team.unnamed.creative.model.Element}
- * composite, util to make rotations over the pivot
+ * Represents a {@link Model} movable part, in the
+ * game, it has its own Creative's {@link team.unnamed.creative.model.Model}
+ * and its own armor_stand entity
+ *
+ * @since 1.0.0
  */
 public class Bone {
 
