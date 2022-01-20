@@ -26,7 +26,6 @@ package team.unnamed.hephaestus.view;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.ModelAnimation;
-import team.unnamed.hephaestus.struct.Vector3Double;
 
 /**
  * Base abstraction for representing a {@link Model}
@@ -82,7 +81,7 @@ public interface ModelView {
      * @throws NullPointerException If no bone with the
      * given name is found
      */
-    void rotateBone(String name, Vector3Double rotation);
+    void rotateBone(String name, Vector3Float rotation);
     //#endregion
 
     //#region Animation Handling methods

@@ -27,7 +27,6 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.ModelBone;
 import team.unnamed.hephaestus.view.ModelView;
 import team.unnamed.hephaestus.struct.Quaternion;
-import team.unnamed.hephaestus.struct.Vector3Double;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Deque;
@@ -116,23 +115,23 @@ public class AnimationQueue {
             double yaw,
             ModelBone parent,
             ModelBone bone,
-            Vector3Double parentRotation,
+            Vector3Float parentRotation,
             Vector3Float parentPosition
     ) {
 
         KeyFrame frame = next(bone.getName());
         Vector3Float framePosition = frame.getPosition();
 
-        Vector3Double frameRotation = Vectors.toRadians(frame.getRotation());
+        Vector3Float frameRotation = Vectors.toRadians(frame.getRotation());
 
         Vector3Float defaultPosition = bone.getOffset();
-        Vector3Double defaultRotation = Vectors.toRadians(bone.getRotation());
+        Vector3Float defaultRotation = Vectors.toRadians(bone.getRotation());
 
         Vector3Float localPosition = framePosition.add(defaultPosition);
-        Vector3Double localRotation = defaultRotation.add(frameRotation.getX(), frameRotation.getY(), frameRotation.getZ());
+        Vector3Float localRotation = defaultRotation.add(frameRotation);
 
         Vector3Float globalPosition;
-        Vector3Double globalRotation;
+        Vector3Float globalRotation;
 
         if (parent == null) {
             globalPosition = Vectors.rotateAroundY(localPosition, yaw);
@@ -171,7 +170,7 @@ public class AnimationQueue {
                     yaw,
                     null,
                     bone,
-                    Vector3Double.ZERO,
+                    Vector3Float.ZERO,
                     Vector3Float.ZERO
             );
         }

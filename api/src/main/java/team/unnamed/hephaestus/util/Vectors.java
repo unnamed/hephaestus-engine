@@ -24,7 +24,6 @@
 package team.unnamed.hephaestus.util;
 
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.struct.Vector3Double;
 
 /**
  * Utility class for working with
@@ -32,16 +31,14 @@ import team.unnamed.hephaestus.struct.Vector3Double;
  */
 public final class Vectors {
 
+    private static final float DEGREE = 0.017453292519943295F;
+
     private Vectors() {
         throw new UnsupportedOperationException("This class cannot be instantiated");
     }
 
-    public static Vector3Double toRadians(Vector3Float vector) {
-        return new Vector3Double(
-                Math.toRadians(vector.x()),
-                Math.toRadians(vector.y()),
-                Math.toRadians(vector.z())
-        );
+    public static Vector3Float toRadians(Vector3Float vector) {
+        return vector.multiply(DEGREE);
     }
 
     public static Vector3Float rotateAroundY(Vector3Float vector, double angle) {
@@ -55,11 +52,11 @@ public final class Vectors {
         );
     }
 
-    public static Vector3Float rotate(Vector3Float vector, Vector3Double rotation) {
+    public static Vector3Float rotate(Vector3Float vector, Vector3Float rotation) {
 
-        double cosX = Math.cos(rotation.getX()), sinX = Math.sin(rotation.getX());
-        double cosY = Math.cos(rotation.getY()), sinY = Math.sin(rotation.getY());
-        double cosZ = Math.cos(rotation.getZ()), sinZ = Math.sin(rotation.getZ());
+        double cosX = Math.cos(rotation.x()), sinX = Math.sin(rotation.x());
+        double cosY = Math.cos(rotation.y()), sinY = Math.sin(rotation.y());
+        double cosZ = Math.cos(rotation.z()), sinZ = Math.sin(rotation.z());
 
         double x = vector.x();
         double y = vector.y();

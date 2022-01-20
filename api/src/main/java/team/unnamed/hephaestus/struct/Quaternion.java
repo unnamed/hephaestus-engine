@@ -23,6 +23,8 @@
  */
 package team.unnamed.hephaestus.struct;
 
+import team.unnamed.creative.base.Vector3Float;
+
 import java.util.Objects;
 
 /**
@@ -55,25 +57,25 @@ public class Quaternion {
      * geometry/rotations/conversions/quaternionToEuler
      * /indexLocal.htm</p>
      */
-    public Vector3Double toEuler() {
+    public Vector3Float toEuler() {
 
         double test = x * z + y * w;
 
         // singularity at north pole
-        if (test > 0.499) {
-            return new Vector3Double(
-                    Math.atan2(x, w),
-                    Math.PI / 2,
-                    0
+        if (test > 0.499F) {
+            return new Vector3Float(
+                    (float) Math.atan2(x, w),
+                    (float) (Math.PI / 2F),
+                    0F
             );
         }
 
         // singularity at south pole
-        if (test < -0.499) {
-            return new Vector3Double(
-                    -Math.atan2(x, w),
-                    -Math.PI / 2,
-                    0
+        if (test < -0.499F) {
+            return new Vector3Float(
+                    (float) -Math.atan2(x, w),
+                    (float) (-Math.PI / 2F),
+                    0F
             );
         }
 
@@ -85,10 +87,10 @@ public class Quaternion {
         double y2 = y + y;
         double z2 = z + z;
 
-        return new Vector3Double(
-                Math.atan2(w * x2 - y * z2, 1 - 2 * (sqx + sqy)),
-                -Math.asin(2 * test),
-                Math.atan2(w * z2 - x * y2, 1 - 2 * (sqz + sqy))
+        return new Vector3Float(
+                (float) Math.atan2(w * x2 - y * z2, 1 - 2 * (sqx + sqy)),
+                (float) -Math.asin(2 * test),
+                (float) Math.atan2(w * z2 - x * y2, 1 - 2 * (sqz + sqy))
         );
     }
 
@@ -118,16 +120,16 @@ public class Quaternion {
      * Creates a {@link Quaternion} representation of the given
      * {@code euler} angles (in radians)
      */
-    public static Quaternion fromEuler(Vector3Double euler) {
+    public static Quaternion fromEuler(Vector3Float euler) {
 
         // based on https://www.javatips.net/api/rotation-vector
         // -compass-master/RotationVectorCompass/src/com/adamrat
         // ana/rotationvectorcompass/math/Quaternion.java
 
         // common values
-        double halfX = euler.getX() / 2D;
-        double negHalfY = euler.getY() / -2D;
-        double halfZ = euler.getZ() / 2D;
+        double halfX = euler.x() / 2D;
+        double negHalfY = euler.y() / -2D;
+        double halfZ = euler.z() / 2D;
 
         // compute cos
         double cosX = Math.cos(halfX);
