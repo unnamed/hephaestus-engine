@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.struct;
+package team.unnamed.hephaestus.util;
 
 import team.unnamed.creative.base.Vector3Float;
 

@@ -26,7 +26,7 @@ package team.unnamed.hephaestus.animation;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.ModelBone;
 import team.unnamed.hephaestus.view.ModelView;
-import team.unnamed.hephaestus.struct.Quaternion;
+import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Deque;
