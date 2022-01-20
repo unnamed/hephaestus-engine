@@ -199,12 +199,11 @@ public class BBModelReader implements ModelReader {
 
             if (isNullOrAbsent(animationJson, "animators")) {
                 // empty animation, no keyframes of any kind
-                animations.put(name, new ModelAnimation(name, loop, length, new HashMap<>(), new HashMap<>()));
+                animations.put(name, new ModelAnimation(name, loop, length, new HashMap<>()));
                 continue;
             }
 
             Map<String, KeyFrameList> animators = new HashMap<>();
-            Map<String, Map<Integer, Integer>> modelData = new HashMap<>();
 
             for (Map.Entry<String, JsonElement> animatorEntry : animationJson.get("animators")
                     .getAsJsonObject()
@@ -245,7 +244,7 @@ public class BBModelReader implements ModelReader {
                 animators.put(boneName, frames);
             }
 
-            ModelAnimation animation = new ModelAnimation(name, loop, length, animators, modelData);
+            ModelAnimation animation = new ModelAnimation(name, loop, length, animators);
             animations.put(name, animation);
         }
     }
@@ -421,7 +420,7 @@ public class BBModelReader implements ModelReader {
         // instantiate bone and asset with empty and mutable
         // cubes, bones and assets, they'll be filled later
         ModelBoneAsset asset = new ModelBoneAsset(name, pivot, cursor.next(), cubes, boneAssets);
-        ModelBone bone = new ModelBone(parent, name, rotation, bones, offset, true, asset.getCustomModelData());
+        ModelBone bone = new ModelBone(parent, name, rotation, bones, offset, true, asset.customModelData());
 
         for (JsonElement childElement : json.get("children").getAsJsonArray()) {
             if (childElement.isJsonObject()) {
@@ -455,8 +454,8 @@ public class BBModelReader implements ModelReader {
             }
         }
 
-        siblings.put(bone.getName(), bone);
-        siblingAssets.put(asset.getName(), asset);
+        siblings.put(bone.name(), bone);
+        siblingAssets.put(asset.name(), asset);
     }
 
     /**

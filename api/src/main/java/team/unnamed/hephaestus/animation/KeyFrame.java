@@ -53,15 +53,15 @@ public class KeyFrame {
         this.scale = scale;
     }
 
-    public Vector3Float getPosition() {
+    public Vector3Float position() {
         return position;
     }
 
-    public Vector3Float getRotation() {
+    public Vector3Float rotation() {
         return rotation;
     }
 
-    public Vector3Float getScale() {
+    public Vector3Float scale() {
         return scale;
     }
 

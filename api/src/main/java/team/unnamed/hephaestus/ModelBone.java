@@ -63,24 +63,23 @@ public class ModelBone {
         this.customModelData = customModelData;
     }
 
-    @Nullable
-    public ModelBone getParent() {
+    public @Nullable ModelBone parent() {
         return parent;
     }
 
-    public Vector3Float getOffset() {
+    public Vector3Float offset() {
         return offset;
     }
 
-    public int getCustomModelData() {
+    public int customModelData() {
         return customModelData;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public Vector3Float getRotation() {
+    public Vector3Float rotation() {
         return rotation;
     }
 
@@ -90,15 +89,15 @@ public class ModelBone {
      *
      * @return True to use small armor stands
      */
-    public boolean isSmall() {
+    public boolean small() {
         return small;
     }
 
-    public Collection<ModelBone> getBones() {
+    public Collection<ModelBone> bones() {
         return bones.values();
     }
 
-    public Map<String, ModelBone> getBoneMap() {
+    public Map<String, ModelBone> boneMap() {
         return bones;
     }
 

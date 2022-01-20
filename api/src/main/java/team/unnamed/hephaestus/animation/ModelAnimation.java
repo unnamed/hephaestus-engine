@@ -35,49 +35,35 @@ import java.util.Objects;
 public class ModelAnimation {
 
     private final String name;
-
-    /** Determines if the animation is infinite */
     private final boolean loop;
-
-    /** Determines the animation length in ticks */
     private final int animationLength;
-
-    /** Contains all the bone animations using the bone names as key */
     private final Map<String, KeyFrameList> framesByBone;
-
-    private final Map<String, Map<Integer, Integer>> modelData;
 
     public ModelAnimation(
             String name,
             boolean loop,
             int animationLength,
-            Map<String, KeyFrameList> framesByBone,
-            Map<String, Map<Integer, Integer>> modelData
+            Map<String, KeyFrameList> framesByBone
     ) {
         this.name = name;
         this.loop = loop;
         this.animationLength = animationLength;
         this.framesByBone = framesByBone;
-        this.modelData = modelData;
     }
 
-    public Map<String, Map<Integer, Integer>> getModelData() {
-        return modelData;
-    }
-
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public boolean isLoop() {
+    public boolean loop() {
         return loop;
     }
 
-    public int getAnimationLength() {
+    public int animationLength() {
         return animationLength;
     }
 
-    public Map<String, KeyFrameList> getAnimationsByBoneName() {
+    public Map<String, KeyFrameList> framesByBone() {
         return framesByBone;
     }
 

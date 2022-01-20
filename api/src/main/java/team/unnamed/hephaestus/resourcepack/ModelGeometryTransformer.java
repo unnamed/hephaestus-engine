@@ -82,14 +82,14 @@ public class ModelGeometryTransformer {
             ModelAsset model,
             ModelBoneAsset bone
     ) {
-        Vector3Float bonePivot = bone.getPivot();
+        Vector3Float bonePivot = bone.pivot();
         float deltaX = bonePivot.x() - HALF_BLOCK_SIZE;
         float deltaY = bonePivot.y() - HALF_BLOCK_SIZE;
         float deltaZ = bonePivot.z() - HALF_BLOCK_SIZE;
 
         List<Element> newElements = new ArrayList<>();
 
-        for (Element cube : bone.getCubes()) {
+        for (Element cube : bone.cubes()) {
 
             Vector3Float origin = cube.from();
             Vector3Float to = cube.to();
@@ -144,8 +144,8 @@ public class ModelGeometryTransformer {
         displays.put(ItemTransform.Type.HEAD, headTransform);
 
         Map<String, Key> textureMappings = new HashMap<>();
-        model.getTextureMapping().forEach((id, path) ->
-                textureMappings.put(id.toString(), Key.key(namespace, model.getName() + '/' + path)));
+        model.textureMapping().forEach((id, path) ->
+                textureMappings.put(id.toString(), Key.key(namespace, model.name() + '/' + path)));
 
         return Model.builder()
                 .key(key)

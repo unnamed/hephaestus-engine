@@ -40,7 +40,7 @@ public interface ModelView {
      * Returns the model being viewed
      * from this view instance
      */
-    Model getModel();
+    Model model();
 
     //#region Entire View Handling methods
     /**
@@ -92,7 +92,7 @@ public interface ModelView {
      *
      * @param name The animation name
      * @param transitionTicks the amount of ticks for the transition between last animation and the current one
-     * @see Model#getAnimations()
+     * @see Model#animations()
      */
     void playAnimation(String name, int transitionTicks);
 
@@ -102,7 +102,7 @@ public interface ModelView {
      * instance.
      *
      * @param name The animation name
-     * @see Model#getAnimations()
+     * @see Model#animations()
      */
     default void playAnimation(String name) {
         playAnimation(name, 0);
@@ -114,7 +114,7 @@ public interface ModelView {
      *
      * @param animation The animation to play
      * @param transitionTicks the amount of ticks for the transition between last animation and the current one
-     * @see Model#getAnimations()
+     * @see Model#animations()
      */
     void playAnimation(ModelAnimation animation, int transitionTicks);
 
@@ -123,7 +123,7 @@ public interface ModelView {
      * this model view instance
      *
      * @param animation The animation to play
-     * @see Model#getAnimations()
+     * @see Model#animations()
      */
     default void playAnimation(ModelAnimation animation) {
         playAnimation(animation, 0);

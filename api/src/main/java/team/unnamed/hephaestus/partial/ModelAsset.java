@@ -24,13 +24,12 @@
 package team.unnamed.hephaestus.partial;
 
 import team.unnamed.creative.base.Writable;
-import team.unnamed.hephaestus.BoneHolder;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class ModelAsset implements BoneHolder {
+public class ModelAsset {
 
     private final String name;
     private final Map<String, Writable> textures;
@@ -52,24 +51,23 @@ public class ModelAsset implements BoneHolder {
         this.animations = animations;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public Map<String, Writable> getTextures() {
+    public Map<String, Writable> textures() {
         return textures;
     }
 
-    public Map<Integer, String> getTextureMapping() {
+    public Map<Integer, String> textureMapping() {
         return textureMapping;
     }
 
-    public Map<String, ModelAnimation> getAnimations() {
+    public Map<String, ModelAnimation> animations() {
         return animations;
     }
 
-    @Override
-    public Collection<ModelBoneAsset> getBones() {
+    public Collection<ModelBoneAsset> bones() {
         return bones.values();
     }
 

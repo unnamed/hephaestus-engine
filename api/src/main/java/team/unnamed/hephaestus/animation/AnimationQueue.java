@@ -51,7 +51,7 @@ public class AnimationQueue {
 
     private void createIterators(ModelAnimation animation) {
         iterators.clear();
-        animation.getAnimationsByBoneName().forEach((name, list) ->
+        animation.framesByBone().forEach((name, list) ->
                 iterators.put(name, list.iterator()));
     }
 
@@ -67,22 +67,22 @@ public class AnimationQueue {
 
         lastFrames.forEach((boneName, frame) -> {
             KeyFrameList keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicKeyFrameList());
-            keyFrames.put(0, KeyFrameList.Channel.POSITION, frame.getPosition());
-            keyFrames.put(0, KeyFrameList.Channel.ROTATION, frame.getRotation());
-            keyFrames.put(0, KeyFrameList.Channel.SCALE, frame.getScale());
+            keyFrames.put(0, KeyFrameList.Channel.POSITION, frame.position());
+            keyFrames.put(0, KeyFrameList.Channel.ROTATION, frame.rotation());
+            keyFrames.put(0, KeyFrameList.Channel.SCALE, frame.scale());
 
             framesByBone.put(boneName, keyFrames);
         });
 
-        animation.getAnimationsByBoneName().forEach((boneName, frames) -> {
+        animation.framesByBone().forEach((boneName, frames) -> {
             Iterator<KeyFrame> iterator = frames.iterator();
             if (iterator.hasNext()) {
                 KeyFrame firstFrame = frames.iterator().next();
 
                 KeyFrameList keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicKeyFrameList());
-                keyFrames.put(transitionTicks, KeyFrameList.Channel.POSITION, firstFrame.getPosition());
-                keyFrames.put(transitionTicks, KeyFrameList.Channel.ROTATION, firstFrame.getRotation());
-                keyFrames.put(transitionTicks, KeyFrameList.Channel.SCALE, firstFrame.getScale());
+                keyFrames.put(transitionTicks, KeyFrameList.Channel.POSITION, firstFrame.position());
+                keyFrames.put(transitionTicks, KeyFrameList.Channel.ROTATION, firstFrame.rotation());
+                keyFrames.put(transitionTicks, KeyFrameList.Channel.SCALE, firstFrame.scale());
             }
         });
 
@@ -90,8 +90,7 @@ public class AnimationQueue {
                 "generated-transition",
                 false,
                 transitionTicks,
-                framesByBone,
-                modelData
+                framesByBone
         ));
 
         animations.addFirst(animation);
@@ -119,13 +118,13 @@ public class AnimationQueue {
             Vector3Float parentPosition
     ) {
 
-        KeyFrame frame = next(bone.getName());
-        Vector3Float framePosition = frame.getPosition();
+        KeyFrame frame = next(bone.name());
+        Vector3Float framePosition = frame.position();
 
-        Vector3Float frameRotation = Vectors.toRadians(frame.getRotation());
+        Vector3Float frameRotation = Vectors.toRadians(frame.rotation());
 
-        Vector3Float defaultPosition = bone.getOffset();
-        Vector3Float defaultRotation = Vectors.toRadians(bone.getRotation());
+        Vector3Float defaultPosition = bone.offset();
+        Vector3Float defaultRotation = Vectors.toRadians(bone.rotation());
 
         Vector3Float localPosition = framePosition.add(defaultPosition);
         Vector3Float localRotation = defaultRotation.add(frameRotation);
@@ -146,14 +145,14 @@ public class AnimationQueue {
                     .toEuler();
         }
 
-        view.moveBone(bone.getName(), globalPosition);
-        view.rotateBone(bone.getName(), globalRotation);
+        view.moveBone(bone.name(), globalPosition);
+        view.rotateBone(bone.name(), globalRotation);
 
         //if (modelData != -1) {
         //    entity.updateBoneModelData(bone, modelData);
         //}
 
-        for (ModelBone component : bone.getBones()) {
+        for (ModelBone component : bone.bones()) {
             this.updateBone(
                     yaw,
                     bone,
@@ -165,7 +164,7 @@ public class AnimationQueue {
     }
 
     public synchronized void next(double yaw) {
-        for (ModelBone bone : view.getModel().getBones()) {
+        for (ModelBone bone : view.model().bones()) {
             updateBone(
                     yaw,
                     null,
@@ -192,7 +191,7 @@ public class AnimationQueue {
                 if (++noNext >= iterators.size()) {
                     noNext = 0;
                     // all iterators fully-consumed
-                    if (animation.isLoop()) {
+                    if (animation.loop()) {
                         createIterators(animation);
                     } else {
                         nextAnimation();

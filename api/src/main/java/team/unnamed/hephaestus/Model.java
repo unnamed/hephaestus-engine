@@ -47,27 +47,27 @@ public class Model {
         this.asset = asset;
         // data from 'asset' that will persist after calling
         // discardResourcePackData()
-        this.animations = asset.getAnimations();
+        this.animations = asset.animations();
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public Collection<ModelBone> getBones() {
+    public Collection<ModelBone> bones() {
         return bones.values();
     }
 
-    public Map<String, ModelBone> getBoneMap() {
+    public Map<String, ModelBone> boneMap() {
         return bones;
     }
 
-    public Map<String, ModelAnimation> getAnimations() {
+    public Map<String, ModelAnimation> animations() {
         return animations;
     }
 
     @Nullable
-    public ModelAsset getAsset() {
+    public ModelAsset asset() {
         return asset;
     }
 

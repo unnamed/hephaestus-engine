@@ -55,7 +55,7 @@ public class MinestomModelView
     }
 
     @Override
-    public Model getModel() {
+    public Model model() {
         return model;
     }
 
@@ -107,7 +107,7 @@ public class MinestomModelView
     //#region Animation Handling methods
     @Override
     public void playAnimation(String animationName, int transitionTicks) {
-        ModelAnimation animation = model.getAnimations().get(animationName);
+        ModelAnimation animation = model.animations().get(animationName);
         animationQueue.pushAnimation(animation, transitionTicks);
     }
 
@@ -136,7 +136,7 @@ public class MinestomModelView
     private void summonBone(double yawRadians, Pos pos, ModelBone bone, Vector3Float parentOffset) {
         Instance instance = this.instance;
 
-        Vector3Float offset = bone.getOffset().add(parentOffset);
+        Vector3Float offset = bone.offset().add(parentOffset);
 
         Vector3Float relativePos = Vectors.rotateAroundY(offset, yawRadians);
 
@@ -145,11 +145,11 @@ public class MinestomModelView
 
         meta.setSilent(true);
         meta.setHasNoGravity(true);
-        meta.setSmall(bone.isSmall());
+        meta.setSmall(bone.small());
         meta.setInvisible(true);
 
         entity.setHelmet(BASE_HELMET.withMeta(itemMeta ->
-                itemMeta.customModelData(bone.getCustomModelData())));
+                itemMeta.customModelData(bone.customModelData())));
 
         // todo: maybe we can just show the bones using addViewer
         entity.setInstance(instance, pos.add(
@@ -158,9 +158,9 @@ public class MinestomModelView
                 relativePos.z()
         )).join();
 
-        bones.put(bone.getName(), entity);
+        bones.put(bone.name(), entity);
 
-        for (ModelBone child : bone.getBones()) {
+        for (ModelBone child : bone.bones()) {
             summonBone(yawRadians, pos, child, offset);
         }
     }
@@ -171,9 +171,9 @@ public class MinestomModelView
             ModelBone bone,
             Vector3Float parentOffset
     ) {
-        Vector3Float offset = bone.getOffset().add(parentOffset);
+        Vector3Float offset = bone.offset().add(parentOffset);
         Vector3Float relativePosition = Vectors.rotateAroundY(offset, yawRadians);
-        Entity entity = bones.get(bone.getName());
+        Entity entity = bones.get(bone.name());
 
         if (entity != null) {
             entity.teleport(pos.add(
@@ -182,7 +182,7 @@ public class MinestomModelView
                     relativePosition.z()
             ));
         }
-        for (ModelBone child : bone.getBones()) {
+        for (ModelBone child : bone.bones()) {
             this.teleportBone(yawRadians, pos, child, offset);
         }
     }
@@ -194,7 +194,7 @@ public class MinestomModelView
                     // create the bone entities
                     Pos basePos = spawnPosition.sub(0, ARMORSTAND_HEIGHT, 0);
                     double yawRadians = Math.toRadians(basePos.yaw());
-                    for (ModelBone bone : model.getBones()) {
+                    for (ModelBone bone : model.bones()) {
                         summonBone(yawRadians, basePos, bone, Vector3Float.ZERO);
                     }
                 });
@@ -207,7 +207,7 @@ public class MinestomModelView
                     Pos basePos = position.sub(0, ARMORSTAND_HEIGHT, 0);
                     double yawRadians = Math.toRadians(basePos.yaw());
 
-                    for (ModelBone bone : this.getModel().getBones()) {
+                    for (ModelBone bone : this.model().bones()) {
                         teleportBone(yawRadians, basePos, bone, Vector3Float.ZERO);
                     }
                 });

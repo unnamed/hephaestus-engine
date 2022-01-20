@@ -25,13 +25,12 @@ package team.unnamed.hephaestus.partial;
 
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.model.Element;
-import team.unnamed.hephaestus.BoneHolder;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class ModelBoneAsset implements BoneHolder {
+public class ModelBoneAsset {
 
     private final String name;
     private final Vector3Float pivot;
@@ -53,24 +52,23 @@ public class ModelBoneAsset implements BoneHolder {
         this.bones = bones;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public Vector3Float getPivot() {
+    public Vector3Float pivot() {
         return pivot;
     }
 
-    public int getCustomModelData() {
+    public int customModelData() {
         return customModelData;
     }
 
-    public List<Element> getCubes() {
+    public List<Element> cubes() {
         return cubes;
     }
 
-    @Override
-    public Collection<ModelBoneAsset> getBones() {
+    public Collection<ModelBoneAsset> bones() {
         return bones.values();
     }
 

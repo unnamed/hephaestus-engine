@@ -87,7 +87,7 @@ public class Server {
                 case "resourcepack" -> {
                     try {
                         ModelResourcePackWriter modelWriter = new ModelResourcePackWriter(Collections.singletonList(
-                                Models.REDSTONE_MONSTROSITY.getAsset()
+                                Models.REDSTONE_MONSTROSITY.asset()
                         ), "hephaestus");
 
                         player.setResourcePack(

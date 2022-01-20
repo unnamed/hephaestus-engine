@@ -70,18 +70,18 @@ public class ModelResourcePackWriter {
     ) throws IOException {
         for (ModelBoneAsset bone : assets) {
 
-            Key modelKey = Key.key(namespace, model.getName() + '/' + bone.getName());
+            Key modelKey = Key.key(namespace, model.name() + '/' + bone.name());
             Model creativeModel = transformer.toCreative(modelKey, model, bone);
 
             overrides.add(ItemOverride.of(
                     modelKey,
-                    ItemPredicate.customModelData(bone.getCustomModelData())
+                    ItemPredicate.customModelData(bone.customModelData())
             ));
 
             tree.write(creativeModel);
 
             // write children
-            writeBoneCubes(tree, model, overrides, bone.getBones());
+            writeBoneCubes(tree, model, overrides, bone.bones());
         }
     }
 
@@ -94,7 +94,7 @@ public class ModelResourcePackWriter {
         List<ItemOverride> overrides = new ArrayList<>();
 
         for (ModelAsset model : models) {
-            for (Map.Entry<String, Writable> texture : model.getTextures().entrySet()) {
+            for (Map.Entry<String, Writable> texture : model.textures().entrySet()) {
                 String textureName = texture.getKey();
                 Writable data = texture.getValue();
 
@@ -102,7 +102,7 @@ public class ModelResourcePackWriter {
                     textureName += ".png";
                 }
 
-                Key key = Key.key(namespace, model.getName() + '/' + textureName);
+                Key key = Key.key(namespace, model.name() + '/' + textureName);
 
                 // write the texture
                 tree.write(Texture.builder()
@@ -111,7 +111,7 @@ public class ModelResourcePackWriter {
                         .build());
             }
             // write all the model bones
-            writeBoneCubes(tree, model, overrides, model.getBones());
+            writeBoneCubes(tree, model, overrides, model.bones());
         }
 
         // sort overrides comparing by customModelData
