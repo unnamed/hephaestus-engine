@@ -15,17 +15,19 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.resourcepack.ResourcePack;
 import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.io.Streams;
-import team.unnamed.hephaestus.io.TreeOutputStream;
+import team.unnamed.creative.file.FileTree;
+import team.unnamed.creative.metadata.Metadata;
+import team.unnamed.creative.metadata.PackMeta;
+import team.unnamed.creative.texture.PackInfo;
 import team.unnamed.hephaestus.resourcepack.ModelResourcePackWriter;
-import team.unnamed.hephaestus.resourcepack.ResourcePackInfo;
-import team.unnamed.hephaestus.resourcepack.ResourcePackWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.zip.ZipOutputStream;
 
 public class Server {
@@ -82,16 +85,29 @@ public class Server {
 
                 case "resourcepack" -> {
                     try {
-                        player.setResourcePack(new MCPacksHttpExporter().export(ResourcePackWriter.compose(
-                                ResourcePackInfo.builder()
-                                        .setFormat(7) // 1.17
-                                        .setDescription("Hephaestus generated resource pack")
-                                        .build()
-                                        .toWriter(),
-                                new ModelResourcePackWriter(Collections.singletonList(
-                                        Models.REDSTONE_MONSTROSITY.getAsset()
-                                ), "hephaestus")
-                        )));
+                        ModelResourcePackWriter modelWriter = new ModelResourcePackWriter(Collections.singletonList(
+                                Models.REDSTONE_MONSTROSITY.getAsset()
+                        ), "hephaestus");
+
+                        player.setResourcePack(
+                                new MCPacksHttpExporter()
+                                        .export(tree -> {
+                                            try {
+                                                modelWriter.write(tree);
+
+                                                tree.write(PackInfo.builder()
+                                                        .meta(Metadata.builder()
+                                                                .add(PackMeta.of(
+                                                                        7,
+                                                                        "Hephaestus generated resource pack"
+                                                                ))
+                                                                .build())
+                                                        .build());
+                                            } catch (IOException e) {
+                                                throw new UncheckedIOException(e);
+                                            }
+                                        })
+                        );
                     } catch (IOException e) {
                         throw new IllegalStateException(
                                 "Cannot upload resource pack",
@@ -139,7 +155,7 @@ public class Server {
         }
 
         @NotNull
-        public ResourcePack export(ResourcePackWriter writer) throws IOException {
+        public ResourcePack export(Consumer<FileTree> writer) throws IOException {
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -157,7 +173,7 @@ public class Server {
 
             // write http request body
             try (OutputStream output = connection.getOutputStream()) {
-                Streams.writeUTF(
+                writeUTF(
                         output,
                         "--" + BOUNDARY + LINE_FEED
                                 + "Content-Disposition: form-data; name=\"file\"; filename=\"emojis.zip\""
@@ -172,13 +188,8 @@ public class Server {
                     throw new IOException("Cannot find SHA-1 algorithm");
                 }
 
-                TreeOutputStream treeOutput = TreeOutputStream.forZip(
-                        new ZipOutputStream(new DigestOutputStream(output, digest))
-                );
-                try {
-                    writer.write(treeOutput);
-                } finally {
-                    treeOutput.finish();
+                try (FileTree tree = FileTree.zip(new ZipOutputStream(new DigestOutputStream(output, digest)))) {
+                    writer.accept(tree);
                 }
 
                 hash = digest.digest();
@@ -194,7 +205,7 @@ public class Server {
 
                 hashString = hashBuilder.toString();
 
-                Streams.writeUTF(
+                writeUTF(
                         output,
                         LINE_FEED + "--" + BOUNDARY + "--" + LINE_FEED
                 );
@@ -209,7 +220,15 @@ public class Server {
             );
         }
 
-        private char hex(int c) {
+        private static void writeUTF(
+                OutputStream output,
+                String string
+        ) throws IOException {
+            byte[] data = string.getBytes(StandardCharsets.UTF_8);
+            output.write(data, 0, data.length);
+        }
+
+        private static char hex(int c) {
             return "0123456789abcdef".charAt(c);
         }
 

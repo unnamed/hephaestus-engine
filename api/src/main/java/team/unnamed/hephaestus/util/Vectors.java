@@ -23,8 +23,8 @@
  */
 package team.unnamed.hephaestus.util;
 
+import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.struct.Vector3Double;
-import team.unnamed.hephaestus.struct.Vector3Float;
 
 /**
  * Utility class for working with
@@ -38,9 +38,9 @@ public final class Vectors {
 
     public static Vector3Double toRadians(Vector3Float vector) {
         return new Vector3Double(
-                Math.toRadians(vector.getX()),
-                Math.toRadians(vector.getY()),
-                Math.toRadians(vector.getZ())
+                Math.toRadians(vector.x()),
+                Math.toRadians(vector.y()),
+                Math.toRadians(vector.z())
         );
     }
 
@@ -49,9 +49,9 @@ public final class Vectors {
         double cos = Math.cos(angle);
 
         return new Vector3Float(
-                (float) (vector.getX() * cos - vector.getZ() * sin),
-                vector.getY(),
-                (float) (vector.getX() * sin + vector.getZ() * cos)
+                (float) (vector.x() * cos - vector.z() * sin),
+                vector.y(),
+                (float) (vector.x() * sin + vector.z() * cos)
         );
     }
 
@@ -61,9 +61,9 @@ public final class Vectors {
         double cosY = Math.cos(rotation.getY()), sinY = Math.sin(rotation.getY());
         double cosZ = Math.cos(rotation.getZ()), sinZ = Math.sin(rotation.getZ());
 
-        double x = vector.getX();
-        double y = vector.getY();
-        double z = vector.getZ();
+        double x = vector.x();
+        double y = vector.y();
+        double z = vector.z();
 
         // rotate around X axis
         double xy = y * cosX - z * sinX;

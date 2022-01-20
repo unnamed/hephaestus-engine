@@ -18,7 +18,6 @@ import team.unnamed.hephaestus.ModelBone;
 import team.unnamed.hephaestus.animation.AnimationQueue;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.struct.Vector3Double;
-import team.unnamed.hephaestus.struct.Vector3Float;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.ModelView;
 

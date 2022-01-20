@@ -23,23 +23,26 @@
  */
 package team.unnamed.hephaestus.resourcepack;
 
-import com.google.gson.JsonObject;
-import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.io.Streamable;
-import team.unnamed.hephaestus.io.Streams;
-import team.unnamed.hephaestus.io.TreeOutputStream;
+import net.kyori.adventure.key.Key;
+import team.unnamed.creative.base.Writable;
+import team.unnamed.creative.file.FileTree;
+import team.unnamed.creative.model.ItemOverride;
+import team.unnamed.creative.model.ItemPredicate;
+import team.unnamed.creative.model.Model;
+import team.unnamed.creative.model.ModelTexture;
+import team.unnamed.creative.texture.Texture;
 import team.unnamed.hephaestus.ModelAsset;
 import team.unnamed.hephaestus.ModelBoneAsset;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
-public class ModelResourcePackWriter
-        implements ResourcePackWriter {
+public class ModelResourcePackWriter {
 
     private final Collection<ModelAsset> models;
     private final String namespace;
@@ -59,106 +62,78 @@ public class ModelResourcePackWriter
         this(models, "hephaestus");
     }
 
-    private static class ItemOverride implements Comparable<ItemOverride> {
-
-        private final int customModelData;
-        private final String model;
-
-        public ItemOverride(int customModelData, String model) {
-            this.customModelData = customModelData;
-            this.model = model;
-        }
-
-        @Override
-        public int compareTo(@NotNull ModelResourcePackWriter.ItemOverride other) {
-            return Integer.compare(customModelData, other.customModelData);
-        }
-
-        @Override
-        public String toString() {
-            return "{ " +
-                    "\"predicate\": { " +
-                        "\"custom_model_data\": " + customModelData +
-                    " }," +
-                    "\"model\": \"" + model + "\" " +
-                    "}";
-        }
-
-    }
-
     private void writeBoneCubes(
-            TreeOutputStream output,
+            FileTree tree,
             ModelAsset model,
             Collection<ItemOverride> overrides,
             Collection<ModelBoneAsset> assets
     ) throws IOException {
         for (ModelBoneAsset bone : assets) {
 
-            JsonObject json = transformer.toJavaJson(model, bone);
+            Key modelKey = Key.key(namespace, model.getName() + '/' + bone.getName());
+            Model creativeModel = transformer.toCreative(modelKey, model, bone);
 
-            overrides.add(new ItemOverride(
-                    bone.getCustomModelData(),
-                    namespace + ':' + model.getName() + '/' + bone.getName()
+            overrides.add(ItemOverride.of(
+                    Collections.singletonList(
+                            ItemPredicate.customModelData(bone.getCustomModelData())
+                    ),
+                    modelKey
             ));
 
-            output.useEntry(
-                    "assets/" + namespace + "/models/"
-                            + model.getName()
-                            +  "/" + bone.getName()
-                            + ".json"
-            );
-
-            Streams.writeUTF(output, json.toString());
-            output.closeEntry();
+            tree.write(creativeModel);
 
             // write children
-            writeBoneCubes(output, model, overrides, bone.getBones());
+            writeBoneCubes(tree, model, overrides, bone.getBones());
         }
     }
 
     /**
      * Transfers the resource pack information to the
      * given {@code output}
-     *
-     * <strong>Note that, as specified in {@link Streamable#transfer},
-     * this method won't close the given {@code output}</strong>
      */
-    @Override
-    public void write(TreeOutputStream output) throws IOException {
+    public void write(FileTree tree) throws IOException {
 
-        Set<ItemOverride> overrides = new TreeSet<>();
+        List<ItemOverride> overrides = new ArrayList<>();
 
         for (ModelAsset model : models) {
-            for (Map.Entry<String, Streamable> texture : model.getTextures().entrySet()) {
+            for (Map.Entry<String, Writable> texture : model.getTextures().entrySet()) {
                 String textureName = texture.getKey();
-                Streamable data = texture.getValue();
+                Writable data = texture.getValue();
 
                 if (!textureName.endsWith(".png")) {
                     textureName += ".png";
                 }
 
+                Key key = Key.key(namespace, model.getName() + '/' + textureName);
+
                 // write the texture
-                output.useEntry("assets/" + namespace
-                        + "/textures/" + model.getName() + "/" + textureName);
-                try (InputStream input = data.openIn()) {
-                    Streams.pipe(input, output);
-                }
-                output.closeEntry();
+                tree.write(Texture.builder()
+                        .key(key)
+                        .data(data)
+                        .build());
             }
             // write all the model bones
-            writeBoneCubes(output, model, overrides, model.getBones());
+            writeBoneCubes(tree, model, overrides, model.getBones());
         }
 
-        output.useEntry("assets/minecraft/models/item/leather_horse_armor.json");
-        Streams.writeUTF(
-                output,
-                "{"
-                        + "\"parent\": \"item/handheld\","
-                        + "\"textures\": { \"layer0\": \"item/leather_horse_armor\" },"
-                        + "\"overrides\": " + overrides
-                        + "}"
-        );
-        output.closeEntry();
+        // sort overrides comparing by customModelData
+        overrides.sort(Comparator.comparing(override -> {
+            ItemPredicate predicate = override.predicate().get(0);
+            return (Integer) predicate.value();
+        }));
+
+        Model leatherHorseArmorModel = Model.builder()
+                .key(Key.key("item/leather_horse_armor"))
+                .parent(Model.ITEM_HANDHELD)
+                .textures(ModelTexture.builder()
+                        .layers(Collections.singletonList(
+                                Key.key("item/leather_horse_armor")
+                        ))
+                        .build())
+                .overrides(overrides)
+                .build();
+
+        tree.write(leatherHorseArmorModel);
     }
 
 }

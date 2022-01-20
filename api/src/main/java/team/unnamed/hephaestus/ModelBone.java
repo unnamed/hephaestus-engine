@@ -24,13 +24,13 @@
 package team.unnamed.hephaestus;
 
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.creative.base.Vector3Float;
 
 import java.util.Collection;
 import java.util.Map;
 
 /**
- * It's a model cube holder, a {@link ModelCube}
+ * It's a model cube holder, a {@link team.unnamed.creative.model.Element}
  * composite, util to make rotations over the pivot
  */
 public class ModelBone {

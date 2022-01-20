@@ -23,7 +23,7 @@
  */
 package team.unnamed.hephaestus;
 
-import team.unnamed.hephaestus.io.Streamable;
+import team.unnamed.creative.base.Writable;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 
 import java.util.Collection;
@@ -32,25 +32,19 @@ import java.util.Map;
 public class ModelAsset implements BoneHolder {
 
     private final String name;
-    private final int textureWidth;
-    private final int textureHeight;
-    private final Map<String, Streamable> textures;
+    private final Map<String, Writable> textures;
     private final Map<Integer, String> textureMapping;
     private final Map<String, ModelAnimation> animations;
     private final Map<String, ModelBoneAsset> bones;
 
     public ModelAsset(
             String name,
-            int textureWidth,
-            int textureHeight,
-            Map<String, Streamable> textures,
+            Map<String, Writable> textures,
             Map<Integer, String> textureMapping,
             Map<String, ModelBoneAsset> bones,
             Map<String, ModelAnimation> animations
     ) {
         this.name = name;
-        this.textureWidth = textureWidth;
-        this.textureHeight = textureHeight;
         this.textures = textures;
         this.textureMapping = textureMapping;
         this.bones = bones;
@@ -61,15 +55,7 @@ public class ModelAsset implements BoneHolder {
         return name;
     }
 
-    public int getTextureWidth() {
-        return textureWidth;
-    }
-
-    public int getTextureHeight() {
-        return textureHeight;
-    }
-
-    public Map<String, Streamable> getTextures() {
+    public Map<String, Writable> getTextures() {
         return textures;
     }
 

@@ -24,7 +24,7 @@
 package team.unnamed.hephaestus.animation;
 
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.creative.base.Vector3Float;
 
 import java.util.Iterator;
 

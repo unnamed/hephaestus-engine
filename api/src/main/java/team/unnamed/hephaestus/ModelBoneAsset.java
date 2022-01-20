@@ -23,7 +23,8 @@
  */
 package team.unnamed.hephaestus;
 
-import team.unnamed.hephaestus.struct.Vector3Float;
+import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.creative.model.Element;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,14 +35,14 @@ public class ModelBoneAsset implements BoneHolder {
     private final String name;
     private final Vector3Float pivot;
     private final int customModelData;
-    private final List<ModelCube> cubes;
+    private final List<Element> cubes;
     private final Map<String, ModelBoneAsset> bones;
 
     public ModelBoneAsset(
             String name,
             Vector3Float pivot,
             int customModelData,
-            List<ModelCube> cubes,
+            List<Element> cubes,
             Map<String, ModelBoneAsset> bones
     ) {
         this.name = name;
@@ -63,7 +64,7 @@ public class ModelBoneAsset implements BoneHolder {
         return customModelData;
     }
 
-    public List<ModelCube> getCubes() {
+    public List<Element> getCubes() {
         return cubes;
     }
 

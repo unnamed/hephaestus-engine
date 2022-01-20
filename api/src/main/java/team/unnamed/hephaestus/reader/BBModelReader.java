@@ -28,31 +28,32 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.ModelCubeRotation;
-import team.unnamed.hephaestus.io.Streamable;
-import team.unnamed.hephaestus.io.Streams;
+import team.unnamed.creative.base.Axis3D;
+import team.unnamed.creative.base.CubeFace;
+import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.creative.base.Vector4Float;
+import team.unnamed.creative.base.Writable;
+import team.unnamed.creative.model.Element;
+import team.unnamed.creative.model.ElementFace;
+import team.unnamed.creative.model.ElementRotation;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelAsset;
 import team.unnamed.hephaestus.ModelBone;
 import team.unnamed.hephaestus.ModelBoneAsset;
-import team.unnamed.hephaestus.ModelCube;
 import team.unnamed.hephaestus.ModelDataCursor;
 import team.unnamed.hephaestus.animation.DynamicKeyFrameList;
 import team.unnamed.hephaestus.animation.KeyFrameList;
 import team.unnamed.hephaestus.animation.ModelAnimation;
-import team.unnamed.hephaestus.bound.FacedTextureBound;
-import team.unnamed.hephaestus.bound.TextureFace;
-import team.unnamed.hephaestus.struct.Vector3Float;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -106,25 +107,25 @@ public class BBModelReader implements ModelReader {
             throw new IOException("Box UV not supported, please turn it off");
         }
 
+        JsonObject resolution = json.getAsJsonObject("resolution");
+        int width = resolution.get("width").getAsInt();
+        int height = resolution.get("height").getAsInt();
+
         Map<String, ModelBone> bones = new LinkedHashMap<>();
         Map<String, ModelBoneAsset> boneAssets = new LinkedHashMap<>();
         Map<String, ModelAnimation> animations = new LinkedHashMap<>();
-        Map<String, Streamable> textures = new HashMap<>();
+        Map<String, Writable> textures = new HashMap<>();
         Map<Integer, String> textureMapping = new HashMap<>();
 
         readTextures(json, textures, textureMapping);
-        readElements(json, bones, boneAssets);
+        readElements(json, bones, boneAssets, width, height);
         readAnimations(json, animations);
-
-        JsonObject resolution = json.getAsJsonObject("resolution");
 
         return new Model(
                 modelName,
                 bones,
                 new ModelAsset(
                         modelName,
-                        resolution.get("width").getAsInt(),
-                        resolution.get("height").getAsInt(),
                         textures,
                         textureMapping,
                         boneAssets,
@@ -140,7 +141,7 @@ public class BBModelReader implements ModelReader {
      */
     private void readTextures(
             JsonObject json,
-            Map<String, Streamable> textures,
+            Map<String, Writable> textures,
             Map<Integer, String> textureMappings
     ) throws IOException {
 
@@ -166,12 +167,7 @@ public class BBModelReader implements ModelReader {
 
             // map to index
             textureMappings.put(index, name);
-            textures.put(name, new Streamable() {
-                @Override
-                public InputStream openIn() {
-                    return Streams.fromBase64(base64Source, StandardCharsets.UTF_8);
-                }
-            });
+            textures.put(name, Writable.bytes(Base64.getDecoder().decode(base64Source)));
         }
     }
 
@@ -259,13 +255,18 @@ public class BBModelReader implements ModelReader {
     private void readElements(
             JsonObject json,
             Map<String, ModelBone> bones,
-            Map<String, ModelBoneAsset> boneAssets
+            Map<String, ModelBoneAsset> boneAssets,
+            int textureWidth,
+            int textureHeight
     ) throws IOException {
+
+        float widthRatio = 16F / textureWidth;
+        float heightRatio = 16F / textureHeight;
 
         // Local map holding relations of cube identifier to
         // cube data, used to get bone cubes in constant time
         // when reading them
-        Map<String, ModelCube> cubeIdMap = new HashMap<>();
+        Map<String, Element> cubeIdMap = new HashMap<>();
 
         for (JsonElement cubeElement : json.getAsJsonArray("elements")) {
 
@@ -276,44 +277,39 @@ public class BBModelReader implements ModelReader {
             Vector3Float to = getVector3FloatFromJson(cubeJson.get("to"));
             Vector3Float from = getVector3FloatFromJson(cubeJson.get("from"));
 
-            Vector3Float origin = new Vector3Float(-to.getX(), from.getY(), from.getZ());
-            Vector3Float size = new Vector3Float(
-                    round(to.getX() - from.getX()),
-                    round(to.getY() - from.getY()),
-                    round(to.getZ() - from.getZ())
-            );
+            Vector3Float origin = new Vector3Float(-to.x(), from.y(), from.z());
 
             Vector3Float rotation = isNullOrAbsent(cubeJson, "rotation")
                     ? Vector3Float.ZERO
                     : getVector3FloatFromJson(cubeJson.get("rotation")).multiply(-1, -1, 1);
 
-            float x = rotation.getX();
-            float y = rotation.getY();
-            float z = rotation.getZ();
+            float x = rotation.x();
+            float y = rotation.y();
+            float z = rotation.z();
 
             // determine axis and check that it is rotated to a single direction
-            ModelCubeRotation.Axis axis;
+            Axis3D axis;
             float angle;
 
             if ((((x != 0) ? 1 : 0) ^ ((y != 0) ? 1 : 0) ^ ((z != 0) ? 1 : 0)) == 0 && (x != 0 || y != 0)) {
                 throw new UnsupportedOperationException("Cube can't be rotated in multiple axis");
             } else if (x != 0) {
-                axis = ModelCubeRotation.Axis.X;
+                axis = Axis3D.X;
                 angle = x;
             } else if (y != 0) {
-                axis = ModelCubeRotation.Axis.Y;
+                axis = Axis3D.Y;
                 angle = y;
             } else {
-                axis = ModelCubeRotation.Axis.Z;
+                axis = Axis3D.Z;
                 angle = z;
             }
 
-            FacedTextureBound[] textureBounds = new FacedTextureBound[TextureFace.values().length];
+            Map<CubeFace, ElementFace> faces = new HashMap<>();
 
             for (Map.Entry<String, JsonElement> faceEntry
                     : cubeJson.getAsJsonObject("faces").entrySet()) {
 
-                TextureFace face = TextureFace.valueOf(faceEntry.getKey().toUpperCase());
+                CubeFace face = CubeFace.valueOf(faceEntry.getKey().toUpperCase(Locale.ROOT));
                 JsonObject faceJson = faceEntry.getValue().getAsJsonObject();
 
                 int textureId = isNullOrAbsent(faceJson, "texture")
@@ -321,25 +317,28 @@ public class BBModelReader implements ModelReader {
                         : faceJson.get("texture").getAsInt();
 
                 JsonArray uvJson = faceJson.get("uv").getAsJsonArray();
-                float[] bounds = {
-                        uvJson.get(0).getAsFloat(),
-                        uvJson.get(1).getAsFloat(),
-                        uvJson.get(2).getAsFloat(),
-                        uvJson.get(3).getAsFloat()
-                };
+                Vector4Float uv = new Vector4Float(
+                        uvJson.get(0).getAsFloat() * widthRatio,
+                        uvJson.get(1).getAsFloat() * heightRatio,
+                        uvJson.get(2).getAsFloat() * widthRatio,
+                        uvJson.get(3).getAsFloat() * heightRatio
+                );
 
-                if (bounds[0] != 0 || bounds[1] != 0 || bounds[2] != 0 || bounds[3] != 0) {
-                    textureBounds[face.ordinal()] = new FacedTextureBound(bounds, textureId);
+                if (!uv.equals(Vector4Float.ZERO)) {
+                    faces.put(face, ElementFace.builder()
+                            .uv(uv)
+                            .texture("#" + textureId)
+                            .build());
                 }
             }
 
             String uuid = cubeJson.get("uuid").getAsString();
-            ModelCube cube = new ModelCube(
-                    origin,
-                    new ModelCubeRotation(axis, pivot, angle),
-                    size,
-                    textureBounds
-            );
+            Element cube = Element.builder()
+                    .from(origin)
+                    .to(to)
+                    .rotation(ElementRotation.of(pivot, axis, angle, ElementRotation.DEFAULT_RESCALE))
+                    .faces(faces)
+                    .build();
 
             cubeIdMap.put(uuid, cube);
         }
@@ -361,15 +360,6 @@ public class BBModelReader implements ModelReader {
             }
             // TODO: Support elements without a bone
         }
-    }
-
-    /**
-     * Rounds the given {@code number} up to
-     * two decimals, <a href="https://stackoverflow.com/questions/11701399">
-     * see this question</a>
-     */
-    private float round(float number) {
-        return (float) (Math.round(number * 100D) / 100D);
     }
 
     /**
@@ -399,7 +389,7 @@ public class BBModelReader implements ModelReader {
     private void createBone(
             Vector3Float parentScaledPivot,
             @Nullable ModelBone parent,
-            Map<String, ModelCube> cubeIdMap,
+            Map<String, Element> cubeIdMap,
             JsonObject json,
 
             Map<String, ModelBone> siblings,
@@ -421,7 +411,7 @@ public class BBModelReader implements ModelReader {
         Vector3Float scaledPivot = pivot.divide(16, 16, -16);
         Vector3Float offset = scaledPivot.subtract(parentScaledPivot);
 
-        List<ModelCube> cubes = new ArrayList<>();
+        List<Element> cubes = new ArrayList<>();
         Map<String, ModelBone> bones = new LinkedHashMap<>();
         Map<String, ModelBoneAsset> boneAssets = new LinkedHashMap<>();
 
@@ -448,7 +438,7 @@ public class BBModelReader implements ModelReader {
                 // if it's a string, it refers to a cube,
                 // find it and add it to the cube map
                 String cubeId = childElement.getAsString();
-                ModelCube cube = cubeIdMap.get(cubeId);
+                Element cube = cubeIdMap.get(cubeId);
 
                 if (cube == null) {
                     throw new IOException("Bone " + name + " contains " +
