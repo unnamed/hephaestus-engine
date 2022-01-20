@@ -26,7 +26,6 @@ package team.unnamed.hephaestus.animation;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.view.ModelView;
-import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Deque;
@@ -140,9 +139,7 @@ public class AnimationQueue {
                     Vectors.rotate(localPosition, parentRotation),
                     yaw
             ).add(parentPosition);
-            globalRotation = Quaternion.fromEuler(localRotation)
-                    .multiply(Quaternion.fromEuler(parentRotation))
-                    .toEuler();
+            globalRotation = Vectors.combine(localRotation, parentRotation);
         }
 
         view.moveBone(bone.name(), globalPosition);

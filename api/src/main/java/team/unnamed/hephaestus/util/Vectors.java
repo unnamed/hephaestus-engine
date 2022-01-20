@@ -80,4 +80,11 @@ public final class Vectors {
     public static Vector3Float lerp(Vector3Float start, Vector3Float end, float percent) {
         return start.add(end.subtract(start).multiply(percent));
     }
+
+    public static Vector3Float combine(Vector3Float origin, Vector3Float delta) {
+        return Quaternion.fromEuler(origin)
+                .multiply(Quaternion.fromEuler(delta))
+                .toEuler();
+    }
+
 }
