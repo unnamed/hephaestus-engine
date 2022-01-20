@@ -59,9 +59,11 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Implementation of {@link ModelReader} to create
- * {@link Model} instances from <a href="https://blockbench.net">
- * Blockbench</a>'s <b>.bbmodel</b> files
+ * Implementation of {@link ModelReader} to create {@link Model} instances
+ * from <a href="https://blockbench.net">Blockbench</a>'s <b>.bbmodel</b> files,
+ * which are just JSON files with a special format
+ *
+ * @since 1.0.0
  */
 public class BBModelReader implements ModelReader {
 

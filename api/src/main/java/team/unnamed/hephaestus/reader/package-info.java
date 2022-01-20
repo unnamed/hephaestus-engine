@@ -21,32 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.reader;
-
-import team.unnamed.hephaestus.Model;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
- * Responsible for reading and parsing {@link Model} from a
- * sequence of bytes, structure of models depend on
- * implementation
- *
- * @since 1.0.0
+ * Defines the {@link team.unnamed.hephaestus.reader.ModelReader} interface,
+ * main component of this package and its implementations, which are used
+ * to read {@link team.unnamed.hephaestus.Model} instances from given input
+ * streams
  */
-@FunctionalInterface
-public interface ModelReader {
-
-    /**
-     * Reads a model from the given {@code reader}
-     *
-     * @param input The byte input stream used to read
-     *              and parse the {@link Model} instance
-     * @return The parsed model
-     * @throws IOException If parsing fails
-     * @since 1.0.0
-     */
-    Model read(InputStream input) throws IOException;
-
-}
+package team.unnamed.hephaestus.reader;
