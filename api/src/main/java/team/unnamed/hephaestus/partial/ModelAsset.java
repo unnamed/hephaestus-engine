@@ -21,9 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus;
+package team.unnamed.hephaestus.partial;
 
 import team.unnamed.creative.base.Writable;
+import team.unnamed.hephaestus.BoneHolder;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 
 import java.util.Collection;

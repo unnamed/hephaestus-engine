@@ -34,8 +34,8 @@ import team.unnamed.creative.model.ElementRotation;
 import team.unnamed.creative.model.ItemTransform;
 import team.unnamed.creative.model.Model;
 import team.unnamed.creative.model.ModelTexture;
-import team.unnamed.hephaestus.ModelAsset;
-import team.unnamed.hephaestus.ModelBoneAsset;
+import team.unnamed.hephaestus.partial.ModelAsset;
+import team.unnamed.hephaestus.partial.ModelBoneAsset;
 
 import java.util.ArrayList;
 import java.util.HashMap;

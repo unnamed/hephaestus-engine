@@ -31,8 +31,8 @@ import team.unnamed.creative.model.ItemPredicate;
 import team.unnamed.creative.model.Model;
 import team.unnamed.creative.model.ModelTexture;
 import team.unnamed.creative.texture.Texture;
-import team.unnamed.hephaestus.ModelAsset;
-import team.unnamed.hephaestus.ModelBoneAsset;
+import team.unnamed.hephaestus.partial.ModelAsset;
+import team.unnamed.hephaestus.partial.ModelBoneAsset;
 
 import java.io.IOException;
 import java.util.ArrayList;

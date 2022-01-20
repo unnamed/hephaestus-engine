@@ -25,6 +25,7 @@ package team.unnamed.hephaestus;
 
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.partial.ModelAsset;
 
 import java.util.Collection;
 import java.util.Map;

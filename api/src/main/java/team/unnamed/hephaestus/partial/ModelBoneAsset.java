@@ -21,22 +21,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus;
+package team.unnamed.hephaestus.partial;
 
-import team.unnamed.hephaestus.partial.ModelBoneAsset;
+import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.creative.model.Element;
+import team.unnamed.hephaestus.BoneHolder;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-/**
- * Abstraction for any class that holds bones
- * assets, like a ModelAsset or a ModelBoneAsset
- */
-public interface BoneHolder {
+public class ModelBoneAsset implements BoneHolder {
 
-    /**
-     * Returns the bones that this
-     * instance holds
-     */
-    Collection<ModelBoneAsset> getBones();
+    private final String name;
+    private final Vector3Float pivot;
+    private final int customModelData;
+    private final List<Element> cubes;
+    private final Map<String, ModelBoneAsset> bones;
+
+    public ModelBoneAsset(
+            String name,
+            Vector3Float pivot,
+            int customModelData,
+            List<Element> cubes,
+            Map<String, ModelBoneAsset> bones
+    ) {
+        this.name = name;
+        this.pivot = pivot;
+        this.customModelData = customModelData;
+        this.cubes = cubes;
+        this.bones = bones;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Vector3Float getPivot() {
+        return pivot;
+    }
+
+    public int getCustomModelData() {
+        return customModelData;
+    }
+
+    public List<Element> getCubes() {
+        return cubes;
+    }
+
+    @Override
+    public Collection<ModelBoneAsset> getBones() {
+        return bones.values();
+    }
 
 }
