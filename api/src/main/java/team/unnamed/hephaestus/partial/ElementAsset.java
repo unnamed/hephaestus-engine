@@ -24,14 +24,19 @@
 package team.unnamed.hephaestus.partial;
 
 
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.CubeFace;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.model.ElementFace;
 import team.unnamed.creative.model.ElementRotation;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
-public class ElementAsset {
+public class ElementAsset implements Examinable {
 
     private final Vector3Float from;
     private final Vector3Float to;
@@ -64,6 +69,21 @@ public class ElementAsset {
 
     public Map<CubeFace, ElementFace> faces() {
         return faces;
+    }
+
+    @Override
+    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("from", from),
+                ExaminableProperty.of("to", to),
+                ExaminableProperty.of("rotation", rotation),
+                ExaminableProperty.of("faces", faces)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return examine(StringExaminer.simpleEscaping());
     }
 
 }

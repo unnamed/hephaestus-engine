@@ -23,13 +23,18 @@
  */
 package team.unnamed.hephaestus.partial;
 
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Writable;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
 
-public class ModelAsset {
+public class ModelAsset implements Examinable {
 
     private final String name;
     private final Map<String, Writable> textures;
@@ -69,6 +74,22 @@ public class ModelAsset {
 
     public Collection<BoneAsset> bones() {
         return bones.values();
+    }
+
+    @Override
+    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("name", name),
+                ExaminableProperty.of("textures", textures),
+                ExaminableProperty.of("textureMapping", textureMapping),
+                ExaminableProperty.of("animations", animations),
+                ExaminableProperty.of("bones", bones)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return examine(StringExaminer.simpleEscaping());
     }
 
 }

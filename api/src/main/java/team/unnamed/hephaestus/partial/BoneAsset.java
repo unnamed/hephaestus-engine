@@ -23,33 +23,37 @@
  */
 package team.unnamed.hephaestus.partial;
 
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.creative.model.Element;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
-public class BoneAsset {
+public class BoneAsset implements Examinable {
 
     private final String name;
     private final Vector3Float pivot;
     private final int customModelData;
     private final List<ElementAsset> cubes;
-    private final Map<String, BoneAsset> bones;
+    private final Map<String, BoneAsset> children;
 
     public BoneAsset(
             String name,
             Vector3Float pivot,
             int customModelData,
             List<ElementAsset> cubes,
-            Map<String, BoneAsset> bones
+            Map<String, BoneAsset> children
     ) {
         this.name = name;
         this.pivot = pivot;
         this.customModelData = customModelData;
         this.cubes = cubes;
-        this.bones = bones;
+        this.children = children;
     }
 
     public String name() {
@@ -68,8 +72,24 @@ public class BoneAsset {
         return cubes;
     }
 
-    public Collection<BoneAsset> bones() {
-        return bones.values();
+    public Collection<BoneAsset> children() {
+        return children.values();
+    }
+
+    @Override
+    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("name", name),
+                ExaminableProperty.of("pivot", pivot),
+                ExaminableProperty.of("customModelData", customModelData),
+                ExaminableProperty.of("cubes", cubes),
+                ExaminableProperty.of("children", children)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return examine(StringExaminer.simpleEscaping());
     }
 
 }

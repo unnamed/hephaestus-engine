@@ -78,7 +78,7 @@ public class ModelResourcePackWriter {
             tree.write(creativeModel);
 
             // write children
-            writeBoneCubes(tree, model, overrides, bone.bones());
+            writeBoneCubes(tree, model, overrides, bone.children());
         }
     }
 
