@@ -76,6 +76,10 @@ public class ModelAsset implements Examinable {
         return bones.values();
     }
 
+    public Map<String, BoneAsset> boneMap() {
+        return bones;
+    }
+
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
