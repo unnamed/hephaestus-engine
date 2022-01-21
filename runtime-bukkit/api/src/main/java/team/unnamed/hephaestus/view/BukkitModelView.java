@@ -15,7 +15,13 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
-public class BukkitModelView implements ModelView<Player> {
+/**
+ * Bukkit implementation of {@link ModelView} interface
+ *
+ * @since 1.0.0
+ */
+public class BukkitModelView
+        implements ModelView<Player> {
 
     private final ModelViewController controller;
     private final AnimationQueue animationQueue;

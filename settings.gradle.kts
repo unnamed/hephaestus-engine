@@ -3,7 +3,7 @@ rootProject.name = "hephaestus-parent"
 includePrefixed("api")
 // includePrefixed("plugin")
 
-includePrefixed("runtime-bukkit")
+include("runtime-bukkit:api")
 arrayOf(
     "v1_14_R1",
     "v1_15_R1",
