@@ -1,0 +1,92 @@
+{
+    "meta": {
+        "format_version": "4.0",
+        "creation_time": 1642729683,
+        "model_format": "free",
+        "box_uv": false
+    },
+    "name": "cube",
+    "geometry_name": "cube",
+    "visible_box": [ 1, 1, 0 ],
+    "variable_placeholders": "",
+    "resolution": {
+        "width": 64,
+        "height": 64
+    },
+    "elements": [
+        {
+            "name": "cube",
+            "rescale": false,
+            "locked": false,
+            "from": [ -8, 0, -8 ],
+            "to": [ 8, 16, 8 ],
+            "autouv": 0,
+            "color": 4,
+            "origin": [ 0, 0, 0 ],
+            "faces": {
+                "north": {
+                    "uv": [ 0, 0, 16, 16 ],
+                    "texture": 0
+                },
+                "east": {
+                    "uv": [ 0, 16, 16, 32 ],
+                    "texture": 0
+                },
+                "south": {
+                    "uv": [ 16, 0, 32, 16 ],
+                    "texture": 0
+                },
+                "west": {
+                    "uv": [ 16, 16, 32, 32 ],
+                    "texture": 0
+                },
+                "up": {
+                    "uv": [ 16, 48, 0, 32 ],
+                    "texture": 0
+                },
+                "down": {
+                    "uv": [ 48, 0, 32, 16 ],
+                    "texture": 0
+                }
+            },
+            "uuid": "25c9be41-848d-9dc8-f538-6121fc608327"
+        }
+    ],
+    "outliner": [
+        {
+            "name": "root",
+            "origin": [
+                0,
+                0,
+                0
+            ],
+            "color": 0,
+            "uuid": "1194c0f2-9154-8ddf-aa64-33bfa7d7e1f8",
+            "export": true,
+            "isOpen": true,
+            "locked": false,
+            "visibility": true,
+            "autouv": 0,
+            "children": [
+                "25c9be41-848d-9dc8-f538-6121fc608327"
+            ]
+        }
+    ],
+    "textures": [
+        {
+            "path": "",
+            "name": "cube_default.png",
+            "folder": "block",
+            "namespace": "",
+            "id": "0",
+            "particle": false,
+            "render_mode": "normal",
+            "visible": true,
+            "mode": "bitmap",
+            "saved": true,
+            "uuid": "0ce5b990-aa62-3b6f-a7f0-df9ae4716779",
+            "relative_path": "../cube_default.png",
+            "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABZElEQVR4Xu2YMU5CURBF59lYYO0ngSAkJjQsgJ7WHbATCipKXYK4AgsTSxfAAmhISBAjyccaCirMM38FM5PofA/9Hd67c9/MvT+N3w5nMfwee1MDWmQ8uzDhn5/uk6VAygR0mw1VjffyKJmAy1ZfhT/tVj8EtIqmCr/blwIBKIAnwAxQDZAKxBBkC7AG8QEYIZwgVpgsoPIStQlDqttXoPBxeFQ+mL4HvMxPFv7kajIxeXnTn4tIygQMi2tVncX+SzIBjV5HhT9uPiAABfAEmAEMQdUEdQKxBViD+ACMEE4QK0wW+OdhyOIpwsfh1+XW9D3gbnDzq1bW0ryMTZmA4W1bVWex/hQIQAE8AWaAaoD8ERBDkC3AGsQHYIRwglhhsoDKltQmDKluX4HCp0HL5euADR1kPBoAAR4sRq6BAiJ3z+PsKMCDxcg1UEDk7nmcHQV4sBi5BgqI3D2Ps6MADxYj1/gGtYsMXx6lkdgAAAAASUVORK5CYII="
+        }
+    ]
+}

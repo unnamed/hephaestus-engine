@@ -1,0 +1,103 @@
+{
+    "meta": {
+        "format_version": "4.0",
+        "creation_time": 1642730376,
+        "model_format": "free",
+        "box_uv": false
+    },
+    "name": "cube_multitexture",
+    "geometry_name": "cube_multitexture",
+    "visible_box": [ 1, 1, 0 ],
+    "variable_placeholders": "",
+    "resolution": {
+        "width": 16,
+        "height": 16
+    },
+    "elements": [
+        {
+            "name": "cube",
+            "rescale": false,
+            "locked": false,
+            "from": [ -8, 0, -8 ],
+            "to": [ 8, 16, 8 ],
+            "autouv": 0,
+            "color": 1,
+            "origin": [ 0, 0, 0 ],
+            "faces": {
+                "north": {
+                    "uv": [ 0, 0, 16, 16 ],
+                    "texture": 1
+                },
+                "east": {
+                    "uv": [ 0, 0, 16, 16 ],
+                    "texture": 0
+                },
+                "south": {
+                    "uv": [ 0, 0, 16, 16 ],
+                    "texture": 1
+                },
+                "west": {
+                    "uv": [ 0, 0, 16, 16 ],
+                    "texture": 0
+                },
+                "up": {
+                    "uv": [ 0, 0, 16, 16 ],
+                    "texture": 0
+                },
+                "down": {
+                    "uv": [ 0, 0, 16, 16 ],
+                    "texture": 0
+                }
+            },
+            "uuid": "5efb3959-237d-d654-f63b-8a007fa86d75"
+        }
+    ],
+    "outliner": [
+        {
+            "name": "root",
+            "origin": [ 0, 0, 0 ],
+            "color": 0,
+            "uuid": "573535fb-6440-bc8a-b303-3ea2afa47423",
+            "export": true,
+            "isOpen": true,
+            "locked": false,
+            "visibility": true,
+            "autouv": 0,
+            "children": [
+                "5efb3959-237d-d654-f63b-8a007fa86d75"
+            ]
+        }
+    ],
+    "textures": [
+        {
+            "path": "",
+            "name": "cube_multitexture_1.png",
+            "folder": "block",
+            "namespace": "",
+            "id": "0",
+            "particle": false,
+            "render_mode": "normal",
+            "visible": true,
+            "mode": "bitmap",
+            "saved": true,
+            "uuid": "f3a30a52-9844-7275-7ea1-88b145169800",
+            "relative_path": "./cube_multitexture_1.png",
+            "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAL0lEQVRYR+3QQREAAAzCMPAvepPBJ1XQSy+5DKsBAgQIECBAgAABAgQIECBAYC3wpb4/4Xemy4gAAAAASUVORK5CYII="
+        },
+        {
+            "path": "",
+            "name": "cube_multitexture_2.png",
+            "folder": "block",
+            "namespace": "",
+            "id": "1",
+            "particle": false,
+            "render_mode": "normal",
+            "visible": true,
+            "mode": "bitmap",
+            "saved": true,
+            "uuid": "83f080d7-eeac-f445-8787-b64fdd17b745",
+            "relative_path": "./cube_multitexture_2.png",
+            "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAMUlEQVRYR+3QQREAAAjDsOEF/xZBxj6pgl4mt5diY4AAAQIECBAgQIAAAQIECBBoCzzkyURhku1spQAAAABJRU5ErkJggg=="
+        }
+    ]
+}

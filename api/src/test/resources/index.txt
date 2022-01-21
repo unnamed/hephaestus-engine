@@ -1,0 +1,13 @@
+cube.bbmodel:
+    A 16x16x16 cube in Blockbench format, it has a single bone
+    "root" and a single cube "cube"
+
+cube_multitexture.bbmodel:
+    A 16x16x16 cube in Blockbench format, it has a single bone "root"
+    and a single cube "cube", but in this case, it has multiple textures
+    (in multiple files)
+
+cube_boxuv.bbmodel:
+    A 16x16x16 cube in Blockbench format, it has a single bone
+    "root" and a single cube "cube", but in this case, it uses
+    Box UV as UV mapping mode instead of Per-face UV

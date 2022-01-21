@@ -1,0 +1,86 @@
+{
+    "meta": {
+        "format_version": "4.0",
+        "creation_time": 1642730775,
+        "model_format": "free",
+        "box_uv": true
+    },
+    "name": "cube_boxuv",
+    "geometry_name": "cube_boxuv_2",
+    "visible_box": [ 1, 1, 0 ],
+    "variable_placeholders": "",
+    "resolution": {
+        "width": 64,
+        "height": 64
+    },
+    "elements": [
+        {
+            "name": "cube",
+            "rescale": false,
+            "locked": false,
+            "from": [ -8, 0, -8 ],
+            "to": [ 8, 16, 8 ],
+            "autouv": 0,
+            "color": 7,
+            "origin": [ 0, 0, 0 ],
+            "faces": {
+                "north": {
+                    "uv": [ 16, 16, 32, 32 ],
+                    "texture": 0
+                },
+                "east": {
+                    "uv": [ 0, 16, 16, 32 ],
+                    "texture": 0
+                },
+                "south": {
+                    "uv": [ 48, 16, 64, 32 ],
+                    "texture": 0
+                },
+                "west": {
+                    "uv": [ 32, 16, 48, 32 ],
+                    "texture": 0
+                },
+                "up": {
+                    "uv": [ 32, 16, 16, 0 ],
+                    "texture": 0
+                },
+                "down": {
+                    "uv": [ 48, 0, 32, 16 ],
+                    "texture": 0
+                }
+            },
+            "uuid": "735c9d8e-5c8b-a967-c64e-d10f122dc7e6"
+        }
+    ],
+    "outliner": [
+        {
+            "name": "root",
+            "origin": [ 0, 0, 0 ],
+            "color": 0,
+            "uuid": "f97a39a4-969e-37c3-c2d3-d2e51e1a38dc",
+            "export": true,
+            "isOpen": true,
+            "locked": false,
+            "visibility": true,
+            "autouv": 0,
+            "children": [ "735c9d8e-5c8b-a967-c64e-d10f122dc7e6" ]
+        }
+    ],
+    "textures": [
+        {
+            "path": "",
+            "name": "cube_boxuv_default.png",
+            "folder": "block",
+            "namespace": "",
+            "id": "0",
+            "particle": false,
+            "render_mode": "normal",
+            "visible": true,
+            "mode": "bitmap",
+            "saved": true,
+            "uuid": "34f3b4ba-0925-9d73-ced2-cb8736931ae5",
+            "relative_path": "./cube_boxuv_default.png",
+            "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABT0lEQVR4Xu2ZMWoCURRF/0Aghb0OGEIEIVuY3kW4hGwm05jKyhXYuQixthEEE1GYCWktUkW+uIJ3i3D12J8/b+678/59WCTxt1h//SlHzOoPBU/z2XuhHCDB+cFZgGr4FKphuT2kLEC/V4b4Y9sgAA7gE2AGSHNMghmC3AJcg+QAghBJkCjMLnD3y1BolbtC/74Oj5pa2ufL9Zvy/mm6mkj8w/hH4ossQNXrhg5Ztt8pC/BSdkL8Z3O6CNAZPIf4026fsgCP/dcQ/3vcJATAAXwCzACGILcA1yA5IBQkCEIkQaIwu8BNLEOhCXiF7Ndh5eVvgZX/GnMXAQHcO6jWjwNUBd15HODeQbV+HKAq6M7jAPcOqvXjAFVBdx4HuHdQrR8HqAq68zjAvYNq/ThAVdCdxwHuHVTrxwGqgu48DnDvoFo/DlAVdOdxgHsH1frPXdngsEuby7gAAAAASUVORK5CYII="
+        }
+    ]
+}
