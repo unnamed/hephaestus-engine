@@ -8,6 +8,7 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.AnimationQueue;
 import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -100,7 +101,7 @@ public class BukkitModelView
 
     @Override
     public void rotateBone(String name, Vector3Float rotation) {
-        controller.setBonePose(this, name, rotation);
+        controller.setBonePose(this, name, Vectors.toDegrees(rotation));
     }
     //#endregion
 

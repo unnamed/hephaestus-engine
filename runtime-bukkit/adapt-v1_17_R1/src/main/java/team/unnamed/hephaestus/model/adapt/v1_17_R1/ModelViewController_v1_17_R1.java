@@ -266,11 +266,7 @@ public class ModelViewController_v1_17_R1
         DataWatcher watcher = new DataWatcher(null);
         watcher.register(
                 new DataWatcherObject<>(16, DataWatcherRegistry.k),
-                new Vector3f(
-                        (float) Math.toDegrees(angle.x()),
-                        (float) Math.toDegrees(angle.y()),
-                        (float) Math.toDegrees(angle.z())
-                )
+                new Vector3f(angle.x(), angle.y(), angle.z())
         );
         Packets.send(view.getViewers(), new PacketPlayOutEntityMetadata(entity.getId(), watcher, true));
     }
