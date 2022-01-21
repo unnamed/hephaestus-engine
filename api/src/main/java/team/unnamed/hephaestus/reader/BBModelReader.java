@@ -367,15 +367,6 @@ public class BBModelReader implements ModelReader {
     }
 
     /**
-     * Determines if a property with the given {@code name}
-     * exists in the specified {@code object} and it's
-     * not null
-     */
-    private boolean isNullOrAbsent(JsonObject object, String name) {
-        return !object.has(name) || object.get(name).isJsonNull();
-    }
-
-    /**
      * Creates a {@link Bone} and {@link Bone} from
      * the given {@code json} object
      *
@@ -458,6 +449,15 @@ public class BBModelReader implements ModelReader {
 
         siblings.put(bone.name(), bone);
         siblingAssets.put(asset.name(), asset);
+    }
+
+    /**
+     * Determines if a property with the given {@code name}
+     * exists in the specified {@code object} and it's
+     * not null
+     */
+    private static boolean isNullOrAbsent(JsonObject object, String name) {
+        return !object.has(name) || object.get(name).isJsonNull();
     }
 
     /**
