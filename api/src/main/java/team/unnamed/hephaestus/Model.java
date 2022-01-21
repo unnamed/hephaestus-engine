@@ -23,12 +23,17 @@
  */
 package team.unnamed.hephaestus;
 
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.partial.ModelAsset;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Represents a {@link Bone} compound which also holds
@@ -36,7 +41,7 @@ import java.util.Map;
  *
  * @since 1.0.0
  */
-public class Model {
+public class Model implements Examinable {
 
     private final String name;
     private final Map<String, Bone> bones;
@@ -108,6 +113,21 @@ public class Model {
      */
     public void discardResourcePackData() {
         this.asset = null;
+    }
+
+    @Override
+    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("name", name),
+                ExaminableProperty.of("bones", bones),
+                ExaminableProperty.of("animations", animations),
+                ExaminableProperty.of("asset", asset)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return examine(StringExaminer.simpleEscaping());
     }
 
 }

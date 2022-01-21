@@ -23,11 +23,16 @@
  */
 package team.unnamed.hephaestus;
 
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Represents a {@link Model} movable part, in the
@@ -36,7 +41,7 @@ import java.util.Map;
  *
  * @since 1.0.0
  */
-public class Bone {
+public class Bone implements Examinable {
 
     @Nullable private final Bone parent;
     private final String name;
@@ -150,6 +155,23 @@ public class Bone {
      */
     public Map<String, Bone> boneMap() {
         return bones;
+    }
+
+    @Override
+    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("name", name),
+                ExaminableProperty.of("rotation", rotation),
+                ExaminableProperty.of("bones", bones),
+                ExaminableProperty.of("offset", offset),
+                ExaminableProperty.of("small", small),
+                ExaminableProperty.of("customModelData", customModelData)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return examine(StringExaminer.simpleEscaping());
     }
 
 }

@@ -23,15 +23,27 @@
  */
 package team.unnamed.hephaestus.reader;
 
+import net.kyori.examination.string.MultiLineStringExaminer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import team.unnamed.hephaestus.Model;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class BBModelReaderTest {
 
     @Test
     @DisplayName("Test that a small model is correctly read as a single small bone")
-    public void test_small() {
+    public void test_small() throws IOException {
 
+        ModelReader reader = new BBModelReader();
+
+        try (InputStream resource = getClass().getClassLoader().getResourceAsStream("cube.bbmodel")) {
+            Model model = reader.read(resource);
+            model.examine(MultiLineStringExaminer.simpleEscaping())
+                            .forEach(System.out::println);
+        }
     }
 
 }
