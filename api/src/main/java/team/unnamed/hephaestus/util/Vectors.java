@@ -32,6 +32,7 @@ import team.unnamed.creative.base.Vector3Float;
 public final class Vectors {
 
     private static final float DEGREE = 0.017453292519943295F;
+    private static final float RADIAN = 57.29577951308232F;
 
     private Vectors() {
         throw new UnsupportedOperationException("This class cannot be instantiated");
@@ -39,6 +40,10 @@ public final class Vectors {
 
     public static Vector3Float toRadians(Vector3Float vector) {
         return vector.multiply(DEGREE);
+    }
+
+    public static Vector3Float toDegrees(Vector3Float vector) {
+        return vector.multiply(RADIAN);
     }
 
     public static Vector3Float rotateAroundY(Vector3Float vector, double angle) {
