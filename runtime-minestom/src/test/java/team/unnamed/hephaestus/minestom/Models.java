@@ -1,7 +1,7 @@
 package team.unnamed.hephaestus.minestom;
 
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.reader.BBModelReader;
+import team.unnamed.hephaestus.reader.ModelReader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +15,7 @@ public class Models {
         try (InputStream input = Server.class.getClassLoader()
                         .getResourceAsStream("redstone_monstrosity.json")) {
             Objects.requireNonNull(input, "redstone monstrosity");
-            REDSTONE_MONSTROSITY = new BBModelReader().read(input);
+            REDSTONE_MONSTROSITY = ModelReader.blockbench().read(input);
         } catch (IOException e) {
             throw new ExceptionInInitializerError(e);
         }
