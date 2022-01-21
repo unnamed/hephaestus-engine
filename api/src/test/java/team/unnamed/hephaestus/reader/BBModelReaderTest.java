@@ -43,7 +43,7 @@ public class BBModelReaderTest {
     @DisplayName("Test that a small model is correctly read as a single small bone")
     public void test_small() throws IOException {
 
-        ModelReader reader = new BBModelReader();
+        ModelReader reader = ModelReader.blockbench();
 
         try (InputStream resource = getClass().getClassLoader().getResourceAsStream("cube.bbmodel")) {
             Model model = reader.read(resource);
