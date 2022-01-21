@@ -99,7 +99,7 @@ public class BBModelReader implements ModelReader {
         JsonObject meta = json.get("meta").getAsJsonObject();
 
         // TODO: we can take the "meta.creation_time" date for generating resource pack
-        String modelName = json.get("name").getAsString();
+        String modelName = json.get("geometry_name").getAsString();
 
         // check for bbmodel format version
         if (!isNullOrAbsent(meta, "format_version")
