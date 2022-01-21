@@ -29,6 +29,13 @@ public interface ModelViewController {
 
     void updateBoneModelData(BukkitModelView view, Bone bone, int modelData);
 
+    /**
+     * Sets the bone armor stand head pose
+     *
+     * @param view The model view to update
+     * @param boneName The model bone name
+     * @param angle The new angle, in degrees
+     */
     void setBonePose(BukkitModelView view, String boneName, Vector3Float angle);
 
     void showIndividually(BukkitModelView view, Player player);
