@@ -148,7 +148,7 @@ public class MinestomModelView
 
         bones.put(bone.name(), entity);
 
-        for (Bone child : bone.bones()) {
+        for (Bone child : bone.children()) {
             summonBone(yawRadians, pos, child, offset);
         }
     }
@@ -170,7 +170,7 @@ public class MinestomModelView
                     relativePosition.z()
             ));
         }
-        for (Bone child : bone.bones()) {
+        for (Bone child : bone.children()) {
             this.teleportBone(yawRadians, pos, child, offset);
         }
     }

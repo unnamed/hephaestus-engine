@@ -149,7 +149,7 @@ public class AnimationQueue {
         //    entity.updateBoneModelData(bone, modelData);
         //}
 
-        for (Bone component : bone.bones()) {
+        for (Bone component : bone.children()) {
             this.updateBone(
                     yaw,
                     bone,

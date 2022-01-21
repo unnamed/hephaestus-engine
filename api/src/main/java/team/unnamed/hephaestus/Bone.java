@@ -47,7 +47,7 @@ public class Bone implements Examinable {
     private final String name;
     private final Vector3Float rotation;
 
-    private final Map<String, Bone> bones;
+    private final Map<String, Bone> children;
     private final Vector3Float offset;
 
     private final boolean small;
@@ -57,7 +57,7 @@ public class Bone implements Examinable {
             @Nullable Bone parent,
             String name,
             Vector3Float rotation,
-            Map<String, Bone> bones,
+            Map<String, Bone> children,
             Vector3Float offset,
             boolean small,
             int customModelData
@@ -65,7 +65,7 @@ public class Bone implements Examinable {
         this.parent = parent;
         this.name = name;
         this.rotation = rotation;
-        this.bones = bones;
+        this.children = children;
         this.offset = offset;
         this.small = small;
         this.customModelData = customModelData;
@@ -143,8 +143,8 @@ public class Bone implements Examinable {
      *
      * @return The child bones
      */
-    public Collection<Bone> bones() {
-        return bones.values();
+    public Collection<Bone> children() {
+        return children.values();
     }
 
     /**
@@ -153,8 +153,8 @@ public class Bone implements Examinable {
      *
      * @return The child bone map
      */
-    public Map<String, Bone> boneMap() {
-        return bones;
+    public Map<String, Bone> childrenMap() {
+        return children;
     }
 
     @Override
@@ -162,7 +162,7 @@ public class Bone implements Examinable {
         return Stream.of(
                 ExaminableProperty.of("name", name),
                 ExaminableProperty.of("rotation", rotation),
-                ExaminableProperty.of("bones", bones),
+                ExaminableProperty.of("bones", children),
                 ExaminableProperty.of("offset", offset),
                 ExaminableProperty.of("small", small),
                 ExaminableProperty.of("customModelData", customModelData)

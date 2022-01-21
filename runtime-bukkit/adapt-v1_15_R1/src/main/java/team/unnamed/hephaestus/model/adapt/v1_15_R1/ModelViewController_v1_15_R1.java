@@ -79,7 +79,7 @@ public class ModelViewController_v1_15_R1
 
         view.getEntities().put(bone.name(), entity);
 
-        for (Bone component : bone.bones()) {
+        for (Bone component : bone.children()) {
             summonBone(
                     yawRadians,
                     view,
@@ -128,7 +128,7 @@ public class ModelViewController_v1_15_R1
                 new PacketPlayOutEntityTeleport(entity)
         );
 
-        for (Bone component : bone.bones()) {
+        for (Bone component : bone.children()) {
             teleportBonesRecursively(
                     yawRadians,
                     view,
@@ -150,7 +150,7 @@ public class ModelViewController_v1_15_R1
     private void hideBone(BukkitModelView view, Bone bone) {
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.name());
         Packets.send(view.getViewers(), new PacketPlayOutEntityDestroy(entity.getId()));
-        for (Bone child : bone.bones()) {
+        for (Bone child : bone.children()) {
             hideBone(view, child);
         }
     }
@@ -190,7 +190,7 @@ public class ModelViewController_v1_15_R1
 
     private void colorizeBoneAndChildren(BukkitModelView view, Bone bone, Color color) {
         colorizeBone(view, bone.name(), color);
-        for (Bone child : bone.bones()) {
+        for (Bone child : bone.children()) {
             colorizeBoneAndChildren(view, child, color);
         }
     }
@@ -278,7 +278,7 @@ public class ModelViewController_v1_15_R1
                 )
         );
 
-        for (Bone child : bone.bones()) {
+        for (Bone child : bone.children()) {
             showBoneIndividually(view, child, player);
         }
     }
@@ -291,7 +291,7 @@ public class ModelViewController_v1_15_R1
         EntityArmorStand entity = (EntityArmorStand) view.getEntities().get(bone.name());
         Packets.send(player, new PacketPlayOutEntityDestroy(entity.getId()));
 
-        for (Bone child : bone.bones()) {
+        for (Bone child : bone.children()) {
             hideBoneIndividually(view, child, player);
         }
     }
