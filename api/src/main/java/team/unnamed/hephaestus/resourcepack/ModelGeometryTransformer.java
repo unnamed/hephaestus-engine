@@ -90,21 +90,11 @@ public class ModelGeometryTransformer {
 
             ElementRotation rotation = cube.rotation();
             Vector3Float rotationOrigin = rotation.origin();
-
-            if (rotationOrigin.equals(Vector3Float.ZERO)) {
-                // rotate at the center
-                rotationOrigin = new Vector3Float(
-                        HALF_BLOCK_SIZE,
-                        HALF_BLOCK_SIZE,
-                        HALF_BLOCK_SIZE
-                );
-            } else {
-                rotationOrigin = new Vector3Float(
-                        unshift(-rotationOrigin.x() + bonePivot.x() + HALF_BLOCK_SIZE),
-                        unshift(rotationOrigin.y() - bonePivot.y() + HALF_BLOCK_SIZE),
-                        unshift(rotationOrigin.z() - bonePivot.z() + HALF_BLOCK_SIZE)
-                );
-            }
+            rotationOrigin = new Vector3Float(
+                    unshift(-rotationOrigin.x() + bonePivot.x() + HALF_BLOCK_SIZE),
+                    unshift(rotationOrigin.y() - bonePivot.y() + HALF_BLOCK_SIZE),
+                    unshift(rotationOrigin.z() - bonePivot.z() + HALF_BLOCK_SIZE)
+            );
 
             ElementRotation newRotation = rotation.origin(rotationOrigin);
 

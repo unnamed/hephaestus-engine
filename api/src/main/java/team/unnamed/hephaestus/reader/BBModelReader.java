@@ -279,7 +279,7 @@ final class BBModelReader implements ModelReader {
 
             Vector3Float rotation = isNullOrAbsent(cubeJson, "rotation")
                     ? Vector3Float.ZERO
-                    : getVector3FloatFromJson(cubeJson.get("rotation")).multiply(-1, -1, 1);
+                    : getVector3FloatFromJson(cubeJson.get("rotation"));
 
             float x = rotation.x();
             float y = rotation.y();
