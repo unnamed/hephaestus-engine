@@ -76,7 +76,7 @@ public class Server {
         ModelResourcePackWriter modelWriter = new ModelResourcePackWriter(Collections.singletonList(
                 Models.REDSTONE_MONSTROSITY.asset()
         ), "hephaestus");
-        new MCPacksHttpExporter()
+        ResourcePack resourcePack = new MCPacksHttpExporter()
                 .export(tree -> {
                     try {
                         modelWriter.write(tree);
@@ -111,38 +111,8 @@ public class Server {
 
             switch (message) {
 
-                case "resourcepack" -> {
-                    try {
-                        player.setResourcePack(
-                                new MCPacksHttpExporter()
-                                        .export(tree -> {
-                                            try {
-                                                modelWriter.write(tree);
-
-                                                tree.write(PackInfo.builder()
-                                                        .icon(Writable.resource(
-                                                                Server.class.getClassLoader(),
-                                                                "hephaestus.png"
-                                                        ))
-                                                        .meta(Metadata.builder()
-                                                                .add(PackMeta.of(
-                                                                        7,
-                                                                        "Hephaestus generated resource pack"
-                                                                ))
-                                                                .build())
-                                                        .build());
-                                            } catch (IOException e) {
-                                                throw new UncheckedIOException(e);
-                                            }
-                                        })
-                        );
-                    } catch (IOException e) {
-                        throw new IllegalStateException(
-                                "Cannot upload resource pack",
-                                e
-                        );
-                    }
-                }
+                case "resourcepack" ->
+                        player.setResourcePack(resourcePack);
 
                 case "spawn" -> {
                     MinestomModelView view = new RedstoneMonstrosityView();
