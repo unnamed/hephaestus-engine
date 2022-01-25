@@ -31,7 +31,10 @@ import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import team.unnamed.hephaestus.view.ActionType;
 
-public class ModelClickListener {
+public final class ModelClickListener {
+
+    private ModelClickListener() {
+    }
 
     private static void onAttack(EntityAttackEvent event) {
         Entity entity = event.getEntity();
