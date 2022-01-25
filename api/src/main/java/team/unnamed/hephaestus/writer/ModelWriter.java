@@ -36,8 +36,17 @@ import java.util.Collection;
  * @since 1.0.0
  * @param <T> The target type
  */
+@FunctionalInterface
 public interface ModelWriter<T> {
 
+    /**
+     * Writes a {@link Model} to the given {@code target}
+     *
+     * @param target The target output type where the
+     *               model will be written
+     * @throws IOException If writing fails
+     * @since 1.0.0
+     */
     void write(T target, Collection<Model> models) throws IOException;
 
     /**
