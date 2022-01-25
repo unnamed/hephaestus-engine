@@ -21,4 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+/**
+ * Defines the {@link team.unnamed.hephaestus.writer.ModelWriter} interface,
+ * main component of this package and its implementations, which are used
+ * to write {@link team.unnamed.hephaestus.Model} instances to given locations
+ */
 package team.unnamed.hephaestus.writer;
