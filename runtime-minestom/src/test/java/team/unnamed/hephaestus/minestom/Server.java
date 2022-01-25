@@ -15,7 +15,12 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.resourcepack.ResourcePack;
 import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.NotNull;
+import team.unnamed.creative.base.Writable;
+import team.unnamed.creative.file.FileResource;
 import team.unnamed.creative.file.FileTree;
+import team.unnamed.creative.file.ResourceWriter;
+import team.unnamed.creative.metadata.Metadata;
+import team.unnamed.creative.metadata.PackMeta;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
 import java.io.IOException;
@@ -73,18 +78,24 @@ public class Server {
                 .export(tree -> {
                     try {
                         ModelWriter.resource().write(tree, Collections.singletonList(Models.REDSTONE_MONSTROSITY));
-                        /*tree.write(PackInfo.builder()
-                                .icon(Writable.resource(
-                                        Server.class.getClassLoader(),
-                                        "hephaestus.png"
-                                ))
-                                .meta(Metadata.builder()
-                                        .add(PackMeta.of(
-                                                7,
-                                                "Hephaestus generated resource pack"
-                                        ))
-                                        .build())
-                                .build());*/
+
+                        // temporary solution
+                        tree.write("pack.png", Writable.resource(Server.class.getClassLoader(), "hephaestus.png"));
+                        tree.write(new FileResource() {
+                            @Override
+                            public String path() {
+                                return "pack.mcmeta";
+                            }
+
+                            @Override
+                            public void serialize(ResourceWriter writer) {
+                                writer.startObject();
+                                writer.key("pack");
+                                PackMeta.of(8, "Hephaestus generated resource pack")
+                                                .serialize(writer);
+                                writer.endObject();
+                            }
+                        });
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }
