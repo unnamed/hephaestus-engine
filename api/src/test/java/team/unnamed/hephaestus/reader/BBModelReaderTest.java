@@ -23,9 +23,15 @@
  */
 package team.unnamed.hephaestus.reader;
 
+import net.kyori.examination.string.MultiLineStringExaminer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import team.unnamed.creative.base.CubeFace;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.creative.base.Vector4Float;
+import team.unnamed.creative.base.Writable;
+import team.unnamed.creative.model.ElementFace;
+import team.unnamed.creative.model.ElementRotation;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.partial.BoneAsset;
 import team.unnamed.hephaestus.partial.ElementAsset;
@@ -33,6 +39,7 @@ import team.unnamed.hephaestus.partial.ModelAsset;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -55,6 +62,14 @@ public class BBModelReaderTest {
             assertNotNull(asset);
             assertEquals(1, asset.bones().size());
 
+            Map<String, Writable> textures = asset.textures();
+            assertEquals(1, textures.size());
+            assertNotNull(textures.get("cube_default"));
+
+            Map<Integer, String> textureMapping = asset.textureMapping();
+            assertEquals(1, textureMapping.size());
+            assertEquals("cube_default", textureMapping.get(0));
+
             BoneAsset root = asset.boneMap().get("root");
             assertNotNull(root);
             assertEquals("root", root.name());
@@ -65,6 +80,36 @@ public class BBModelReaderTest {
             assertNotNull(element);
             assertEquals(new Vector3Float(-8F, 0F, -8F), element.from());
             assertEquals(new Vector3Float(8F, 16F, 8F), element.to());
+
+            ElementRotation rotation = element.rotation();
+            assertEquals(Vector3Float.ZERO, rotation.origin());
+            assertEquals(0F, rotation.angle());
+
+            Map<CubeFace, ElementFace> faces = element.faces();
+
+            ElementFace south = faces.get(CubeFace.SOUTH);
+            assertNotNull(south);
+            assertEquals(new Vector4Float(4F, 0F, 8F, 4F), south.uv());
+
+            ElementFace up = faces.get(CubeFace.UP);
+            assertNotNull(up);
+            assertEquals(new Vector4Float(4F, 12F, 0F, 8F), up.uv());
+
+            ElementFace north = faces.get(CubeFace.NORTH);
+            assertNotNull(north);
+            assertEquals(new Vector4Float(0F, 0F, 4F, 4F), north.uv());
+
+            ElementFace east = faces.get(CubeFace.EAST);
+            assertNotNull(east);
+            assertEquals(new Vector4Float(0F, 4F, 4F, 8F), east.uv());
+
+            ElementFace west = faces.get(CubeFace.WEST);
+            assertNotNull(west);
+            assertEquals(new Vector4Float(4F, 4F, 8F, 8F), west.uv());
+
+            ElementFace down = faces.get(CubeFace.DOWN);
+            assertNotNull(down);
+            assertEquals(new Vector4Float(12F, 0F, 8F, 4F), down.uv());
         }
     }
 
