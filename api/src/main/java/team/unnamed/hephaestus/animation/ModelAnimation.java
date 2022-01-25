@@ -37,13 +37,13 @@ public class ModelAnimation {
     private final String name;
     private final boolean loop;
     private final int animationLength;
-    private final Map<String, KeyFrameList> framesByBone;
+    private final Map<String, Timeline> framesByBone;
 
     public ModelAnimation(
             String name,
             boolean loop,
             int animationLength,
-            Map<String, KeyFrameList> framesByBone
+            Map<String, Timeline> framesByBone
     ) {
         this.name = name;
         this.loop = loop;
@@ -63,7 +63,7 @@ public class ModelAnimation {
         return animationLength;
     }
 
-    public Map<String, KeyFrameList> framesByBone() {
+    public Map<String, Timeline> framesByBone() {
         return framesByBone;
     }
 

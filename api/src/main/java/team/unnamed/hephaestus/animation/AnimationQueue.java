@@ -61,13 +61,13 @@ public class AnimationQueue {
             return;
         }
 
-        Map<String, KeyFrameList> framesByBone = new HashMap<>();
+        Map<String, Timeline> framesByBone = new HashMap<>();
 
         lastFrames.forEach((boneName, frame) -> {
-            KeyFrameList keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicKeyFrameList());
-            keyFrames.put(0, KeyFrameList.Channel.POSITION, frame.position());
-            keyFrames.put(0, KeyFrameList.Channel.ROTATION, frame.rotation());
-            keyFrames.put(0, KeyFrameList.Channel.SCALE, frame.scale());
+            Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicTimeline());
+            keyFrames.put(0, Timeline.Channel.POSITION, frame.position());
+            keyFrames.put(0, Timeline.Channel.ROTATION, frame.rotation());
+            keyFrames.put(0, Timeline.Channel.SCALE, frame.scale());
 
             framesByBone.put(boneName, keyFrames);
         });
@@ -77,10 +77,10 @@ public class AnimationQueue {
             if (iterator.hasNext()) {
                 KeyFrame firstFrame = frames.iterator().next();
 
-                KeyFrameList keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicKeyFrameList());
-                keyFrames.put(transitionTicks, KeyFrameList.Channel.POSITION, firstFrame.position());
-                keyFrames.put(transitionTicks, KeyFrameList.Channel.ROTATION, firstFrame.rotation());
-                keyFrames.put(transitionTicks, KeyFrameList.Channel.SCALE, firstFrame.scale());
+                Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicTimeline());
+                keyFrames.put(transitionTicks, Timeline.Channel.POSITION, firstFrame.position());
+                keyFrames.put(transitionTicks, Timeline.Channel.ROTATION, firstFrame.rotation());
+                keyFrames.put(transitionTicks, Timeline.Channel.SCALE, firstFrame.scale());
             }
         });
 

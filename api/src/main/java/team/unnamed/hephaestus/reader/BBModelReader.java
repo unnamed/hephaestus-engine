@@ -41,8 +41,7 @@ import team.unnamed.hephaestus.partial.ModelAsset;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.partial.BoneAsset;
 import team.unnamed.hephaestus.ModelDataCursor;
-import team.unnamed.hephaestus.animation.DynamicKeyFrameList;
-import team.unnamed.hephaestus.animation.KeyFrameList;
+import team.unnamed.hephaestus.animation.Timeline;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 
 import java.io.IOException;
@@ -202,7 +201,7 @@ final class BBModelReader implements ModelReader {
                 continue;
             }
 
-            Map<String, KeyFrameList> animators = new HashMap<>();
+            Map<String, Timeline> animators = new HashMap<>();
 
             for (Map.Entry<String, JsonElement> animatorEntry : animationJson.get("animators")
                     .getAsJsonObject()
@@ -211,7 +210,7 @@ final class BBModelReader implements ModelReader {
                 JsonObject animatorJson = animatorEntry.getValue().getAsJsonObject();
                 String boneName = animatorJson.get("name").getAsString();
 
-                KeyFrameList frames = new DynamicKeyFrameList();
+                Timeline frames = Timeline.dynamic();
 
                 for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
 
@@ -237,7 +236,7 @@ final class BBModelReader implements ModelReader {
                         value = value.divide(16, 16, -16);
                     }
 
-                    frames.put(time, KeyFrameList.Channel.valueOf(channel.toUpperCase()), value);
+                    frames.put(time, Timeline.Channel.valueOf(channel.toUpperCase()), value);
                 }
 
                 animators.put(boneName, frames);

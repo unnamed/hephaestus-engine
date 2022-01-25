@@ -29,20 +29,27 @@ import team.unnamed.creative.base.Vector3Float;
 import java.util.Iterator;
 
 /**
- * Data structure for holding and iterating {@link KeyFrame}
- * instances to perform model animations
+ * Represents an animation timeline, holds and creates
+ * iterators for {@link KeyFrame} instances in order to
+ * perform model animations
+ *
+ * @since 1.0.0
  */
-public interface KeyFrameList extends Iterable<KeyFrame> {
+public interface Timeline extends Iterable<KeyFrame> {
 
     /**
      * Adds the given {@code value} to the timeline in
      * the specified {@code tick} and {@code channel}
+     *
+     * @since 1.0.0
      */
     void put(int position, Channel channel, Vector3Float value);
 
     /**
      * Creates an iterator that iterates over
-     * keyframes stored in this keyframe list.
+     * keyframes stored in this timeline
+     *
+     * @since 1.0.0
      */
     @NotNull
     @Override
@@ -52,6 +59,18 @@ public interface KeyFrameList extends Iterable<KeyFrame> {
         POSITION,
         ROTATION,
         SCALE
+    }
+
+    /**
+     * Creates a new dynamic {@link Timeline} instance, it
+     * will generate synthetic keyframes during iteration
+     * and not during creation
+     *
+     * @return A new dynamic timeline instance
+     * @since 1.0.0
+     */
+    static Timeline dynamic() {
+        return new DynamicTimeline();
     }
 
 }

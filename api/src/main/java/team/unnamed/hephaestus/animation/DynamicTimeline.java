@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class DynamicKeyFrameList implements KeyFrameList {
+final class DynamicTimeline implements Timeline {
 
     private static final int CHANNEL_COUNT = Channel.values().length;
 
