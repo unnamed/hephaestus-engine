@@ -32,7 +32,15 @@ import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
 import team.unnamed.hephaestus.Bone;
 
-public class BoneEntity extends LivingEntity {
+/**
+ * Represents a {@link Bone} holder entity,
+ * it is an armor stand with a LEATHER_HORSE_ARMOR
+ * item as helmet using a custom model data to
+ * apply the bone model
+ *
+ * @since 1.0.0
+ */
+public final class BoneEntity extends LivingEntity {
 
     private static final ItemStack BASE_HELMET =
             ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
@@ -66,14 +74,31 @@ public class BoneEntity extends LivingEntity {
                 itemMeta.customModelData(bone.customModelData())));
     }
 
+    /**
+     * Returns the holder view
+     *
+     * @return The view for this bone entity
+     */
     public MinestomModelView view() {
         return view;
     }
 
+    /**
+     * Returns the bone represented by this
+     * entity
+     *
+     * @return The entity bone
+     */
     public Bone bone() {
         return bone;
     }
 
+    /**
+     * Colorizes this bone entity using
+     * the specified color
+     *
+     * @param color The new bone color
+     */
     public void colorize(Color color) {
         setHelmet(getHelmet().withMeta((LeatherArmorMeta.Builder meta) -> meta.color(color)));
     }
