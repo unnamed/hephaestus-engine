@@ -23,7 +23,6 @@
  */
 package team.unnamed.hephaestus.reader;
 
-import net.kyori.examination.string.MultiLineStringExaminer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.CubeFace;
