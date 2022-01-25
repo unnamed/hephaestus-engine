@@ -41,10 +41,10 @@ public class AnimationQueue {
     private int noNext;
 
     private final Deque<ModelAnimation> animations = new LinkedList<>();
-    private final ModelView view;
+    private final ModelView<?> view;
     private ModelAnimation animation;
 
-    public AnimationQueue(ModelView view) {
+    public AnimationQueue(ModelView<?> view) {
         this.view = view;
     }
 
@@ -62,7 +62,6 @@ public class AnimationQueue {
         }
 
         Map<String, KeyFrameList> framesByBone = new HashMap<>();
-        Map<String, Map<Integer, Integer>> modelData = new HashMap<>();
 
         lastFrames.forEach((boneName, frame) -> {
             KeyFrameList keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicKeyFrameList());
