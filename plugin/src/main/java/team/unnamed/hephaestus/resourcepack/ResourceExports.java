@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.resourcepack;
+package team.unnamed.hephaestus.writer;
 
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.io.Streams;

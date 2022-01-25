@@ -15,12 +15,8 @@ import net.minestom.server.instance.block.Block;
 import net.minestom.server.resourcepack.ResourcePack;
 import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.file.FileTree;
-import team.unnamed.creative.metadata.Metadata;
-import team.unnamed.creative.metadata.PackMeta;
-import team.unnamed.creative.texture.PackInfo;
-import team.unnamed.hephaestus.resourcepack.ModelResourcePackWriter;
+import team.unnamed.hephaestus.writer.ModelWriter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -73,15 +69,11 @@ public class Server {
 
         Set<MinestomModelView> views = ConcurrentHashMap.newKeySet();
 
-        ModelResourcePackWriter modelWriter = new ModelResourcePackWriter(Collections.singletonList(
-                Models.REDSTONE_MONSTROSITY.asset()
-        ), "hephaestus");
         ResourcePack resourcePack = new MCPacksHttpExporter()
                 .export(tree -> {
                     try {
-                        modelWriter.write(tree);
-
-                        tree.write(PackInfo.builder()
+                        ModelWriter.resource().write(tree, Collections.singletonList(Models.REDSTONE_MONSTROSITY));
+                        /*tree.write(PackInfo.builder()
                                 .icon(Writable.resource(
                                         Server.class.getClassLoader(),
                                         "hephaestus.png"
@@ -92,7 +84,7 @@ public class Server {
                                                 "Hephaestus generated resource pack"
                                         ))
                                         .build())
-                                .build());
+                                .build());*/
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }

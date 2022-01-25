@@ -1,4 +1,4 @@
-package team.unnamed.hephaestus.resourcepack;
+package team.unnamed.hephaestus.writer;
 
 import java.io.File;
 import java.io.IOException;

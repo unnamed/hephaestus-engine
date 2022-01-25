@@ -26,11 +26,11 @@ import team.unnamed.hephaestus.view.ModelViewRenderer;
 import team.unnamed.hephaestus.mythicmobs.MythicMobsHookListener;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.BBModelReader;
-import team.unnamed.hephaestus.resourcepack.ResourceExportMethodFactory;
-import team.unnamed.hephaestus.resourcepack.ResourceExporter;
-import team.unnamed.hephaestus.resourcepack.ModelResourcePackWriter;
-import team.unnamed.hephaestus.resourcepack.ResourcePackInfo;
-import team.unnamed.hephaestus.resourcepack.ResourcePackWriter;
+import team.unnamed.hephaestus.writer.ResourceExportMethodFactory;
+import team.unnamed.hephaestus.writer.ResourceExporter;
+import team.unnamed.hephaestus.writer.ModelResourcePackWriter;
+import team.unnamed.hephaestus.writer.ResourcePackInfo;
+import team.unnamed.hephaestus.writer.ResourcePackWriter;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;

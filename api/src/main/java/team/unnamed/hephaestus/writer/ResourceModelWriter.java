@@ -21,28 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.resourcepack;
+package team.unnamed.hephaestus.writer;
 
-import com.google.gson.JsonObject;
 import net.kyori.adventure.key.Key;
+import org.intellij.lang.annotations.Subst;
 import team.unnamed.creative.base.Axis3D;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.creative.base.Writable;
+import team.unnamed.creative.file.FileTree;
 import team.unnamed.creative.model.Element;
 import team.unnamed.creative.model.ElementRotation;
+import team.unnamed.creative.model.ItemOverride;
+import team.unnamed.creative.model.ItemPredicate;
 import team.unnamed.creative.model.ItemTransform;
-import team.unnamed.creative.model.Model;
 import team.unnamed.creative.model.ModelTexture;
+import team.unnamed.creative.texture.Texture;
+import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.partial.ElementAsset;
 import team.unnamed.hephaestus.partial.ModelAsset;
 import team.unnamed.hephaestus.partial.BoneAsset;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ModelGeometryTransformer {
+/**
+ * Implementation of {@link ModelWriter} that writes
+ * {@link Model} instances to a {@link FileTree}, which
+ * represents a resource pack
+ *
+ * @since 1.0.0
+ */
+final class ResourceModelWriter implements ModelWriter<FileTree> {
+
+    private static final String NAMESPACE = "hephaestus";
 
     /**
      * The size of a block for models, this is the number that
@@ -59,19 +76,106 @@ public class ModelGeometryTransformer {
 
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
 
-
     private static final float MIN_TRANSLATION = -80F;
     private static final float MAX_TRANSLATION = 80F;
 
+    @Subst(NAMESPACE) private final String namespace;
+
+    ResourceModelWriter(@Subst(NAMESPACE) String namespace) {
+        this.namespace = namespace;
+
+        // validate namespace
+        Key.key(namespace, "dummy");
+    }
+
+    ResourceModelWriter() {
+        this(NAMESPACE);
+    }
+
+    private void writeBones(
+            FileTree tree,
+            ModelAsset model,
+            Collection<ItemOverride> overrides,
+            Collection<BoneAsset> assets
+    ) {
+        for (BoneAsset bone : assets) {
+            Key key = Key.key(namespace, model.name() + '/' + bone.name());
+
+            overrides.add(ItemOverride.of(
+                    key,
+                    ItemPredicate.customModelData(bone.customModelData())
+            ));
+
+            tree.write(toCreative(key, model, bone));
+
+            // write children
+            writeBones(tree, model, overrides, bone.children());
+        }
+    }
+
+    /**
+     * Transfers the resource pack information to the
+     * given {@code output}
+     */
+    @Override
+    public void write(FileTree tree, Collection<Model> models) {
+
+        List<ItemOverride> overrides = new ArrayList<>();
+
+        for (Model model : models) {
+            ModelAsset asset = model.asset();
+
+            if (asset == null) {
+                throw new IllegalArgumentException("Model '"
+                        + model.name() + "' does not have a model asset," +
+                        " resource pack data already discarded?");
+            }
+
+            // write textures from this model
+            for (Map.Entry<String, Writable> texture : asset.textures().entrySet()) {
+                @Subst(NAMESPACE) String textureName = texture.getKey();
+                Writable data = texture.getValue();
+
+                Key key = Key.key(namespace, model.name() + '/' + textureName);
+
+                // write the texture
+                tree.write(Texture.builder()
+                        .key(key)
+                        .data(data)
+                        .build());
+            }
+
+            // write all the model bones
+            writeBones(tree, asset, overrides, asset.bones());
+        }
+
+        // sort overrides comparing by customModelData
+        overrides.sort(Comparator.comparing(override -> {
+            ItemPredicate predicate = override.predicate().get(0);
+            return (Integer) predicate.value();
+        }));
+
+        tree.write(team.unnamed.creative.model.Model.builder()
+                .key(Key.key("item/leather_horse_armor"))
+                .parent(team.unnamed.creative.model.Model.ITEM_HANDHELD)
+                .textures(ModelTexture.builder()
+                        .layers(Collections.singletonList(
+                                Key.key("item/leather_horse_armor")
+                        ))
+                        .build())
+                .overrides(overrides)
+                .build());
+    }
+
     /**
      * Converts a {@link BoneAsset} (a representation of a model
-     * bone) to a resource-pack ready {@link JsonObject} JSON object
+     * bone) to a resource-pack ready {@link team.unnamed.creative.model.Model}
+     * object
      *
      * @param model The model holding the given bone
      * @param bone The bone to be converted
-     * @return The JSON representation of the bone
      */
-    public static Model toCreative(
+    private static team.unnamed.creative.model.Model toCreative(
             Key key,
             ModelAsset model,
             BoneAsset bone
@@ -130,7 +234,7 @@ public class ModelGeometryTransformer {
         model.textureMapping().forEach((id, path) ->
                 textureMappings.put(id.toString(), Key.key(key.namespace(), model.name() + '/' + path)));
 
-        return Model.builder()
+        return team.unnamed.creative.model.Model.builder()
                 .key(key)
                 .display(displays)
                 .textures(ModelTexture.builder()
