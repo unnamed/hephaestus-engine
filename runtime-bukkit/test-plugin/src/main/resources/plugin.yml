@@ -1,0 +1,6 @@
+main: team.unnamed.hephaestus.ModelEnginePlugin
+name: hephaestus
+version: 0.1.0-SNAPSHOT
+author: UnnamedTeam
+description: A Bukkit plugin to test hephaestus-engine
+api-version: 1.18

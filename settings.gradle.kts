@@ -4,6 +4,7 @@ includePrefixed("api")
 // includePrefixed("plugin")
 
 include("runtime-bukkit:api")
+include("runtime-bukkit:test-plugin")
 arrayOf(
     "v1_17_R1"
 ).forEach {
