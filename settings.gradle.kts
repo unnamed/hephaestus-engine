@@ -5,9 +5,6 @@ includePrefixed("api")
 
 include("runtime-bukkit:api")
 arrayOf(
-    "v1_14_R1",
-    "v1_15_R1",
-    "v1_16_R3",
     "v1_17_R1"
 ).forEach {
     include(":runtime-bukkit:adapt-$it")
