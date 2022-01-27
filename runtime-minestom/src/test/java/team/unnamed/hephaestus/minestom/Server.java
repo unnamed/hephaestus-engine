@@ -89,11 +89,10 @@ public class Server {
 
                             @Override
                             public void serialize(ResourceWriter writer) {
-                                writer.startObject();
-                                writer.key("pack");
-                                PackMeta.of(8, "Hephaestus generated resource pack")
-                                                .serialize(writer);
-                                writer.endObject();
+                                Metadata.builder()
+                                        .add(PackMeta.of(8, "Hephaestus generated resource pack"))
+                                        .build()
+                                        .serialize(writer);
                             }
                         });
                     } catch (IOException e) {
