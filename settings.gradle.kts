@@ -1,7 +1,6 @@
 rootProject.name = "hephaestus-parent"
 
 includePrefixed("api")
-// includePrefixed("plugin")
 
 include("runtime-bukkit:api")
 include("runtime-bukkit:test-plugin")
