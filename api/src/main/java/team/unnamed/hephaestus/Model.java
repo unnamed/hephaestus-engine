@@ -28,6 +28,7 @@ import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.partial.ModelAsset;
 
@@ -45,16 +46,19 @@ public class Model implements Examinable {
 
     private final String name;
     private final Map<String, Bone> bones;
+    private final Vector2Float boundingBox;
     private ModelAsset asset;
     private final Map<String, ModelAnimation> animations;
 
     public Model(
             String name,
             Map<String, Bone> bones,
+            Vector2Float boundingBox,
             ModelAsset asset
     ) {
         this.name = name;
         this.bones = bones;
+        this.boundingBox = boundingBox;
         this.asset = asset;
         // data from 'asset' that will persist after calling
         // discardResourcePackData()
@@ -78,6 +82,16 @@ public class Model implements Examinable {
      */
     public Collection<Bone> bones() {
         return bones.values();
+    }
+
+    /**
+     * Returns the model bounding box (x =
+     * width, y = height)
+     *
+     * @return The model bounding box
+     */
+    public Vector2Float boundingBox() {
+        return boundingBox;
     }
 
     /**

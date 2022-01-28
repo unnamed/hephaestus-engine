@@ -30,6 +30,7 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Axis3D;
 import team.unnamed.creative.base.CubeFace;
+import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.base.Vector4Float;
 import team.unnamed.creative.base.Writable;
@@ -125,6 +126,7 @@ final class BBModelReader implements ModelReader {
         return new Model(
                 modelName,
                 bones,
+                new Vector2Float(width, height),
                 new ModelAsset(
                         modelName,
                         textures,
