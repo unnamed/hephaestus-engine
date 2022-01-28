@@ -167,6 +167,50 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                 .build());
     }
 
+    private static List<ElementAsset> scale(
+            Vector3Float bonePivot,
+            List<ElementAsset> elements,
+            float ratio
+    ) {
+        float deltaX = bonePivot.x() - HALF_BLOCK_SIZE;
+        float deltaY = bonePivot.y() - HALF_BLOCK_SIZE;
+        float deltaZ = bonePivot.z() - HALF_BLOCK_SIZE;
+        List<ElementAsset> scaledElements = new ArrayList<>(elements.size());
+
+        for (ElementAsset cube : elements) {
+
+            Vector3Float origin = cube.from();
+            Vector3Float to = cube.to();
+
+            ElementRotation rotation = cube.rotation();
+            Vector3Float rotationOrigin = rotation.origin();
+            rotationOrigin = new Vector3Float(
+                    scale(-rotationOrigin.x() + bonePivot.x() + HALF_BLOCK_SIZE, ratio),
+                    scale(rotationOrigin.y() - bonePivot.y() + HALF_BLOCK_SIZE, ratio),
+                    scale(rotationOrigin.z() - bonePivot.z() + HALF_BLOCK_SIZE, ratio)
+            );
+
+            scaledElements.add(new ElementAsset(
+                    // from
+                    new Vector3Float(
+                            scale(BLOCK_SIZE + deltaX - to.x(), ratio),
+                            scale(origin.y() - deltaY, ratio),
+                            scale(origin.z() - deltaZ, ratio)
+                    ),
+                    // to
+                    new Vector3Float(
+                        scale(BLOCK_SIZE + deltaX - origin.x(), ratio),
+                        scale(to.y() - deltaY, ratio),
+                        scale(to.z() - deltaZ, ratio)
+                    ),
+                    rotation.origin(rotationOrigin),
+                    cube.faces()
+            ));
+        }
+
+        return scaledElements;
+    }
+
     /**
      * Converts a {@link BoneAsset} (a representation of a model
      * bone) to a resource-pack ready {@link team.unnamed.creative.model.Model}
@@ -180,53 +224,25 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
             ModelAsset model,
             BoneAsset bone
     ) {
-        Vector3Float bonePivot = bone.pivot();
-        float deltaX = bonePivot.x() - HALF_BLOCK_SIZE;
-        float deltaY = bonePivot.y() - HALF_BLOCK_SIZE;
-        float deltaZ = bonePivot.z() - HALF_BLOCK_SIZE;
+        float displayScale = SMALL_DISPLAY_SCALE;
+        List<ElementAsset> scaledElements = scale(bone.pivot(), bone.cubes(), SMALL_RATIO);
+        Vector3Float offset = computeOffset(scaledElements);
 
-        List<ElementAsset> unshiftedElements = new ArrayList<>();
-
-        for (ElementAsset cube : bone.cubes()) {
-
-            Vector3Float origin = cube.from();
-            Vector3Float to = cube.to();
-
-            ElementRotation rotation = cube.rotation();
-            Vector3Float rotationOrigin = rotation.origin();
-            rotationOrigin = new Vector3Float(
-                    unshift(-rotationOrigin.x() + bonePivot.x() + HALF_BLOCK_SIZE),
-                    unshift(rotationOrigin.y() - bonePivot.y() + HALF_BLOCK_SIZE),
-                    unshift(rotationOrigin.z() - bonePivot.z() + HALF_BLOCK_SIZE)
-            );
-
-            ElementRotation newRotation = rotation.origin(rotationOrigin);
-
-            Vector3Float newFrom = new Vector3Float(
-                    unshift(BLOCK_SIZE + deltaX - to.x()),
-                    unshift(origin.y() - deltaY),
-                    unshift(origin.z() - deltaZ)
-            );
-            Vector3Float newTo = new Vector3Float(
-                    unshift(BLOCK_SIZE + deltaX - origin.x()),
-                    unshift(to.y() - deltaY),
-                    unshift(to.z() - deltaZ)
-            );
-
-            unshiftedElements.add(new ElementAsset(
-                    newFrom,
-                    newTo,
-                    newRotation,
-                    cube.faces()
-            ));
+        if (!applyOffset(scaledElements, offset)) {
+            // failed to use small scale, use large scale
+            scaledElements = scale(bone.pivot(), bone.cubes(), LARGE_RATIO);
+            offset = computeOffset(scaledElements);
+            displayScale = LARGE_DISPLAY_SCALE;
+            // TODO: Make 'bone' not small
+            if (!applyOffset(scaledElements, offset)) {
+                throw new IllegalStateException("Cubes out of bounds");
+            }
         }
-
-        Vector3Float offset = computeOffset(unshiftedElements);
 
         Map<ItemTransform.Type, ItemTransform> displays = new HashMap<>();
         ItemTransform headTransform = ItemTransform.builder()
                 .translation(computeTranslation(offset))
-                .scale(new Vector3Float(SMALL_DISPLAY_SCALE, SMALL_DISPLAY_SCALE, SMALL_DISPLAY_SCALE))
+                .scale(new Vector3Float(displayScale, displayScale, displayScale))
                 .build();
         displays.put(ItemTransform.Type.HEAD, headTransform);
 
@@ -240,7 +256,7 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                 .textures(ModelTexture.builder()
                         .variables(textureMappings)
                         .build())
-                .elements(unshiftedElements.stream().map(cube -> Element.builder()
+                .elements(scaledElements.stream().map(cube -> Element.builder()
                         .from(cube.from())
                         .to(cube.to())
                         .rotation(cube.rotation())
@@ -249,11 +265,15 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                 .build();
     }
 
+    /**
+     * Computes the offset for the given cube elements,
+     * does not modify the provided list
+     *
+     * @param elements The elements to compute
+     * @return The resulting offset
+     */
     private static Vector3Float computeOffset(List<ElementAsset> elements) {
-
         Vector3Float offset = Vector3Float.ZERO;
-
-        // compute offset
         for (ElementAsset cube : elements) {
             Vector3Float from = cube.from();
             Vector3Float to = cube.to();
@@ -263,20 +283,6 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                 offset = computeOffset(offset, axis, to);
             }
         }
-
-        // apply offset
-        for (int i = 0; i < elements.size(); i++) {
-            ElementAsset cube = elements.get(i);
-            Vector3Float from = cube.from().add(offset);
-            Vector3Float to = cube.to().add(offset);
-            ElementRotation rotation = cube.rotation();
-
-            Vector3Float origin = rotation.origin();
-            rotation = rotation.origin(origin.add(offset));
-
-            elements.set(i, new ElementAsset(from, to, rotation, cube.faces()));
-        }
-
         return offset;
     }
 
@@ -298,6 +304,47 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
         return offset.with(axis, off);
     }
 
+    /**
+     * Applies an offset to a given list of elements
+     *
+     * @param elements The element list to modify
+     * @param offset The applied offset
+     * @return True if successfully applied, false otherwise
+     * (is out of MIN_EXTENT and MAX_EXTENT)
+     */
+    private static boolean applyOffset(List<ElementAsset> elements, Vector3Float offset) {
+        // compute offset
+        for (int i = 0; i < elements.size(); i++) {
+            ElementAsset cube = elements.get(i);
+            Vector3Float from = cube.from().add(offset);
+            Vector3Float to = cube.to().add(offset);
+
+            if (isOutOfBounds(from) || isOutOfBounds(to)) {
+                // fail
+                return false;
+            }
+
+            ElementRotation rotation = cube.rotation();
+
+            Vector3Float origin = rotation.origin();
+            rotation = rotation.origin(origin.add(offset));
+
+            elements.set(i, new ElementAsset(from, to, rotation, cube.faces()));
+        }
+
+        // success
+        return true;
+    }
+
+    private static boolean isOutOfBounds(Vector3Float location) {
+        return location.x() < Element.MIN_EXTENT
+                || location.y() < Element.MIN_EXTENT
+                || location.z() < Element.MIN_EXTENT
+                || location.x() > Element.MAX_EXTENT
+                || location.y() > Element.MAX_EXTENT
+                || location.z() > Element.MAX_EXTENT;
+    }
+
     private static Vector3Float computeTranslation(Vector3Float offset) {
         float translationX = -offset.x() * SMALL_DISPLAY_SCALE;
         float translationY = DISPLAY_TRANSLATION_Y - offset.y() * SMALL_DISPLAY_SCALE;
@@ -314,8 +361,8 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
         return new Vector3Float(translationX, translationY, translationZ);
     }
 
-    private static float unshift(float pos) {
-        return HALF_BLOCK_SIZE - (SMALL_RATIO * (HALF_BLOCK_SIZE - pos));
+    private static float scale(float value, float ratio) {
+        return HALF_BLOCK_SIZE - (ratio * (HALF_BLOCK_SIZE - value));
     }
 
 }
