@@ -23,17 +23,66 @@
  */
 package team.unnamed.hephaestus.minestom;
 
+import net.minestom.server.collision.BoundingBox;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
+import net.minestom.server.event.player.PlayerHandAnimationEvent;
+import net.minestom.server.instance.Instance;
 import team.unnamed.hephaestus.view.ActionType;
 
 public final class ModelClickListener {
 
     private ModelClickListener() {
+    }
+
+    private static void onArmAnimaion(PlayerHandAnimationEvent event) {
+        Player player = event.getPlayer();
+        System.out.println("Ray casting...");
+
+        Pos position = player.getPosition();
+        Vec direction = position.direction();
+        double eyeHeight = player.getEyeHeight();
+
+        double directionX = direction.x();
+        double directionY = direction.y();
+        double directionZ = direction.z();
+
+        double originX = position.x();
+        double originY = position.y() + eyeHeight;
+        double originZ = position.z();
+
+        double distance = player.getGameMode() == GameMode.CREATIVE ? 5D : 3D;
+
+        double lenX = (distance - (Math.abs(originX) % distance)) / Math.abs(directionX);
+        double lenY = (distance - (Math.abs(originY) % distance)) / Math.abs(directionY);
+        double lenZ = (distance - (Math.abs(originZ) % distance)) / Math.abs(directionZ);
+
+        double minLen = Math.min(lenX, Math.min(lenY, lenZ));
+
+        double targetX = originX + (directionX * minLen);
+        double targetY = originY + (directionY * minLen);
+        double targetZ = originZ + (directionZ * minLen);
+
+        System.out.println("Target: " + targetX + " " + targetY + " " + targetZ);
+        System.out.println("Checking for nearby entities");
+
+        Instance instance = player.getInstance();
+        for (Entity entity : instance.getNearbyEntities(position, distance)) {
+            if (entity == player) {
+                continue;
+            }
+            BoundingBox boundingBox = entity.getBoundingBox();
+            if (boundingBox.intersect(originX, originY, originZ, targetX, targetY, targetZ)) {
+                System.out.println("Intersect " + entity);
+            }
+        }
     }
 
     private static void onAttack(EntityAttackEvent event) {
@@ -57,6 +106,7 @@ public final class ModelClickListener {
     }
 
     public static void register(EventNode<Event> node) {
+        node.addListener(PlayerHandAnimationEvent.class, ModelClickListener::onArmAnimaion);
         node.addListener(EntityAttackEvent.class, ModelClickListener::onAttack);
         node.addListener(PlayerEntityInteractEvent.class, ModelClickListener::onInteract);
     }
