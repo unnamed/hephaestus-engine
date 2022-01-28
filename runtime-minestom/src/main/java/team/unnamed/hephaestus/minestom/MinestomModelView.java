@@ -33,6 +33,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Instance;
 import org.jetbrains.annotations.NotNull;
+import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.Bone;
@@ -68,6 +69,8 @@ public class MinestomModelView
         this.model = model;
         this.animationQueue = new AnimationQueue(this);
 
+        Vector2Float boundingBox = model.boundingBox();
+        setBoundingBox(boundingBox.x(), boundingBox.y(), boundingBox.x());
         setInvisible(true);
         setNoGravity(true);
     }
