@@ -4,3 +4,9 @@ version: 0.1.0-SNAPSHOT
 author: UnnamedTeam
 description: A Bukkit plugin to test hephaestus-engine
 api-version: 1.18
+commands:
+    model:
+        description: Main command for handling hephaestus-engine models
+        usage: /<command> spawn <name>
+        aliases: [models]
+        permission: model.admin

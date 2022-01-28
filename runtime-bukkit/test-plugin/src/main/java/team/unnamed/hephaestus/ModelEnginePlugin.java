@@ -23,12 +23,95 @@
  */
 package team.unnamed.hephaestus;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import team.unnamed.creative.file.FileResource;
+import team.unnamed.creative.file.ResourceWriter;
+import team.unnamed.creative.metadata.Metadata;
+import team.unnamed.creative.metadata.PackMeta;
+import team.unnamed.hephaestus.command.ModelCommand;
+import team.unnamed.hephaestus.export.MCPacksHttpExporter;
+import team.unnamed.hephaestus.listener.ResourcePackSetListener;
+import team.unnamed.hephaestus.reader.ModelReader;
+import team.unnamed.hephaestus.writer.ModelWriter;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 
 public class ModelEnginePlugin extends JavaPlugin {
 
+    private static final ModelReader READER = ModelReader.blockbench();
+
     @Override
     public void onEnable() {
+        // load models from resources
+        getLogger().info("Loading models...");
+        ModelRegistry registry = new ModelRegistry();
+        registry.add(loadModelFromResource("butterfly.bbmodel"));
+
+        // upload resource pack
+        getLogger().info("Uploading resource pack...");
+        ResourcePack pack = exportResourcePack(registry);
+        getLogger().info("Uploaded resource pack to " + pack.url());
+
+        // register commands and listeners
+        getLogger().info("Registering commands and listeners...");
+        registerCommand("model", new ModelCommand(registry));
+        registerListener(new ResourcePackSetListener(pack));
+    }
+
+    private ResourcePack exportResourcePack(ModelRegistry registry) {
+        try {
+            return new MCPacksHttpExporter().export(tree -> {
+                try {
+                    ModelWriter.resource().write(tree, registry.all());
+                    tree.write(new FileResource() {
+                        @Override
+                        public String path() {
+                            return "pack.mcmeta";
+                        }
+
+                        @Override
+                        public void serialize(ResourceWriter writer) {
+                            Metadata.builder()
+                                    .add(PackMeta.of(8, "Generated resource pack"))
+                                    .build()
+                                    .serialize(writer);
+                        }
+                    });
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+        } catch (IOException e) {
+             throw new UncheckedIOException(e);
+        }
+    }
+
+    private Model loadModelFromResource(String resourceName) {
+        try (InputStream input = super.getResource(resourceName)) {
+            Model model = READER.read(input);
+            getLogger().info("Loaded model " + model.name());
+            return model;
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to read model " + resourceName, e);
+        }
+    }
+
+    private void registerCommand(String name, CommandExecutor executor) {
+        PluginCommand command = super.getCommand(name);
+        if (command == null) {
+            throw new IllegalArgumentException("Command not found: " + name);
+        }
+        command.setExecutor(executor);
+    }
+
+    private void registerListener(Listener listener) {
+        Bukkit.getPluginManager().registerEvents(listener, this);
     }
 
 }
