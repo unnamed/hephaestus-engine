@@ -9,8 +9,6 @@ subprojects {
     }
 
     repositories {
-        mavenLocal()
-        maven("https://repo.codemc.io/repository/nms/")
         maven("https://repo.unnamed.team/repository/unnamed-public/")
         mavenCentral()
     }
