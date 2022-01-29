@@ -35,7 +35,7 @@ import java.util.Map;
 
 final class AnimationReader {
 
-    private static final int TICKS_PER_SECOND = 20;
+    private static final int TICKS_PER_SECOND = Integer.getInteger("hephaestus.tps", 20);
 
     /**
      * Reads {@link ModelAnimation} from the given {@code json}
