@@ -1,12 +1,10 @@
 repositories {
-    mavenLocal()
-    maven("https://repo.spongepowered.org/maven/")
     maven("https://jitpack.io/")
     mavenCentral()
 }
 
 dependencies {
-    val minestom = "com.github.Minestom:Minestom:549a9a9b52"
+    val minestom = "com.github.Minestom:Minestom:f05b4baa8a"
 
     api(project(":hephaestus-api"))
     compileOnly(minestom)

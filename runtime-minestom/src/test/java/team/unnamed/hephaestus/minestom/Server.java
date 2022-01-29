@@ -13,7 +13,6 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.batch.ChunkBatch;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.resourcepack.ResourcePack;
-import net.minestom.server.world.biomes.Biome;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.file.FileResource;
@@ -33,7 +32,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -56,8 +54,7 @@ public class Server {
                     for (byte z = 0; z < Chunk.CHUNK_SIZE_Z; z++)
                         batch.setBlock(x, 70, z, Block.GRASS_BLOCK);
             }
-
-            public void fillBiomes(Biome[] biomes, int chunkX, int chunkZ) { Arrays.fill(biomes, Biome.PLAINS); }
+            @Override
             public List<ChunkPopulator> getPopulators() { return null; }
         });
 
