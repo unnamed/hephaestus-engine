@@ -49,7 +49,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,12 +61,8 @@ public final class BBModelReader implements ModelReader {
 
     private final ModelDataCursor cursor;
 
-    public BBModelReader(ModelDataCursor cursor) {
+    private BBModelReader(ModelDataCursor cursor) {
         this.cursor = cursor;
-    }
-
-    public BBModelReader() {
-        this(new ModelDataCursor(1));
     }
 
     @Override
@@ -127,7 +122,7 @@ public final class BBModelReader implements ModelReader {
      * @since 1.0.0
      */
     public static ModelReader blockbench() {
-        return new BBModelReader();
+        return new BBModelReader(new ModelDataCursor(1));
     }
 
     /**
