@@ -35,6 +35,7 @@ import team.unnamed.creative.metadata.PackMeta;
 import team.unnamed.hephaestus.command.ModelCommand;
 import team.unnamed.hephaestus.export.MCPacksHttpExporter;
 import team.unnamed.hephaestus.listener.ResourcePackSetListener;
+import team.unnamed.hephaestus.reader.BBModelReader;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
@@ -44,7 +45,7 @@ import java.io.UncheckedIOException;
 
 public class ModelEnginePlugin extends JavaPlugin {
 
-    private static final ModelReader READER = ModelReader.blockbench();
+    private static final ModelReader READER = BBModelReader.blockbench();
 
     @Override
     public void onEnable() {
