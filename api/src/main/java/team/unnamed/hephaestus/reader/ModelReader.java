@@ -25,6 +25,8 @@ package team.unnamed.hephaestus.reader;
 
 import team.unnamed.hephaestus.Model;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -39,7 +41,7 @@ import java.io.InputStream;
 public interface ModelReader {
 
     /**
-     * Reads a model from the given {@code reader}
+     * Reads a model from a {@link InputStream}
      *
      * @param input The byte input stream used to read
      *              and parse the {@link Model} instance
@@ -48,5 +50,19 @@ public interface ModelReader {
      * @since 1.0.0
      */
     Model read(InputStream input) throws IOException;
+
+    /**
+     * Reads a model from a {@link File}
+     *
+     * @param file The file containing the model data
+     * @return The parsed model
+     * @throws IOException If parsing fails
+     * @since 1.0.0
+     */
+    default Model read(File file) throws IOException {
+        try (InputStream input = new FileInputStream(file)) {
+            return read(input);
+        }
+    }
 
 }
