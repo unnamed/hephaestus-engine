@@ -37,7 +37,6 @@ import team.unnamed.creative.texture.Texture;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.partial.ModelAsset;
 import team.unnamed.hephaestus.partial.BoneAsset;
-import team.unnamed.hephaestus.process.ElementProcessor;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -168,12 +167,11 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
             ModelAsset model,
             BoneAsset bone
     ) {
-        ElementProcessor.Result result = ElementProcessor.process(bone.pivot(), bone.cubes());
-        float displayScale = result.small() ? SMALL_DISPLAY_SCALE : LARGE_DISPLAY_SCALE;
+        float displayScale = bone.small() ? SMALL_DISPLAY_SCALE : LARGE_DISPLAY_SCALE;
 
         Map<ItemTransform.Type, ItemTransform> displays = new HashMap<>();
         ItemTransform headTransform = ItemTransform.builder()
-                .translation(computeTranslation(result.offset(), displayScale))
+                .translation(computeTranslation(bone.offset(), displayScale))
                 .scale(new Vector3Float(displayScale, displayScale, displayScale))
                 .build();
         displays.put(ItemTransform.Type.HEAD, headTransform);
@@ -188,7 +186,7 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                 .textures(ModelTexture.builder()
                         .variables(textureMappings)
                         .build())
-                .elements(result.elements().stream().map(cube -> Element.builder()
+                .elements(bone.cubes().stream().map(cube -> Element.builder()
                         .from(cube.from())
                         .to(cube.to())
                         .rotation(cube.rotation())

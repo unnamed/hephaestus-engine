@@ -27,7 +27,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Axis3D;
 import team.unnamed.creative.base.CubeFace;
 import team.unnamed.creative.base.Vector2Float;
@@ -43,6 +42,7 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.partial.BoneAsset;
 import team.unnamed.hephaestus.ModelDataCursor;
 import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.process.ElementProcessor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -245,7 +245,6 @@ public final class BBModelReader implements ModelReader {
                 // if it's an object, then it represents a bone
                 createBone(
                         Vector3Float.ZERO,
-                        null,
                         cubeIdMap,
                         element.getAsJsonObject(),
 
@@ -262,7 +261,6 @@ public final class BBModelReader implements ModelReader {
      * the given {@code json} object
      *
      * @param parentScaledPivot The scaled pivot of the parent bone
-     * @param parent The parent bone, null if it's a root bone
      * @param cubeIdMap Map containing a relation of the cubes by
      *                  their identifiers for this model
      * @param json The json representation for this bone
@@ -274,7 +272,6 @@ public final class BBModelReader implements ModelReader {
      */
     private void createBone(
             Vector3Float parentScaledPivot,
-            @Nullable Bone parent,
             Map<String, ElementAsset> cubeIdMap,
             JsonObject json,
 
@@ -301,18 +298,12 @@ public final class BBModelReader implements ModelReader {
         Map<String, Bone> bones = new LinkedHashMap<>();
         Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
 
-        // instantiate bone and asset with empty and mutable
-        // cubes, bones and assets, they'll be filled later
-        BoneAsset asset = new BoneAsset(name, pivot, cursor.next(), cubes, boneAssets);
-        Bone bone = new Bone(parent, name, rotation, bones, offset, true, asset.customModelData());
-
         for (JsonElement childElement : json.get("children").getAsJsonArray()) {
             if (childElement.isJsonObject()) {
                 // if it's an object, it's a sub-bone,
                 // recursively read it
                 createBone(
                         scaledPivot,
-                        bone,
                         cubeIdMap,
                         childElement.getAsJsonObject(),
 
@@ -338,8 +329,20 @@ public final class BBModelReader implements ModelReader {
             }
         }
 
-        siblings.put(bone.name(), bone);
-        siblingAssets.put(asset.name(), asset);
+
+        ElementProcessor.Result processResult = ElementProcessor.process(pivot, cubes);
+        BoneAsset asset = new BoneAsset(
+                name,
+                pivot,
+                cursor.next(),
+                processResult.offset(),
+                processResult.elements(),
+                processResult.small(),
+                boneAssets
+        );
+
+        siblings.put(name, new Bone(name, rotation, bones, offset, asset));
+        siblingAssets.put(name, asset);
     }
 
 }

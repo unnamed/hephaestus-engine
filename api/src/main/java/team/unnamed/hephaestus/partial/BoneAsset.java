@@ -39,20 +39,26 @@ public class BoneAsset implements Examinable {
     private final String name;
     private final Vector3Float pivot;
     private final int customModelData;
+    private final Vector3Float offset;
     private final List<ElementAsset> cubes;
+    private final boolean small;
     private final Map<String, BoneAsset> children;
 
     public BoneAsset(
             String name,
             Vector3Float pivot,
             int customModelData,
+            Vector3Float offset,
             List<ElementAsset> cubes,
+            boolean small,
             Map<String, BoneAsset> children
     ) {
         this.name = name;
         this.pivot = pivot;
         this.customModelData = customModelData;
+        this.offset = offset;
         this.cubes = cubes;
+        this.small = small;
         this.children = children;
     }
 
@@ -68,8 +74,16 @@ public class BoneAsset implements Examinable {
         return customModelData;
     }
 
+    public Vector3Float offset() {
+        return offset;
+    }
+
     public List<ElementAsset> cubes() {
         return cubes;
+    }
+
+    public boolean small() {
+        return small;
     }
 
     public Collection<BoneAsset> children() {

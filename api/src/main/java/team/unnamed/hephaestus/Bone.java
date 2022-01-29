@@ -27,8 +27,8 @@ import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.partial.BoneAsset;
 
 import java.util.Collection;
 import java.util.Map;
@@ -43,7 +43,6 @@ import java.util.stream.Stream;
  */
 public class Bone implements Examinable {
 
-    @Nullable private final Bone parent;
     private final String name;
     private final Vector3Float rotation;
 
@@ -54,30 +53,20 @@ public class Bone implements Examinable {
     private final int customModelData;
 
     public Bone(
-            @Nullable Bone parent,
             String name,
             Vector3Float rotation,
             Map<String, Bone> children,
             Vector3Float offset,
-            boolean small,
-            int customModelData
+            BoneAsset asset
     ) {
-        this.parent = parent;
         this.name = name;
         this.rotation = rotation;
         this.children = children;
         this.offset = offset;
-        this.small = small;
-        this.customModelData = customModelData;
-    }
 
-    /**
-     * Returns this bone parent bone
-     *
-     * @return The bone parent
-     */
-    public @Nullable Bone parent() {
-        return parent;
+        // data kept from BoneAsset
+        this.small = asset.small();
+        this.customModelData = asset.customModelData();
     }
 
     /**
