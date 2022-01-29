@@ -58,7 +58,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-final class BBModelReader implements ModelReader {
+public final class BBModelReader implements ModelReader {
 
     private static final String BASE_64_PREFIX = "data:image/png;base64,";
     private static final JsonParser JSON_PARSER = new JsonParser();
@@ -135,6 +135,36 @@ final class BBModelReader implements ModelReader {
                         animations
                 )
         );
+    }
+
+    /**
+     * Creates a new instance of the implementation of this
+     * interface to create {@link Model} instances from
+     * <a href="https://blockbench.net">Blockbench</a>'s
+     * <b>.bbmodel</b> files, which are just JSON files with a
+     * special structure
+     *
+     * @since 1.0.0
+     */
+    public static ModelReader blockbench() {
+        return new BBModelReader();
+    }
+
+    /**
+     * Creates a new instance of the implementation of this
+     * interface to create {@link Model} instances from
+     * <a href="https://blockbench.net">Blockbench</a>'s
+     * <b>.bbmodel</b> files, which are just JSON files with a
+     * special structure
+     *
+     * <p>Similar to {@link BBModelReader#blockbench()} but
+     * a specific {@link ModelDataCursor} can be used</p>
+     *
+     * @param cursor The custom model data cursor reference
+     * @since 1.0.0
+     */
+    public static ModelReader blockbench(ModelDataCursor cursor) {
+        return new BBModelReader(cursor);
     }
 
     /**

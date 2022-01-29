@@ -24,7 +24,6 @@
 package team.unnamed.hephaestus.reader;
 
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.ModelDataCursor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,35 +48,5 @@ public interface ModelReader {
      * @since 1.0.0
      */
     Model read(InputStream input) throws IOException;
-
-    /**
-     * Creates a new instance of the implementation of this
-     * interface to create {@link Model} instances from
-     * <a href="https://blockbench.net">Blockbench</a>'s
-     * <b>.bbmodel</b> files, which are just JSON files with a
-     * special structure
-     *
-     * @since 1.0.0
-     */
-    static ModelReader blockbench() {
-        return new BBModelReader();
-    }
-
-    /**
-     * Creates a new instance of the implementation of this
-     * interface to create {@link Model} instances from
-     * <a href="https://blockbench.net">Blockbench</a>'s
-     * <b>.bbmodel</b> files, which are just JSON files with a
-     * special structure
-     *
-     * <p>Similar to {@link ModelReader#blockbench()} but
-     * a specific {@link ModelDataCursor} can be used</p>
-     *
-     * @param cursor The custom model data cursor reference
-     * @since 1.0.0
-     */
-    static ModelReader blockbench(ModelDataCursor cursor) {
-        return new BBModelReader(cursor);
-    }
 
 }
