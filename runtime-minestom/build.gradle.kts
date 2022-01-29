@@ -12,4 +12,5 @@ dependencies {
     compileOnly(minestom)
 
     testImplementation(minestom)
+    testImplementation(project(":hephaestus-reader-blockbench"))
 }
