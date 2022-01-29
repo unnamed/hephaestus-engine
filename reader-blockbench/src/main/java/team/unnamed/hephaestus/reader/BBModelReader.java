@@ -60,15 +60,6 @@ public final class BBModelReader implements ModelReader {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
 
-    /**
-     * List containing supported block-bench format
-     * versions
-     */
-    private static final List<String> SUPPORTED_FORMATS = Arrays.asList(
-            "3.6",
-            "4.0"
-    );
-
     private final ModelDataCursor cursor;
 
     public BBModelReader(ModelDataCursor cursor) {
@@ -91,12 +82,6 @@ public final class BBModelReader implements ModelReader {
         if (modelName.isEmpty()) {
             // fallback to "name"
             modelName = json.get("name").getAsString();
-        }
-
-        // check for bbmodel format version
-        if (!GsonUtil.isNullOrAbsent(meta, "format_version")
-                        && !SUPPORTED_FORMATS.contains(meta.get("format_version").getAsString())) {
-            throw new IOException("Provided JSON doesn't have a valid format version");
         }
 
         // check for box uv
