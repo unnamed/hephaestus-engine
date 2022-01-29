@@ -33,15 +33,36 @@ $ cd hephaestus-engine
 $ ./gradlew publishToMavenLocal
 ```
 
-### Maven
-Add the repositories into your  `<repositories>`  tag (`pom.xml`)
+### Installation
+<details>
+<summary>Gradle (recommended)</summary>
+
+Add our repository to your `repositories` section
+```groovy
+repositories {
+    maven { url 'https://repo.unnamed.team/repository/unnamed-public/' }
+}
+```
+
+Add dependency to your `dependencies` section
+```groovy
+dependencies {
+    implementation 'team.unnamed:hephaestus-api:VERSION'
+}
+```
+</details>
+
+<details>
+<summary>Maven</summary>
+
+Add our repository to your  `<repositories>`  tag (`pom.xml`)
 ```XML
 <repository>
   <id>unnamed-public</id>
   <url>https://repo.unnamed.team/repository/unnamed-public/</url>
 </repository>
 ```
-Add the dependency into your  `<dependencies>`  tag (`pom.xml`)
+Add dependency to your  `<dependencies>`  tag (`pom.xml`)
 ```XML
 <dependency>
   <groupId>team.unnamed</groupId>
@@ -49,3 +70,4 @@ Add the dependency into your  `<dependencies>`  tag (`pom.xml`)
   <version>VERSION</version>
 </dependency>
 ```
+</details>
