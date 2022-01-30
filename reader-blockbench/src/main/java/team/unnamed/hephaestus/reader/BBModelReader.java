@@ -85,8 +85,8 @@ public final class BBModelReader implements ModelReader {
         }
 
         JsonObject resolution = json.getAsJsonObject("resolution");
-        int width = resolution.get("width").getAsInt();
-        int height = resolution.get("height").getAsInt();
+        int textureWidth = resolution.get("width").getAsInt();
+        int textureHeight = resolution.get("height").getAsInt();
 
         Map<String, Bone> bones = new LinkedHashMap<>();
         Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
@@ -95,13 +95,14 @@ public final class BBModelReader implements ModelReader {
         Map<Integer, String> textureMapping = new HashMap<>();
 
         TextureReader.readTextures(json, textures, textureMapping);
-        readElements(json, bones, boneAssets, width, height);
+        readElements(json, bones, boneAssets, textureWidth, textureHeight);
         AnimationReader.readAnimations(json, animations);
 
         return new Model(
                 modelName,
                 bones,
-                new Vector2Float(width, height),
+                // TODO:
+                new Vector2Float(4, 4),
                 new ModelAsset(
                         modelName,
                         textures,
