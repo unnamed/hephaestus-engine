@@ -1,0 +1,23 @@
+[versions]
+creative = "0.1.10-SNAPSHOT"
+annotations = "23.0.0"
+junit = "5.8.2"
+
+# reader-blockbench
+gson = "2.8.0"
+
+# runtime-minestom
+minestom = "f05b4baa8a"
+
+
+[libraries]
+creative = { group = "team.unnamed", name = "creative-api", version.ref =  "creative" }
+annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
+junit-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit" }
+junit-engine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junit" }
+
+# reader-blockbench
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+# runtime-minestom
+minestom = { group = "com.github.Minestom", name = "Minestom", version.ref = "minestom" }

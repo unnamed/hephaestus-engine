@@ -4,11 +4,9 @@ repositories {
 }
 
 dependencies {
-    val minestom = "com.github.Minestom:Minestom:f05b4baa8a"
-
     api(project(":hephaestus-api"))
-    compileOnly(minestom)
+    compileOnly(libs.minestom)
 
-    testImplementation(minestom)
+    testImplementation(libs.minestom)
     testImplementation(project(":hephaestus-reader-blockbench"))
 }

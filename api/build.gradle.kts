@@ -1,9 +1,9 @@
 dependencies {
-    api("org.jetbrains:annotations:22.0.0")
-    api("team.unnamed:creative-api:0.1.10-SNAPSHOT")
+    api(libs.annotations)
+    api(libs.creative)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.junit.engine)
 }
 
 tasks {

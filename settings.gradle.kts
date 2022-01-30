@@ -1,3 +1,5 @@
+enableFeaturePreview("VERSION_CATALOGS")
+
 rootProject.name = "hephaestus-parent"
 
 includePrefixed("api")

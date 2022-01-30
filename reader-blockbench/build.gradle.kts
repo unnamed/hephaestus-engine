@@ -1,9 +1,9 @@
 dependencies {
     api(project(":hephaestus-api"))
-    api("com.google.code.gson:gson:2.8.0")
+    api(libs.gson)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.junit.engine)
 }
 
 tasks {
