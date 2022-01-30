@@ -24,42 +24,63 @@
 package team.unnamed.hephaestus.process;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Axis3D;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.model.ElementRotation;
 import team.unnamed.hephaestus.partial.ElementAsset;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class ElementProcessorTest {
 
     @Test
-    public void test() {
-        List<ElementAsset> elements = new ArrayList<>();
-        elements.add(new ElementAsset(
-                // 16x16x16 element
+    @DisplayName("Test that a 16x16x16 block cube is correctly processed")
+    public void test_single_small_block() {
+        MonoResult result = processSingle(Vector3Float.ZERO, new ElementAsset(
+                // 16x16x16 block
                 new Vector3Float(-8, -8, -8),
                 new Vector3Float(8, 8, 8),
                 ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
                 Collections.emptyMap()
         ));
-        ElementProcessor.Result result = ElementProcessor.process(Vector3Float.ZERO, elements);
 
-        ElementAsset scaledElement = result.elements().get(0);
+        ElementAsset scaledElement = result.element;
 
         // 9.6x9.6x9.6 cube, which is then multiplied
         // by the scale (4, max scale) by the client,
         // creating a 38.4x38.4x38.4 cube, which is the
         // size of a block when using an item in a
         // small armor stand head
-        Assertions.assertEquals(new Vector3Float(3.2F, 3.2F, 3.2F), scaledElement.from());
-        Assertions.assertEquals(new Vector3Float(12.8F, 12.8F, 12.8F), scaledElement.to());
+        Assertions.assertEquals(new Vector3Float(3.2F, 3.2F, 3.2F), scaledElement.from(), "from");
+        Assertions.assertEquals(new Vector3Float(12.8F, 12.8F, 12.8F), scaledElement.to(), "to");
 
-        Assertions.assertEquals(Vector3Float.ZERO, result.offset());
-        Assertions.assertTrue(result.small());
+        Assertions.assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
+        Assertions.assertTrue(result.small, "Bone should be small");
+    }
+
+    private static class MonoResult {
+
+        private final Vector3Float offset;
+        private final ElementAsset element;
+        private final boolean small;
+
+        public MonoResult(Vector3Float offset, ElementAsset element, boolean small) {
+            this.offset = offset;
+            this.element = element;
+            this.small = small;
+        }
+
+    }
+
+    private static MonoResult processSingle(Vector3Float pivot, ElementAsset cube) {
+        ElementProcessor.Result result = ElementProcessor.process(pivot, Collections.singletonList(cube));
+        return new MonoResult(
+                result.offset(),
+                result.elements().get(0),
+                result.small()
+        );
     }
 
 }
