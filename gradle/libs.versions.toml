@@ -1,5 +1,5 @@
 [versions]
-creative = "0.1.10-SNAPSHOT"
+creative = "0.1.11-SNAPSHOT"
 annotations = "23.0.0"
 junit = "5.8.2"
 
