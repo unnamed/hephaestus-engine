@@ -155,9 +155,6 @@ public final class BBModelReader implements ModelReader {
             int textureHeight
     ) throws IOException {
 
-        float widthRatio = 16F / textureWidth;
-        float heightRatio = 16F / textureHeight;
-
         // Local map holding relations of cube identifier to
         // cube data, used to get bone cubes in constant time
         // when reading them
@@ -214,10 +211,10 @@ public final class BBModelReader implements ModelReader {
 
                 JsonArray uvJson = faceJson.get("uv").getAsJsonArray();
                 Vector4Float uv = new Vector4Float(
-                        uvJson.get(0).getAsFloat() * widthRatio,
-                        uvJson.get(1).getAsFloat() * heightRatio,
-                        uvJson.get(2).getAsFloat() * widthRatio,
-                        uvJson.get(3).getAsFloat() * heightRatio
+                        uvJson.get(0).getAsFloat() / textureWidth,
+                        uvJson.get(1).getAsFloat() / textureHeight,
+                        uvJson.get(2).getAsFloat() / textureWidth,
+                        uvJson.get(3).getAsFloat() / textureHeight
                 );
 
                 if (!uv.equals(Vector4Float.ZERO)) {
