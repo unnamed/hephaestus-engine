@@ -23,7 +23,6 @@
  */
 package team.unnamed.hephaestus.process;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Axis3D;
@@ -33,10 +32,12 @@ import team.unnamed.hephaestus.partial.ElementAsset;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class ElementProcessorTest {
 
     @Test
-    @DisplayName("Test that a 16x16x16 block cube is correctly processed")
+    @DisplayName("Test that a 16x16x16 block cube is processed as small")
     public void test_single_small_block() {
         MonoResult result = processSingle(Vector3Float.ZERO, new ElementAsset(
                 // 16x16x16 block
@@ -53,11 +54,84 @@ public class ElementProcessorTest {
         // creating a 38.4x38.4x38.4 cube, which is the
         // size of a block when using an item in a
         // small armor stand head
-        Assertions.assertEquals(new Vector3Float(3.2F, 3.2F, 3.2F), scaledElement.from(), "from");
-        Assertions.assertEquals(new Vector3Float(12.8F, 12.8F, 12.8F), scaledElement.to(), "to");
+        assertEquals(new Vector3Float(3.2F, 3.2F, 3.2F), scaledElement.from(), "from");
+        assertEquals(new Vector3Float(12.8F, 12.8F, 12.8F), scaledElement.to(), "to");
 
-        Assertions.assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
-        Assertions.assertTrue(result.small, "Bone should be small");
+        assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
+        assertTrue(result.small, "Bone should be small");
+    }
+
+    @Test
+    @DisplayName("Test that a 80x80x80 block cube is processed as small")
+    public void test_single_small_block_max() {
+        MonoResult result = processSingle(Vector3Float.ZERO, new ElementAsset(
+                // 80x80x80 block
+                new Vector3Float(-40, -40, -40),
+                new Vector3Float(40, 40, 40),
+                ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
+                Collections.emptyMap()
+        ));
+
+        ElementAsset scaledElement = result.element;
+
+        assertEquals(new Vector3Float(-16F, -16F, -16F), scaledElement.from(), "from");
+        assertEquals(new Vector3Float(32F, 32F, 32F), scaledElement.to(), "to");
+
+        assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
+        assertTrue(result.small, "Bone should be small");
+    }
+
+    @Test
+    @DisplayName("Test that a 82x82x82 block cube is processed as large")
+    public void test_single_large_block_min() {
+        MonoResult result = processSingle(Vector3Float.ZERO, new ElementAsset(
+                // 82x82x82 block
+                new Vector3Float(-41, -41, -41),
+                new Vector3Float(41, 41, 41),
+                ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
+                Collections.emptyMap()
+        ));
+
+        ElementAsset scaledElement = result.element;
+
+        assertEquals(new Vector3Float(-7.37F, -7.37F, -7.37F), scaledElement.from(), "from");
+        assertEquals(new Vector3Float(23.38F, 23.38F, 23.38F), scaledElement.to(), "to");
+
+        assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
+        assertFalse(result.small, "Bone should be large");
+    }
+
+    @Test
+    @DisplayName("Test that a 128x128x128 block cube is processed as large")
+    public void test_single_large_block_max() {
+        MonoResult result = processSingle(Vector3Float.ZERO, new ElementAsset(
+                // 128x128x128 block
+                new Vector3Float(-64, -64, -64),
+                new Vector3Float(64, 64, 64),
+                ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
+                Collections.emptyMap()
+        ));
+
+        ElementAsset scaledElement = result.element;
+
+        assertEquals(new Vector3Float(-16F, -16F, -16F), scaledElement.from(), "from");
+        assertEquals(new Vector3Float(32F, 32F, 32F), scaledElement.to(), "to");
+
+        assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
+        assertFalse(result.small, "Bone should be large");
+    }
+
+    @Test
+    @DisplayName("Test cube out of bounds")
+    public void test_single_cube_out_of_bounds() {
+        assertThrows(IllegalStateException.class, () -> {
+            processSingle(Vector3Float.ZERO, new ElementAsset(
+                    new Vector3Float(-65, -65, -65),
+                    new Vector3Float(65, 65, 65),
+                    ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
+                    Collections.emptyMap()
+            ));
+        }, "Cube out of bounds");
     }
 
     private static class MonoResult {
