@@ -58,8 +58,7 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
 
     private static final String NAMESPACE = "hephaestus";
 
-    private static final float SMALL_DISPLAY_SCALE = 3.8095F;
-    private static final float LARGE_DISPLAY_SCALE = 3.7333333F;
+    private static final float MAX_SCALE = 4F;
 
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
 
@@ -167,12 +166,10 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
             ModelAsset model,
             BoneAsset bone
     ) {
-        float displayScale = bone.small() ? SMALL_DISPLAY_SCALE : LARGE_DISPLAY_SCALE;
-
         Map<ItemTransform.Type, ItemTransform> displays = new HashMap<>();
         ItemTransform headTransform = ItemTransform.builder()
-                .translation(computeTranslation(bone.offset(), displayScale))
-                .scale(new Vector3Float(displayScale, displayScale, displayScale))
+                .translation(computeTranslation(bone.offset()))
+                .scale(new Vector3Float(MAX_SCALE, MAX_SCALE, MAX_SCALE))
                 .build();
         displays.put(ItemTransform.Type.HEAD, headTransform);
 
@@ -195,10 +192,10 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                 .build();
     }
 
-    private static Vector3Float computeTranslation(Vector3Float offset, float scale) {
-        float translationX = -offset.x() * scale;
-        float translationY = DISPLAY_TRANSLATION_Y - offset.y() * scale;
-        float translationZ = -offset.z() * scale;
+    private static Vector3Float computeTranslation(Vector3Float offset) {
+        float translationX = -offset.x() * MAX_SCALE;
+        float translationY = DISPLAY_TRANSLATION_Y - offset.y() * MAX_SCALE;
+        float translationZ = -offset.z() * MAX_SCALE;
 
         if (
                 translationX < MIN_TRANSLATION || translationX > MAX_TRANSLATION

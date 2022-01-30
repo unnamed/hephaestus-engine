@@ -41,8 +41,13 @@ public class ElementProcessor {
     private static final float BLOCK_SIZE = 16F;
     private static final float HALF_BLOCK_SIZE = BLOCK_SIZE / 2F;
 
-    private static final float SMALL_RATIO = BLOCK_SIZE / (BLOCK_SIZE + 9.6F);
-    private static final float LARGE_RATIO = BLOCK_SIZE / (BLOCK_SIZE + 20.57F);
+    private static final float MAX_LARGE_SIZE = BLOCK_SIZE * 8F; // 128 pixels (8 blocks)
+    private static final float MAX_SMALL_SIZE = BLOCK_SIZE * 5F; // 80 pixels (5 blocks)
+
+    private static final float MAX_ELEMENT_SIZE = Element.MAX_EXTENT - Element.MIN_EXTENT;
+
+    private static final float SMALL_RATIO = MAX_ELEMENT_SIZE / MAX_SMALL_SIZE;
+    private static final float LARGE_RATIO = MAX_ELEMENT_SIZE / MAX_LARGE_SIZE;
 
     public static class Result {
         private final List<ElementAsset> elements;
