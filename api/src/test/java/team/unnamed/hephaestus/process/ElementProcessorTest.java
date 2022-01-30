@@ -49,6 +49,12 @@ public class ElementProcessorTest {
         ElementProcessor.Result result = ElementProcessor.process(Vector3Float.ZERO, elements);
 
         ElementAsset scaledElement = result.elements().get(0);
+
+        // 9.6x9.6x9.6 cube, which is then multiplied
+        // by the scale (4, max scale) by the client,
+        // creating a 38.4x38.4x38.4 cube, which is the
+        // size of a block when using an item in a
+        // small armor stand head
         Assertions.assertEquals(new Vector3Float(3.2F, 3.2F, 3.2F), scaledElement.from());
         Assertions.assertEquals(new Vector3Float(12.8F, 12.8F, 12.8F), scaledElement.to());
 
