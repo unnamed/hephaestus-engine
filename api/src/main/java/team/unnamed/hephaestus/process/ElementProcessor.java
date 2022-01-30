@@ -220,7 +220,9 @@ public class ElementProcessor {
     }
 
     private static float scale(float value, float ratio) {
-        return HALF_BLOCK_SIZE - (ratio * (HALF_BLOCK_SIZE - value));
+        float scaled = HALF_BLOCK_SIZE - (ratio * (HALF_BLOCK_SIZE - value));
+        // round up to two decimals
+        return Math.round(scaled * 100F) / 100F;
     }
 
 }
