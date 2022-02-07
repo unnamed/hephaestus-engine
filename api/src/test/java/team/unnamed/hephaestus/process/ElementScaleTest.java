@@ -34,7 +34,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ElementProcessorTest {
+public class ElementScaleTest {
 
     @Test
     @DisplayName("Test that a 16x16x16 block cube is processed as small")
@@ -149,7 +149,7 @@ public class ElementProcessorTest {
     }
 
     private static MonoResult processSingle(Vector3Float pivot, ElementAsset cube) {
-        ElementProcessor.Result result = ElementProcessor.process(pivot, Collections.singletonList(cube));
+        ElementScale.Result result = ElementScale.process(pivot, Collections.singletonList(cube));
         return new MonoResult(
                 result.offset(),
                 result.elements().get(0),

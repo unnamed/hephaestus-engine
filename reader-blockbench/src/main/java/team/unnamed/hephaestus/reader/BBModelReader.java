@@ -42,7 +42,7 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.partial.BoneAsset;
 import team.unnamed.hephaestus.ModelDataCursor;
 import team.unnamed.hephaestus.animation.ModelAnimation;
-import team.unnamed.hephaestus.process.ElementProcessor;
+import team.unnamed.hephaestus.process.ElementScale;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -328,7 +328,7 @@ public final class BBModelReader implements ModelReader {
         }
 
 
-        ElementProcessor.Result processResult = ElementProcessor.process(pivot, cubes);
+        ElementScale.Result processResult = ElementScale.process(pivot, cubes);
         BoneAsset asset = new BoneAsset(
                 name,
                 pivot,

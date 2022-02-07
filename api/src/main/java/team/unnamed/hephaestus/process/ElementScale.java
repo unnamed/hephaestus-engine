@@ -32,7 +32,7 @@ import team.unnamed.hephaestus.partial.ElementAsset;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ElementProcessor {
+public class ElementScale {
 
     /**
      * The size of a block for models, this is the number that
