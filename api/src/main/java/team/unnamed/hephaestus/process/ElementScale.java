@@ -38,7 +38,7 @@ public class ElementScale {
      * The size of a block for models, this is the number that
      * relates Minecraft blocks to our models
      */
-    private static final float BLOCK_SIZE = 16F;
+    public static final float BLOCK_SIZE = 16F;
     private static final float HALF_BLOCK_SIZE = BLOCK_SIZE / 2F;
 
     private static final float MAX_LARGE_SIZE = BLOCK_SIZE * 8F; // 128 pixels (8 blocks)

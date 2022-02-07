@@ -28,6 +28,7 @@ import com.google.gson.JsonObject;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.animation.Timeline;
+import team.unnamed.hephaestus.process.ElementScale;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -98,7 +99,7 @@ final class AnimationReader {
                     }
 
                     if (channel.equals("position")) {
-                        value = value.divide(16, 16, -16);
+                        value = value.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
                     }
 
                     frames.put(time, Timeline.Channel.valueOf(channel.toUpperCase()), value);

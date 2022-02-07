@@ -288,8 +288,8 @@ public final class BBModelReader implements ModelReader {
                 ? Vector3Float.ZERO
                 : GsonUtil.getVector3FloatFromJson(json.get("rotation"));
 
-        // scaled pivot of the bone (pivot / 16)
-        Vector3Float scaledPivot = pivot.divide(16, 16, -16);
+        // scaled pivot of the bone (pivot / block size)
+        Vector3Float scaledPivot = pivot.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
         Vector3Float offset = scaledPivot.subtract(parentScaledPivot);
 
         List<ElementAsset> cubes = new ArrayList<>();
