@@ -8,7 +8,7 @@ includePrefixed("reader-blockbench")
 include("runtime-bukkit:api")
 include("runtime-bukkit:test-plugin")
 arrayOf(
-    "v1_17_R1"
+    "v1_18_R1"
 ).forEach {
     include(":runtime-bukkit:adapt-$it")
 }
