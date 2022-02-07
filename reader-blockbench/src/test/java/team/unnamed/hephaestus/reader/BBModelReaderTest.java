@@ -77,39 +77,41 @@ public class BBModelReaderTest {
 
             ElementAsset element = root.cubes().get(0);
             assertNotNull(element);
-            // TODO: Fix assertions
-            // assertEquals(new Vector3Float(-8F, 0F, -8F), element.from());
-            // assertEquals(new Vector3Float(8F, 16F, 8F), element.to());
+            System.out.println(element.from());
+            System.out.println(element.to());
+            assertEquals(new Vector3Float(3.2F, 8.0F, 3.2F), element.from());
+            assertEquals(new Vector3Float(12.8F, 17.6F, 12.8F), element.to());
 
             ElementRotation rotation = element.rotation();
-            // assertEquals(Vector3Float.ZERO, rotation.origin());
+            System.out.println(rotation.origin());
+            assertEquals(new Vector3Float(8.0F, 8.0F, 8.0F), rotation.origin());
             assertEquals(0F, rotation.angle());
 
             Map<CubeFace, ElementFace> faces = element.faces();
 
             ElementFace south = faces.get(CubeFace.SOUTH);
             assertNotNull(south);
-            assertEquals(new Vector4Float(4F, 0F, 8F, 4F), south.uv());
+            assertEquals(new Vector4Float(0.25F, 0F, 0.5F, 0.25F), south.uv());
 
             ElementFace up = faces.get(CubeFace.UP);
             assertNotNull(up);
-            assertEquals(new Vector4Float(4F, 12F, 0F, 8F), up.uv());
+            assertEquals(new Vector4Float(0.25F, 0.75F, 0F, 0.5F), up.uv());
 
             ElementFace north = faces.get(CubeFace.NORTH);
             assertNotNull(north);
-            assertEquals(new Vector4Float(0F, 0F, 4F, 4F), north.uv());
+            assertEquals(new Vector4Float(0F, 0F, 0.25F, 0.25F), north.uv());
 
             ElementFace east = faces.get(CubeFace.EAST);
             assertNotNull(east);
-            assertEquals(new Vector4Float(0F, 4F, 4F, 8F), east.uv());
+            assertEquals(new Vector4Float(0F, 0.25F, 0.25F, 0.5F), east.uv());
 
             ElementFace west = faces.get(CubeFace.WEST);
             assertNotNull(west);
-            assertEquals(new Vector4Float(4F, 4F, 8F, 8F), west.uv());
+            assertEquals(new Vector4Float(0.25F, 0.25F, 0.5F, 0.5F), west.uv());
 
             ElementFace down = faces.get(CubeFace.DOWN);
             assertNotNull(down);
-            assertEquals(new Vector4Float(12F, 0F, 8F, 4F), down.uv());
+            assertEquals(new Vector4Float(0.75F, 0F, 0.5F, 0.25F), down.uv());
         }
     }
 
