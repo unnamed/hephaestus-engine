@@ -42,7 +42,7 @@ public final class ModelClickListener {
     private ModelClickListener() {
     }
 
-    private static void onArmAnimaion(PlayerHandAnimationEvent event) {
+    private static void onArmAnimation(PlayerHandAnimationEvent event) {
         Player player = event.getPlayer();
         System.out.println("Ray casting...");
 
@@ -106,7 +106,7 @@ public final class ModelClickListener {
     }
 
     public static void register(EventNode<Event> node) {
-        node.addListener(PlayerHandAnimationEvent.class, ModelClickListener::onArmAnimaion);
+        node.addListener(PlayerHandAnimationEvent.class, ModelClickListener::onArmAnimation);
         node.addListener(EntityAttackEvent.class, ModelClickListener::onAttack);
         node.addListener(PlayerEntityInteractEvent.class, ModelClickListener::onInteract);
     }
