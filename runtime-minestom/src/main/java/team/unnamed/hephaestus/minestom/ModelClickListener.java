@@ -44,7 +44,6 @@ public final class ModelClickListener {
 
     private static void onArmAnimation(PlayerHandAnimationEvent event) {
         Player player = event.getPlayer();
-        System.out.println("Ray casting...");
 
         Pos position = player.getPosition();
         Vec direction = position.direction();
@@ -70,17 +69,16 @@ public final class ModelClickListener {
         double targetY = originY + (directionY * minLen);
         double targetZ = originZ + (directionZ * minLen);
 
-        System.out.println("Target: " + targetX + " " + targetY + " " + targetZ);
-        System.out.println("Checking for nearby entities");
-
         Instance instance = player.getInstance();
         for (Entity entity : instance.getNearbyEntities(position, distance)) {
-            if (entity == player) {
+            if (!(entity instanceof MinestomModelView modelView)) {
                 continue;
             }
             BoundingBox boundingBox = entity.getBoundingBox();
             if (boundingBox.intersect(originX, originY, originZ, targetX, targetY, targetZ)) {
-                System.out.println("Intersect " + entity);
+                modelView.interactListener()
+                        .onInteract(modelView, player, ActionType.LEFT_CLICK);
+                break;
             }
         }
     }
