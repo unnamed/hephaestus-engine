@@ -49,6 +49,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -101,6 +102,7 @@ public final class BBModelReader implements ModelReader {
         return new Model(
                 modelName,
                 bones,
+                Collections.emptySet(),
                 // TODO:
                 new Vector2Float(4, 4),
                 new ModelAsset(

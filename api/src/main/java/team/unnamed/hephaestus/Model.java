@@ -46,6 +46,7 @@ public class Model implements Examinable {
 
     private final String name;
     private final Map<String, Bone> bones;
+    private final Collection<Bone> seats;
     private final Vector2Float boundingBox;
     private ModelAsset asset;
     private final Map<String, ModelAnimation> animations;
@@ -53,10 +54,12 @@ public class Model implements Examinable {
     public Model(
             String name,
             Map<String, Bone> bones,
+            Collection<Bone> seats,
             Vector2Float boundingBox,
             ModelAsset asset
     ) {
         this.name = name;
+        this.seats = seats;
         this.bones = bones;
         this.boundingBox = boundingBox;
         this.asset = asset;
@@ -82,6 +85,19 @@ public class Model implements Examinable {
      */
     public Collection<Bone> bones() {
         return bones.values();
+    }
+
+    /**
+     * Returns a collection of the {@link Bone}
+     * instances where an entity can be attached
+     *
+     * <p>All the provided bones are also present
+     * in the bone tree (From {@link Model#bones()})</p>
+     *
+     * @return The model seats
+     */
+    public Collection<Bone> seats() {
+        return seats;
     }
 
     /**
@@ -134,6 +150,8 @@ public class Model implements Examinable {
         return Stream.of(
                 ExaminableProperty.of("name", name),
                 ExaminableProperty.of("bones", bones),
+                ExaminableProperty.of("seats", seats),
+                ExaminableProperty.of("boundingBox", boundingBox),
                 ExaminableProperty.of("animations", animations),
                 ExaminableProperty.of("asset", asset)
         );
