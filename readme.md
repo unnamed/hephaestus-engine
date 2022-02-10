@@ -17,7 +17,7 @@ Example:
 ### Limitations
 The normal limitations when creating a java Minecraft model
 - Cube rotations are limited by increments of 22.5 from -45 to 45 *(This limitation does not apply for bones)*
-- Bones cannot be larger than 48x48x48
+- Bones cannot be larger than 128x128x128
 
 ### Installation
 *(Currently not available from our repositories)*
