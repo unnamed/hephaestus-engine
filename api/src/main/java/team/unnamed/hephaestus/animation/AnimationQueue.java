@@ -25,6 +25,7 @@ package team.unnamed.hephaestus.animation;
 
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.view.BoneView;
 import team.unnamed.hephaestus.view.ModelView;
 import team.unnamed.hephaestus.util.Vectors;
 
@@ -141,8 +142,9 @@ public class AnimationQueue {
             globalRotation = Vectors.combineRotations(localRotation, parentRotation);
         }
 
-        view.moveBone(bone.name(), globalPosition);
-        view.rotateBone(bone.name(), globalRotation);
+        BoneView boneView = view.bone(bone.name());
+        boneView.position(globalPosition);
+        boneView.rotation(globalRotation);
 
         //if (modelData != -1) {
         //    entity.updateBoneModelData(bone, modelData);
