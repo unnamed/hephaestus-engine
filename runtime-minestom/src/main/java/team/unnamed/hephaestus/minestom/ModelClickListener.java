@@ -88,7 +88,7 @@ public final class ModelClickListener {
         Entity target = event.getTarget();
 
         if (entity instanceof Player player
-                && target instanceof BoneEntity bone) {
+                && target instanceof MinestomBoneView bone) {
             bone.view()
                     .interactListener()
                     .onInteract(bone.view(), player, ActionType.LEFT_CLICK);
@@ -96,7 +96,7 @@ public final class ModelClickListener {
     }
 
     private static void onInteract(PlayerEntityInteractEvent event) {
-        if (event.getTarget() instanceof BoneEntity bone) {
+        if (event.getTarget() instanceof MinestomBoneView bone) {
             bone.view()
                     .interactListener()
                     .onInteract(bone.view(), event.getPlayer(), ActionType.RIGHT_CLICK);

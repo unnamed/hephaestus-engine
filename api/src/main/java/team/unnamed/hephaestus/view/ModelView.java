@@ -23,17 +23,19 @@
  */
 package team.unnamed.hephaestus.view;
 
-import team.unnamed.creative.base.Vector3Float;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 
+import java.util.Collection;
+
 /**
  * Base abstraction for representing a {@link Model}
- * view, allows multiple viewers and animation playing.
+ * view, allows multiple viewers and animation playing
  *
- * Platform independent, to use more specific properties
+ * <p>Platform independent, to use more specific properties
  * and avoid using generics, use their implementations in
- * runtime-* projects
+ * runtime-* projects</p>
  *
  * @param <T> The platform-specific server player type
  * @since 1.0.0
@@ -47,6 +49,15 @@ public interface ModelView<T> {
     Model model();
 
     /**
+     * Returns a collection of the bone views
+     * where an entity can be attached (added
+     * as passenger)
+     *
+     * @return The model view seats
+     */
+    Collection<BoneView> seats();
+
+    /**
      * Sets the {@link ModelInteractListener} for
      * this model view
      *
@@ -54,49 +65,21 @@ public interface ModelView<T> {
      */
     void interactListener(ModelInteractListener<T> interactListener);
 
-    //#region Entire View Handling methods
     /**
      * Colorizes this view using the specified
      * {@code r} (red), {@code g} (green) and
      * {@code b} (blue) color components
      */
     void colorize(int r, int g, int b);
-    //#endregion
-
-    //#region Bone Handling methods
-    /**
-     * Finds the bone with the specified {@code name}
-     * and colorizes it using the specified RGB color
-     * components
-     * @throws NullPointerException If no bone with
-     * the given name is found
-     */
-    void colorizeBone(String name, int r, int g, int b);
 
     /**
-     * Teleports the bone with the specified {@code name}
-     * to the given relative {@code position} (added to
-     * the global model position to obtain the global bone
-     * position)
-     * @param name The teleported bone name
-     * @param position The relative target position
-     * @throws NullPointerException If no bone with
-     * the given name is found
+     * Gets the bone with the specified name
+     *
+     * @param name The bone name
+     * @return The bone view, null if absent
      */
-    void moveBone(String name, Vector3Float position);
+    @Nullable BoneView bone(String name);
 
-    /**
-     * Rotates the bone with the specified {@code name}
-     * to the given {@code rotation}
-     * @param name The rotated bone name
-     * @param rotation The target rotation
-     * @throws NullPointerException If no bone with the
-     * given name is found
-     */
-    void rotateBone(String name, Vector3Float rotation);
-    //#endregion
-
-    //#region Animation Handling methods
     /**
      * Finds and plays the animation with the
      * specified {@code name} for this model view
@@ -161,6 +144,5 @@ public interface ModelView<T> {
      * to the next animation frame
      */
     void tickAnimations();
-    //#endregion
 
 }

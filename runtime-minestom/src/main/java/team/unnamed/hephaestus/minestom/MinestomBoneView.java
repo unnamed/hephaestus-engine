@@ -24,13 +24,21 @@
 package team.unnamed.hephaestus.minestom;
 
 import net.minestom.server.color.Color;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
+import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
+import org.jetbrains.annotations.NotNull;
+import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.view.BoneView;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Represents a {@link Bone} holder entity,
@@ -40,7 +48,12 @@ import team.unnamed.hephaestus.Bone;
  *
  * @since 1.0.0
  */
-public final class BoneEntity extends LivingEntity {
+public final class MinestomBoneView
+        extends LivingEntity
+        implements BoneView {
+
+    private static final float SMALL_OFFSET = 0.726F;
+    private static final float LARGE_OFFSET = 1.452F; // todo: this must be tested
 
     private static final ItemStack BASE_HELMET =
             ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
@@ -52,13 +65,18 @@ public final class BoneEntity extends LivingEntity {
     private final MinestomModelView view;
     private final Bone bone;
 
-    public BoneEntity(
+    // cached height offset, either SMALL_OFFSET
+    // or LARGE_OFFSET
+    private final float offset;
+
+    public MinestomBoneView(
             MinestomModelView view,
             Bone bone
     ) {
         super(EntityType.ARMOR_STAND);
         this.view = view;
         this.bone = bone;
+        this.offset = bone.small() ? SMALL_OFFSET : LARGE_OFFSET;
         initialize();
     }
 
@@ -83,12 +101,7 @@ public final class BoneEntity extends LivingEntity {
         return view;
     }
 
-    /**
-     * Returns the bone represented by this
-     * entity
-     *
-     * @return The entity bone
-     */
+    @Override
     public Bone bone() {
         return bone;
     }
@@ -101,6 +114,35 @@ public final class BoneEntity extends LivingEntity {
      */
     public void colorize(Color color) {
         setHelmet(getHelmet().withMeta((LeatherArmorMeta.Builder meta) -> meta.color(color)));
+    }
+
+    @Override
+    public void colorize(int r, int g, int b) {
+        colorize(new Color(r, g, b));
+    }
+
+    @Override
+    public void position(Vector3Float position) {
+        teleport(view.getPosition().add(
+                position.x(),
+                position.y() - offset,
+                position.z()
+        ));
+    }
+
+    @Override
+    public void rotation(Vector3Float rotation) {
+        ArmorStandMeta meta = (ArmorStandMeta) getEntityMeta();
+        meta.setHeadRotation(new Vec(
+                Math.toDegrees(rotation.x()),
+                Math.toDegrees(rotation.y()),
+                Math.toDegrees(rotation.z())
+        ));
+    }
+
+    @Override
+    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos pos) {
+        return super.setInstance(instance, pos.sub(0, offset, 0));
     }
 
 }
