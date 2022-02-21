@@ -339,7 +339,7 @@ public final class BBModelReader implements ModelReader {
                 boneAssets
         );
 
-        siblings.put(name, new Bone(name, rotation, bones, offset, asset));
+        siblings.put(name, Bone.bone(name, offset, rotation, asset.small(), asset.customModelData(), bones));
         siblingAssets.put(name, asset);
     }
 
