@@ -24,24 +24,50 @@
 package team.unnamed.hephaestus;
 
 import net.kyori.examination.Examinable;
-import org.jetbrains.annotations.Contract;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.partial.BoneAsset;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Represents a {@link Model} movable part, in the
  * game, it has its own Creative's {@link team.unnamed.creative.model.Model}
  * and its own armor_stand entity
  *
- * <p>Abstraction for all bone types such as normal
- * bone, head bone (special movement), name-tag bones,
- * seat bones, hand bones (can hold items), etc</p>
- *
  * @since 1.0.0
  */
-public interface Bone extends Examinable {
+public class Bone implements Examinable {
+
+    private final String name;
+    private final Vector3Float rotation;
+
+    private final Map<String, Bone> children;
+    private final Vector3Float offset;
+
+    private final boolean small;
+    private final int customModelData;
+
+    public Bone(
+            String name,
+            Vector3Float rotation,
+            Map<String, Bone> children,
+            Vector3Float offset,
+            BoneAsset asset
+    ) {
+        this.name = name;
+        this.rotation = rotation;
+        this.children = children;
+        this.offset = offset;
+
+        // data kept from BoneAsset
+        this.small = asset.small();
+        this.customModelData = asset.customModelData();
+    }
 
     /**
      * Returns this bone unique name, bone names
@@ -49,8 +75,9 @@ public interface Bone extends Examinable {
      *
      * @return The bone name
      */
-    @Contract(pure = true)
-    String name();
+    public String name() {
+        return name;
+    }
 
     /**
      * Returns this bone offset, which is, in
@@ -59,7 +86,9 @@ public interface Bone extends Examinable {
      *
      * @return The bone offset
      */
-    Vector3Float offset();
+    public Vector3Float offset() {
+        return offset;
+    }
 
     /**
      * Returns this bone custom model data,
@@ -75,14 +104,18 @@ public interface Bone extends Examinable {
      *
      * @return The bone custom model data
      */
-    int customModelData();
+    public int customModelData() {
+        return customModelData;
+    }
 
     /**
      * Returns this bone initial rotation
      *
      * @return The bone initial rotation
      */
-    Vector3Float rotation();
+    public Vector3Float rotation() {
+        return rotation;
+    }
 
     /**
      * Determines whether to use small armor stands
@@ -90,14 +123,18 @@ public interface Bone extends Examinable {
      *
      * @return True to use small armor stands
      */
-    boolean small();
+    public boolean small() {
+        return small;
+    }
 
     /**
      * Returns this bone child bones
      *
      * @return The child bones
      */
-    Collection<Bone> children();
+    public Collection<Bone> children() {
+        return children.values();
+    }
 
     /**
      * Returns a map of this bone children
@@ -105,28 +142,25 @@ public interface Bone extends Examinable {
      *
      * @return The child bone map
      */
-    Map<String, Bone> childrenMap();
+    public Map<String, Bone> childrenMap() {
+        return children;
+    }
 
-    /**
-     * Creates a new, default {@link Bone} implementation
-     *
-     * @param name The bone name
-     * @param offset The bone initial relative offset
-     * @param rotation The bone initial rotation
-     * @param small True if the bone armor stand should be small
-     * @param customModelData The bone item custom model data
-     * @param children The children bones
-     * @return The recently created bone
-     */
-    static Bone bone(
-            String name,
-            Vector3Float offset,
-            Vector3Float rotation,
-            boolean small,
-            int customModelData,
-            Map<String, Bone> children
-    ) {
-        return new BoneImpl(name, offset, rotation, small, customModelData, children);
+    @Override
+    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("name", name),
+                ExaminableProperty.of("rotation", rotation),
+                ExaminableProperty.of("bones", children),
+                ExaminableProperty.of("offset", offset),
+                ExaminableProperty.of("small", small),
+                ExaminableProperty.of("customModelData", customModelData)
+        );
+    }
+
+    @Override
+    public String toString() {
+        return examine(StringExaminer.simpleEscaping());
     }
 
 }
