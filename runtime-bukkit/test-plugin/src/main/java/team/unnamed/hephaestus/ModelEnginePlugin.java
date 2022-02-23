@@ -32,11 +32,13 @@ import team.unnamed.creative.file.FileResource;
 import team.unnamed.creative.file.ResourceWriter;
 import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
+import team.unnamed.hephaestus.adapt.v1_18_R1.ModelViewRenderer_v1_18_R1;
 import team.unnamed.hephaestus.command.ModelCommand;
 import team.unnamed.hephaestus.export.MCPacksHttpExporter;
 import team.unnamed.hephaestus.listener.ResourcePackSetListener;
 import team.unnamed.hephaestus.reader.BBModelReader;
 import team.unnamed.hephaestus.reader.ModelReader;
+import team.unnamed.hephaestus.view.ModelViewRenderer;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
 import java.io.IOException;
@@ -49,27 +51,38 @@ public class ModelEnginePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        ModelViewRenderer renderer = new ModelViewRenderer_v1_18_R1();
+
+        // load properties
+        int showPeriod = Integer.getInteger("hephaestus.show-task-period", 5); // ticks
+
         // load models from resources
         getLogger().info("Loading models...");
         ModelRegistry registry = new ModelRegistry();
-        registry.add(loadModelFromResource("butterfly.bbmodel"));
+        registry.registerModel(loadModelFromResource("butterfly.bbmodel"));
 
         // upload resource pack
         getLogger().info("Uploading resource pack...");
         ResourcePack pack = exportResourcePack(registry);
         getLogger().info("Uploaded resource pack to " + pack.url());
 
-        // register commands and listeners
-        getLogger().info("Registering commands and listeners...");
-        registerCommand("model", new ModelCommand(registry));
+        // register commands, listeners and tasks
+        getLogger().info("Registering commands, listeners and tasks...");
+        registerCommand("model", new ModelCommand(registry, renderer));
         registerListener(new ResourcePackSetListener(pack));
+        getServer().getScheduler().runTaskTimerAsynchronously(
+                this,
+                new ModelShowTask(registry),
+                0L,
+                showPeriod
+        );
     }
 
     private ResourcePack exportResourcePack(ModelRegistry registry) {
         try {
             return new MCPacksHttpExporter().export(tree -> {
                 try {
-                    ModelWriter.resource().write(tree, registry.all());
+                    ModelWriter.resource().write(tree, registry.models());
                     tree.write(new FileResource() {
                         @Override
                         public String path() {

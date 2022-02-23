@@ -23,23 +23,35 @@
  */
 package team.unnamed.hephaestus.command;
 
-import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelRegistry;
+import team.unnamed.hephaestus.view.BukkitModelView;
+import team.unnamed.hephaestus.view.ModelViewRenderer;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Locale;
 
+import static org.bukkit.ChatColor.DARK_GREEN;
+import static org.bukkit.ChatColor.GREEN;
+import static org.bukkit.ChatColor.RED;
+
 public class ModelCommand implements CommandExecutor {
 
     private final ModelRegistry modelRegistry;
+    private final ModelViewRenderer modelRenderer;
 
-    public ModelCommand(ModelRegistry modelRegistry) {
+    public ModelCommand(
+            ModelRegistry modelRegistry,
+            ModelViewRenderer modelRenderer
+    ) {
         this.modelRegistry = modelRegistry;
+        this.modelRenderer = modelRenderer;
     }
 
     @Override
@@ -47,7 +59,7 @@ public class ModelCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (args.length < 1) {
-            sender.sendMessage(ChatColor.RED + "/" + label + " spawn");
+            sender.sendMessage(RED + "/" + label + " spawn");
             return true;
         }
 
@@ -55,23 +67,36 @@ public class ModelCommand implements CommandExecutor {
 
         switch (subcommand) {
             case "spawn" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(RED + "You must be a player to do this");
+                    return true;
+                }
+
                 if (args.length != 2) {
-                    sender.sendMessage(ChatColor.RED + "/" + label + " spawn <type>");
+                    sender.sendMessage(RED + "/" + label + " spawn <type>");
                     return true;
                 }
 
                 String modelName = args[1].toLowerCase(Locale.ROOT);
-                @Nullable Model model = modelRegistry.get(modelName);
+                @Nullable Model model = modelRegistry.model(modelName);
 
                 if (model == null) {
-                    sender.sendMessage(ChatColor.RED + "Model not found: " + modelName);
+                    sender.sendMessage(RED + "Model not found: " + modelName);
                     return true;
                 }
 
+                Location location = player.getLocation();
+                String viewId = ModelRegistry.generateViewId();
+                BukkitModelView view = modelRenderer.render(model, location);
 
+                // register so it is shown for players in next iterations
+                modelRegistry.registerView(viewId, view);
+                sender.sendMessage(GREEN + "Created view with id "
+                        + DARK_GREEN + viewId
+                        + GREEN + " with model " + modelName);
             }
             default -> {
-                sender.sendMessage(ChatColor.RED + "Unknown subcommand");
+                sender.sendMessage(RED + "Unknown subcommand");
             }
         }
 

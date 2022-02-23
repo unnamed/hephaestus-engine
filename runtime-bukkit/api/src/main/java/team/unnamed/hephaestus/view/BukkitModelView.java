@@ -152,16 +152,20 @@ public class BukkitModelView
         return location;
     }
 
-    public void addViewer(Player player) {
+    public boolean addViewer(Player player) {
         if (viewers.add(player)) {
             controller.show(this, player);
+            return true;
         }
+        return false;
     }
 
-    public void removeViewer(Player player) {
+    public boolean removeViewer(Player player) {
         if (viewers.remove(player)) {
             controller.hide(this, player);
+            return true;
         }
+        return false;
     }
 
     private void teleportBoneAndChildren(

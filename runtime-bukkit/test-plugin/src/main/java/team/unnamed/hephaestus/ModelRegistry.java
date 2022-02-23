@@ -24,6 +24,7 @@
 package team.unnamed.hephaestus;
 
 import org.jetbrains.annotations.Nullable;
+import team.unnamed.hephaestus.view.BukkitModelView;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,17 +33,34 @@ import java.util.Map;
 public class ModelRegistry {
 
     private final Map<String, Model> models = new HashMap<>();
+    private final Map<String, BukkitModelView> views = new HashMap<>();
 
-    public void add(Model model) {
+    public void registerModel(Model model) {
         models.put(model.name(), model);
     }
 
-    public @Nullable Model get(String name) {
+    public @Nullable Model model(String name) {
         return models.get(name);
     }
 
-    public Collection<Model> all() {
+    public Collection<Model> models() {
         return models.values();
+    }
+
+    public void registerView(String id, BukkitModelView view) {
+        views.put(id, view);
+    }
+
+    public @Nullable BukkitModelView view(String id) {
+        return views.get(id);
+    }
+    
+    public Collection<BukkitModelView> views() {
+        return views.values();
+    }
+
+    public static String generateViewId() {
+        return Long.toHexString(Long.reverseBytes(System.nanoTime()));
     }
 
 }
