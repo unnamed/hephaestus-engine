@@ -1,5 +1,12 @@
 enableFeaturePreview("VERSION_CATALOGS")
 
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven("https://papermc.io/repo/repository/maven-public/")
+    }
+}
+
 rootProject.name = "hephaestus-parent"
 
 includePrefixed("api")
