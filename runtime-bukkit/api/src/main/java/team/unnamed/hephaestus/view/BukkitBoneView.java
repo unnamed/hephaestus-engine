@@ -21,25 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.adapt.v1_18_R1;
+package team.unnamed.hephaestus.view;
 
-import org.bukkit.Location;
-import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.view.BukkitModelView;
-import team.unnamed.hephaestus.view.ModelViewController;
-import team.unnamed.hephaestus.view.ModelViewRenderer;
+import org.bukkit.Color;
 
-public class ModelViewRenderer_v1_18_R1 implements ModelViewRenderer {
+public interface BukkitBoneView extends BoneView {
 
-    private final ModelViewController controller;
-
-    public ModelViewRenderer_v1_18_R1() {
-        this.controller = new ModelViewController_v1_18_R1();
-    }
+    void colorize(Color color);
 
     @Override
-    public BukkitModelView render(Model model, Location location) {
-        return new BukkitModelView(controller, model, location);
+    default void colorize(int r, int g, int b) {
+        colorize(Color.fromRGB(r, g, b));
     }
 
 }

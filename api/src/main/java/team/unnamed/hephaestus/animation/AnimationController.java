@@ -21,25 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.adapt.v1_18_R1;
+package team.unnamed.hephaestus.animation;
 
-import org.bukkit.Location;
-import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.view.BukkitModelView;
-import team.unnamed.hephaestus.view.ModelViewController;
-import team.unnamed.hephaestus.view.ModelViewRenderer;
+import team.unnamed.hephaestus.view.ModelView;
 
-public class ModelViewRenderer_v1_18_R1 implements ModelViewRenderer {
+/**
+ * Represents the object responsible to animate
+ * a single model or group of models
+ *
+ * @since 1.0.0
+ */
+public interface AnimationController {
 
-    private final ModelViewController controller;
+    /**
+     * Queues the given {@link ModelAnimation} so that
+     * it will be played in the next ticks
+     *
+     * @param animation The queued animation
+     * @param transitionTicks The animation transition ticks
+     */
+    void queue(ModelAnimation animation, int transitionTicks);
 
-    public ModelViewRenderer_v1_18_R1() {
-        this.controller = new ModelViewController_v1_18_R1();
+    default void queue(ModelAnimation animation) {
+        queue(animation, 0);
     }
 
-    @Override
-    public BukkitModelView render(Model model, Location location) {
-        return new BukkitModelView(controller, model, location);
+    void clearQueue();
+
+    /**
+     * Passes to the next animation frame using
+     * the given model yaw
+     *
+     * @param yaw The model yaw
+     */
+    void tick(double yaw);
+
+    static AnimationController create(ModelView<?> view) {
+        return new AnimationControllerImpl(view);
     }
 
 }

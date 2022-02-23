@@ -1,39 +1,27 @@
 package team.unnamed.hephaestus.view;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.Model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
-/** Responsible for spawning {@link Model} */
+/**
+ * Responsible for spawning {@link Model}, or
+ * converting {@link Model} to {@link ModelView}
+ * concrete instances at specific world locations
+ *
+ * @since 1.0.0
+ */
 public interface ModelViewRenderer {
 
     /**
-     * Spawns the bones of the given {@code model}
-     * @return The living model entity
+     * Spawns the given {@link Model} model
+     * instance at the given world location
+     *
+     * @param model The rendered model
+     * @param location The model view location
+     *
+     * @return The created model view
+     * @since 1.0.0
      */
-    BukkitModelView render(
-            Model model,
-            Location location,
-            Collection<Player> viewers
-    );
-
-    default BukkitModelView render(
-            Model model,
-            Location location,
-            Player... viewers
-    ) {
-        return render(model, location, Arrays.asList(viewers));
-    }
-
-    default BukkitModelView render(
-            Model model,
-            Location location
-    ) {
-        return render(model, location, new ArrayList<>());
-    }
+    BukkitModelView render(Model model, Location location);
 
 }

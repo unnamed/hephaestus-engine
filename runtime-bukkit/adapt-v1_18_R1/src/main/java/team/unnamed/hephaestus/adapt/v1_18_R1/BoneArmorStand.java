@@ -23,23 +23,19 @@
  */
 package team.unnamed.hephaestus.adapt.v1_18_R1;
 
-import org.bukkit.Location;
-import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.view.BukkitModelView;
-import team.unnamed.hephaestus.view.ModelViewController;
-import team.unnamed.hephaestus.view.ModelViewRenderer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.level.Level;
 
-public class ModelViewRenderer_v1_18_R1 implements ModelViewRenderer {
+final class BoneArmorStand extends ArmorStand {
 
-    private final ModelViewController controller;
-
-    public ModelViewRenderer_v1_18_R1() {
-        this.controller = new ModelViewController_v1_18_R1();
+    public BoneArmorStand(Level level) {
+        super(EntityType.ARMOR_STAND, level);
     }
 
     @Override
-    public BukkitModelView render(Model model, Location location) {
-        return new BukkitModelView(controller, model, location);
+    public void setRot(float yRot, float xRot) { // makes setRot accessible
+        super.setRot(yRot, xRot);
     }
 
 }

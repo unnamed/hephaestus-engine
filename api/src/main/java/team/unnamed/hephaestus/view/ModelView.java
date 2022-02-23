@@ -25,9 +25,11 @@ package team.unnamed.hephaestus.view;
 
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.animation.AnimationController;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Base abstraction for representing a {@link Model}
@@ -55,7 +57,7 @@ public interface ModelView<T> {
      *
      * @return The model view seats
      */
-    Collection<BoneView> seats();
+    Collection<? extends BoneView> seats();
 
     /**
      * Sets the {@link ModelInteractListener} for
@@ -81,6 +83,14 @@ public interface ModelView<T> {
     @Nullable BoneView bone(String name);
 
     /**
+     * Returns the animation controller linked to
+     * this model view
+     *
+     * @return The animation controller
+     */
+    AnimationController animationController();
+
+    /**
      * Finds and plays the animation with the
      * specified {@code name} for this model view
      * instance.
@@ -89,7 +99,11 @@ public interface ModelView<T> {
      * @param transitionTicks the amount of ticks for the transition between last animation and the current one
      * @see Model#animations()
      */
-    void playAnimation(String name, int transitionTicks);
+    default void playAnimation(String name, int transitionTicks) {
+        ModelAnimation animation = model().animations().get(name);
+        Objects.requireNonNull(animation, "Animation " + name);
+        animationController().queue(animation, transitionTicks);
+    }
 
     /**
      * Finds and plays the animation with the
@@ -102,42 +116,6 @@ public interface ModelView<T> {
     default void playAnimation(String name) {
         playAnimation(name, 0);
     }
-
-    /**
-     * Plays the given {@code animation} for
-     * this model view instance
-     *
-     * @param animation The animation to play
-     * @param transitionTicks the amount of ticks for the transition between last animation and the current one
-     * @see Model#animations()
-     */
-    void playAnimation(ModelAnimation animation, int transitionTicks);
-
-    /**
-     * Plays the given {@code animation} for
-     * this model view instance
-     *
-     * @param animation The animation to play
-     * @see Model#animations()
-     */
-    default void playAnimation(ModelAnimation animation) {
-        playAnimation(animation, 0);
-    }
-
-    /**
-     * Stops playing the animation with the
-     * specified {@code name} for this model view
-     * @param name The animation to stop
-     * @return True if animation was stopped, false
-     * otherwise
-     */
-    boolean stopAnimation(String name);
-
-    /**
-     * Stops all animations in the queue
-     * for this model view
-     */
-    void stopAllAnimations();
 
     /**
      * Ticks animations, makes required bones pass

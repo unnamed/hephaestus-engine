@@ -36,10 +36,9 @@ import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.animation.AnimationQueue;
+import team.unnamed.hephaestus.animation.AnimationController;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.util.Vectors;
-import team.unnamed.hephaestus.view.BoneView;
 import team.unnamed.hephaestus.view.ModelInteractListener;
 import team.unnamed.hephaestus.view.ModelView;
 
@@ -55,13 +54,13 @@ public class MinestomModelView
         extends EntityCreature
         implements ModelView<Player> {
 
-    private final Map<String, MinestomBoneView> bones = new ConcurrentHashMap<>();
-
     private final Model model;
-    private final AnimationQueue animationQueue;
 
+    private final Map<String, MinestomBoneView> bones = new ConcurrentHashMap<>();
+    private final Collection<MinestomBoneView> seats = new HashSet<>();
+
+    private final AnimationController animationController;
     private ModelInteractListener<Player> interactListener = ModelInteractListener.nop();
-    private final Collection<BoneView> seats = new HashSet<>();
 
     public MinestomModelView(
             EntityType type,
@@ -69,7 +68,7 @@ public class MinestomModelView
     ) {
         super(type);
         this.model = model;
-        this.animationQueue = new AnimationQueue(this);
+        this.animationController = AnimationController.create(this);
 
         Vector2Float boundingBox = model.boundingBox();
         setBoundingBox(boundingBox.x(), boundingBox.y(), boundingBox.x());
@@ -83,7 +82,7 @@ public class MinestomModelView
     }
 
     @Override
-    public Collection<BoneView> seats() {
+    public Collection<MinestomBoneView> seats() {
         return seats;
     }
 
@@ -110,30 +109,19 @@ public class MinestomModelView
     }
 
     @Override
+    public AnimationController animationController() {
+        return animationController;
+    }
+
+    @Override
     public void playAnimation(String animationName, int transitionTicks) {
         ModelAnimation animation = model.animations().get(animationName);
-        animationQueue.pushAnimation(animation, transitionTicks);
-    }
-
-    @Override
-    public void playAnimation(ModelAnimation animation, int transitionTicks) {
-        animationQueue.pushAnimation(animation, transitionTicks);
-    }
-
-    @Override
-    public boolean stopAnimation(String name) {
-        // TODO:
-        return false;
-    }
-
-    @Override
-    public void stopAllAnimations() {
-        animationQueue.removeAllAnimations();
+        animationController.queue(animation, transitionTicks);
     }
 
     @Override
     public void tickAnimations() {
-        animationQueue.next(Math.toRadians(getPosition().yaw()));
+        animationController.tick(Math.toRadians(getPosition().yaw()));
     }
 
     private void summonBone(double yawRadians, Pos pos, Bone bone, Vector3Float parentOffset) {
@@ -190,7 +178,7 @@ public class MinestomModelView
 
                     // after spawning bones, process seats
                     for (Bone seatBone : model.seats()) {
-                        BoneView seatView = bone(seatBone.name());
+                        MinestomBoneView seatView = bone(seatBone.name());
                         if (seatView != null) {
                             seats.add(seatView);
                         }

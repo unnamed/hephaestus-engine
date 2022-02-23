@@ -25,9 +25,9 @@ package team.unnamed.hephaestus.animation;
 
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BoneView;
 import team.unnamed.hephaestus.view.ModelView;
-import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Deque;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class AnimationQueue {
+final class AnimationControllerImpl implements AnimationController {
 
     private final Map<String, KeyFrame> lastFrames = new HashMap<>();
     private final Map<String, Iterator<KeyFrame>> iterators = new HashMap<>();
@@ -45,7 +45,7 @@ public class AnimationQueue {
     private final ModelView<?> view;
     private ModelAnimation animation;
 
-    public AnimationQueue(ModelView<?> view) {
+    AnimationControllerImpl(ModelView<?> view) {
         this.view = view;
     }
 
@@ -55,7 +55,8 @@ public class AnimationQueue {
                 iterators.put(name, list.iterator()));
     }
 
-    public synchronized void pushAnimation(ModelAnimation animation, int transitionTicks) {
+    @Override
+    public synchronized void queue(ModelAnimation animation, int transitionTicks) {
         if (transitionTicks <= 0) {
             animations.addFirst(animation);
             nextAnimation();
@@ -95,12 +96,6 @@ public class AnimationQueue {
         animations.addFirst(animation);
         nextAnimation();
     }
-
-    public synchronized void removeAllAnimations() {
-        animations.clear();
-        animation = null;
-    }
-
 
     private void nextAnimation() {
         animation = animations.pollLast();
@@ -161,7 +156,14 @@ public class AnimationQueue {
         }
     }
 
-    public synchronized void next(double yaw) {
+    @Override
+    public void clearQueue() {
+        animations.clear();
+        animation = null;
+    }
+
+    @Override
+    public synchronized void tick(double yaw) {
         for (Bone bone : view.model().bones()) {
             updateBone(
                     yaw,

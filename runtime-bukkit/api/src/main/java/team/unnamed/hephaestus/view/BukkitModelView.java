@@ -3,56 +3,81 @@ package team.unnamed.hephaestus.view;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.animation.AnimationQueue;
+import team.unnamed.hephaestus.animation.AnimationController;
 import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- * Bukkit implementation of {@link ModelView} interface
- *
- * @since 1.0.0
- */
 public class BukkitModelView
         implements ModelView<Player> {
 
-    private final ModelViewController controller;
-    private final AnimationQueue animationQueue;
-
     private final Model model;
 
-    private final Collection<Player> viewers;
+    private final Map<String, BukkitBoneView> bones = new ConcurrentHashMap<>();
+    private final Collection<BukkitBoneView> seats = new HashSet<>();
 
-    private Location location;
-
-    /**
-     * Holds a relation of model bone name as key
-     * and its linked entity ID as value
-     */
-    private final Map<String, Object> entities = new HashMap<>();
-
+    private final ModelViewController controller;
+    private final AnimationController animationController;
     private ModelInteractListener<Player> interactListener = ModelInteractListener.nop();
+
+    private final Collection<Player> viewers = new HashSet<>();
+    private Location location;
 
     public BukkitModelView(
             ModelViewController controller,
             Model model,
-            Collection<Player> viewers,
             Location location
     ) {
         this.controller = controller;
-        this.animationQueue = new AnimationQueue(this);
+        this.animationController = AnimationController.create(this);
 
         this.model = model;
-        this.viewers = viewers;
         this.location = location;
+        this.summonBones();
+    }
+
+    private void summonBones() {
+        // create the bone entities
+        double yawRadians = Math.toRadians(location.getYaw());
+
+        for (Bone bone : model.bones()) {
+            summonBone(yawRadians, bone, Vector3Float.ZERO);
+        }
+
+        // after spawning bones, process seats
+        for (Bone seatBone : model.seats()) {
+            BukkitBoneView seatView = bone(seatBone.name());
+            if (seatView != null) {
+                seats.add(seatView);
+            }
+        }
+    }
+
+    private void summonBone(
+            double yawRadians,
+            Bone bone,
+            Vector3Float parentPosition
+    ) {
+        Vector3Float position = bone.offset().add(parentPosition);
+
+        BukkitBoneView entity = controller.createBone(this, bone);
+        entity.position(Vectors.rotateAroundY(position, yawRadians));
+        bones.put(bone.name(), entity);
+
+        for (Bone child : bone.children()) {
+            summonBone(yawRadians, child, position);
+        }
     }
 
     @Override
@@ -60,79 +85,54 @@ public class BukkitModelView
         this.interactListener = requireNonNull(interactListener, "interactListener");
     }
 
+    @ApiStatus.Internal // we probably should make this public
+    public Collection<BukkitBoneView> bones() {
+        return bones.values();
+    }
+
+    @Override
+    public AnimationController animationController() {
+        return animationController;
+    }
+
     @Override
     public Model model() {
         return model;
     }
 
-    //#region Entire View Handling methods
+    @Override
+    public Collection<BukkitBoneView> seats() {
+        return seats;
+    }
+
     @Override
     public void colorize(int r, int g, int b) {
-        controller.colorize(this, Color.fromRGB(r, g, b));
+        for (BukkitBoneView view : bones.values()) {
+            view.colorize(r, g, b);
+        }
     }
 
     public void colorize(Color color) {
-        controller.colorize(this, color);
-    }
-    //#endregion
-
-    //#region Bone Handling methods
-    @Override
-    public void colorizeBone(String name, int r, int g, int b) {
-        controller.colorizeBone(this, name, Color.fromRGB(r, g, b));
-    }
-
-    public void colorizeBone(Bone bone, Color color) {
-        controller.colorizeBone(this, bone.name(), color);
-    }
-
-    public void colorizeBone(String boneName, Color color) {
-        controller.colorizeBone(this, boneName, color);
+        for (BukkitBoneView view : bones.values()) {
+            view.colorize(color);
+        }
     }
 
     @Override
-    public void moveBone(String name, Vector3Float position) {
-        controller.teleportBone(this, name, location.clone().add(
-                position.x(),
-                position.y(),
-                position.z()
-        ));
+    public @Nullable BukkitBoneView bone(String name) {
+        return bones.get(name);
     }
 
-    @Override
-    public void rotateBone(String name, Vector3Float rotation) {
-        controller.setBonePose(this, name, Vectors.toDegrees(rotation));
-    }
-    //#endregion
-
-    //#region Animation Handling methods
     @Override
     public void playAnimation(String name, int transitionTicks) {
         ModelAnimation animation = model.animations().get(name);
-        animationQueue.pushAnimation(animation, transitionTicks);
-    }
-
-    @Override
-    public void playAnimation(ModelAnimation animation, int transitionTicks) {
-        animationQueue.pushAnimation(animation, transitionTicks);
-    }
-
-    @Override
-    public boolean stopAnimation(String name) {
-        // TODO
-        return false;
-    }
-
-    @Override
-    public void stopAllAnimations() {
-        animationQueue.removeAllAnimations();
+        animationController.queue(animation, transitionTicks);
     }
 
     @Override
     public void tickAnimations() {
-        animationQueue.next(Math.toRadians(location.getYaw()));
+        animationController.tick(Math.toRadians(location.getYaw()));
     }
-    //#endregion
 
     /**
      * Sets the location to the given {@code location}
@@ -144,41 +144,53 @@ public class BukkitModelView
         this.location = location.clone();
     }
 
-    public Collection<Player> getViewers() {
+    public Collection<Player> viewers() {
         return viewers;
     }
 
-    public Location getLocation() {
+    public Location location() {
         return location;
-    }
-
-    public Map<String, Object> getEntities() {
-        return entities;
-    }
-
-    public void show() {
-        controller.show(this);
     }
 
     public void addViewer(Player player) {
         if (viewers.add(player)) {
-            controller.showIndividually(this, player);
+            controller.show(this, player);
         }
     }
 
     public void removeViewer(Player player) {
         if (viewers.remove(player)) {
-            controller.hideIndividually(this, player);
+            controller.hide(this, player);
         }
     }
 
-    public void hide() {
-        controller.hide(this);
+    private void teleportBoneAndChildren(
+            double yawRadians,
+            Bone bone,
+            Vector3Float parentPosition
+    ) {
+        // location computing
+        var position = bone.offset().add(parentPosition);
+        var rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
+
+        var entity = bones.get(bone.name());
+        entity.position(rotatedPosition);
+
+        for (var child : bone.children()) {
+            teleportBoneAndChildren(
+                    yawRadians,
+                    child,
+                    position
+            );
+        }
     }
 
     public void teleport(Location newLocation) {
         this.location = newLocation.clone();
-        controller.teleport(this, this.location);
+        double yawRadians = Math.toRadians(newLocation.getYaw());
+        for (Bone bone : model.bones()) {
+            teleportBoneAndChildren(yawRadians, bone, Vector3Float.ZERO);
+        }
     }
 
 }
