@@ -60,6 +60,7 @@ public class ModelEnginePlugin extends JavaPlugin {
         getLogger().info("Loading models...");
         ModelRegistry registry = new ModelRegistry();
         registry.registerModel(loadModelFromResource("butterfly.bbmodel"));
+        registry.registerModel(loadModelFromResource("redstone_monstrosity.bbmodel"));
 
         // upload resource pack
         getLogger().info("Uploading resource pack...");
