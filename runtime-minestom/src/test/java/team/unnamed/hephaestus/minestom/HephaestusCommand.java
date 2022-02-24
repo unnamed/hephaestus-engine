@@ -102,13 +102,17 @@ final class HephaestusCommand extends Command {
                     }
                 };
 
-                view.interactListener((interactedView, interactor, action) ->
-                        MinecraftServer.LOGGER.info(
-                                "[hephaestus] player {} interacted with {}, action: {}",
-                                interactor.getUsername(),
-                                interactedView,
-                                action
-                        ));
+                view.interactListener((interactedView, interactor, action) -> {
+                    double yaw = Math.toRadians(interactor.getPosition().yaw());
+
+                    ((MinestomModelView) interactedView).takeKnockback(0.4F, Math.sin(yaw), -Math.cos(yaw));
+                    MinecraftServer.LOGGER.info(
+                            "[hephaestus] player {} interacted with {}, action: {}",
+                            interactor.getUsername(),
+                            interactedView,
+                            action
+                    );
+                });
                 view.setInstance(
                         Objects.requireNonNull(player.getInstance(), "player instance"),
                         player.getPosition()
