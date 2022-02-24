@@ -56,7 +56,7 @@ public class Server {
         ModelClickListener.register(eventHandler);
 
         ModelRegistry registry = new ModelRegistry();
-        registry.model(modelFromResource("redstone_monstrosity.json"));
+        registry.model(modelFromResource("redstone_monstrosity.bbmodel"));
 
         MemoizedCallable<ResourcePack> resourcePackProvider = new MemoizedCallable<>(() -> new MCPacksHttpExporter()
                 .export(tree -> {
