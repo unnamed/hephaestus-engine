@@ -29,7 +29,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.util.StringUtil;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelRegistry;
 import team.unnamed.hephaestus.animation.ModelAnimation;
@@ -38,10 +38,10 @@ import team.unnamed.hephaestus.view.ModelViewRenderer;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.bukkit.ChatColor.DARK_GREEN;
 import static org.bukkit.ChatColor.DARK_RED;
@@ -145,33 +145,34 @@ public class ModelCommand
 
     @Override
     @ParametersAreNonnullByDefault
-    public @Nullable List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public @Nullable List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        List<String> suggestions = new ArrayList<>();
+
         switch (args.length) {
-            case 0 -> {
-                return List.of("spawn", "animate");
-            }
-            case 1 ->  {
-                return switch (args[0].toLowerCase(Locale.ROOT)) {
-                    case "spawn" -> List.copyOf(modelRegistry.modelNames());
-                    case "animate" -> List.copyOf(modelRegistry.viewIds());
+            case 1 -> StringUtil.copyPartialMatches(args[0], List.of("spawn", "animate"), suggestions);
+            case 2 ->  {
+                Iterable<String> toSuggest = switch (args[0].toLowerCase(Locale.ROOT)) {
+                    case "spawn" -> modelRegistry.modelNames();
+                    case "animate" -> modelRegistry.viewIds();
                     default -> List.of();
                 };
+
+                StringUtil.copyPartialMatches(args[1], toSuggest, suggestions);
             }
-            case 2 -> {
+            case 3 -> {
                 if (args[0].equalsIgnoreCase("animate")) {
                     String viewId = args[1];
                     @Nullable BukkitModelView view = modelRegistry.view(viewId);
 
                     if (view != null) {
-                        return List.copyOf(view.model().animations().keySet());
+                        StringUtil.copyPartialMatches(args[2], view.model().animations().keySet(), suggestions);
                     }
                 }
-                return List.of();
-            }
-            default -> {
-                return List.of();
             }
         }
+
+        suggestions.sort(String.CASE_INSENSITIVE_ORDER);
+        return suggestions;
     }
 
 }
