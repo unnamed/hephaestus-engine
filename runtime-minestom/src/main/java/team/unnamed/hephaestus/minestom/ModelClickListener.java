@@ -57,11 +57,11 @@ public final class ModelClickListener {
         double originY = position.y() + eyeHeight;
         double originZ = position.z();
 
-        double distance = player.getGameMode() == GameMode.CREATIVE ? 5D : 3D;
+        double range = player.getGameMode() == GameMode.CREATIVE ? 5D : 3D;
 
-        double lenX = (distance - (Math.abs(originX) % distance)) / Math.abs(directionX);
-        double lenY = (distance - (Math.abs(originY) % distance)) / Math.abs(directionY);
-        double lenZ = (distance - (Math.abs(originZ) % distance)) / Math.abs(directionZ);
+        double lenX = (range - (Math.abs(originX) % range)) / Math.abs(directionX);
+        double lenY = (range - (Math.abs(originY) % range)) / Math.abs(directionY);
+        double lenZ = (range - (Math.abs(originZ) % range)) / Math.abs(directionZ);
 
         double minLen = Math.min(lenX, Math.min(lenY, lenZ));
 
@@ -70,7 +70,7 @@ public final class ModelClickListener {
         double targetZ = originZ + (directionZ * minLen);
 
         Instance instance = player.getInstance();
-        for (Entity entity : instance.getNearbyEntities(position, distance)) {
+        for (Entity entity : instance.getNearbyEntities(position, range * range)) {
             if (!(entity instanceof MinestomModelView modelView)) {
                 continue;
             }
