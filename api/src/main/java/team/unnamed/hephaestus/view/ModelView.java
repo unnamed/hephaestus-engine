@@ -44,6 +44,8 @@ import java.util.Objects;
  */
 public interface ModelView<T> {
 
+    int DEFAULT_COLOR = 0xFFFFFF;
+
     /**
      * Returns the model being viewed
      * from this view instance
@@ -71,8 +73,30 @@ public interface ModelView<T> {
      * Colorizes this view using the specified
      * {@code r} (red), {@code g} (green) and
      * {@code b} (blue) color components
+     * 
+     * @param r The red component [0-255]
+     * @param g The green component [0-255]
+     * @param b The blue component [0-255]
      */
     void colorize(int r, int g, int b);
+
+    /**
+     * Colorizes this view using the specified,
+     * encoded RGB (Red, Green, Blue) color
+     *
+     * @param rgb The encoded color
+     */
+    void colorize(int rgb);
+
+    /**
+     * Colorizes this view using the default,
+     * initial color {@link ModelView#DEFAULT_COLOR}
+     *
+     * @see ModelView#colorize(int) 
+     */
+    default void colorizeDefault() {
+        colorize(DEFAULT_COLOR);
+    }
 
     /**
      * Gets the bone with the specified name

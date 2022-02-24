@@ -113,6 +113,11 @@ public class BukkitModelView
         }
     }
 
+    @Override
+    public void colorize(int rgb) {
+        colorize(Color.fromRGB(rgb));
+    }
+
     public void colorize(Color color) {
         for (BukkitBoneView view : bones.values()) {
             view.colorize(color);

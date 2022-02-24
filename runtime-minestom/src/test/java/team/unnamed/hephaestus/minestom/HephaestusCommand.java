@@ -34,6 +34,7 @@ import net.minestom.server.command.builder.suggestion.SuggestionEntry;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.resourcepack.ResourcePack;
+import net.minestom.server.utils.time.TimeUnit;
 import team.unnamed.hephaestus.Model;
 
 import java.util.Locale;
@@ -104,6 +105,13 @@ final class HephaestusCommand extends Command {
 
                 view.interactListener((interactedView, interactor, action) -> {
                     double yaw = Math.toRadians(interactor.getPosition().yaw());
+
+                    interactedView.colorize(0xDC3232);
+
+                    MinecraftServer.getSchedulerManager()
+                            .buildTask(interactedView::colorizeDefault)
+                            .delay(4L, TimeUnit.SERVER_TICK)
+                            .schedule();
 
                     ((MinestomModelView) interactedView).takeKnockback(0.4F, Math.sin(yaw), -Math.cos(yaw));
                     MinecraftServer.LOGGER.info(

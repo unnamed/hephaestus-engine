@@ -97,7 +97,15 @@ public class MinestomModelView
 
     @Override
     public void colorize(int r, int g, int b) {
-        Color color = new Color(r, g, b);
+        colorize(new Color(r, g, b));
+    }
+
+    @Override
+    public void colorize(int rgb) {
+        colorize(new Color(rgb));
+    }
+
+    public void colorize(Color color) {
         for (MinestomBoneView entity : bones.values()) {
             entity.colorize(color);
         }
