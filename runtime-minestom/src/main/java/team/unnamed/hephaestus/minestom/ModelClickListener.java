@@ -32,18 +32,29 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.entity.EntityAttackEvent;
+import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.player.PlayerHandAnimationEvent;
 import net.minestom.server.instance.Instance;
+import net.minestom.server.tag.Tag;
 import team.unnamed.hephaestus.view.ActionType;
 
 public final class ModelClickListener {
 
+    private static final Tag<Byte> IS_DROPPING_ITEM = Tag.Byte("hephaestus:dropping_flag");
+    
     private ModelClickListener() {
     }
 
     private static void onArmAnimation(PlayerHandAnimationEvent event) {
         Player player = event.getPlayer();
+
+        if (player.hasTag(IS_DROPPING_ITEM)) {
+            // player has "is dropping item" tag flag, so this event
+            // was caused by an item drop, ignore
+            player.removeTag(IS_DROPPING_ITEM);
+            return;
+        }
 
         Pos position = player.getPosition();
         Vec direction = position.direction();
@@ -102,8 +113,13 @@ public final class ModelClickListener {
                     .onInteract(bone.view(), event.getPlayer(), ActionType.RIGHT_CLICK);
         }
     }
+    
+    private static void onItemDrop(ItemDropEvent event) {
+        event.getPlayer().setTag(IS_DROPPING_ITEM, (byte) 1);
+    }
 
     public static void register(EventNode<Event> node) {
+        node.addListener(ItemDropEvent.class, ModelClickListener::onItemDrop);
         node.addListener(PlayerHandAnimationEvent.class, ModelClickListener::onArmAnimation);
         node.addListener(EntityAttackEvent.class, ModelClickListener::onAttack);
         node.addListener(PlayerEntityInteractEvent.class, ModelClickListener::onInteract);
