@@ -152,6 +152,17 @@ public class BukkitModelView
         return location;
     }
 
+    /**
+     * Adds the given {@link Player} as viewer if they
+     * are not already viewers, and if they were not,
+     * shows the view ({@link ModelViewController#show})
+     *
+     * @param player The added viewer
+     * @return True if the player was added as viewer,
+     * false otherwise (may because they are already
+     * viewers)
+     * @since 1.0.0
+     */
     public boolean addViewer(Player player) {
         if (viewers.add(player)) {
             controller.show(this, player);
@@ -160,6 +171,17 @@ public class BukkitModelView
         return false;
     }
 
+    /**
+     * Removes the given {@link Player} as viewer if they
+     * are viewers, and if they were, the view is hidden
+     * ({@link ModelViewController#hide})
+     *
+     * @param player The removed viewer
+     * @return True if the player was correctly removed
+     * as viewers, false otherwise (may because they
+     * were not viewers)
+     * @since 1.0.0
+     */
     public boolean removeViewer(Player player) {
         if (viewers.remove(player)) {
             controller.hide(this, player);
