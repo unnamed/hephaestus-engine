@@ -30,14 +30,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelRegistry;
+import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.view.BukkitModelView;
 import team.unnamed.hephaestus.view.ModelViewRenderer;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.bukkit.ChatColor.DARK_GREEN;
+import static org.bukkit.ChatColor.DARK_RED;
 import static org.bukkit.ChatColor.GREEN;
 import static org.bukkit.ChatColor.RED;
 
@@ -81,7 +84,7 @@ public class ModelCommand implements CommandExecutor {
                 @Nullable Model model = modelRegistry.model(modelName);
 
                 if (model == null) {
-                    sender.sendMessage(RED + "Model not found: " + modelName);
+                    sender.sendMessage(RED + "Model not found: " + DARK_RED + modelName);
                     return true;
                 }
 
@@ -93,7 +96,39 @@ public class ModelCommand implements CommandExecutor {
                 modelRegistry.registerView(viewId, view);
                 sender.sendMessage(GREEN + "Created view with id "
                         + DARK_GREEN + viewId
-                        + GREEN + " with model " + modelName);
+                        + GREEN + " with model "
+                        + DARK_GREEN + modelName);
+            }
+            case "animate" -> {
+                if (args.length != 3) {
+                    sender.sendMessage(RED + "/" + label + " animate <view> <animation>");
+                    return true;
+                }
+
+                String viewId = args[1];
+                String animationName = args[2];
+
+                @Nullable BukkitModelView view = modelRegistry.view(viewId);
+
+                if (view == null) {
+                    sender.sendMessage(RED + "View not found: " + DARK_RED + viewId);
+                    return true;
+                }
+
+                Map<String, ModelAnimation> animations = view.model().animations();
+                @Nullable ModelAnimation animation = animations.get(animationName);
+
+                if (animation == null) {
+                    sender.sendMessage(
+                            RED + "Animation not found: "
+                                    + DARK_RED + animationName
+                                    + RED + ". Available animations: "
+                                    + DARK_RED + String.join(", ", animations.keySet())
+                    );
+                    return true;
+                }
+
+                view.animationController().queue(animation);
             }
             default -> {
                 sender.sendMessage(RED + "Unknown subcommand");
