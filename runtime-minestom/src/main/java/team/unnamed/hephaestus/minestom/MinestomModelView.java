@@ -156,7 +156,6 @@ public class MinestomModelView
 
     private void setBoneInstance(
             double yawRadians,
-            Pos pos,
             Bone bone,
             Vector3Float parentPosition
     ) {
@@ -165,7 +164,7 @@ public class MinestomModelView
 
         MinestomBoneView entity = bone(bone.name());
         if (entity != null) {
-            entity.setInstance(instance, pos.add(
+            entity.setInstance(instance, super.position.add(
                     rotatedPosition.x(),
                     rotatedPosition.y(),
                     rotatedPosition.z()
@@ -173,13 +172,12 @@ public class MinestomModelView
         }
 
         for (Bone child : bone.children()) {
-            setBoneInstance(yawRadians, pos, child, position);
+            setBoneInstance(yawRadians, child, position);
         }
     }
 
     private void teleportBone(
             double yawRadians,
-            Pos pos,
             Bone bone,
             Vector3Float parentPosition
     ) {
@@ -188,14 +186,14 @@ public class MinestomModelView
         Entity entity = bones.get(bone.name());
 
         if (entity != null) {
-            entity.teleport(pos.add(
+            entity.teleport(super.position.add(
                     rotatedPosition.x(),
                     rotatedPosition.y(),
                     rotatedPosition.z()
-            ));
+            )).join();
         }
         for (Bone child : bone.children()) {
-            this.teleportBone(yawRadians, pos, child, position);
+            this.teleportBone(yawRadians, child, position);
         }
     }
 
@@ -204,9 +202,8 @@ public class MinestomModelView
         return super.setInstance(instance, spawnPosition)
                 .thenAccept(ignored -> {
                     double yawRadians = Math.toRadians(spawnPosition.yaw());
-
                     for (Bone bone : model.bones()) {
-                        setBoneInstance(yawRadians, spawnPosition, bone, Vector3Float.ZERO);
+                        setBoneInstance(yawRadians, bone, Vector3Float.ZERO);
                     }
                 });
     }
@@ -216,9 +213,8 @@ public class MinestomModelView
         return super.teleport(position)
                 .thenRun(() -> {
                     double yawRadians = Math.toRadians(position.yaw());
-
                     for (Bone bone : model.bones()) {
-                        teleportBone(yawRadians, position, bone, Vector3Float.ZERO);
+                        teleportBone(yawRadians, bone, Vector3Float.ZERO);
                     }
                 });
     }
