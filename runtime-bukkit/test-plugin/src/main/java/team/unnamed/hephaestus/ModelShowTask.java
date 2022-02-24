@@ -65,12 +65,12 @@ public class ModelShowTask implements Runnable {
                     // in range, show
                     if (view.addViewer(player)) {
                         LOGGER.info("Showing view " + view + " to player " + player.getName()
-                                + "because they entered the model vision range");
+                                + " because they entered the model vision range");
                     }
                 } else {
                     if (view.removeViewer(player)) {
                         LOGGER.info("Hiding view " + view + " from player " + player.getName()
-                                + "because they left the model vision range");
+                                + " because they left the model vision range");
                     }
                 }
             }
