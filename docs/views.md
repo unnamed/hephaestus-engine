@@ -11,7 +11,7 @@ implementations
 ### Coloring
 
 Model views can be colored with any RGB color, just use `ModelView#colorize`
-or `ModelView#colorizeBone` to colorize a specific bone
+or `BoneView#colorize` to colorize a specific bone
 
 Example:
 ```java
@@ -35,12 +35,14 @@ Bukkit.getScheduler().runTaskTimerAsynchronously(() -> {
 }, 0L, 1L);
 ```
 
-Then you can animate views by just using `ModelView#playAnimation`, stop
-animations using `ModelView#stopAnimation`
+Then you can animate views by just using `AnimationController#queue`, stop
+animations using `AnimationController#clearQueue`
 
 Example:
 ```java
 public void animate(ModelView<?> view) {
-    view.playAnimation("walk");
+    // walkAnimation is a ModelAnimation instance that can
+    // be obtained from Model#animations()
+    view.animationController().queue(walkAnimation);
 }
 ```
