@@ -135,9 +135,7 @@ public class ModelCommand
 
                 view.animationController().queue(animation);
             }
-            default -> {
-                sender.sendMessage(RED + "Unknown subcommand");
-            }
+            default -> sender.sendMessage(RED + "Unknown subcommand");
         }
 
         return true;
