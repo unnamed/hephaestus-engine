@@ -44,7 +44,6 @@ import java.util.Objects;
  */
 public interface ModelView<T> {
 
-
     /**
      * Returns the model being viewed
      * from this view instance
