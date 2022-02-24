@@ -132,22 +132,26 @@ public class MinestomModelView
         animationController.tick(Math.toRadians(getPosition().yaw()));
     }
 
-    private void summonBone(double yawRadians, Pos pos, Bone bone, Vector3Float parentOffset) {
-
-        Vector3Float offset = bone.offset().add(parentOffset);
-        Vector3Float relativePos = Vectors.rotateAroundY(offset, yawRadians);
+    private void summonBone(
+            double yawRadians,
+            Pos pos,
+            Bone bone,
+            Vector3Float parentPosition
+    ) {
+        Vector3Float position = bone.position().add(parentPosition);
+        Vector3Float rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
 
         MinestomBoneView entity = new MinestomBoneView(this, bone);
         entity.setInstance(instance, pos.add(
-                relativePos.x(),
-                relativePos.y(),
-                relativePos.z()
+                rotatedPosition.x(),
+                rotatedPosition.y(),
+                rotatedPosition.z()
         )).join();
 
         bones.put(bone.name(), entity);
 
         for (Bone child : bone.children()) {
-            summonBone(yawRadians, pos, child, offset);
+            summonBone(yawRadians, pos, child, position);
         }
     }
 
@@ -155,21 +159,21 @@ public class MinestomModelView
             double yawRadians,
             Pos pos,
             Bone bone,
-            Vector3Float parentOffset
+            Vector3Float parentPosition
     ) {
-        Vector3Float offset = bone.offset().add(parentOffset);
-        Vector3Float relativePosition = Vectors.rotateAroundY(offset, yawRadians);
+        Vector3Float position = bone.position().add(parentPosition);
+        Vector3Float rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
         Entity entity = bones.get(bone.name());
 
         if (entity != null) {
             entity.teleport(pos.add(
-                    relativePosition.x(),
-                    relativePosition.y(),
-                    relativePosition.z()
+                    rotatedPosition.x(),
+                    rotatedPosition.y(),
+                    rotatedPosition.z()
             ));
         }
         for (Bone child : bone.children()) {
-            this.teleportBone(yawRadians, pos, child, offset);
+            this.teleportBone(yawRadians, pos, child, position);
         }
     }
 

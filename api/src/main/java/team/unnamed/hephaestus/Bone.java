@@ -43,26 +43,27 @@ import java.util.stream.Stream;
 public class Bone implements Examinable {
 
     private final String name;
+
+    private final Vector3Float position;
     private final Vector3Float rotation;
 
     private final Map<String, Bone> children;
-    private final Vector3Float offset;
 
     private final boolean small;
     private final int customModelData;
 
     public Bone(
             String name,
+            Vector3Float position,
             Vector3Float rotation,
             Map<String, Bone> children,
-            Vector3Float offset,
             boolean small,
             int customModelData
     ) {
         this.name = name;
+        this.position = position;
         this.rotation = rotation;
         this.children = children;
-        this.offset = offset;
         this.small = small;
         this.customModelData = customModelData;
     }
@@ -78,14 +79,22 @@ public class Bone implements Examinable {
     }
 
     /**
-     * Returns this bone offset, which is, in
-     * other words, the position of this bone
-     * (relative to parent's position)
+     * Returns the bone position relative to parent
+     * bone position, in Minecraft blocks
      *
-     * @return The bone offset
+     * @return The bone position
      */
-    public Vector3Float offset() {
-        return offset;
+    public Vector3Float position() {
+        return position;
+    }
+
+    /**
+     * Returns this bone initial rotation
+     *
+     * @return The bone initial rotation
+     */
+    public Vector3Float rotation() {
+        return rotation;
     }
 
     /**
@@ -104,15 +113,6 @@ public class Bone implements Examinable {
      */
     public int customModelData() {
         return customModelData;
-    }
-
-    /**
-     * Returns this bone initial rotation
-     *
-     * @return The bone initial rotation
-     */
-    public Vector3Float rotation() {
-        return rotation;
     }
 
     /**
@@ -150,7 +150,7 @@ public class Bone implements Examinable {
                 ExaminableProperty.of("name", name),
                 ExaminableProperty.of("rotation", rotation),
                 ExaminableProperty.of("bones", children),
-                ExaminableProperty.of("offset", offset),
+                ExaminableProperty.of("offset", position),
                 ExaminableProperty.of("small", small),
                 ExaminableProperty.of("customModelData", customModelData)
         );

@@ -70,7 +70,7 @@ public class BukkitModelView
             Bone bone,
             Vector3Float parentPosition
     ) {
-        Vector3Float position = bone.offset().add(parentPosition);
+        Vector3Float position = bone.position().add(parentPosition);
 
         BukkitBoneView entity = controller.createBone(this, bone);
         entity.position(Vectors.rotateAroundY(position, yawRadians));
@@ -202,7 +202,7 @@ public class BukkitModelView
             Vector3Float parentPosition
     ) {
         // location computing
-        var position = bone.offset().add(parentPosition);
+        var position = bone.position().add(parentPosition);
         var rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
 
         var entity = bones.get(bone.name());

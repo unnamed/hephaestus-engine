@@ -117,7 +117,7 @@ final class AnimationControllerImpl implements AnimationController {
 
         Vector3Float frameRotation = Vectors.toRadians(frame.rotation());
 
-        Vector3Float defaultPosition = bone.offset();
+        Vector3Float defaultPosition = bone.position();
         Vector3Float defaultRotation = Vectors.toRadians(bone.rotation());
 
         Vector3Float localPosition = framePosition.add(defaultPosition);

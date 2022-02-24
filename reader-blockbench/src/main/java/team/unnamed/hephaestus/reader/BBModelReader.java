@@ -268,7 +268,7 @@ public final class BBModelReader implements ModelReader {
      * Creates a {@link Bone} and {@link Bone} from
      * the given {@code json} object
      *
-     * @param parentScaledPivot The scaled pivot of the parent bone
+     * @param parentAbsolutePosition The scaled pivot of the parent bone
      * @param cubeIdMap Map containing a relation of the cubes by
      *                  their identifiers for this model
      * @param json The json representation for this bone
@@ -280,7 +280,7 @@ public final class BBModelReader implements ModelReader {
      */
     private void createBone(
             BBModelData modelData,
-            Vector3Float parentScaledPivot,
+            Vector3Float parentAbsolutePosition,
             Map<String, ElementAsset> cubeIdMap,
             JsonObject json,
 
@@ -291,8 +291,8 @@ public final class BBModelReader implements ModelReader {
         String name = json.get("name").getAsString();
         BoneType boneType = BoneType.matchByBoneName(name);
 
-        // The pivot of this bone
-        Vector3Float pivot = GsonUtil.getVector3FloatFromJson(json.get("origin"))
+        // The absolute position of this bone, in Blockbench units
+        Vector3Float unitAbsolutePosition = GsonUtil.getVector3FloatFromJson(json.get("origin"))
                 .multiply(-1, 1, 1);
 
         // The initial rotation of this bone
@@ -300,13 +300,13 @@ public final class BBModelReader implements ModelReader {
                 ? Vector3Float.ZERO
                 : GsonUtil.getVector3FloatFromJson(json.get("rotation"));
 
-        // scaled pivot of the bone (pivot / block size)
-        Vector3Float scaledPivot = pivot.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
-        Vector3Float offset = scaledPivot.subtract(parentScaledPivot);
+        // The position of this bone, in Minecraft units
+        Vector3Float absolutePosition = unitAbsolutePosition.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
+        Vector3Float position = absolutePosition.subtract(parentAbsolutePosition);
 
         List<ElementAsset> cubes = new ArrayList<>();
-        Map<String, Bone> bones = new LinkedHashMap<>();
-        Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
+        Map<String, Bone> children = new LinkedHashMap<>();
+        Map<String, BoneAsset> childrenAssets = new LinkedHashMap<>();
 
         for (JsonElement childElement : json.get("children").getAsJsonArray()) {
             if (childElement.isJsonObject()) {
@@ -314,12 +314,12 @@ public final class BBModelReader implements ModelReader {
                 // recursively read it
                 createBone(
                         modelData,
-                        scaledPivot,
+                        absolutePosition,
                         cubeIdMap,
                         childElement.getAsJsonObject(),
 
-                        bones,
-                        boneAssets
+                        children,
+                        childrenAssets
                 );
             } else if (childElement.isJsonPrimitive()
                     && childElement.getAsJsonPrimitive().isString()) {
@@ -365,18 +365,18 @@ public final class BBModelReader implements ModelReader {
             return;
         }
 
-        ElementScale.Result processResult = ElementScale.process(pivot, cubes);
+        ElementScale.Result processResult = ElementScale.process(unitAbsolutePosition, cubes);
         BoneAsset asset = new BoneAsset(
                 name,
-                pivot,
+                unitAbsolutePosition,
                 cursor.next(),
                 processResult.offset(),
                 processResult.elements(),
                 processResult.small(),
-                boneAssets
+                childrenAssets
         );
 
-        siblings.put(name, new Bone(name, rotation, bones, offset, asset.small(), asset.customModelData()));
+        siblings.put(name, new Bone(name, position, rotation, children, asset.small(), asset.customModelData()));
         siblingAssets.put(name, asset);
     }
 
