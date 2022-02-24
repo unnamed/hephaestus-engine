@@ -122,6 +122,11 @@ public final class MinestomBoneView
     }
 
     @Override
+    public void colorize(int rgb) {
+        colorize(new Color(rgb));
+    }
+
+    @Override
     public void position(Vector3Float position) {
         teleport(view.getPosition().add(
                 position.x(),

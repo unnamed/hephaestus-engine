@@ -44,7 +44,6 @@ import java.util.Objects;
  */
 public interface ModelView<T> {
 
-    int DEFAULT_COLOR = 0xFFFFFF;
 
     /**
      * Returns the model being viewed
@@ -90,12 +89,12 @@ public interface ModelView<T> {
 
     /**
      * Colorizes this view using the default,
-     * initial color {@link ModelView#DEFAULT_COLOR}
+     * initial color {@link BoneView#DEFAULT_COLOR}
      *
      * @see ModelView#colorize(int) 
      */
     default void colorizeDefault() {
-        colorize(DEFAULT_COLOR);
+        colorize(BoneView.DEFAULT_COLOR);
     }
 
     /**

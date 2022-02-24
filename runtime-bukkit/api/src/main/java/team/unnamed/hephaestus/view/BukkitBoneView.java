@@ -34,4 +34,9 @@ public interface BukkitBoneView extends BoneView {
         colorize(Color.fromRGB(r, g, b));
     }
 
+    @Override
+    default void colorize(int rgb) {
+        colorize(Color.fromRGB(rgb));
+    }
+
 }
