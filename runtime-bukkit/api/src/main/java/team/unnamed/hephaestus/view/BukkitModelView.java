@@ -34,6 +34,7 @@ public class BukkitModelView
     private final Collection<Player> viewers = new HashSet<>();
     private Location location;
 
+    @ApiStatus.Internal
     public BukkitModelView(
             ModelViewController controller,
             Model model,
