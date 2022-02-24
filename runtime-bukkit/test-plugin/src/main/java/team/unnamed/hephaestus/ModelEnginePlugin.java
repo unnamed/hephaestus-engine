@@ -36,6 +36,7 @@ import team.unnamed.creative.metadata.PackMeta;
 import team.unnamed.hephaestus.adapt.v1_18_R1.ModelViewRenderer_v1_18_R1;
 import team.unnamed.hephaestus.command.ModelCommand;
 import team.unnamed.hephaestus.export.MCPacksHttpExporter;
+import team.unnamed.hephaestus.listener.PlayerQuitListener;
 import team.unnamed.hephaestus.listener.ResourcePackSetListener;
 import team.unnamed.hephaestus.reader.BBModelReader;
 import team.unnamed.hephaestus.reader.ModelReader;
@@ -72,6 +73,7 @@ public class ModelEnginePlugin extends JavaPlugin {
         getLogger().info("Registering commands, listeners and tasks...");
         registerCommand("model", new ModelCommand(registry, renderer));
         registerListener(new ResourcePackSetListener(pack));
+        registerListener(new PlayerQuitListener(registry));
         getServer().getScheduler().runTaskTimerAsynchronously(
                 this,
                 new ModelShowTask(registry),
