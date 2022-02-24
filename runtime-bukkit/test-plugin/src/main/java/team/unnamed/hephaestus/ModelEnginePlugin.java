@@ -26,6 +26,7 @@ package team.unnamed.hephaestus;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import team.unnamed.creative.file.FileResource;
@@ -123,12 +124,13 @@ public class ModelEnginePlugin extends JavaPlugin {
         }
     }
 
-    private void registerCommand(String name, CommandExecutor executor) {
+    private <T extends CommandExecutor & TabCompleter> void registerCommand(String name, T handler) {
         PluginCommand command = super.getCommand(name);
         if (command == null) {
             throw new IllegalArgumentException("Command not found: " + name);
         }
-        command.setExecutor(executor);
+        command.setExecutor(handler);
+        command.setTabCompleter(handler);
     }
 
     private void registerListener(Listener listener) {

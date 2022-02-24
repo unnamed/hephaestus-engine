@@ -27,7 +27,9 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelRegistry;
 import team.unnamed.hephaestus.animation.ModelAnimation;
@@ -36,15 +38,18 @@ import team.unnamed.hephaestus.view.ModelViewRenderer;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.bukkit.ChatColor.DARK_GREEN;
 import static org.bukkit.ChatColor.DARK_RED;
 import static org.bukkit.ChatColor.GREEN;
 import static org.bukkit.ChatColor.RED;
 
-public class ModelCommand implements CommandExecutor {
+public class ModelCommand
+        implements CommandExecutor, TabCompleter {
 
     private final ModelRegistry modelRegistry;
     private final ModelViewRenderer modelRenderer;
@@ -136,6 +141,37 @@ public class ModelCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    @Override
+    @ParametersAreNonnullByDefault
+    public @Nullable List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        switch (args.length) {
+            case 0 -> {
+                return List.of("spawn", "animate");
+            }
+            case 1 ->  {
+                return switch (args[0].toLowerCase(Locale.ROOT)) {
+                    case "spawn" -> List.copyOf(modelRegistry.modelNames());
+                    case "animate" -> List.copyOf(modelRegistry.viewIds());
+                    default -> List.of();
+                };
+            }
+            case 2 -> {
+                if (args[0].equalsIgnoreCase("animate")) {
+                    String viewId = args[1];
+                    @Nullable BukkitModelView view = modelRegistry.view(viewId);
+
+                    if (view != null) {
+                        return List.copyOf(view.model().animations().keySet());
+                    }
+                }
+                return List.of();
+            }
+            default -> {
+                return List.of();
+            }
+        }
     }
 
 }

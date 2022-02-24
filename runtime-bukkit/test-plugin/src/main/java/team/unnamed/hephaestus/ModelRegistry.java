@@ -43,6 +43,10 @@ public class ModelRegistry {
         return models.get(name);
     }
 
+    public Collection<String> modelNames() {
+        return models.keySet();
+    }
+
     public Collection<Model> models() {
         return models.values();
     }
@@ -53,6 +57,10 @@ public class ModelRegistry {
 
     public @Nullable BukkitModelView view(String id) {
         return views.get(id);
+    }
+
+    public Collection<String> viewIds() {
+        return views.keySet();
     }
     
     public Collection<BukkitModelView> views() {
