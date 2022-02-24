@@ -230,6 +230,7 @@ public final class BBModelReader implements ModelReader {
                     faces.put(face, ElementFace.builder()
                             .uv(uv)
                             .texture("#" + textureId)
+                            .tintIndex(0)
                             .build());
                 }
             }
