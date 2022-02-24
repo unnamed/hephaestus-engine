@@ -42,7 +42,7 @@ import team.unnamed.hephaestus.Bone;
  *
  * @since 1.0.0
  */
-public interface BoneView {
+public interface BoneView extends NamedEntity {
 
     int DEFAULT_COLOR = 0xFFFFFF;
 

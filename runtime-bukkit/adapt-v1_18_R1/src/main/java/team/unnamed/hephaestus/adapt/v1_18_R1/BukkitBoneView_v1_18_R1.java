@@ -24,6 +24,8 @@
 package team.unnamed.hephaestus.adapt.v1_18_R1;
 
 import com.mojang.datafixers.util.Pair;
+import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
+import net.kyori.adventure.text.Component;
 import net.minecraft.core.Rotations;
 import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
@@ -58,7 +60,6 @@ final class BukkitBoneView_v1_18_R1 implements BukkitBoneView {
     BukkitBoneView_v1_18_R1(BukkitModelView view, Bone bone) {
         this.view = view;
         this.bone = bone;
-        // noinspection ConstantConditions
         this.entity = new BoneArmorStand(((CraftWorld) view.location().getWorld()).getHandle());
         this.initialize();
     }
@@ -105,6 +106,26 @@ final class BukkitBoneView_v1_18_R1 implements BukkitBoneView {
     @Override
     public Bone bone() {
         return bone;
+    }
+
+    @Override
+    public Component customName() {
+        return fromMinecraft(entity.getCustomName());
+    }
+
+    @Override
+    public void customName(Component customName) {
+        entity.setCustomName(toMinecraft(customName));
+    }
+
+    @Override
+    public void customNameVisible(boolean visible) {
+        entity.setCustomNameVisible(visible);
+    }
+
+    @Override
+    public boolean customNameVisible() {
+        return entity.isCustomNameVisible();
     }
 
     @Override
@@ -160,6 +181,16 @@ final class BukkitBoneView_v1_18_R1 implements BukkitBoneView {
                 )
         );
         Packets.send(view.viewers(), new ClientboundSetEntityDataPacket(entity.getId(), watcher, true));
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    private static net.minecraft.network.chat.Component toMinecraft(Component component) {
+        return (net.minecraft.network.chat.Component) MinecraftComponentSerializer.get().serialize(component);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    private static Component fromMinecraft(net.minecraft.network.chat.Component component) {
+        return MinecraftComponentSerializer.get().deserialize(component);
     }
 
 }

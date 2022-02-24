@@ -14,5 +14,6 @@ tasks {
 
 dependencies {
     implementation(project(":runtime-bukkit:api"))
+    implementation("net.kyori:adventure-platform-bukkit:4.0.1")
     paperDevBundle("1.18.1-R0.1-SNAPSHOT")
 }

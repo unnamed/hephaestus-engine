@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.minestom;
 
+import net.kyori.adventure.text.Component;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
@@ -104,6 +105,26 @@ public final class MinestomBoneView
     @Override
     public Bone bone() {
         return bone;
+    }
+
+    @Override
+    public void customName(Component displayName) {
+        super.setCustomName(displayName);
+    }
+
+    @Override
+    public Component customName() {
+        return super.getCustomName();
+    }
+
+    @Override
+    public void customNameVisible(boolean visible) {
+        super.setCustomNameVisible(visible);
+    }
+
+    @Override
+    public boolean customNameVisible() {
+        return super.isCustomNameVisible();
     }
 
     /**
