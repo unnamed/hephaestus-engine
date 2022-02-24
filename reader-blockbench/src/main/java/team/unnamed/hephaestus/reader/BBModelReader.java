@@ -56,9 +56,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 
 public final class BBModelReader implements ModelReader {
 
+    private static final Logger LOGGER = Logger.getLogger(BBModelReader.class.getName());
     private static final JsonParser JSON_PARSER = new JsonParser();
 
     private final ModelDataCursor cursor;
@@ -96,16 +98,18 @@ public final class BBModelReader implements ModelReader {
         Map<String, Writable> textures = new HashMap<>();
         Map<Integer, String> textureMapping = new HashMap<>();
 
+        BBModelData modelData = new BBModelData();
+        modelData.boundingBox = new Vector2Float(1, 1); // initial
+
         TextureReader.readTextures(json, textures, textureMapping);
-        readElements(json, bones, boneAssets, textureWidth, textureHeight);
+        readElements(modelData, json, bones, boneAssets, textureWidth, textureHeight);
         AnimationReader.readAnimations(json, animations);
 
         return new Model(
                 modelName,
                 bones,
                 Collections.emptySet(),
-                // TODO:
-                new Vector2Float(4, 4),
+                modelData.boundingBox,
                 new ModelAsset(
                         modelName,
                         textures,
@@ -152,6 +156,7 @@ public final class BBModelReader implements ModelReader {
      * and {@link BoneAsset} from the "outliner" property
      */
     private void readElements(
+            BBModelData modelData,
             JsonObject json,
             Map<String, Bone> bones,
             Map<String, BoneAsset> boneAssets,
@@ -245,6 +250,7 @@ public final class BBModelReader implements ModelReader {
             if (element.isJsonObject()) {
                 // if it's an object, then it represents a bone
                 createBone(
+                        modelData,
                         Vector3Float.ZERO,
                         cubeIdMap,
                         element.getAsJsonObject(),
@@ -272,6 +278,7 @@ public final class BBModelReader implements ModelReader {
      *                      will be put in this map by its name
      */
     private void createBone(
+            BBModelData modelData,
             Vector3Float parentScaledPivot,
             Map<String, ElementAsset> cubeIdMap,
             JsonObject json,
@@ -281,7 +288,7 @@ public final class BBModelReader implements ModelReader {
     ) throws IOException {
 
         String name = json.get("name").getAsString();
-        // BoneType boneType = BoneType.matchByBoneName(name);
+        BoneType boneType = BoneType.matchByBoneName(name);
 
         // The pivot of this bone
         Vector3Float pivot = GsonUtil.getVector3FloatFromJson(json.get("origin"))
@@ -305,6 +312,7 @@ public final class BBModelReader implements ModelReader {
                 // if it's an object, it's a sub-bone,
                 // recursively read it
                 createBone(
+                        modelData,
                         scaledPivot,
                         cubeIdMap,
                         childElement.getAsJsonObject(),
@@ -331,6 +339,30 @@ public final class BBModelReader implements ModelReader {
             }
         }
 
+        if (boneType == BoneType.BOUNDING_BOX) {
+            // bounding box bones should only have one cube
+            if (cubes.size() != 1) {
+                LOGGER.warning("Bounding-box bone (" + name
+                        + ") has less or more than one cube, ignoring...");
+                return;
+            }
+
+            ElementAsset boundingBoxCube = cubes.get(0);
+            Vector3Float size = boundingBoxCube.to()
+                    .subtract(boundingBoxCube.from())
+                    .divide(ElementScale.BLOCK_SIZE);
+
+            if (size.x() != size.z()) {
+                LOGGER.warning("Bounding-box cube (bone: " + name
+                        + ") has different 'X' (" + size.x() + ") and 'Z' ("
+                        + size.z() + ") sizes, ignoring...");
+                return;
+            }
+
+            modelData.boundingBox = new Vector2Float(size.x(), size.y());
+            // skip other processing
+            return;
+        }
 
         ElementScale.Result processResult = ElementScale.process(pivot, cubes);
         BoneAsset asset = new BoneAsset(
@@ -347,16 +379,23 @@ public final class BBModelReader implements ModelReader {
         siblingAssets.put(name, asset);
     }
 
+    private static class BBModelData {
+
+        private Vector2Float boundingBox;
+
+    }
+    
     private enum BoneType {
         // name matching based on Model-Engine by Ticxo, for
         // compatibility with existing Model-Engine models
+        // todo: support more types
         BOUNDING_BOX(exact("hitbox")),
-        SUB_BOUNDING_BOX(prefixed("b_")),
-        DRIVER_SEAT(exact("mount")),
-        PASSENGER_SEAT(prefixed("p_")),
-        NAME_TAG(prefixed("tag_")),
-        LEFT_HAND(prefixed("il_")),
-        RIGHT_HAND(prefixed("ir_")),
+        // SUB_BOUNDING_BOX(prefixed("b_")),
+        // DRIVER_SEAT(exact("mount")),
+        // PASSENGER_SEAT(prefixed("p_")),
+        // NAME_TAG(prefixed("tag_")),
+        // LEFT_HAND(prefixed("il_")),
+        // RIGHT_HAND(prefixed("ir_")),
         NONE(v -> true);
 
         private static final BoneType[] VALUES = BoneType.values();
