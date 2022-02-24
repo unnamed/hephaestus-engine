@@ -153,7 +153,11 @@ final class BukkitBoneView_v1_18_R1 implements BukkitBoneView {
         var watcher = new SynchedEntityData(entity);
         watcher.define(
                 EntityDataSerializers.ROTATIONS.createAccessor(16),
-                new Rotations(rotation.x(), rotation.y(), rotation.z())
+                new Rotations(
+                        (float) Math.toDegrees(rotation.x()),
+                        (float) Math.toDegrees(rotation.y()),
+                        (float) Math.toDegrees(rotation.z())
+                )
         );
         Packets.send(view.viewers(), new ClientboundSetEntityDataPacket(entity.getId(), watcher, true));
     }
