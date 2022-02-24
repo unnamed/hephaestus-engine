@@ -69,11 +69,33 @@ public class MinestomModelView
         super(type);
         this.model = model;
         this.animationController = AnimationController.create(this);
+        initialize();
+    }
 
+    private void initialize() {
         Vector2Float boundingBox = model.boundingBox();
         setBoundingBox(boundingBox.x(), boundingBox.y(), boundingBox.x());
         setInvisible(true);
         setNoGravity(true);
+
+        for (Bone bone : model.bones()) {
+            createBone(bone);
+        }
+
+        // after creating bones, process seats
+        for (Bone seatBone : model.seats()) {
+            MinestomBoneView seatView = bone(seatBone.name());
+            if (seatView != null) {
+                seats.add(seatView);
+            }
+        }
+    }
+
+    private void createBone(Bone bone) {
+        bones.put(bone.name(), new MinestomBoneView(this, bone));
+        for (Bone child : bone.children()) {
+            createBone(child);
+        }
     }
 
     @Override
@@ -132,7 +154,7 @@ public class MinestomModelView
         animationController.tick(Math.toRadians(getPosition().yaw()));
     }
 
-    private void summonBone(
+    private void setBoneInstance(
             double yawRadians,
             Pos pos,
             Bone bone,
@@ -141,17 +163,17 @@ public class MinestomModelView
         Vector3Float position = bone.position().add(parentPosition);
         Vector3Float rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
 
-        MinestomBoneView entity = new MinestomBoneView(this, bone);
-        entity.setInstance(instance, pos.add(
-                rotatedPosition.x(),
-                rotatedPosition.y(),
-                rotatedPosition.z()
-        )).join();
-
-        bones.put(bone.name(), entity);
+        MinestomBoneView entity = bone(bone.name());
+        if (entity != null) {
+            entity.setInstance(instance, pos.add(
+                    rotatedPosition.x(),
+                    rotatedPosition.y(),
+                    rotatedPosition.z()
+            )).join();
+        }
 
         for (Bone child : bone.children()) {
-            summonBone(yawRadians, pos, child, position);
+            setBoneInstance(yawRadians, pos, child, position);
         }
     }
 
@@ -181,19 +203,10 @@ public class MinestomModelView
     public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
         return super.setInstance(instance, spawnPosition)
                 .thenAccept(ignored -> {
-                    // create the bone entities
                     double yawRadians = Math.toRadians(spawnPosition.yaw());
 
                     for (Bone bone : model.bones()) {
-                        summonBone(yawRadians, spawnPosition, bone, Vector3Float.ZERO);
-                    }
-
-                    // after spawning bones, process seats
-                    for (Bone seatBone : model.seats()) {
-                        MinestomBoneView seatView = bone(seatBone.name());
-                        if (seatView != null) {
-                            seats.add(seatView);
-                        }
+                        setBoneInstance(yawRadians, spawnPosition, bone, Vector3Float.ZERO);
                     }
                 });
     }
