@@ -77,6 +77,12 @@ public class ModelEnginePlugin extends JavaPlugin {
                 0L,
                 showPeriod
         );
+        getServer().getScheduler().runTaskTimerAsynchronously(
+                this,
+                new ModelAnimationTickTask(registry),
+                0L,
+                1L // ticking must obviously occur every tick
+        );
     }
 
     private ResourcePack exportResourcePack(ModelRegistry registry) {
