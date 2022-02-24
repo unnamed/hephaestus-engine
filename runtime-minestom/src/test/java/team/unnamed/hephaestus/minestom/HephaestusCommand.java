@@ -25,6 +25,7 @@ package team.unnamed.hephaestus.minestom;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.CommandExecutor;
@@ -100,6 +101,14 @@ final class HephaestusCommand extends Command {
                         tickAnimations();
                     }
                 };
+
+                view.interactListener((interactedView, interactor, action) ->
+                        MinecraftServer.LOGGER.info(
+                                "[hephaestus] player {} interacted with {}, action: {}",
+                                interactor.getUsername(),
+                                interactedView,
+                                action
+                        ));
                 view.setInstance(
                         Objects.requireNonNull(player.getInstance(), "player instance"),
                         player.getPosition()
