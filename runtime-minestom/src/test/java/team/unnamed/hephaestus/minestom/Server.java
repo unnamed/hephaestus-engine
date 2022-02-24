@@ -2,6 +2,7 @@ package team.unnamed.hephaestus.minestom;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
@@ -49,6 +50,7 @@ public class Server {
         GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
         eventHandler.addListener(PlayerLoginEvent.class, event -> {
             Player player = event.getPlayer();
+            player.setGameMode(GameMode.CREATIVE);
             event.setSpawningInstance(instance);
             player.setRespawnPoint(new Pos(0, 72, 0));
         });
