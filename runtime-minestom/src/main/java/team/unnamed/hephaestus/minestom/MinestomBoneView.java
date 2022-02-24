@@ -35,6 +35,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.view.BoneView;
@@ -164,6 +165,11 @@ public final class MinestomBoneView
                 Math.toDegrees(rotation.y()),
                 Math.toDegrees(rotation.z())
         ));
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position, long @Nullable [] chunks) {
+        return super.teleport(position.sub(0, offset, 0), chunks);
     }
 
     @Override
