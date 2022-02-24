@@ -35,6 +35,7 @@ import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.player.PlayerHandAnimationEvent;
+import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
 import team.unnamed.hephaestus.view.ActionType;
@@ -46,16 +47,7 @@ public final class ModelClickListener {
     private ModelClickListener() {
     }
 
-    private static void onArmAnimation(PlayerHandAnimationEvent event) {
-        Player player = event.getPlayer();
-
-        if (player.hasTag(IS_DROPPING_ITEM)) {
-            // player has "is dropping item" tag flag, so this event
-            // was caused by an item drop, ignore
-            player.removeTag(IS_DROPPING_ITEM);
-            return;
-        }
-
+    private static void checkInteraction(Player player, ActionType action) {
         Pos position = player.getPosition();
         Vec direction = position.direction();
         double eyeHeight = player.getEyeHeight();
@@ -88,10 +80,23 @@ public final class ModelClickListener {
             BoundingBox boundingBox = entity.getBoundingBox();
             if (boundingBox.intersect(originX, originY, originZ, targetX, targetY, targetZ)) {
                 modelView.interactListener()
-                        .onInteract(modelView, player, ActionType.LEFT_CLICK);
+                        .onInteract(modelView, player, action);
                 break;
             }
         }
+    }
+
+    private static void onArmAnimation(PlayerHandAnimationEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.hasTag(IS_DROPPING_ITEM)) {
+            // player has "is dropping item" tag flag, so this event
+            // was caused by an item drop, ignore
+            player.removeTag(IS_DROPPING_ITEM);
+            return;
+        }
+
+        checkInteraction(player, ActionType.LEFT_CLICK);
     }
 
     private static void onAttack(EntityAttackEvent event) {
@@ -118,7 +123,12 @@ public final class ModelClickListener {
         event.getPlayer().setTag(IS_DROPPING_ITEM, (byte) 1);
     }
 
+    private static void onItemUse(PlayerUseItemEvent event) {
+        checkInteraction(event.getPlayer(), ActionType.RIGHT_CLICK);
+    }
+
     public static void register(EventNode<Event> node) {
+        node.addListener(PlayerUseItemEvent.class, ModelClickListener::onItemUse);
         node.addListener(ItemDropEvent.class, ModelClickListener::onItemDrop);
         node.addListener(PlayerHandAnimationEvent.class, ModelClickListener::onArmAnimation);
         node.addListener(EntityAttackEvent.class, ModelClickListener::onAttack);
