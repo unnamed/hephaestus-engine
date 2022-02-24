@@ -152,6 +152,20 @@ final class HephaestusCommand extends Command {
             }), viewArg, animationArg);
         }});
 
+        addSubcommand(new Command("tphere") {{
+            addSyntax(playerExecutor((player, context) -> {
+                String viewId = context.get(viewArg);
+                MinestomModelView view = registry.view(viewId);
+
+                if (view == null) {
+                    player.sendMessage("Unknown view: " + viewId);
+                    return;
+                }
+
+                view.teleport(player.getPosition());
+            }), viewArg);
+        }});
+
         addSubcommand(new Command("pack") {{
             addSubcommand(playerCommand("apply", (player, context) ->
                     player.setResourcePack(resourcePackProvider.get())));
