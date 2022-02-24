@@ -55,6 +55,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public final class BBModelReader implements ModelReader {
 
@@ -280,6 +281,7 @@ public final class BBModelReader implements ModelReader {
     ) throws IOException {
 
         String name = json.get("name").getAsString();
+        // BoneType boneType = BoneType.matchByBoneName(name);
 
         // The pivot of this bone
         Vector3Float pivot = GsonUtil.getVector3FloatFromJson(json.get("origin"))
@@ -343,6 +345,51 @@ public final class BBModelReader implements ModelReader {
 
         siblings.put(name, new Bone(name, rotation, bones, offset, asset.small(), asset.customModelData()));
         siblingAssets.put(name, asset);
+    }
+
+    private enum BoneType {
+        // name matching based on Model-Engine by Ticxo, for
+        // compatibility with existing Model-Engine models
+        BOUNDING_BOX(exact("hitbox")),
+        SUB_BOUNDING_BOX(prefixed("b_")),
+        DRIVER_SEAT(exact("mount")),
+        PASSENGER_SEAT(prefixed("p_")),
+        NAME_TAG(prefixed("tag_")),
+        LEFT_HAND(prefixed("il_")),
+        RIGHT_HAND(prefixed("ir_")),
+        NONE(v -> true);
+
+        private static final BoneType[] VALUES = BoneType.values();
+
+        private final Predicate<String> matcher;
+
+        BoneType(Predicate<String> matcher) {
+            this.matcher = matcher;
+        }
+
+        public boolean matches(String name) {
+            return matcher.test(name);
+        }
+
+        public static BoneType matchByBoneName(String name) {
+            for (BoneType type : VALUES) {
+                // "NONE" is a special case, since I do not
+                // want to depend on the enum values order,
+                // we do this
+                if (type != NONE && type.matches(name)) {
+                    return type;
+                }
+            }
+            return NONE;
+        }
+
+        private static Predicate<String> exact(String value) {
+            return v -> v.equals(value);
+        }
+
+        private static Predicate<String> prefixed(String prefix) {
+            return v -> v.startsWith(prefix);
+        }
     }
 
 }
