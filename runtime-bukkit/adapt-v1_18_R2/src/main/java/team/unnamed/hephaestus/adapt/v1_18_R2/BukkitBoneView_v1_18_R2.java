@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.adapt.v1_18_R1;
+package team.unnamed.hephaestus.adapt.v1_18_R2;
 
 import com.mojang.datafixers.util.Pair;
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
@@ -38,8 +38,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -50,14 +50,14 @@ import team.unnamed.hephaestus.view.BukkitModelView;
 
 import java.util.List;
 
-final class BukkitBoneView_v1_18_R1 implements BukkitBoneView {
+final class BukkitBoneView_v1_18_R2 implements BukkitBoneView {
 
     private final BukkitModelView view;
     private final Bone bone;
 
     private final BoneArmorStand entity;
 
-    BukkitBoneView_v1_18_R1(BukkitModelView view, Bone bone) {
+    BukkitBoneView_v1_18_R2(BukkitModelView view, Bone bone) {
         this.view = view;
         this.bone = bone;
         this.entity = new BoneArmorStand(((CraftWorld) view.location().getWorld()).getHandle());

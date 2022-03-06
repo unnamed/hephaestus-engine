@@ -33,7 +33,7 @@ import team.unnamed.creative.file.FileResource;
 import team.unnamed.creative.file.ResourceWriter;
 import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
-import team.unnamed.hephaestus.adapt.v1_18_R1.ModelViewRenderer_v1_18_R1;
+import team.unnamed.hephaestus.adapt.v1_18_R2.ModelViewRenderer_v1_18_R2;
 import team.unnamed.hephaestus.command.ModelCommand;
 import team.unnamed.hephaestus.export.MCPacksHttpExporter;
 import team.unnamed.hephaestus.listener.PlayerQuitListener;
@@ -53,7 +53,7 @@ public class ModelEnginePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        ModelViewRenderer renderer = new ModelViewRenderer_v1_18_R1();
+        ModelViewRenderer renderer = new ModelViewRenderer_v1_18_R2();
 
         // load properties
         int showPeriod = Integer.getInteger("hephaestus.show-task-period", 5); // ticks

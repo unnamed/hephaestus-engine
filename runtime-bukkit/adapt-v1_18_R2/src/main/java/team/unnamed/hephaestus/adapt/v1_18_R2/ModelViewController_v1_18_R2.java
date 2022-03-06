@@ -21,25 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.adapt.v1_18_R1;
+package team.unnamed.hephaestus.adapt.v1_18_R2;
 
-import org.bukkit.Location;
-import team.unnamed.hephaestus.Model;
+import org.bukkit.entity.Player;
+import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.view.BukkitBoneView;
 import team.unnamed.hephaestus.view.BukkitModelView;
 import team.unnamed.hephaestus.view.ModelViewController;
-import team.unnamed.hephaestus.view.ModelViewRenderer;
 
-public class ModelViewRenderer_v1_18_R1 implements ModelViewRenderer {
+final class ModelViewController_v1_18_R2
+        implements ModelViewController {
 
-    private final ModelViewController controller;
-
-    public ModelViewRenderer_v1_18_R1() {
-        this.controller = new ModelViewController_v1_18_R1();
+    @Override
+    public BukkitBoneView createBone(BukkitModelView view, Bone bone) {
+        return new BukkitBoneView_v1_18_R2(view, bone);
     }
 
     @Override
-    public BukkitModelView render(Model model, Location location) {
-        return new BukkitModelView(controller, model, location);
+    public void show(BukkitModelView view, Player player) {
+        for (var boneView : view.bones()) {
+            ((BukkitBoneView_v1_18_R2) boneView).show(player);
+        }
+    }
+
+    @Override
+    public void hide(BukkitModelView view, Player player) {
+        for (var boneView : view.bones()) {
+            ((BukkitBoneView_v1_18_R2) boneView).hide(player);
+        }
     }
 
 }
