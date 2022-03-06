@@ -1,10 +1,12 @@
-## Writing Models to a Resource Pack
+## Generating the Resource Pack
 
-Hephaestus engine uses [creative](https://github.com/unnamed/creative) to interact
-with resource pack data, we convert a `Model` and its bones to creative's block
-models 
+Hephaestus-engine uses [creative](https://github.com/unnamed/creative) to
+interact with resource pack data, we convert a `Model` and its bones to
+creative's block models 
+
 
 ### Writing to a resource pack ZIP
+
 ```java
 Collection<Model> models = ...;
 
@@ -19,7 +21,9 @@ try (FileTree tree = FileTree.zip(new ZipOutputStream(new FileOutputStream(file)
 }
 ```
 
+
 ### Writing to a directory
+
 ```java
 Collection<Model> models = ...;
 

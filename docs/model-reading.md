@@ -13,11 +13,13 @@ unique `custom_model_data` properties for each bone
 ### BBModel Reader
 
 Create a `ModelReader` for Blockbench models
+
 ```java
 ModelReader reader = BBModelReader.blockbench();
 ```
 
 Create a `ModelReader` for Blockbench models, using an assigned `ModelDataCursor`
+
 ```java
 ModelDataCursor modelDataCursor = new ModelDataCursor(0);
 ModelReader reader = BBModelReader.blockbench(modelDataCursor);
@@ -27,6 +29,7 @@ ModelReader reader = BBModelReader.blockbench(modelDataCursor);
 ### Examples
 
 Reading a Blockbench model from a file
+
 ```java
 ModelReader reader = BBModelReader.blockbench();
 File file = new File("model.bbmodel");
