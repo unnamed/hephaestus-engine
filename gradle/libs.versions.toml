@@ -8,7 +8,7 @@ junit = "5.8.2"
 gson = "2.8.0"
 
 # runtime-minestom
-minestom = "2c0b026e46"
+minestom = "2f6e3b62b0"
 
 
 [libraries]
