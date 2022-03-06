@@ -1,4 +1,5 @@
 plugins {
+    id("hephaestus.runtime-bukkit-conventions")
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -10,8 +11,4 @@ dependencies {
     }
 
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
-}
-
-tasks.withType<PublishToMavenRepository>().configureEach {
-    enabled = false
 }

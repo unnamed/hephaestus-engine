@@ -1,3 +1,7 @@
+plugins {
+    id("hephaestus.publishing-conventions")
+}
+
 repositories {
     maven("https://jitpack.io/")
     mavenCentral()

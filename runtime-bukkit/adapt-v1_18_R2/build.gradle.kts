@@ -1,4 +1,6 @@
 plugins {
+    id("hephaestus.runtime-bukkit-conventions")
+    id("hephaestus.publishing-conventions")
     id("io.papermc.paperweight.userdev") version "1.3.5"
 }
 
