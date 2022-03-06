@@ -13,7 +13,8 @@ tasks {
 }
 
 dependencies {
-    implementation(project(":runtime-bukkit:api"))
-    implementation("net.kyori:adventure-platform-bukkit:4.0.1")
     paperDevBundle("1.18.2-R0.1-SNAPSHOT")
+
+    implementation(project(":hephaestus-runtime-bukkit-api"))
+    implementation("net.kyori:adventure-platform-bukkit:4.0.1")
 }

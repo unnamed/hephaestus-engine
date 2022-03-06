@@ -10,6 +10,8 @@ subprojects {
 
     repositories {
         maven("https://repo.unnamed.team/repository/unnamed-public/")
+        maven("https://repo.codemc.io/repository/nms/")
+        maven("https://papermc.io/repo/repository/maven-public/")
         mavenCentral()
     }
 

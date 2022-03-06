@@ -9,18 +9,15 @@ rootProject.name = "hephaestus-parent"
 
 includePrefixed("api")
 includePrefixed("reader-blockbench")
-
-include("runtime-bukkit:api")
-include("runtime-bukkit:test-plugin")
-arrayOf(
-    "v1_18_R2"
-).forEach {
-    include(":runtime-bukkit:adapt-$it")
-}
-
+includePrefixed("runtime-bukkit:api")
+includePrefixed("runtime-bukkit:adapt-v1_18_R2")
+includePrefixed("runtime-bukkit:test-plugin")
 includePrefixed("runtime-minestom")
 
 fun includePrefixed(name: String) {
-    include("hephaestus-$name")
-    project(":hephaestus-$name").projectDir = file(name)
+    val kebabName = name.replace(':', '-')
+    val path = name.replace(':', '/')
+
+    include("hephaestus-$kebabName")
+    project(":hephaestus-$kebabName").projectDir = file(path)
 }

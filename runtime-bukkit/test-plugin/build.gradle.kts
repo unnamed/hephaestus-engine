@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":runtime-bukkit:api"))
-    implementation(project(":runtime-bukkit:adapt-v1_18_R2", "reobf"))
+    implementation(project(":hephaestus-runtime-bukkit-api"))
+    implementation(project(":hephaestus-runtime-bukkit-adapt-v1_18_R2", "reobf"))
     implementation(project(":hephaestus-reader-blockbench")) {
         exclude(group = "com.google.code.gson", module = "gson")
     }
