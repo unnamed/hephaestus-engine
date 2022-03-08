@@ -49,10 +49,7 @@ import java.util.function.BiConsumer;
 // - /hephaestus pack reload
 final class HephaestusCommand extends Command {
 
-    public HephaestusCommand(
-            ModelRegistry registry,
-            MemoizedCallable<ResourcePack> resourcePackProvider
-    ) {
+    public HephaestusCommand(ModelRegistry registry, ResourcePackProvider packProvider) {
         super("hephaestus");
 
         var modelArg = ArgumentType.Word("model")
@@ -167,20 +164,12 @@ final class HephaestusCommand extends Command {
         }});
 
         addSubcommand(new Command("pack") {{
-            addSubcommand(playerCommand("apply", (player, context) ->
-                    player.setResourcePack(resourcePackProvider.get())));
-
-            addSubcommand(playerCommand("reload", (player, context) -> {
-                ResourcePack pack;
-                try {
-                    pack = resourcePackProvider.call();
-                } catch (Exception e) {
-                    player.sendMessage(Component.text("Failed to export resource pack", NamedTextColor.RED));
-                    e.printStackTrace();
-                    return;
-                }
-
-                player.setResourcePack(pack);
+            addSubcommand(playerCommand("apply", (player, context) -> {
+                player.setResourcePack(ResourcePack.forced(
+                        "http://localhost:7270/",
+                        packProvider.pack().hash(),
+                        Component.text("Hello! Please accept the resource-pack")
+                ));
             }));
         }});
     }

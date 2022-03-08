@@ -16,9 +16,11 @@ import net.minestom.server.resourcepack.ResourcePack;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.file.FileResource;
+import team.unnamed.creative.file.FileTreeWriter;
 import team.unnamed.creative.file.ResourceWriter;
 import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
+import team.unnamed.creative.server.ResourcePackServer;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.reader.BBModelReader;
 
@@ -60,30 +62,27 @@ public class Server {
         ModelRegistry registry = new ModelRegistry();
         registry.model(modelFromResource("redstone_monstrosity.bbmodel"));
 
-        MemoizedCallable<ResourcePack> resourcePackProvider = new MemoizedCallable<>(() -> new MCPacksHttpExporter()
-                .export(tree -> {
-                    registry.write(tree);
+        ResourcePackProvider provider = new ResourcePackProvider(tree -> {
+            tree.write(Metadata.builder()
+                    .add(PackMeta.of(8, "Hephaestus generated resource pack"))
+                    .build());
 
-                    // temporary solution
-                    tree.write("pack.png", Writable.resource(Server.class.getClassLoader(), "hephaestus.png"));
-                    tree.write(new FileResource() {
-                        @Override
-                        public String path() {
-                            return "pack.mcmeta";
-                        }
+            tree.write("pack.png", Writable.resource(Server.class.getClassLoader(), "hephaestus.png"));
 
-                        @Override
-                        public void serialize(ResourceWriter writer) {
-                            Metadata.builder()
-                                    .add(PackMeta.of(8, "Hephaestus generated resource pack"))
-                                    .build()
-                                    .serialize(writer);
-                        }
-                    });
-                }));
-        MinecraftServer.getCommandManager().register(new HephaestusCommand(registry, resourcePackProvider));
+            // write models
+            registry.write(tree);
+        });
+        ResourcePackServer resourcePackServer = ResourcePackServer.builder()
+                .address("127.0.0.1", 7270)
+                .handler(provider)
+                .build();
 
+        MinecraftServer.getCommandManager().register(new HephaestusCommand(registry, provider));
+
+        resourcePackServer.start();
         server.start("127.0.0.1", 25565);
+
+        MinecraftServer.getSchedulerManager().buildShutdownTask(() -> resourcePackServer.stop(10));
     }
 
     private static Model modelFromResource(String name) throws IOException {

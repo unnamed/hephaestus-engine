@@ -4,6 +4,6 @@ plugins {
 
 dependencies {
     api(libs.annotations)
-    api(libs.creative)
+    api(libs.creative.api)
     api(libs.adventure.api)
 }

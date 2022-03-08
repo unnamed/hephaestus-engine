@@ -23,20 +23,41 @@
  */
 package team.unnamed.hephaestus.minestom;
 
-import net.minestom.server.resourcepack.ResourcePack;
-import org.jetbrains.annotations.Nullable;
-import team.unnamed.creative.file.FileTree;
+import com.sun.net.httpserver.HttpExchange;
+import team.unnamed.creative.ResourcePack;
+import team.unnamed.creative.file.FileTreeWriter;
+import team.unnamed.creative.server.ResourcePackRequest;
+import team.unnamed.creative.server.ResourcePackRequestHandler;
 
 import java.io.IOException;
 
-public interface ResourcePackExporter {
+/**
+ * {@link ResourcePackRequestHandler} implementation that re-builds
+ * the resource-pack after every request
+ */
+public class ResourcePackProvider implements ResourcePackRequestHandler {
 
-    @Nullable ResourcePack export(FileTreeWriter writer) throws IOException;
+    private final FileTreeWriter writer;
+    private ResourcePack pack;
 
-    interface FileTreeWriter {
+    public ResourcePackProvider(FileTreeWriter writer) {
+        this.writer = writer;
+        this.pack = ResourcePack.build(writer);
+    }
 
-        void write(FileTree tree) throws IOException;
+    @Override
+    public void onRequest(ResourcePackRequest request, HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "application/zip");
+        exchange.sendResponseHeaders(200, pack.bytes().length);
+        exchange.getResponseBody().write(pack.bytes());
 
+        // rebuild is done *after* the resource-pack is created,
+        // to ensure stored hash is correct
+        pack = ResourcePack.build(writer);
+    }
+
+    public ResourcePack pack() {
+        return pack;
     }
 
 }

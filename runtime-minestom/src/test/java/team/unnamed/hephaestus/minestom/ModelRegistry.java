@@ -28,7 +28,6 @@ import team.unnamed.creative.file.FileTree;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +37,7 @@ public final class ModelRegistry {
     private final Map<String, Model> models = new HashMap<>();
     private final Map<String, MinestomModelView> views = new HashMap<>();
 
-    public void write(FileTree tree) throws IOException {
+    public void write(FileTree tree) {
         ModelWriter.resource().write(tree, models.values());
     }
 

@@ -26,7 +26,6 @@ package team.unnamed.hephaestus.writer;
 import team.unnamed.creative.file.FileTree;
 import team.unnamed.hephaestus.Model;
 
-import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -44,10 +43,9 @@ public interface ModelWriter<T> {
      *
      * @param target The target output type where the
      *               model will be written
-     * @throws IOException If writing fails
      * @since 1.0.0
      */
-    void write(T target, Collection<Model> models) throws IOException;
+    void write(T target, Collection<Model> models);
 
     /**
      * Creates a new {@link ModelWriter} instance that
