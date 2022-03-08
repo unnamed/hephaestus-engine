@@ -21,15 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
-/**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
- *
- * @since 1.0.0
- */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+import org.bukkit.entity.Player;
+import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.bukkit.BoneView;
+import team.unnamed.hephaestus.bukkit.ModelView;
+import team.unnamed.hephaestus.bukkit.ModelViewController;
+
+final class ModelViewController_v1_18_R2
+        implements ModelViewController {
+
+    @Override
+    public BoneView createBone(ModelView view, Bone bone) {
+        return new BoneView_v1_18_R2(view, bone);
+    }
+
+    @Override
+    public void show(ModelView view, Player player) {
+        for (var boneView : view.bones()) {
+            ((BoneView_v1_18_R2) boneView).show(player);
+        }
+    }
+
+    @Override
+    public void hide(ModelView view, Player player) {
+        for (var boneView : view.bones()) {
+            ((BoneView_v1_18_R2) boneView).hide(player);
+        }
+    }
+
 }

@@ -74,7 +74,7 @@ public final class ModelClickListener {
 
         Instance instance = player.getInstance();
         for (Entity entity : instance.getNearbyEntities(position, range * range)) {
-            if (!(entity instanceof MinestomModelView modelView)) {
+            if (!(entity instanceof ModelView modelView)) {
                 continue;
             }
             BoundingBox boundingBox = entity.getBoundingBox();
@@ -104,7 +104,7 @@ public final class ModelClickListener {
         Entity target = event.getTarget();
 
         if (entity instanceof Player player
-                && target instanceof MinestomBoneView bone) {
+                && target instanceof BoneView bone) {
             bone.view()
                     .interactListener()
                     .onInteract(bone.view(), player, ActionType.LEFT_CLICK);
@@ -112,7 +112,7 @@ public final class ModelClickListener {
     }
 
     private static void onInteract(PlayerEntityInteractEvent event) {
-        if (event.getTarget() instanceof MinestomBoneView bone) {
+        if (event.getTarget() instanceof BoneView bone) {
             bone.view()
                     .interactListener()
                     .onInteract(bone.view(), event.getPlayer(), ActionType.RIGHT_CLICK);

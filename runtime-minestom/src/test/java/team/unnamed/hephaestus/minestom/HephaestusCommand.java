@@ -72,7 +72,7 @@ final class HephaestusCommand extends Command {
         var animationArg = ArgumentType.Word("animation")
                 .setSuggestionCallback((sender, context, suggestion) -> {
                     String viewId = context.get(viewArg);
-                    MinestomModelView view = registry.view(viewId);
+                    ModelView view = registry.view(viewId);
                     if (view != null) {
                         String input = suggestion.getInput();
                         view.model().animations().keySet()
@@ -92,7 +92,7 @@ final class HephaestusCommand extends Command {
                     return;
                 }
 
-                MinestomModelView view = new MinestomModelView(EntityType.ARMOR_STAND, model) {
+                ModelView view = new ModelView(EntityType.ARMOR_STAND, model) {
                     @Override
                     public void tick(long time) {
                         super.tick(time);
@@ -110,7 +110,7 @@ final class HephaestusCommand extends Command {
                             .delay(4L, TimeUnit.SERVER_TICK)
                             .schedule();
 
-                    ((MinestomModelView) interactedView).takeKnockback(0.4F, Math.sin(yaw), -Math.cos(yaw));
+                    interactedView.takeKnockback(0.4F, Math.sin(yaw), -Math.cos(yaw));
                     MinecraftServer.LOGGER.info(
                             "[hephaestus] player {} interacted with {}, action: {}",
                             interactor.getUsername(),
@@ -139,7 +139,7 @@ final class HephaestusCommand extends Command {
                 String viewId = context.get(viewArg);
                 String animationName = context.get(animationArg);
 
-                MinestomModelView view = registry.view(viewId);
+                ModelView view = registry.view(viewId);
                 if (view == null) {
                     player.sendMessage("Unknown view: " + viewId);
                     return;
@@ -152,7 +152,7 @@ final class HephaestusCommand extends Command {
         addSubcommand(new Command("tphere") {{
             addSyntax(playerExecutor((player, context) -> {
                 String viewId = context.get(viewArg);
-                MinestomModelView view = registry.view(viewId);
+                ModelView view = registry.view(viewId);
 
                 if (view == null) {
                     player.sendMessage("Unknown view: " + viewId);

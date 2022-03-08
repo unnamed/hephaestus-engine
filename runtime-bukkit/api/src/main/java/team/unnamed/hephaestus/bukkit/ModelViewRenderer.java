@@ -21,15 +21,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.bukkit;
+
+import org.bukkit.Location;
+import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.view.BaseModelView;
 
 /**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
+ * Responsible for spawning {@link Model}, or
+ * converting {@link Model} to {@link BaseModelView}
+ * concrete instances at specific world locations
  *
  * @since 1.0.0
  */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+public interface ModelViewRenderer {
+
+    /**
+     * Spawns the given {@link Model} model
+     * instance at the given world location
+     *
+     * @param model The rendered model
+     * @param location The model view location
+     *
+     * @return The created model view
+     * @since 1.0.0
+     */
+    ModelView render(Model model, Location location);
+
 }

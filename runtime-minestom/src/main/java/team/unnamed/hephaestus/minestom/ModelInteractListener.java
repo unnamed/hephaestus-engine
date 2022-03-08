@@ -21,15 +21,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.minestom;
+
+import net.minestom.server.entity.Player;
+import team.unnamed.hephaestus.view.ActionType;
 
 /**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
+ * Represents the object responsible for handling
+ * interactions between a {@link Player} and a
+ * {@link ModelView}
  *
  * @since 1.0.0
  */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+@FunctionalInterface
+public interface ModelInteractListener {
+
+    ModelInteractListener NOP = (view, player, action) -> {};
+
+    /**
+     * Method called to handle the interaction between
+     * a {@link Player} and a {@link ModelView}
+     *
+     * @param view The clicked model view
+     * @param player The clicker player
+     * @param action The click type
+     * @since 1.0.0
+     */
+    void onInteract(
+            ModelView view,
+            Player player,
+            ActionType action
+    );
+
 }

@@ -21,15 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.bukkit.v1_18_R2;
+
+import net.minecraft.network.protocol.Packet;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 
 /**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
- *
- * @since 1.0.0
+ * Utility class for packets, specific
+ * for v1_18_R2 minecraft server version
  */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+final class Packets {
+
+    private Packets() {
+    }
+
+    /**
+     * Sends the given {@code packets} to the
+     * specified {@code player}
+     */
+    static void send(Player player, Packet<?>... packets) {
+        var connection = ((CraftPlayer) player).getHandle().connection;
+        for (var packet : packets) {
+            connection.send(packet);
+        }
+    }
+
+    /**
+     * Sends the given {@code packets} to all the
+     * specified {@code players}
+     */
+    static void send(Iterable<? extends Player> players, Packet<?>... packets) {
+        for (var player : players) {
+            var connection = ((CraftPlayer) player).getHandle().connection;
+            for (var packet : packets) {
+                connection.send(packet);
+            }
+        }
+    }
+
 }

@@ -21,15 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
-/**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
- *
- * @since 1.0.0
- */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.level.Level;
+
+final class BoneArmorStand extends ArmorStand {
+
+    public BoneArmorStand(Level level) {
+        super(EntityType.ARMOR_STAND, level);
+    }
+
+    @Override
+    public void setRot(float yRot, float xRot) { // makes setRot accessible
+        super.setRot(yRot, xRot);
+    }
+
 }

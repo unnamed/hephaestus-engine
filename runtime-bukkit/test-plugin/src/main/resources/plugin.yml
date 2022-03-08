@@ -1,4 +1,4 @@
-main: team.unnamed.hephaestus.ModelEnginePlugin
+main: team.unnamed.hephaestus.plugin.ModelEnginePlugin
 name: hephaestus
 version: 0.1.0-SNAPSHOT
 author: UnnamedTeam

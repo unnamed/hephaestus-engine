@@ -21,27 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.minestom;
+package team.unnamed.hephaestus.plugin;
 
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.creative.file.FileTree;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.writer.ModelWriter;
+import team.unnamed.hephaestus.bukkit.ModelView;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class ModelRegistry {
+public class ModelRegistry {
 
     private final Map<String, Model> models = new HashMap<>();
     private final Map<String, ModelView> views = new HashMap<>();
 
-    public void write(FileTree tree) {
-        ModelWriter.resource().write(tree, models.values());
-    }
-
-    public void model(Model model) {
+    public void registerModel(Model model) {
         models.put(model.name(), model);
     }
 
@@ -49,11 +44,15 @@ public final class ModelRegistry {
         return models.get(name);
     }
 
+    public Collection<String> modelNames() {
+        return models.keySet();
+    }
+
     public Collection<Model> models() {
         return models.values();
     }
 
-    public void view(String id, ModelView view) {
+    public void registerView(String id, ModelView view) {
         views.put(id, view);
     }
 
@@ -64,13 +63,13 @@ public final class ModelRegistry {
     public Collection<String> viewIds() {
         return views.keySet();
     }
-
+    
     public Collection<ModelView> views() {
         return views.values();
     }
 
     public static String generateViewId() {
-        return Long.toHexString(System.nanoTime());
+        return Long.toHexString(Long.reverseBytes(System.nanoTime()));
     }
 
 }

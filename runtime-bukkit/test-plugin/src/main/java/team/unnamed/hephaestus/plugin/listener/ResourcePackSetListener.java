@@ -21,15 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.plugin.listener;
 
-/**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
- *
- * @since 1.0.0
- */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import team.unnamed.hephaestus.plugin.ResourcePack;
+
+public class ResourcePackSetListener implements Listener {
+
+    private final ResourcePack resourcePack;
+
+    public ResourcePackSetListener(ResourcePack resourcePack) {
+        this.resourcePack = resourcePack;
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        player.setResourcePack(
+                resourcePack.url(),
+                resourcePack.hash()
+        );
+    }
+
 }

@@ -21,15 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.bukkit;
 
-/**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
- *
- * @since 1.0.0
- */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+import org.bukkit.Color;
+import team.unnamed.hephaestus.view.BaseBoneView;
+
+public interface BoneView extends BaseBoneView {
+
+    void colorize(Color color);
+
+    @Override
+    default void colorize(int r, int g, int b) {
+        colorize(Color.fromRGB(r, g, b));
+    }
+
+    @Override
+    default void colorize(int rgb) {
+        colorize(Color.fromRGB(rgb));
+    }
+
 }

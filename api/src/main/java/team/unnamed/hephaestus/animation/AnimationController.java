@@ -23,7 +23,7 @@
  */
 package team.unnamed.hephaestus.animation;
 
-import team.unnamed.hephaestus.view.ModelView;
+import team.unnamed.hephaestus.view.BaseModelView;
 
 /**
  * Represents the object responsible to animate
@@ -56,7 +56,7 @@ public interface AnimationController {
      */
     void tick(double yaw);
 
-    static AnimationController create(ModelView<?> view) {
+    static AnimationController create(BaseModelView view) {
         return new AnimationControllerImpl(view);
     }
 

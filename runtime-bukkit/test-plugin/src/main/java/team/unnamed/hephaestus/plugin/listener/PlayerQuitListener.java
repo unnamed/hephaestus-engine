@@ -21,15 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.plugin.listener;
 
-/**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
- *
- * @since 1.0.0
- */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
+import team.unnamed.hephaestus.plugin.ModelRegistry;
+import team.unnamed.hephaestus.bukkit.ModelView;
+
+public class PlayerQuitListener implements Listener {
+
+    private final ModelRegistry modelRegistry;
+
+    public PlayerQuitListener(ModelRegistry modelRegistry) {
+        this.modelRegistry = modelRegistry;
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        for (ModelView view : modelRegistry.views()) {
+            view.removeViewer(player);
+        }
+    }
+
 }

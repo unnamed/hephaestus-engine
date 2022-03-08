@@ -26,8 +26,8 @@ package team.unnamed.hephaestus.animation;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Vectors;
-import team.unnamed.hephaestus.view.BoneView;
-import team.unnamed.hephaestus.view.ModelView;
+import team.unnamed.hephaestus.view.BaseBoneView;
+import team.unnamed.hephaestus.view.BaseModelView;
 
 import java.util.Deque;
 import java.util.HashMap;
@@ -42,10 +42,10 @@ final class AnimationControllerImpl implements AnimationController {
     private int noNext;
 
     private final Deque<ModelAnimation> animations = new LinkedList<>();
-    private final ModelView<?> view;
+    private final BaseModelView view;
     private ModelAnimation animation;
 
-    AnimationControllerImpl(ModelView<?> view) {
+    AnimationControllerImpl(BaseModelView view) {
         this.view = view;
     }
 
@@ -137,7 +137,7 @@ final class AnimationControllerImpl implements AnimationController {
             globalRotation = Vectors.combineRotations(localRotation, parentRotation);
         }
 
-        BoneView boneView = view.bone(bone.name());
+        BaseBoneView boneView = view.bone(bone.name());
         boneView.position(globalPosition);
         boneView.rotation(globalRotation);
 

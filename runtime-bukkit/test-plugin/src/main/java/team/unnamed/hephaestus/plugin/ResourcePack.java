@@ -21,15 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.plugin;
 
-/**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
- *
- * @since 1.0.0
- */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+public class ResourcePack {
+
+    private final String url;
+    private final String hash;
+
+    public ResourcePack(String url, String hash) {
+        this.url = url;
+        this.hash = hash;
+    }
+
+    public String url() {
+        return url;
+    }
+
+    public String hash() {
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        return "ResourcePack {url='" + url
+                + "', hash='" + hash + "'}";
+    }
+
 }

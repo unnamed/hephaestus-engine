@@ -21,15 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
-/**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
- *
- * @since 1.0.0
- */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+import org.bukkit.Location;
+import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.bukkit.ModelView;
+import team.unnamed.hephaestus.bukkit.ModelViewController;
+import team.unnamed.hephaestus.bukkit.ModelViewRenderer;
+
+public class ModelViewRenderer_v1_18_R2 implements ModelViewRenderer {
+
+    private final ModelViewController controller = new ModelViewController_v1_18_R2();
+
+    @Override
+    public ModelView render(Model model, Location location) {
+        return new ModelView(controller, model, location);
+    }
+
 }

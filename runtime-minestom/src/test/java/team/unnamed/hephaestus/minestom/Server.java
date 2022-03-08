@@ -12,17 +12,13 @@ import net.minestom.server.instance.ChunkPopulator;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.batch.ChunkBatch;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.resourcepack.ResourcePack;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Writable;
-import team.unnamed.creative.file.FileResource;
-import team.unnamed.creative.file.FileTreeWriter;
-import team.unnamed.creative.file.ResourceWriter;
 import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
 import team.unnamed.creative.server.ResourcePackServer;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.reader.BBModelReader;
+import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 
 import java.io.IOException;
 import java.io.InputStream;

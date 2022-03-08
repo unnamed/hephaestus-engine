@@ -21,15 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view;
+package team.unnamed.hephaestus.plugin;
 
-/**
- * An enum of all the possible interactions
- * between a Minecraft player and a {@link BaseModelView}
- *
- * @since 1.0.0
- */
-public enum ActionType {
-    RIGHT_CLICK,
-    LEFT_CLICK
+import team.unnamed.hephaestus.bukkit.ModelView;
+
+public class ModelAnimationTickTask implements Runnable {
+
+    private final ModelRegistry modelRegistry;
+
+    public ModelAnimationTickTask(ModelRegistry modelRegistry) {
+        this.modelRegistry = modelRegistry;
+    }
+
+    @Override
+    public void run() {
+        for (ModelView view : modelRegistry.views()) {
+            view.tickAnimations();
+        }
+    }
+
 }
