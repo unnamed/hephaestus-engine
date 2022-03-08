@@ -114,9 +114,9 @@ public final class BBModelReader implements ModelReader {
                         modelName,
                         textures,
                         textureMapping,
-                        boneAssets,
-                        animations
-                )
+                        boneAssets
+                ),
+                animations
         );
     }
 

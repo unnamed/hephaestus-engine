@@ -28,7 +28,6 @@ import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Writable;
-import team.unnamed.hephaestus.animation.ModelAnimation;
 
 import java.util.Collection;
 import java.util.Map;
@@ -39,21 +38,18 @@ public class ModelAsset implements Examinable {
     private final String name;
     private final Map<String, Writable> textures;
     private final Map<Integer, String> textureMapping;
-    private final Map<String, ModelAnimation> animations;
     private final Map<String, BoneAsset> bones;
 
     public ModelAsset(
             String name,
             Map<String, Writable> textures,
             Map<Integer, String> textureMapping,
-            Map<String, BoneAsset> bones,
-            Map<String, ModelAnimation> animations
+            Map<String, BoneAsset> bones
     ) {
         this.name = name;
         this.textures = textures;
         this.textureMapping = textureMapping;
         this.bones = bones;
-        this.animations = animations;
     }
 
     public String name() {
@@ -66,10 +62,6 @@ public class ModelAsset implements Examinable {
 
     public Map<Integer, String> textureMapping() {
         return textureMapping;
-    }
-
-    public Map<String, ModelAnimation> animations() {
-        return animations;
     }
 
     public Collection<BoneAsset> bones() {
@@ -86,7 +78,6 @@ public class ModelAsset implements Examinable {
                 ExaminableProperty.of("name", name),
                 ExaminableProperty.of("textures", textures),
                 ExaminableProperty.of("textureMapping", textureMapping),
-                ExaminableProperty.of("animations", animations),
                 ExaminableProperty.of("bones", bones)
         );
     }

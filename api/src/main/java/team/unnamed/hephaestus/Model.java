@@ -56,16 +56,15 @@ public class Model implements Examinable {
             Map<String, Bone> bones,
             Collection<Bone> seats,
             Vector2Float boundingBox,
-            ModelAsset asset
+            ModelAsset asset,
+            Map<String, ModelAnimation> animations
     ) {
         this.name = name;
         this.seats = seats;
         this.bones = bones;
         this.boundingBox = boundingBox;
         this.asset = asset;
-        // data from 'asset' that will persist after calling
-        // discardResourcePackData()
-        this.animations = asset.animations();
+        this.animations = animations;
     }
 
     /**
@@ -131,8 +130,7 @@ public class Model implements Examinable {
         return animations;
     }
 
-    @Nullable
-    public ModelAsset asset() {
+    public @Nullable ModelAsset asset() {
         return asset;
     }
 
