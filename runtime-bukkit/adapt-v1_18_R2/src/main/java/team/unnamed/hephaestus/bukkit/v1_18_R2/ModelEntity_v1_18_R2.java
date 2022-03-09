@@ -23,19 +23,48 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
+import org.jetbrains.annotations.NotNull;
 
-final class BoneArmorStand extends ArmorStand {
+import java.util.Map;
 
-    public BoneArmorStand(Level level) {
-        super(EntityType.ARMOR_STAND, level);
+public class ModelEntity_v1_18_R2 extends Entity {
+
+    final Map<String, BoneViewImpl> bones = new Object2ObjectOpenHashMap<>();
+
+    public ModelEntity_v1_18_R2(EntityType<?> type, Level world) {
+        super(type, world);
     }
 
     @Override
-    public void setRot(float yRot, float xRot) { // makes setRot accessible
-        super.setRot(yRot, xRot);
+    public CraftEntity getBukkitEntity() {
+        System.out.println("getBukkitEntity called");
+        return new CraftEntity(this.getServer().server, this) {
+            @Override
+            public org.bukkit.entity.@NotNull EntityType getType() {
+                return org.bukkit.entity.EntityType.UNKNOWN;
+            }
+        };
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        // no metadata for this entity, it will not
+        // be directly spawned anyways
+    }
+
+    @Override protected void readAdditionalSaveData(CompoundTag nbt) {}
+    @Override protected void addAdditionalSaveData(CompoundTag nbt) {}
+
+    @Override
+    public Packet<?> getAddEntityPacket() {
+        return null;
     }
 
 }

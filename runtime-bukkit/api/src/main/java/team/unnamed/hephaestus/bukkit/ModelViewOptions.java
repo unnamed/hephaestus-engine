@@ -21,34 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_18_R2;
+package team.unnamed.hephaestus.bukkit;
 
-import org.bukkit.entity.Player;
-import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.bukkit.BoneView;
-import team.unnamed.hephaestus.bukkit.ModelView;
-import team.unnamed.hephaestus.bukkit.ModelViewController;
+public final class ModelViewOptions {
 
-final class ModelViewController_v1_18_R2
-        implements ModelViewController {
+    public static final ModelViewOptions DEFAULT = ModelViewOptions.builder()
+            .autoViewable(true)
+            .build();
 
-    @Override
-    public BoneView createBone(ModelView view, Bone bone) {
-        return new BoneViewImpl(view, bone);
+    private final boolean autoViewable;
+
+    public ModelViewOptions(boolean autoViewable) {
+        this.autoViewable = autoViewable;
     }
 
-    @Override
-    public void show(ModelView view, Player player) {
-        for (var boneView : view.bones()) {
-            ((BoneViewImpl) boneView).show(packet -> Packets.send(player, packet));
-        }
+    public boolean autoViewable() {
+        return autoViewable;
     }
 
-    @Override
-    public void hide(ModelView view, Player player) {
-        for (var boneView : view.bones()) {
-            ((BoneViewImpl) boneView).hide(player);
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private boolean autoViewable;
+
+        private Builder() {
         }
+
+        public Builder autoViewable(boolean autoViewable) {
+            this.autoViewable = autoViewable;
+            return this;
+        }
+
+        public ModelViewOptions build() {
+            return new ModelViewOptions(autoViewable);
+        }
+
     }
 
 }

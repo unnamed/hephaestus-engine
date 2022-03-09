@@ -23,19 +23,59 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
+import net.minecraft.server.level.ChunkMap;
+import net.minecraft.server.level.ServerEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelView;
 import team.unnamed.hephaestus.bukkit.ModelViewController;
+import team.unnamed.hephaestus.bukkit.ModelViewOptions;
 import team.unnamed.hephaestus.bukkit.ModelViewRenderer;
 
+import java.lang.reflect.Field;
+
 public class ModelViewRenderer_v1_18_R2 implements ModelViewRenderer {
+
+    private static final Field SERVER_ENTITY_FIELD;
+
+    static {
+        Field serverEntityField = null;
+        for (Field field : ChunkMap.TrackedEntity.class.getDeclaredFields()) {
+            if (field.getType() == ServerEntity.class) {
+                serverEntityField = field;
+                serverEntityField.setAccessible(true);
+            }
+        }
+        if (serverEntityField == null) {
+            throw new IllegalStateException("Server entity field not found");
+        }
+        SERVER_ENTITY_FIELD = serverEntityField;
+    }
 
     private final ModelViewController controller = new ModelViewController_v1_18_R2();
 
     @Override
-    public ModelView render(Model model, Location location) {
-        return new ModelView(controller, model, location);
+    public ModelView render(Model model, Location location, ModelViewOptions options) {
+        ModelView view = new ModelView(controller, model, location);
+        if (options.autoViewable()) {
+            ServerLevel level = ((CraftWorld) location.getWorld()).getHandle();
+            ChunkMap chunkMap = level.chunkSource.chunkMap;
+            ModelEntity_v1_18_R2 entity = new ModelEntity_v1_18_R2(EntityType.ARMOR_STAND, level);
+            ChunkMap.TrackedEntity trackedEntity = chunkMap.new TrackedEntity(entity, 40, 40, false);
+            try {
+                SERVER_ENTITY_FIELD.set(
+                        trackedEntity,
+                        new ModelServerEntity_v1_18_R2(level, entity, trackedEntity::broadcast, trackedEntity.seenBy)
+                );
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException("Failed to set own server entity to tracker");
+            }
+            chunkMap.entityMap.put(entity.getId(), trackedEntity);
+        }
+        return view;
     }
 
 }

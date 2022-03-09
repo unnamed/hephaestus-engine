@@ -23,18 +23,23 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.Rotations;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
+import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -49,30 +54,41 @@ import team.unnamed.hephaestus.bukkit.BoneView;
 import team.unnamed.hephaestus.bukkit.ModelView;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-final class BoneView_v1_18_R2 implements BoneView {
+final class BoneViewImpl
+        extends ArmorStand
+        implements BoneView {
 
     private final ModelView view;
     private final Bone bone;
 
-    private final BoneArmorStand entity;
+    // synchronization data
+    List<Entity> lastPassengers = ImmutableList.of();
+    long lastPx, lastPy, lastPz;
 
-    BoneView_v1_18_R2(ModelView view, Bone bone) {
+    BoneViewImpl(ModelView view, Bone bone) {
+        super(EntityType.ARMOR_STAND, ((CraftWorld) view.location().getWorld()).getHandle());
         this.view = view;
         this.bone = bone;
-        this.entity = new BoneArmorStand(((CraftWorld) view.location().getWorld()).getHandle());
         this.initialize();
+    }
+
+    void updateSentPos() {
+        this.lastPx = ClientboundMoveEntityPacket.entityToPacket(super.getX());
+        this.lastPy = ClientboundMoveEntityPacket.entityToPacket(super.getY());
+        this.lastPz = ClientboundMoveEntityPacket.entityToPacket(super.getZ());
     }
 
     private void initialize() {
 
         Location rootLocation = view.location();
-        entity.setRot(rootLocation.getYaw(), rootLocation.getPitch());
+        super.setRot(rootLocation.getYaw(), rootLocation.getPitch());
 
-        entity.setSilent(true);
-        entity.setNoGravity(true);
-        entity.setSmall(true);
-        entity.setInvisible(true);
+        super.setSilent(true);
+        super.setNoGravity(true);
+        super.setSmall(true);
+        super.setInvisible(true);
 
         var item = new ItemStack(Material.LEATHER_HORSE_ARMOR);
         var meta = (LeatherArmorMeta) item.getItemMeta();
@@ -84,23 +100,20 @@ final class BoneView_v1_18_R2 implements BoneView {
 
         var nmsItem = CraftItemStack.asNMSCopy(item);
 
-        entity.setItemSlot(EquipmentSlot.HEAD, nmsItem, true);
+        setItemSlot(EquipmentSlot.HEAD, nmsItem, true);
     }
 
-    void show(Player player) {
-        Packets.send(
-                player,
-                new ClientboundAddMobPacket(entity),
-                new ClientboundSetEntityDataPacket(entity.getId(), entity.getEntityData(), true),
-                new ClientboundSetEquipmentPacket(entity.getId(), List.of(new Pair<>(
-                        EquipmentSlot.HEAD,
-                        entity.getItemBySlot(EquipmentSlot.HEAD)
-                )))
-        );
+    void show(Consumer<Packet<?>> packetConsumer) {
+        packetConsumer.accept(new ClientboundAddMobPacket(this));
+        packetConsumer.accept(new ClientboundSetEntityDataPacket(super.getId(), super.getEntityData(), true));
+        packetConsumer.accept(new ClientboundSetEquipmentPacket(super.getId(), List.of(new Pair<>(
+                EquipmentSlot.HEAD,
+                super.getItemBySlot(EquipmentSlot.HEAD)
+        ))));
     }
 
     void hide(Player player) {
-        Packets.send(player, new ClientboundRemoveEntitiesPacket(entity.getId()));
+        Packets.send(player, new ClientboundRemoveEntitiesPacket(super.getId()));
     }
 
     @Override
@@ -110,28 +123,28 @@ final class BoneView_v1_18_R2 implements BoneView {
 
     @Override
     public Component customName() {
-        return fromMinecraft(entity.getCustomName());
+        return fromMinecraft(super.getCustomName());
     }
 
     @Override
     public void customName(Component customName) {
-        entity.setCustomName(toMinecraft(customName));
+        super.setCustomName(toMinecraft(customName));
     }
 
     @Override
     public void customNameVisible(boolean visible) {
-        entity.setCustomNameVisible(visible);
+        super.setCustomNameVisible(visible);
     }
 
     @Override
     public boolean customNameVisible() {
-        return entity.isCustomNameVisible();
+        return super.isCustomNameVisible();
     }
 
     @Override
     public void colorize(Color color) {
         // todo: we could avoid bukkit<->nms item conversions
-        var nmsItem = entity.getItemBySlot(EquipmentSlot.HEAD);
+        var nmsItem = super.getItemBySlot(EquipmentSlot.HEAD);
 
         var item = nmsItem == null
                 ? new ItemStack(Material.LEATHER_HORSE_ARMOR)
@@ -144,12 +157,12 @@ final class BoneView_v1_18_R2 implements BoneView {
 
         nmsItem = CraftItemStack.asNMSCopy(item);
 
-        entity.setItemSlot(EquipmentSlot.HEAD, nmsItem);
+        super.setItemSlot(EquipmentSlot.HEAD, nmsItem);
 
         Packets.send(
                 view.viewers(),
                 new ClientboundSetEquipmentPacket(
-                        entity.getId(),
+                        super.getId(),
                         List.of(new Pair<>(
                                 EquipmentSlot.HEAD,
                                 nmsItem
@@ -161,26 +174,28 @@ final class BoneView_v1_18_R2 implements BoneView {
     @Override
     public void position(Vector3Float position) {
         Location rootLocation = view.location();
-        entity.setPos(
+        super.setPos(
                 rootLocation.getX() + position.x(),
                 rootLocation.getY() + position.y(),
                 rootLocation.getZ() + position.z()
         );
-        Packets.send(view.viewers(), new ClientboundTeleportEntityPacket(entity));
+        Packets.send(view.viewers(), new ClientboundTeleportEntityPacket(this));
     }
 
     @Override
     public void rotation(Vector3Float rotation) {
-        var watcher = new SynchedEntityData(entity);
-        watcher.define(
-                EntityDataSerializers.ROTATIONS.createAccessor(16),
-                new Rotations(
-                        (float) Math.toDegrees(rotation.x()),
-                        (float) Math.toDegrees(rotation.y()),
-                        (float) Math.toDegrees(rotation.z())
-                )
-        );
-        Packets.send(view.viewers(), new ClientboundSetEntityDataPacket(entity.getId(), watcher, true));
+        var watcher = new SynchedEntityData(this);
+        super.setHeadPose(new Rotations(
+                (float) Math.toDegrees(rotation.x()),
+                (float) Math.toDegrees(rotation.y()),
+                (float) Math.toDegrees(rotation.z())
+        ));
+        Packets.send(view.viewers(), new ClientboundSetEntityDataPacket(super.getId(), watcher, true));
+    }
+
+    @Override
+    public void setRot(float yRot, float xRot) { // makes setRot accessible
+        super.setRot(yRot, xRot);
     }
 
     @SuppressWarnings("UnstableApiUsage")

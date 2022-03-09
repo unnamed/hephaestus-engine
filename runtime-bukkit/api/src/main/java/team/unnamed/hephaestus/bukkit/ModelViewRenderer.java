@@ -40,12 +40,29 @@ public interface ModelViewRenderer {
      * Spawns the given {@link Model} model
      * instance at the given world location
      *
-     * @param model The rendered model
+     * @param model    The rendered model
      * @param location The model view location
-     *
+     * @param options  The model view rendering options
      * @return The created model view
      * @since 1.0.0
      */
-    ModelView render(Model model, Location location);
+    ModelView render(Model model, Location location, ModelViewOptions options);
+
+    /**
+     * Spawns a {@link Model} instance at the
+     * given location
+     *
+     * <p>Invoking this method is the same as invoking
+     * {@link ModelViewRenderer#render(Model, Location, ModelViewOptions)}
+     * with the default options</p>
+     *
+     * @param model The rendered model
+     * @param location The model view location
+     * @return The created model view
+     * @since 1.0.0
+     */
+    default ModelView render(Model model, Location location) {
+        return render(model, location, ModelViewOptions.DEFAULT);
+    }
 
 }
