@@ -38,6 +38,8 @@ public class ModelEntity_v1_18_R2 extends Entity {
 
     private final ModelView view;
 
+    private CraftEntity bukkitEntity;
+
     public ModelEntity_v1_18_R2(EntityType<?> type, Level world, ModelView view) {
         super(type, world);
         this.view = view;
@@ -50,13 +52,17 @@ public class ModelEntity_v1_18_R2 extends Entity {
 
     @Override
     public CraftEntity getBukkitEntity() {
-        System.out.println("getBukkitEntity called");
-        return new CraftEntity(this.getServer().server, this) {
-            @Override
-            public org.bukkit.entity.@NotNull EntityType getType() {
-                return org.bukkit.entity.EntityType.UNKNOWN;
-            }
-        };
+        if (bukkitEntity == null) {
+            bukkitEntity = new CraftEntity(super.level.getCraftServer(), this) {
+
+                @Override
+                public org.bukkit.entity.@NotNull EntityType getType() {
+                    return org.bukkit.entity.EntityType.UNKNOWN;
+                }
+
+            };
+        }
+        return bukkitEntity;
     }
 
     @Override
