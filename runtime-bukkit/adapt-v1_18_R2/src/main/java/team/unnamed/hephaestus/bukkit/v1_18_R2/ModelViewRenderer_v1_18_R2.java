@@ -63,7 +63,7 @@ public class ModelViewRenderer_v1_18_R2 implements ModelViewRenderer {
         if (options.autoViewable()) {
             ServerLevel level = ((CraftWorld) location.getWorld()).getHandle();
             ChunkMap chunkMap = level.chunkSource.chunkMap;
-            ModelEntity_v1_18_R2 entity = new ModelEntity_v1_18_R2(EntityType.ARMOR_STAND, level);
+            ModelEntity_v1_18_R2 entity = new ModelEntity_v1_18_R2(EntityType.ARMOR_STAND, level, view);
             ChunkMap.TrackedEntity trackedEntity = chunkMap.new TrackedEntity(entity, 40, 40, false);
             try {
                 SERVER_ENTITY_FIELD.set(

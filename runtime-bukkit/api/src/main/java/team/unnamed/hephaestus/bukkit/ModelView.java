@@ -107,6 +107,10 @@ public class ModelView implements BaseModelView {
         return bones.values();
     }
 
+    public Map<String, BoneView> boneMap() {
+        return bones;
+    }
+
     @Override
     public AnimationController animationController() {
         return animationController;

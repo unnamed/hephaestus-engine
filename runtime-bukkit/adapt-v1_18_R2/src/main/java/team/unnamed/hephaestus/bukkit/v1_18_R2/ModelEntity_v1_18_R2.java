@@ -23,7 +23,6 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.Entity;
@@ -31,15 +30,22 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import org.bukkit.craftbukkit.v1_18_R2.entity.CraftEntity;
 import org.jetbrains.annotations.NotNull;
+import team.unnamed.hephaestus.bukkit.ModelView;
 
 import java.util.Map;
 
 public class ModelEntity_v1_18_R2 extends Entity {
 
-    final Map<String, BoneViewImpl> bones = new Object2ObjectOpenHashMap<>();
+    private final ModelView view;
 
-    public ModelEntity_v1_18_R2(EntityType<?> type, Level world) {
+    public ModelEntity_v1_18_R2(EntityType<?> type, Level world, ModelView view) {
         super(type, world);
+        this.view = view;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Map<String, BoneViewImpl> bones() {
+        return (Map) view.boneMap();
     }
 
     @Override

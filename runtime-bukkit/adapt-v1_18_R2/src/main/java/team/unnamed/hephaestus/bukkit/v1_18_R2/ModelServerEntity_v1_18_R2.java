@@ -23,11 +23,8 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
-import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -66,7 +63,7 @@ public class ModelServerEntity_v1_18_R2 extends ServerEntity {
     @Override
     public void removePairing(ServerPlayer player) {
         this.entity.stopSeenByPlayer(player);
-        var bones = entity.bones.values();
+        var bones = entity.bones().values();
         int[] ids = new int[bones.size()];
         int i = 0;
         for (BoneViewImpl bone : bones) {
@@ -82,7 +79,7 @@ public class ModelServerEntity_v1_18_R2 extends ServerEntity {
             return;
         }
 
-        for (BoneViewImpl bone : entity.bones.values()) {
+        for (BoneViewImpl bone : entity.bones().values()) {
             bone.show(packetConsumer);
         }
     }
