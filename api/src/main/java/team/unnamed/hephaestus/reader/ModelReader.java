@@ -41,7 +41,9 @@ import java.io.InputStream;
 public interface ModelReader {
 
     /**
-     * Reads a model from a {@link InputStream}
+     * Reads a model from a {@link InputStream}, this
+     * method <strong>should not close</strong> the
+     * provided input stream
      *
      * @param input The byte input stream used to read
      *              and parse the {@link Model} instance
