@@ -29,7 +29,7 @@ import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector2Float;
-import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.partial.ModelAsset;
 
 import java.util.Collection;
@@ -48,14 +48,14 @@ public class Model implements Examinable {
     private final Map<String, Bone> bones;
     private final Vector2Float boundingBox;
     private ModelAsset asset;
-    private final Map<String, ModelAnimation> animations;
+    private final Map<String, Animation> animations;
 
     public Model(
             String name,
             Map<String, Bone> bones,
             Vector2Float boundingBox,
             ModelAsset asset,
-            Map<String, ModelAnimation> animations
+            Map<String, Animation> animations
     ) {
         this.name = name;
         this.bones = bones;
@@ -110,7 +110,7 @@ public class Model implements Examinable {
      *
      * @return The model animations
      */
-    public Map<String, ModelAnimation> animations() {
+    public Map<String, Animation> animations() {
         return animations;
     }
 

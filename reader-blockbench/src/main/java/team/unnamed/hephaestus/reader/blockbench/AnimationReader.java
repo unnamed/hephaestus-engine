@@ -26,12 +26,14 @@ package team.unnamed.hephaestus.reader.blockbench;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.animation.Timeline;
 import team.unnamed.hephaestus.process.ElementScale;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 final class AnimationReader {
@@ -39,13 +41,13 @@ final class AnimationReader {
     private static final int TICKS_PER_SECOND = Integer.getInteger("hephaestus.tps", 20);
 
     /**
-     * Reads {@link ModelAnimation} from the given {@code json}
+     * Reads {@link Animation} from the given {@code json}
      * object and puts them into the specified {@code animations}
      * map
      */
     static void readAnimations(
             JsonObject json,
-            Map<String, ModelAnimation> animations
+            Map<String, Animation> animations
     ) throws IOException {
 
         if (!json.has("animations")) {
@@ -58,12 +60,12 @@ final class AnimationReader {
             JsonObject animationJson = animationElement.getAsJsonObject();
 
             String name = animationJson.get("name").getAsString();
-            boolean loop = animationJson.get("loop").getAsString().equals("loop");
+            Animation.LoopMode loopMode = getLoopMode(animationJson);
             int length = Math.round(GsonUtil.parseLenientFloat(animationJson.get("length")) * TICKS_PER_SECOND);
 
             if (GsonUtil.isNullOrAbsent(animationJson, "animators")) {
                 // empty animation, no keyframes of any kind
-                animations.put(name, new ModelAnimation(name, loop, length, new HashMap<>()));
+                animations.put(name, new Animation(name, loopMode, Collections.emptyMap()));
                 continue;
             }
 
@@ -108,9 +110,21 @@ final class AnimationReader {
                 animators.put(boneName, frames);
             }
 
-            ModelAnimation animation = new ModelAnimation(name, loop, length, animators);
-            animations.put(name, animation);
+            animations.put(name, new Animation(name, loopMode, animators));
         }
+    }
+
+    private static Animation.LoopMode getLoopMode(JsonObject animationJson) {
+        if (!animationJson.has("loop")) {
+            // PLAY_ONCE by default
+            return Animation.LoopMode.ONCE;
+        }
+
+        return Animation.LoopMode.valueOf(
+                animationJson.get("loop")
+                        .getAsString()
+                        .toUpperCase(Locale.ROOT)
+        );
     }
 
 }

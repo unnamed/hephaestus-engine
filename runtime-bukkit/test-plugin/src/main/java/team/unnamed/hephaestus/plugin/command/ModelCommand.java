@@ -32,7 +32,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.plugin.ModelRegistry;
-import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.bukkit.ModelView;
 import team.unnamed.hephaestus.bukkit.ModelViewRenderer;
 
@@ -120,8 +120,8 @@ public class ModelCommand
                     return true;
                 }
 
-                Map<String, ModelAnimation> animations = view.model().animations();
-                @Nullable ModelAnimation animation = animations.get(animationName);
+                Map<String, Animation> animations = view.model().animations();
+                @Nullable Animation animation = animations.get(animationName);
 
                 if (animation == null) {
                     sender.sendMessage(

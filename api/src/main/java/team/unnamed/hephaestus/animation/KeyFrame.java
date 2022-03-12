@@ -23,15 +23,22 @@
  */
 package team.unnamed.hephaestus.animation;
 
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
- * Represents an animation keyframe, a point in
- * the
+ * Represents a bone animation keyframe, a point in
+ * the bone {@link Timeline}
+ *
+ * @since 1.0.0
  */
-public class KeyFrame {
+public final class KeyFrame implements Examinable {
 
     public static final KeyFrame INITIAL = new KeyFrame(
             Vector3Float.ZERO,
@@ -66,6 +73,15 @@ public class KeyFrame {
     }
 
     @Override
+    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("position", position),
+                ExaminableProperty.of("rotation", rotation),
+                ExaminableProperty.of("scale", scale)
+        );
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -82,11 +98,7 @@ public class KeyFrame {
 
     @Override
     public String toString() {
-        return "KeyFrame{" +
-                "position=" + position +
-                ", rotation=" + rotation +
-                ", scale=" + scale +
-                '}';
+        return examine(StringExaminer.simpleEscaping());
     }
 
 }

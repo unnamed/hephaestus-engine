@@ -26,7 +26,7 @@ package team.unnamed.hephaestus.view;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.AnimationController;
-import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.animation.Animation;
 
 import java.util.Objects;
 
@@ -103,7 +103,7 @@ public interface BaseModelView {
      * @see Model#animations()
      */
     default void playAnimation(String name, int transitionTicks) {
-        ModelAnimation animation = model().animations().get(name);
+        Animation animation = model().animations().get(name);
         Objects.requireNonNull(animation, "Animation " + name);
         animationController().queue(animation, transitionTicks);
     }

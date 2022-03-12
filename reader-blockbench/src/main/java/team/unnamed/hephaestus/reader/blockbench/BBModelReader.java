@@ -41,7 +41,7 @@ import team.unnamed.hephaestus.partial.ModelAsset;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.partial.BoneAsset;
 import team.unnamed.hephaestus.ModelDataCursor;
-import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.process.ElementScale;
 import team.unnamed.hephaestus.reader.ModelReader;
 
@@ -50,7 +50,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -95,7 +94,7 @@ public final class BBModelReader implements ModelReader {
 
         Map<String, Bone> bones = new LinkedHashMap<>();
         Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
-        Map<String, ModelAnimation> animations = new LinkedHashMap<>();
+        Map<String, Animation> animations = new LinkedHashMap<>();
         Map<String, Writable> textures = new HashMap<>();
         Map<Integer, String> textureMapping = new HashMap<>();
 

@@ -32,7 +32,7 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.AnimationController;
-import team.unnamed.hephaestus.animation.ModelAnimation;
+import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseModelView;
 
@@ -146,7 +146,7 @@ public class ModelView implements BaseModelView {
 
     @Override
     public void playAnimation(String name, int transitionTicks) {
-        ModelAnimation animation = model.animations().get(name);
+        Animation animation = model.animations().get(name);
         animationController.queue(animation, transitionTicks);
     }
 

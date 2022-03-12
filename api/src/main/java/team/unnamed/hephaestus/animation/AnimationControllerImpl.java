@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.animation;
 
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Vectors;
@@ -37,28 +38,24 @@ import java.util.Map;
 
 final class AnimationControllerImpl implements AnimationController {
 
+    private final Deque<Animation> queue = new LinkedList<>();
+    private final BaseModelView view;
+
     private final Map<String, KeyFrame> lastFrames = new HashMap<>();
     private final Map<String, Iterator<KeyFrame>> iterators = new HashMap<>();
     private int noNext;
 
-    private final Deque<ModelAnimation> animations = new LinkedList<>();
-    private final BaseModelView view;
-    private ModelAnimation animation;
+    // Reference to the animation currently being played
+    private @Nullable Animation current;
 
     AnimationControllerImpl(BaseModelView view) {
         this.view = view;
     }
 
-    private void createIterators(ModelAnimation animation) {
-        iterators.clear();
-        animation.framesByBone().forEach((name, list) ->
-                iterators.put(name, list.iterator()));
-    }
-
     @Override
-    public synchronized void queue(ModelAnimation animation, int transitionTicks) {
+    public synchronized void queue(Animation animation, int transitionTicks) {
         if (transitionTicks <= 0) {
-            animations.addFirst(animation);
+            queue.addFirst(animation);
             nextAnimation();
             return;
         }
@@ -74,7 +71,7 @@ final class AnimationControllerImpl implements AnimationController {
             framesByBone.put(boneName, keyFrames);
         });
 
-        animation.framesByBone().forEach((boneName, frames) -> {
+        animation.timelines().forEach((boneName, frames) -> {
             Iterator<KeyFrame> iterator = frames.iterator();
             if (iterator.hasNext()) {
                 KeyFrame firstFrame = frames.iterator().next();
@@ -86,22 +83,14 @@ final class AnimationControllerImpl implements AnimationController {
             }
         });
 
-        animations.addFirst(new ModelAnimation(
+        queue.addFirst(new Animation(
                 "generated-transition",
-                false,
-                transitionTicks,
+                Animation.LoopMode.HOLD,
                 framesByBone
         ));
 
-        animations.addFirst(animation);
+        queue.addFirst(animation);
         nextAnimation();
-    }
-
-    private void nextAnimation() {
-        animation = animations.pollLast();
-        if (animation != null) {
-            createIterators(animation);
-        }
     }
 
     private void updateBone(
@@ -112,7 +101,7 @@ final class AnimationControllerImpl implements AnimationController {
             Vector3Float parentPosition
     ) {
 
-        KeyFrame frame = next(bone.name());
+        KeyFrame frame = nextFrame(bone.name());
         Vector3Float framePosition = frame.position();
 
         Vector3Float frameRotation = Vectors.toRadians(frame.rotation());
@@ -141,15 +130,11 @@ final class AnimationControllerImpl implements AnimationController {
         boneView.position(globalPosition);
         boneView.rotation(globalRotation);
 
-        //if (modelData != -1) {
-        //    entity.updateBoneModelData(bone, modelData);
-        //}
-
-        for (Bone component : bone.children()) {
-            this.updateBone(
+        for (Bone child : bone.children()) {
+            updateBone(
                     yaw,
                     bone,
-                    component,
+                    child,
                     globalRotation,
                     globalPosition
             );
@@ -158,8 +143,8 @@ final class AnimationControllerImpl implements AnimationController {
 
     @Override
     public void clearQueue() {
-        animations.clear();
-        animation = null;
+        queue.clear();
+        current = null;
     }
 
     @Override
@@ -175,34 +160,67 @@ final class AnimationControllerImpl implements AnimationController {
         }
     }
 
-    private KeyFrame next(String boneName) {
-        if (animation == null) {
+    private void nextAnimation() {
+        if ((current = queue.pollLast()) != null) {
+            createIterators(current);
+        }
+    }
+
+    private void createIterators(Animation animation) {
+        iterators.clear();
+        animation.timelines().forEach((name, list) ->
+                iterators.put(name, list.iterator()));
+    }
+
+    private KeyFrame nextFrame(String boneName) {
+
+        if (current == null) {
+            // if no animation currently being played,
+            // try poll one from the animation queue
             nextAnimation();
-            if (animation == null) {
-                return lastFrames.getOrDefault(boneName, KeyFrame.INITIAL);
+            if (current == null) {
+                // if queue was empty, the last frame or
+                // the initial keyframe is returned
+                return fallback(boneName);
             }
         }
+
         Iterator<KeyFrame> iterator = iterators.get(boneName);
-        if (iterator == null) {
-            return KeyFrame.INITIAL;
-        } else if (iterator.hasNext()) {
+
+        if (iterator != null && iterator.hasNext()) {
+            // if there are more key frames for current
+            // bone name
             KeyFrame frame = iterator.next();
-            if (!iterator.hasNext()) {
-                if (++noNext >= iterators.size()) {
-                    noNext = 0;
-                    // all iterators fully-consumed
-                    if (animation.loop()) {
-                        createIterators(animation);
-                    } else {
+
+            if (iterator.hasNext()) {
+                // if current bone animation iterator did not
+                // finish, use the current frame
+                lastFrames.put(boneName, frame);
+                return frame;
+            } else if (++noNext >= iterators.size()) {
+                // all iterators fully consumed, this means
+                // the animation finished
+                noNext = 0;
+                switch (current.loopMode()) {
+                    case ONCE:
                         nextAnimation();
-                    }
+                        lastFrames.remove(boneName);
+                        return KeyFrame.INITIAL; // animation ended, reset to initial state
+                    case LOOP:
+                        createIterators(current);
+                        return frame;
+                    case HOLD:
+                        nextAnimation();
+                        return frame;
                 }
             }
-            lastFrames.put(boneName, frame);
-            return frame;
-        } else {
-            return lastFrames.getOrDefault(boneName, KeyFrame.INITIAL);
         }
+
+        return fallback(boneName);
+    }
+
+    private KeyFrame fallback(String boneName) {
+        return lastFrames.getOrDefault(boneName, KeyFrame.INITIAL);
     }
 
 }

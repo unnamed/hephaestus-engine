@@ -34,18 +34,34 @@ import team.unnamed.hephaestus.view.BaseModelView;
 public interface AnimationController {
 
     /**
-     * Queues the given {@link ModelAnimation} so that
+     * Queues the given {@link Animation} so that
      * it will be played in the next ticks
      *
      * @param animation The queued animation
      * @param transitionTicks The animation transition ticks
+     * @since 1.0.0
      */
-    void queue(ModelAnimation animation, int transitionTicks);
+    void queue(Animation animation, int transitionTicks);
 
-    default void queue(ModelAnimation animation) {
+    /**
+     * Queues the given {@link Animation} so that
+     * it will be played in the next ticks, similar
+     * to calling {@link AnimationController#queue}
+     * using zero transition ticks
+     *
+     * @param animation The queued animation
+     * @since 1.0.0
+     */
+    default void queue(Animation animation) {
         queue(animation, 0);
     }
 
+    /**
+     * Clears the animation queue and stops current
+     * animation
+     *
+     * @since 1.0.0
+     */
     void clearQueue();
 
     /**
@@ -53,6 +69,7 @@ public interface AnimationController {
      * the given model yaw
      *
      * @param yaw The model yaw
+     * @since 1.0.0
      */
     void tick(double yaw);
 
