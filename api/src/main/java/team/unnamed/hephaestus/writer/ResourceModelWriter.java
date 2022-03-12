@@ -56,14 +56,16 @@ import java.util.stream.Collectors;
  */
 final class ResourceModelWriter implements ModelWriter<FileTree> {
 
+    private static final Key LEATHER_HORSE_ARMOR_KEY = Key.key("item/leather_horse_armor");
     private static final String NAMESPACE = "hephaestus";
 
-    private static final float MAX_SCALE = 4F;
+    private static final Vector3Float SCALE = new Vector3Float(
+            ItemTransform.MAX_SCALE,
+            ItemTransform.MAX_SCALE,
+            ItemTransform.MAX_SCALE
+    );
 
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
-
-    private static final float MIN_TRANSLATION = -80F;
-    private static final float MAX_TRANSLATION = 80F;
 
     @Subst(NAMESPACE) private final String namespace;
 
@@ -142,11 +144,11 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
         }));
 
         tree.write(team.unnamed.creative.model.Model.builder()
-                .key(Key.key("item/leather_horse_armor"))
+                .key(LEATHER_HORSE_ARMOR_KEY)
                 .parent(team.unnamed.creative.model.Model.ITEM_HANDHELD)
                 .textures(ModelTexture.builder()
                         .layers(Collections.singletonList(
-                                Key.key("item/leather_horse_armor")
+                                LEATHER_HORSE_ARMOR_KEY
                         ))
                         .build())
                 .overrides(overrides)
@@ -161,21 +163,26 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
      * @param model The model holding the given bone
      * @param bone The bone to be converted
      */
-    private static team.unnamed.creative.model.Model toCreative(
+    private team.unnamed.creative.model.Model toCreative(
             Key key,
             ModelAsset model,
             BoneAsset bone
     ) {
+        Vector3Float offset = bone.offset();
+
         Map<ItemTransform.Type, ItemTransform> displays = new HashMap<>();
-        ItemTransform headTransform = ItemTransform.builder()
-                .translation(computeTranslation(bone.offset()))
-                .scale(new Vector3Float(MAX_SCALE, MAX_SCALE, MAX_SCALE))
-                .build();
-        displays.put(ItemTransform.Type.HEAD, headTransform);
+        displays.put(ItemTransform.Type.HEAD, ItemTransform.builder()
+                .translation(new Vector3Float(
+                        -offset.x() * ItemTransform.MAX_SCALE,
+                        -offset.y() * ItemTransform.MAX_SCALE + DISPLAY_TRANSLATION_Y,
+                        -offset.z() * ItemTransform.MAX_SCALE
+                ))
+                .scale(SCALE)
+                .build());
 
         Map<String, Key> textureMappings = new HashMap<>();
         model.textureMapping().forEach((id, path) ->
-                textureMappings.put(id.toString(), Key.key(key.namespace(), model.name() + '/' + path)));
+                textureMappings.put(id.toString(), Key.key(namespace, model.name() + '/' + path)));
 
         return team.unnamed.creative.model.Model.builder()
                 .key(key)
@@ -190,22 +197,6 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                         .faces(cube.faces())
                         .build()).collect(Collectors.toList()))
                 .build();
-    }
-
-    private static Vector3Float computeTranslation(Vector3Float offset) {
-        float translationX = -offset.x() * MAX_SCALE;
-        float translationY = DISPLAY_TRANSLATION_Y - offset.y() * MAX_SCALE;
-        float translationZ = -offset.z() * MAX_SCALE;
-
-        if (
-                translationX < MIN_TRANSLATION || translationX > MAX_TRANSLATION
-                        || translationY < MIN_TRANSLATION || translationY > MAX_TRANSLATION
-                        || translationZ < MIN_TRANSLATION || translationZ > MAX_TRANSLATION
-        ) {
-            throw new IllegalStateException("Translation out of bounds");
-        }
-
-        return new Vector3Float(translationX, translationY, translationZ);
     }
 
 }
