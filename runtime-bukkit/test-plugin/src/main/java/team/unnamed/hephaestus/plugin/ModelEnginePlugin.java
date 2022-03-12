@@ -29,12 +29,13 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import team.unnamed.creative.ResourcePack;
 import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
+import team.unnamed.creative.server.ResourcePackServer;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.v1_18_R2.ModelViewRenderer_v1_18_R2;
 import team.unnamed.hephaestus.plugin.command.ModelCommand;
-import team.unnamed.hephaestus.plugin.export.MCPacksHttpExporter;
 import team.unnamed.hephaestus.plugin.listener.PlayerQuitListener;
 import team.unnamed.hephaestus.plugin.listener.ResourcePackSetListener;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
@@ -45,10 +46,13 @@ import team.unnamed.hephaestus.writer.ModelWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.util.logging.Level;
 
 public class ModelEnginePlugin extends JavaPlugin {
 
     private static final ModelReader READER = BBModelReader.blockbench();
+
+    private ResourcePackServer resourcePackServer;
 
     @Override
     public void onEnable() {
@@ -63,10 +67,24 @@ public class ModelEnginePlugin extends JavaPlugin {
         registry.registerModel(loadModelFromResource("butterfly.bbmodel"));
         registry.registerModel(loadModelFromResource("redstone_monstrosity.bbmodel"));
 
-        // upload resource pack
-        getLogger().info("Uploading resource pack...");
-        ResourcePack pack = exportResourcePack(registry);
-        getLogger().info("Uploaded resource pack to " + pack.url());
+        // generate resource pack
+        getLogger().info("Generating resource pack...");
+        ResourcePack pack = generateResourcePack(registry);
+
+        // start resource pack server
+        getLogger().info("Starting resource pack server");
+        try {
+            int port = 7270;
+            resourcePackServer = ResourcePackServer.builder()
+                    .address("127.0.0.1", port)
+                    .pack(pack)
+                    .build();
+            resourcePackServer.start();
+            getLogger().info("Resource pack server listening on port " + port);
+        } catch (IOException e) {
+            getLogger().log(Level.SEVERE, "Cannot start resource pack server", e);
+            setEnabled(false);
+        }
 
         // register commands, listeners and tasks
         getLogger().info("Registering commands, listeners and tasks...");
@@ -87,18 +105,22 @@ public class ModelEnginePlugin extends JavaPlugin {
         );
     }
 
-    private ResourcePack exportResourcePack(ModelRegistry registry) {
-        try {
-            return new MCPacksHttpExporter().export(tree -> {
-                tree.write(Metadata.builder()
-                        .add(PackMeta.of(8, "Generated resource pack"))
-                        .build());
-
-                ModelWriter.resource().write(tree, registry.models());
-            });
-        } catch (IOException e) {
-             throw new UncheckedIOException(e);
+    @Override
+    public void onDisable() {
+        if (resourcePackServer != null) {
+            getLogger().info("Stopping resource pack server");
+            resourcePackServer.stop(10);
         }
+    }
+
+    private ResourcePack generateResourcePack(ModelRegistry registry) {
+        return ResourcePack.build(tree -> {
+            tree.write(Metadata.builder()
+                    .add(PackMeta.of(8, "Generated resource pack"))
+                    .build());
+
+            ModelWriter.resource().write(tree, registry.models());
+        });
     }
 
     private Model loadModelFromResource(String resourceName) {

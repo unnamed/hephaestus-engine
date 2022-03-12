@@ -27,7 +27,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import team.unnamed.hephaestus.plugin.ResourcePack;
+import team.unnamed.creative.ResourcePack;
 
 public class ResourcePackSetListener implements Listener {
 
@@ -41,7 +41,7 @@ public class ResourcePackSetListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         player.setResourcePack(
-                resourcePack.url(),
+                "http://127.0.0.1:7270",
                 resourcePack.hash()
         );
     }

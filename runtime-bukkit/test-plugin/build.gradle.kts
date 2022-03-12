@@ -4,6 +4,8 @@ plugins {
 }
 
 dependencies {
+    implementation(libs.creative.server)
+
     implementation(project(":hephaestus-runtime-bukkit-api"))
     implementation(project(":hephaestus-runtime-bukkit-adapt-v1_18_R2", "reobf"))
     implementation(project(":hephaestus-reader-blockbench")) {
