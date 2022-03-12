@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 final class ResourceModelWriter implements ModelWriter<FileTree> {
 
     private static final Key LEATHER_HORSE_ARMOR_KEY = Key.key("item/leather_horse_armor");
-    private static final String NAMESPACE = "hephaestus";
+    private static final String DEFAULT_NAMESPACE = "hephaestus";
 
     private static final Vector3Float SCALE = new Vector3Float(
             ItemTransform.MAX_SCALE,
@@ -67,9 +67,9 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
 
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
 
-    @Subst(NAMESPACE) private final String namespace;
+    @Subst(DEFAULT_NAMESPACE) private final String namespace;
 
-    ResourceModelWriter(@Subst(NAMESPACE) String namespace) {
+    ResourceModelWriter(@Subst(DEFAULT_NAMESPACE) String namespace) {
         this.namespace = namespace;
 
         // validate namespace
@@ -77,7 +77,7 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
     }
 
     ResourceModelWriter() {
-        this(NAMESPACE);
+        this(DEFAULT_NAMESPACE);
     }
 
     private void writeBones(
@@ -87,7 +87,8 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
             Collection<BoneAsset> assets
     ) {
         for (BoneAsset bone : assets) {
-            Key key = Key.key(namespace, model.name() + '/' + bone.name());
+            @Subst("model/bone") String path = model.name() + '/' + bone.name();
+            Key key = Key.key(namespace, path);
 
             overrides.add(ItemOverride.of(
                     key,
@@ -121,15 +122,12 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
 
             // write textures from this model
             for (Map.Entry<String, Writable> texture : asset.textures().entrySet()) {
-                @Subst(NAMESPACE) String textureName = texture.getKey();
-                Writable data = texture.getValue();
-
-                Key key = Key.key(namespace, model.name() + '/' + textureName);
+                @Subst("model/texture") String path = model.name() + '/' + texture.getKey();
 
                 // write the texture
                 tree.write(Texture.builder()
-                        .key(key)
-                        .data(data)
+                        .key(Key.key(namespace, path))
+                        .data(texture.getValue())
                         .build());
             }
 
@@ -181,8 +179,10 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                 .build());
 
         Map<String, Key> textureMappings = new HashMap<>();
-        model.textureMapping().forEach((id, path) ->
-                textureMappings.put(id.toString(), Key.key(namespace, model.name() + '/' + path)));
+        model.textureMapping().forEach((id, texturePath) -> {
+            @Subst("model/texture") String path = model.name() + '/' + texturePath;
+            textureMappings.put(id.toString(), Key.key(namespace, path));
+        });
 
         return team.unnamed.creative.model.Model.builder()
                 .key(key)
