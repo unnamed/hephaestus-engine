@@ -204,13 +204,17 @@ final class AnimationControllerImpl implements AnimationController {
                 switch (current.loopMode()) {
                     case ONCE:
                         nextAnimation();
+                        // animation ended, lastFrames are removed
+                        // so that next calls will return INITIAL
                         lastFrames.remove(boneName);
-                        return KeyFrame.INITIAL; // animation ended, reset to initial state
+                        return frame;
                     case LOOP:
                         createIterators(current);
                         return frame;
                     case HOLD:
                         nextAnimation();
+                        // frame is kept
+                        lastFrames.put(boneName, frame);
                         return frame;
                 }
             }

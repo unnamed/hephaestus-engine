@@ -103,6 +103,7 @@ public class ModelView implements BaseModelView {
         return interactListener;
     }
 
+    @Override
     public Collection<BoneView> bones() {
         return bones.values();
     }
@@ -119,18 +120,6 @@ public class ModelView implements BaseModelView {
     @Override
     public Model model() {
         return model;
-    }
-
-    @Override
-    public void colorize(int r, int g, int b) {
-        for (BoneView view : bones.values()) {
-            view.colorize(r, g, b);
-        }
-    }
-
-    @Override
-    public void colorize(int rgb) {
-        colorize(Color.fromRGB(rgb));
     }
 
     public void colorize(Color color) {

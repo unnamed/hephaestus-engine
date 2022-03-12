@@ -28,6 +28,7 @@ import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.AnimationController;
 import team.unnamed.hephaestus.animation.Animation;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -57,7 +58,11 @@ public interface BaseModelView {
      * @param g The green component [0-255]
      * @param b The blue component [0-255]
      */
-    void colorize(int r, int g, int b);
+    default void colorize(int r, int g, int b) {
+        for (BaseBoneView bone : bones()) {
+            bone.colorize(r, g, b);
+        }
+    }
 
     /**
      * Colorizes this view using the specified,
@@ -65,7 +70,11 @@ public interface BaseModelView {
      *
      * @param rgb The encoded color
      */
-    void colorize(int rgb);
+    default void colorize(int rgb) {
+        for (BaseBoneView bone : bones()) {
+            bone.colorize(rgb);
+        }
+    }
 
     /**
      * Colorizes this view using the default,
@@ -76,6 +85,15 @@ public interface BaseModelView {
     default void colorizeDefault() {
         colorize(BaseBoneView.DEFAULT_COLOR);
     }
+
+    /**
+     * Returns a collection holding <strong>all</strong>
+     * the bones created this model view
+     *
+     * @return The model view bone views
+     * @since 1.0.0
+     */
+    Collection<? extends BaseBoneView> bones();
 
     /**
      * Gets the bone with the specified name
