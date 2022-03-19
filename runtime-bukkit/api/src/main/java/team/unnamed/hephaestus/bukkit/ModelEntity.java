@@ -21,23 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.plugin;
+package team.unnamed.hephaestus.bukkit;
 
-import team.unnamed.hephaestus.bukkit.ModelView;
+import org.bukkit.entity.LivingEntity;
+import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.view.BaseModelView;
 
-public class ModelAnimationTickTask implements Runnable {
-
-    private final ModelRegistry modelRegistry;
-
-    public ModelAnimationTickTask(ModelRegistry modelRegistry) {
-        this.modelRegistry = modelRegistry;
-    }
-
-    @Override
-    public void run() {
-        for (ModelView view : modelRegistry.views()) {
-            view.tickAnimations();
-        }
-    }
+/**
+ * Represents a concrete {@link Model} instance
+ * entity in a world
+ *
+ * @since 1.0.0
+ */
+public interface ModelEntity
+        extends LivingEntity, BaseModelView {
 
 }

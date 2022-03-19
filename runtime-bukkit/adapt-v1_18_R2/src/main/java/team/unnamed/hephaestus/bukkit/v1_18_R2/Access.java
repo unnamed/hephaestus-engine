@@ -23,32 +23,49 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
-import org.bukkit.entity.Player;
-import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.bukkit.BoneView;
-import team.unnamed.hephaestus.bukkit.ModelView;
-import team.unnamed.hephaestus.bukkit.ModelViewController;
+import java.lang.reflect.Field;
 
-final class ModelViewController_v1_18_R2
-        implements ModelViewController {
+final class Access {
 
-    @Override
-    public BoneView createBone(ModelView view, Bone bone) {
-        return new BoneViewImpl(view, bone);
+    public static class FieldReflect<T> {
+
+        private final Field field;
+
+        public FieldReflect(Field field) {
+            this.field = field;
+        }
+
+        @SuppressWarnings("unchecked")
+        public T get(Object object) {
+            try {
+                return (T) field.get(object);
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        public void set(Object object, T value) {
+            try {
+                field.set(object, value);
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
     }
 
-    @Override
-    public void show(ModelView view, Player player) {
-        for (var boneView : view.bones()) {
-            ((BoneViewImpl) boneView).show(packet -> Packets.send(player, packet));
+    public static <T> FieldReflect<T> findFieldByType(Class<?> clazz, Class<? super T> type) {
+        Field value = null;
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getType() == type) {
+                value = field;
+                field.setAccessible(true);
+            }
         }
-    }
-
-    @Override
-    public void hide(ModelView view, Player player) {
-        for (var boneView : view.bones()) {
-            ((BoneViewImpl) boneView).hide(player);
+        if (value == null) {
+            throw new IllegalStateException("Field with type " + type + " not found in " + clazz);
         }
+        return new FieldReflect<>(value);
     }
 
 }

@@ -21,29 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.plugin.listener;
+package team.unnamed.hephaestus.bukkit;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
-import team.unnamed.hephaestus.plugin.ModelRegistry;
-import team.unnamed.hephaestus.bukkit.ModelView;
+import org.bukkit.Location;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.view.BaseModelView;
 
-public class PlayerQuitListener implements Listener {
+/**
+ * Responsible for spawning {@link Model} /
+ * converting {@link Model} to {@link BaseModelView}
+ * concrete instances at specific world locations
+ *
+ * @since 1.0.0
+ */
+public interface ModelEntitySpawner {
 
-    private final ModelRegistry modelRegistry;
+    /**
+     * Spawns the given {@link Model} model
+     * instance at the given world location
+     *
+     * @param model    The spawned model
+     * @param location The model entity location
+     * @param reason The model entity spawn reason
+     * @return The spawned model entity
+     * @since 1.0.0
+     */
+    ModelEntity spawn(Model model, Location location, CreatureSpawnEvent.SpawnReason reason);
 
-    public PlayerQuitListener(ModelRegistry modelRegistry) {
-        this.modelRegistry = modelRegistry;
-    }
-
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        for (ModelView view : modelRegistry.views()) {
-            view.removeViewer(player);
-        }
+    /**
+     * Spawns a {@link Model} instance at the
+     * given location
+     *
+     * @param model The spawned model
+     * @param location The model entity location
+     * @return The created model entity
+     * @since 1.0.0
+     */
+    default ModelEntity spawn(Model model, Location location) {
+        return spawn(model, location, CreatureSpawnEvent.SpawnReason.DEFAULT);
     }
 
 }

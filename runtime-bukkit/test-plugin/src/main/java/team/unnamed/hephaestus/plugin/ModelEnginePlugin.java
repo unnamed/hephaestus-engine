@@ -34,13 +34,12 @@ import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
 import team.unnamed.creative.server.ResourcePackServer;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.bukkit.v1_18_R2.ModelViewRenderer_v1_18_R2;
+import team.unnamed.hephaestus.bukkit.v1_18_R2.ModelEntitySpawner_v1_18_R2;
 import team.unnamed.hephaestus.plugin.command.ModelCommand;
-import team.unnamed.hephaestus.plugin.listener.PlayerQuitListener;
 import team.unnamed.hephaestus.plugin.listener.ResourcePackSetListener;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.reader.ModelReader;
-import team.unnamed.hephaestus.bukkit.ModelViewRenderer;
+import team.unnamed.hephaestus.bukkit.ModelEntitySpawner;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
 import java.io.IOException;
@@ -56,10 +55,7 @@ public class ModelEnginePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        ModelViewRenderer renderer = new ModelViewRenderer_v1_18_R2();
-
-        // load properties
-        int showPeriod = Integer.getInteger("hephaestus.show-task-period", 5); // ticks
+        ModelEntitySpawner spawner = new ModelEntitySpawner_v1_18_R2();
 
         // load models from resources
         getLogger().info("Loading models...");
@@ -73,43 +69,35 @@ public class ModelEnginePlugin extends JavaPlugin {
 
         // start resource pack server
         getLogger().info("Starting resource pack server");
+        String resourcePackUrl;
         try {
-            int port = 7270;
+            String hostname = System.getProperty("hephaestus.resourcePackServer.hostname", "127.0.0.1");
+            int port = Integer.getInteger("hephaestus.resourcePackServer.port", 7270);
             resourcePackServer = ResourcePackServer.builder()
-                    .address("127.0.0.1", port)
+                    .address(hostname, port)
                     .pack(pack)
                     .build();
             resourcePackServer.start();
             getLogger().info("Resource pack server listening on port " + port);
+            // important: HTTPS is currently not supported by creative-server
+            resourcePackUrl = "http://" + hostname + ':' + port;
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Cannot start resource pack server", e);
             setEnabled(false);
+            return;
         }
 
         // register commands, listeners and tasks
         getLogger().info("Registering commands, listeners and tasks...");
-        registerCommand("model", new ModelCommand(registry, renderer));
-        registerListener(new ResourcePackSetListener(pack));
-        registerListener(new PlayerQuitListener(registry));
-        getServer().getScheduler().runTaskTimerAsynchronously(
-                this,
-                new ModelShowTask(registry),
-                0L,
-                showPeriod
-        );
-        getServer().getScheduler().runTaskTimerAsynchronously(
-                this,
-                new ModelAnimationTickTask(registry),
-                0L,
-                1L // ticking must obviously occur every tick
-        );
+        registerCommand("model", new ModelCommand(registry, spawner));
+        registerListener(new ResourcePackSetListener(pack, resourcePackUrl));
     }
 
     @Override
     public void onDisable() {
         if (resourcePackServer != null) {
             getLogger().info("Stopping resource pack server");
-            resourcePackServer.stop(10);
+            resourcePackServer.stop(1);
         }
     }
 

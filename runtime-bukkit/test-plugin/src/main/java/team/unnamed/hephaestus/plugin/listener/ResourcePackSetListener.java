@@ -32,18 +32,17 @@ import team.unnamed.creative.ResourcePack;
 public class ResourcePackSetListener implements Listener {
 
     private final ResourcePack resourcePack;
+    private final String resourcePackUrl;
 
-    public ResourcePackSetListener(ResourcePack resourcePack) {
+    public ResourcePackSetListener(ResourcePack resourcePack, String resourcePackUrl) {
         this.resourcePack = resourcePack;
+        this.resourcePackUrl = resourcePackUrl;
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        player.setResourcePack(
-                "http://127.0.0.1:7270",
-                resourcePack.hash()
-        );
+        player.setResourcePack(resourcePackUrl, resourcePack.hash());
     }
 
 }

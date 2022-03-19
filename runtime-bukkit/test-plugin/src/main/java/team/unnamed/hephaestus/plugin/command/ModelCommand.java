@@ -31,10 +31,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.bukkit.ModelEntity;
 import team.unnamed.hephaestus.plugin.ModelRegistry;
 import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.bukkit.ModelView;
-import team.unnamed.hephaestus.bukkit.ModelViewRenderer;
+import team.unnamed.hephaestus.bukkit.ModelEntitySpawner;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -52,14 +52,14 @@ public class ModelCommand
         implements CommandExecutor, TabCompleter {
 
     private final ModelRegistry modelRegistry;
-    private final ModelViewRenderer modelRenderer;
+    private final ModelEntitySpawner modelSpawner;
 
     public ModelCommand(
             ModelRegistry modelRegistry,
-            ModelViewRenderer modelRenderer
+            ModelEntitySpawner modelSpawner
     ) {
         this.modelRegistry = modelRegistry;
-        this.modelRenderer = modelRenderer;
+        this.modelSpawner = modelSpawner;
     }
 
     @Override
@@ -74,6 +74,16 @@ public class ModelCommand
         String subcommand = args[0].toLowerCase(Locale.ROOT);
 
         switch (subcommand) {
+            case "nearby" -> {
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(RED + "You must be a played to do this");
+                    return true;
+                }
+
+                player.sendMessage("Lookup Start");
+                player.getNearbyEntities(10, 10, 10).forEach(entity -> player.sendMessage(entity.getType() + " -> " + entity));
+                player.sendMessage("Lookup End");
+            }
             case "spawn" -> {
                 if (!(sender instanceof Player player)) {
                     sender.sendMessage(RED + "You must be a player to do this");
@@ -95,10 +105,10 @@ public class ModelCommand
 
                 Location location = player.getLocation();
                 String viewId = ModelRegistry.generateViewId();
-                ModelView view = modelRenderer.render(model, location);
+                ModelEntity entity = modelSpawner.spawn(model, location);
 
                 // register so it is shown for players in next iterations
-                modelRegistry.registerView(viewId, view);
+                modelRegistry.registerView(viewId, entity);
                 sender.sendMessage(GREEN + "Created view with id "
                         + DARK_GREEN + viewId
                         + GREEN + " with model "
@@ -113,7 +123,7 @@ public class ModelCommand
                 String viewId = args[1];
                 String animationName = args[2];
 
-                @Nullable ModelView view = modelRegistry.view(viewId);
+                @Nullable ModelEntity view = modelRegistry.view(viewId);
 
                 if (view == null) {
                     sender.sendMessage(RED + "View not found: " + DARK_RED + viewId);
@@ -160,7 +170,7 @@ public class ModelCommand
             case 3 -> {
                 if (args[0].equalsIgnoreCase("animate")) {
                     String viewId = args[1];
-                    @Nullable ModelView view = modelRegistry.view(viewId);
+                    @Nullable ModelEntity view = modelRegistry.view(viewId);
 
                     if (view != null) {
                         StringUtil.copyPartialMatches(args[2], view.model().animations().keySet(), suggestions);

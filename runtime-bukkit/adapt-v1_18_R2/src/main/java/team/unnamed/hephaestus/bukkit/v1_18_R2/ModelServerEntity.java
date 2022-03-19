@@ -29,17 +29,24 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class ModelServerEntity_v1_18_R2 extends ServerEntity {
+import static net.minecraft.network.protocol.game.ClientboundMoveEntityPacket.entityToPacket;
+import static net.minecraft.network.protocol.game.ClientboundMoveEntityPacket.packetToEntity;
 
-    private final ModelEntity_v1_18_R2 entity;
+@ParametersAreNonnullByDefault
+final class ModelServerEntity extends ServerEntity {
 
-    public ModelServerEntity_v1_18_R2(
+    private final ModelEntityImpl entity;
+    private final Consumer<Packet<?>> broadcast;
+
+    public ModelServerEntity(
             ServerLevel level,
-            ModelEntity_v1_18_R2 entity,
+            ModelEntityImpl entity,
             Consumer<Packet<?>> broadcast,
             Set<ServerPlayerConnection> trackedPlayers
     ) {
@@ -52,12 +59,53 @@ public class ModelServerEntity_v1_18_R2 extends ServerEntity {
                 trackedPlayers
         );
         this.entity = entity;
+        this.broadcast = broadcast;
     }
 
     @Override
     public void sendChanges() {
-        // Changes are instantly sent to model viewers
-        // TODO: Should they be done here?
+        for (var bone : entity.bones().values()) {
+
+            // check position changes
+            Vec3 position = bone.position();
+            long lastPx = bone.lastPx;
+            long lastPy = bone.lastPy;
+            long lastPz = bone.lastPz;
+
+            double lastX = packetToEntity(lastPx);
+            double lastY = packetToEntity(lastPy);
+            double lastZ = packetToEntity(lastPz);
+
+            double dx = position.x - lastX;
+            double dy = position.y - lastY;
+            double dz = position.z - lastZ;
+
+            if (dx != 0 || dy != 0 || dz != 0) {
+                long pdx = entityToPacket(dx);
+                long pdy = entityToPacket(dy);
+                long pdz = entityToPacket(dz);
+
+                bone.lastPx = entityToPacket(position.x);
+                bone.lastPy = entityToPacket(position.y);
+                bone.lastPz = entityToPacket(position.z);
+
+                boolean big = pdx < Short.MIN_VALUE || pdx > Short.MAX_VALUE
+                        || pdy < Short.MIN_VALUE || pdy > Short.MAX_VALUE
+                        || pdz < Short.MIN_VALUE || pdz > Short.MAX_VALUE;
+
+                if (big) {
+                    broadcast.accept(new ClientboundTeleportEntityPacket(bone));
+                } else {
+                    broadcast.accept(new ClientboundMoveEntityPacket.Pos(
+                            bone.getId(),
+                            (short) pdx,
+                            (short) pdy,
+                            (short) pdz,
+                            entity.isOnGround()
+                    ));
+                }
+            }
+        }
     }
 
     @Override
@@ -66,7 +114,7 @@ public class ModelServerEntity_v1_18_R2 extends ServerEntity {
         var bones = entity.bones().values();
         int[] ids = new int[bones.size()];
         int i = 0;
-        for (BoneViewImpl bone : bones) {
+        for (var bone : bones) {
             ids[i++] = bone.getId();
         }
         player.connection.send(new ClientboundRemoveEntitiesPacket(ids));
@@ -74,12 +122,11 @@ public class ModelServerEntity_v1_18_R2 extends ServerEntity {
 
     @Override
     public void sendPairingData(Consumer<Packet<?>> packetConsumer, ServerPlayer player) {
-
         if (this.entity.isRemoved()) {
             return;
         }
 
-        for (BoneViewImpl bone : entity.bones().values()) {
+        for (var bone : entity.bones().values()) {
             bone.show(packetConsumer);
         }
     }
