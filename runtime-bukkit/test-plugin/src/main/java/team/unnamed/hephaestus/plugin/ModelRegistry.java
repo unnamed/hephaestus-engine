@@ -56,6 +56,10 @@ public class ModelRegistry {
         entities.put(id, view);
     }
 
+    public void removeView(String id) {
+        entities.remove(id);
+    }
+
     public @Nullable ModelEntity view(String id) {
         return entities.get(id);
     }

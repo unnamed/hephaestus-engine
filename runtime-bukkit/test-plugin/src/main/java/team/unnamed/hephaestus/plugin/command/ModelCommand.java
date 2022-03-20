@@ -28,6 +28,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import team.unnamed.hephaestus.Model;
@@ -67,23 +68,13 @@ public class ModelCommand
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
         if (args.length < 1) {
-            sender.sendMessage(RED + "/" + label + " spawn");
+            sender.sendMessage(RED + "/" + label);
             return true;
         }
 
         String subcommand = args[0].toLowerCase(Locale.ROOT);
 
         switch (subcommand) {
-            case "nearby" -> {
-                if (!(sender instanceof Player player)) {
-                    sender.sendMessage(RED + "You must be a played to do this");
-                    return true;
-                }
-
-                player.sendMessage("Lookup Start");
-                player.getNearbyEntities(10, 10, 10).forEach(entity -> player.sendMessage(entity.getType() + " -> " + entity));
-                player.sendMessage("Lookup End");
-            }
             case "spawn" -> {
                 if (!(sender instanceof Player player)) {
                     sender.sendMessage(RED + "You must be a player to do this");
@@ -114,14 +105,13 @@ public class ModelCommand
                         + GREEN + " with model "
                         + DARK_GREEN + modelName);
             }
-            case "animate" -> {
-                if (args.length != 3) {
-                    sender.sendMessage(RED + "/" + label + " animate <view> <animation>");
+            case "view" -> {
+                if (args.length < 2) {
+                    sender.sendMessage(RED + "/" + label + " view <view> [...]");
                     return true;
                 }
 
                 String viewId = args[1];
-                String animationName = args[2];
 
                 @Nullable ModelEntity view = modelRegistry.view(viewId);
 
@@ -130,20 +120,63 @@ public class ModelCommand
                     return true;
                 }
 
-                Map<String, Animation> animations = view.model().animations();
-                @Nullable Animation animation = animations.get(animationName);
+                switch (args[2].toLowerCase(Locale.ROOT)) {
+                    case "animate" -> {
+                        if (args.length != 4) {
+                            sender.sendMessage(RED + "/" + label + " view <view> animate <animation>");
+                            return true;
+                        }
 
-                if (animation == null) {
-                    sender.sendMessage(
-                            RED + "Animation not found: "
-                                    + DARK_RED + animationName
-                                    + RED + ". Available animations: "
-                                    + DARK_RED + String.join(", ", animations.keySet())
-                    );
-                    return true;
+                        String animationName = args[3];
+                        Map<String, Animation> animations = view.model().animations();
+                        @Nullable Animation animation = animations.get(animationName);
+
+                        if (animation == null) {
+                            sender.sendMessage(
+                                    RED + "Animation not found: "
+                                            + DARK_RED + animationName
+                                            + RED + ". Available animations: "
+                                            + DARK_RED + String.join(", ", animations.keySet())
+                            );
+                            return true;
+                        }
+
+                        view.animationController().queue(animation);
+                    }
+                    case "colorize" -> {
+                        if (args.length != 4) {
+                            sender.sendMessage(RED + "/" + label + " view <view> colorize <color>");
+                            return true;
+                        }
+
+                        String colorArg = args[3];
+                        int color;
+
+                        try {
+                            if (!colorArg.startsWith("#")) {
+                                // looks cooler with a # at the start
+                                throw new NumberFormatException();
+                            }
+                            color = Integer.parseInt(colorArg.substring(1), 16);
+                        } catch (NumberFormatException e) {
+                            sender.sendMessage(RED + "Invalid hexadecimal color: " + DARK_RED + colorArg);
+                            return true;
+                        }
+
+                        view.colorize(color);
+                    }
+                    case "tphere" -> {
+                        if (sender instanceof Entity entity) {
+                            view.teleport(entity);
+                        } else {
+                            sender.sendMessage(RED + "You must be an entity to do this");
+                        }
+                    }
+                    case "delete" -> {
+                        view.remove();
+                        modelRegistry.removeView(viewId);
+                    }
                 }
-
-                view.animationController().queue(animation);
             }
             default -> sender.sendMessage(RED + "Unknown subcommand");
         }
@@ -157,23 +190,28 @@ public class ModelCommand
         List<String> suggestions = new ArrayList<>();
 
         switch (args.length) {
-            case 1 -> StringUtil.copyPartialMatches(args[0], List.of("spawn", "animate"), suggestions);
+            case 1 -> StringUtil.copyPartialMatches(args[0], List.of("spawn", "view"), suggestions);
             case 2 ->  {
                 Iterable<String> toSuggest = switch (args[0].toLowerCase(Locale.ROOT)) {
                     case "spawn" -> modelRegistry.modelNames();
-                    case "animate" -> modelRegistry.viewIds();
+                    case "view" -> modelRegistry.viewIds();
                     default -> List.of();
                 };
 
                 StringUtil.copyPartialMatches(args[1], toSuggest, suggestions);
             }
             case 3 -> {
-                if (args[0].equalsIgnoreCase("animate")) {
+                if (args[0].equalsIgnoreCase("view")) {
+                    StringUtil.copyPartialMatches(args[2], List.of("animate", "colorize", "tphere", "delete"), suggestions);
+                }
+            }
+            case 4 -> {
+                if (args[0].equalsIgnoreCase("view")) {
                     String viewId = args[1];
                     @Nullable ModelEntity view = modelRegistry.view(viewId);
 
-                    if (view != null) {
-                        StringUtil.copyPartialMatches(args[2], view.model().animations().keySet(), suggestions);
+                    if (view != null && args[2].equalsIgnoreCase("animate")) {
+                        StringUtil.copyPartialMatches(args[3], view.model().animations().keySet(), suggestions);
                     }
                 }
             }
