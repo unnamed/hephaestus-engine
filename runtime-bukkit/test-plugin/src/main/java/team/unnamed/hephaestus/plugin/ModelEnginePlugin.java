@@ -55,7 +55,7 @@ public class ModelEnginePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        ModelEntitySpawner spawner = new ModelEntitySpawner_v1_18_R2();
+        ModelEntitySpawner spawner = new ModelEntitySpawner_v1_18_R2(this);
 
         // load models from resources
         getLogger().info("Loading models...");
