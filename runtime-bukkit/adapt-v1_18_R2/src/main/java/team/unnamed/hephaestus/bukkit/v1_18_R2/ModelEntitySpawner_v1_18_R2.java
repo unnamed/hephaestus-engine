@@ -31,9 +31,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.entity.LevelCallback;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.plugin.Plugin;
 import org.spigotmc.AsyncCatcher;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
@@ -48,6 +50,10 @@ public class ModelEntitySpawner_v1_18_R2 implements ModelEntitySpawner {
 
     private static final Access.FieldReflect<LevelCallback<?>> CALLBACKS_FIELD
             = Access.findFieldByType(PersistentEntitySectionManager.class, LevelCallback.class);
+
+    public ModelEntitySpawner_v1_18_R2(Plugin plugin) {
+        Bukkit.getPluginManager().registerEvents(new ModelInteractListener(), plugin);
+    }
 
     @Override
     public ModelEntity spawn(
