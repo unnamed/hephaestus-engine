@@ -50,7 +50,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @since 1.0.0
  */
-public final class BoneView
+public final class BoneEntity
         extends LivingEntity
         implements BaseBoneView {
 
@@ -64,15 +64,15 @@ public final class BoneView
                             .build())
                     .build();
 
-    private final ModelView view;
+    private final ModelEntity view;
     private final Bone bone;
 
     // cached height offset, either SMALL_OFFSET
     // or LARGE_OFFSET
     private final float offset;
 
-    public BoneView(
-            ModelView view,
+    public BoneEntity(
+            ModelEntity view,
             Bone bone
     ) {
         super(EntityType.ARMOR_STAND);
@@ -99,7 +99,7 @@ public final class BoneView
      *
      * @return The view for this bone entity
      */
-    public ModelView view() {
+    public ModelEntity view() {
         return view;
     }
 

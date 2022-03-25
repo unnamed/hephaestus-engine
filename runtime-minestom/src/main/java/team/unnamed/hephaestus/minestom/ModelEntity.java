@@ -36,28 +36,25 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.animation.AnimationController;
-import team.unnamed.hephaestus.animation.ModelAnimation;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseModelView;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.util.Objects.requireNonNull;
-
-public class ModelView
+public class ModelEntity
         extends EntityCreature
         implements BaseModelView {
 
     private final Model model;
 
-    private final Map<String, BoneView> bones = new ConcurrentHashMap<>();
+    private final Map<String, BoneEntity> bones = new ConcurrentHashMap<>();
 
     private final AnimationController animationController;
-    private ModelInteractListener interactListener = ModelInteractListener.NOP;
 
-    public ModelView(
+    public ModelEntity(
             EntityType type,
             Model model
     ) {
@@ -79,7 +76,7 @@ public class ModelView
     }
 
     private void createBone(Bone bone) {
-        bones.put(bone.name(), new BoneView(this, bone));
+        bones.put(bone.name(), new BoneEntity(this, bone));
         for (Bone child : bone.children()) {
             createBone(child);
         }
@@ -88,14 +85,6 @@ public class ModelView
     @Override
     public Model model() {
         return model;
-    }
-
-    public void interactListener(ModelInteractListener interactListener) {
-        this.interactListener = requireNonNull(interactListener, "interactListener");
-    }
-
-    public ModelInteractListener interactListener() {
-        return interactListener;
     }
 
     @Override
@@ -109,25 +98,24 @@ public class ModelView
     }
 
     public void colorize(Color color) {
-        for (BoneView entity : bones.values()) {
+        for (BoneEntity entity : bones.values()) {
             entity.colorize(color);
         }
     }
 
     @Override
-    public @Nullable BoneView bone(String name) {
+    public Collection<BoneEntity> bones() {
+        return bones.values();
+    }
+
+    @Override
+    public @Nullable BoneEntity bone(String name) {
         return bones.get(name);
     }
 
     @Override
     public AnimationController animationController() {
         return animationController;
-    }
-
-    @Override
-    public void playAnimation(String animationName, int transitionTicks) {
-        ModelAnimation animation = model.animations().get(animationName);
-        animationController.queue(animation, transitionTicks);
     }
 
     @Override
@@ -143,7 +131,7 @@ public class ModelView
         Vector3Float position = bone.position().add(parentPosition);
         Vector3Float rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
 
-        BoneView entity = bone(bone.name());
+        BoneEntity entity = bone(bone.name());
         if (entity != null) {
             entity.setInstance(instance, super.position.add(
                     rotatedPosition.x(),

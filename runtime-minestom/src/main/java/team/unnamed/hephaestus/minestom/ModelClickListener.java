@@ -38,16 +38,20 @@ import net.minestom.server.event.player.PlayerHandAnimationEvent;
 import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
-import team.unnamed.hephaestus.view.ActionType;
+
+import java.util.function.Function;
 
 public final class ModelClickListener {
 
     private static final Tag<Byte> IS_DROPPING_ITEM = Tag.Byte("hephaestus:dropping_flag");
-    
-    private ModelClickListener() {
+
+    private final EventNode<Event> node;
+
+    private ModelClickListener(EventNode<Event> node) {
+        this.node = node;
     }
 
-    private static void checkInteraction(Player player, ActionType action) {
+    private void checkInteraction(Player player, Function<ModelEntity, Event> eventFactory) {
         Pos position = player.getPosition();
         Vec direction = position.direction();
         double eyeHeight = player.getEyeHeight();
@@ -60,7 +64,7 @@ public final class ModelClickListener {
         double originY = position.y() + eyeHeight;
         double originZ = position.z();
 
-        double range = player.getGameMode() == GameMode.CREATIVE ? 5D : 3D;
+        double range = player.getGameMode() == GameMode.CREATIVE ? 5D : 4.5D;
 
         double lenX = (range - (Math.abs(originX) % range)) / Math.abs(directionX);
         double lenY = (range - (Math.abs(originY) % range)) / Math.abs(directionY);
@@ -74,19 +78,17 @@ public final class ModelClickListener {
 
         Instance instance = player.getInstance();
         for (Entity entity : instance.getNearbyEntities(position, range * range)) {
-            if (!(entity instanceof ModelView modelView)) {
-                continue;
-            }
-            BoundingBox boundingBox = entity.getBoundingBox();
-            if (boundingBox.intersect(originX, originY, originZ, targetX, targetY, targetZ)) {
-                modelView.interactListener()
-                        .onInteract(modelView, player, action);
-                break;
+            if (entity instanceof ModelEntity modelEntity) {
+                BoundingBox boundingBox = entity.getBoundingBox();
+                if (boundingBox.intersect(originX, originY, originZ, targetX, targetY, targetZ)) {
+                    node.call(eventFactory.apply(modelEntity));
+                    break;
+                }
             }
         }
     }
 
-    private static void onArmAnimation(PlayerHandAnimationEvent event) {
+    private void onArmAnimation(PlayerHandAnimationEvent event) {
         Player player = event.getPlayer();
 
         if (player.hasTag(IS_DROPPING_ITEM)) {
@@ -96,43 +98,45 @@ public final class ModelClickListener {
             return;
         }
 
-        checkInteraction(player, ActionType.LEFT_CLICK);
+        checkInteraction(player, model -> new EntityAttackEvent(player, model));
     }
 
-    private static void onAttack(EntityAttackEvent event) {
+    private void onAttack(EntityAttackEvent event) {
         Entity entity = event.getEntity();
         Entity target = event.getTarget();
 
-        if (entity instanceof Player player
-                && target instanceof BoneView bone) {
-            bone.view()
-                    .interactListener()
-                    .onInteract(bone.view(), player, ActionType.LEFT_CLICK);
+        if (entity instanceof Player player && target instanceof BoneEntity bone) {
+            // re-call using the full entity
+            node.call(new EntityAttackEvent(player, bone.view()));
         }
     }
 
-    private static void onInteract(PlayerEntityInteractEvent event) {
-        if (event.getTarget() instanceof BoneView bone) {
-            bone.view()
-                    .interactListener()
-                    .onInteract(bone.view(), event.getPlayer(), ActionType.RIGHT_CLICK);
+    private void onInteract(PlayerEntityInteractEvent event) {
+        if (event.getTarget() instanceof BoneEntity bone) {
+            node.call(new PlayerEntityInteractEvent(
+                    event.getPlayer(),
+                    bone.view(),
+                    event.getHand()
+            ));
         }
     }
     
-    private static void onItemDrop(ItemDropEvent event) {
+    private void onItemDrop(ItemDropEvent event) {
         event.getPlayer().setTag(IS_DROPPING_ITEM, (byte) 1);
     }
 
-    private static void onItemUse(PlayerUseItemEvent event) {
-        checkInteraction(event.getPlayer(), ActionType.RIGHT_CLICK);
+    private void onItemUse(PlayerUseItemEvent event) {
+        Player player = event.getPlayer();
+        checkInteraction(player, model -> new PlayerEntityInteractEvent(player, model, event.getHand()));
     }
 
     public static void register(EventNode<Event> node) {
-        node.addListener(PlayerUseItemEvent.class, ModelClickListener::onItemUse);
-        node.addListener(ItemDropEvent.class, ModelClickListener::onItemDrop);
-        node.addListener(PlayerHandAnimationEvent.class, ModelClickListener::onArmAnimation);
-        node.addListener(EntityAttackEvent.class, ModelClickListener::onAttack);
-        node.addListener(PlayerEntityInteractEvent.class, ModelClickListener::onInteract);
+        ModelClickListener listener = new ModelClickListener(node);
+        node.addListener(PlayerUseItemEvent.class, listener::onItemUse);
+        node.addListener(ItemDropEvent.class, listener::onItemDrop);
+        node.addListener(PlayerHandAnimationEvent.class, listener::onArmAnimation);
+        node.addListener(EntityAttackEvent.class, listener::onAttack);
+        node.addListener(PlayerEntityInteractEvent.class, listener::onInteract);
     }
 
 }

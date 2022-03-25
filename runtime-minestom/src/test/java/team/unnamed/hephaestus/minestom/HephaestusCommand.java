@@ -31,8 +31,10 @@ import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.CommandExecutor;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.suggestion.SuggestionEntry;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
+import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.resourcepack.ResourcePack;
 import net.minestom.server.utils.time.TimeUnit;
 import team.unnamed.hephaestus.Model;
@@ -72,7 +74,7 @@ final class HephaestusCommand extends Command {
         var animationArg = ArgumentType.Word("animation")
                 .setSuggestionCallback((sender, context, suggestion) -> {
                     String viewId = context.get(viewArg);
-                    ModelView view = registry.view(viewId);
+                    ModelEntity view = registry.view(viewId);
                     if (view != null) {
                         String input = suggestion.getInput();
                         view.model().animations().keySet()
@@ -92,7 +94,7 @@ final class HephaestusCommand extends Command {
                     return;
                 }
 
-                ModelView view = new ModelView(EntityType.ARMOR_STAND, model) {
+                ModelEntity view = new ModelEntity(EntityType.ARMOR_STAND, model) {
                     @Override
                     public void tick(long time) {
                         super.tick(time);
@@ -100,24 +102,25 @@ final class HephaestusCommand extends Command {
                     }
                 };
 
-                view.interactListener((interactedView, interactor, action) -> {
-                    double yaw = Math.toRadians(interactor.getPosition().yaw());
+                view.eventNode()
+                    .addListener(EntityAttackEvent.class, event -> {
+                        Entity interactor = event.getEntity();
+                        double yaw = Math.toRadians(interactor.getPosition().yaw());
 
-                    interactedView.colorize(0xDC3232);
+                        view.colorize(0xDC3232);
 
-                    MinecraftServer.getSchedulerManager()
-                            .buildTask(interactedView::colorizeDefault)
-                            .delay(4L, TimeUnit.SERVER_TICK)
-                            .schedule();
+                        MinecraftServer.getSchedulerManager()
+                                .buildTask(view::colorizeDefault)
+                                .delay(4L, TimeUnit.SERVER_TICK)
+                                .schedule();
 
-                    interactedView.takeKnockback(0.4F, Math.sin(yaw), -Math.cos(yaw));
-                    MinecraftServer.LOGGER.info(
-                            "[hephaestus] player {} interacted with {}, action: {}",
-                            interactor.getUsername(),
-                            interactedView,
-                            action
-                    );
-                });
+                        view.takeKnockback(0.4F, Math.sin(yaw), -Math.cos(yaw));
+                        MinecraftServer.LOGGER.info(
+                                "[hephaestus] entity {} attacked {}",
+                                interactor,
+                                view
+                        );
+                    });
                 view.setInstance(
                         Objects.requireNonNull(player.getInstance(), "player instance"),
                         player.getPosition()
@@ -139,7 +142,7 @@ final class HephaestusCommand extends Command {
                 String viewId = context.get(viewArg);
                 String animationName = context.get(animationArg);
 
-                ModelView view = registry.view(viewId);
+                ModelEntity view = registry.view(viewId);
                 if (view == null) {
                     player.sendMessage("Unknown view: " + viewId);
                     return;
@@ -152,7 +155,7 @@ final class HephaestusCommand extends Command {
         addSubcommand(new Command("tphere") {{
             addSyntax(playerExecutor((player, context) -> {
                 String viewId = context.get(viewArg);
-                ModelView view = registry.view(viewId);
+                ModelEntity view = registry.view(viewId);
 
                 if (view == null) {
                     player.sendMessage("Unknown view: " + viewId);

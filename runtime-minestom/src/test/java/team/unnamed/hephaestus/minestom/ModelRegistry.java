@@ -35,7 +35,7 @@ import java.util.Map;
 public final class ModelRegistry {
 
     private final Map<String, Model> models = new HashMap<>();
-    private final Map<String, ModelView> views = new HashMap<>();
+    private final Map<String, ModelEntity> views = new HashMap<>();
 
     public void write(FileTree tree) {
         ModelWriter.resource().write(tree, models.values());
@@ -53,11 +53,11 @@ public final class ModelRegistry {
         return models.values();
     }
 
-    public void view(String id, ModelView view) {
+    public void view(String id, ModelEntity view) {
         views.put(id, view);
     }
 
-    public @Nullable ModelView view(String id) {
+    public @Nullable ModelEntity view(String id) {
         return views.get(id);
     }
 
@@ -65,7 +65,7 @@ public final class ModelRegistry {
         return views.keySet();
     }
 
-    public Collection<ModelView> views() {
+    public Collection<ModelEntity> views() {
         return views.values();
     }
 
