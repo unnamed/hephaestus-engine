@@ -36,6 +36,7 @@ import team.unnamed.creative.server.ResourcePackServer;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.v1_18_R2.ModelEntitySpawner_v1_18_R2;
 import team.unnamed.hephaestus.plugin.command.ModelCommand;
+import team.unnamed.hephaestus.plugin.listener.DebugListener;
 import team.unnamed.hephaestus.plugin.listener.ResourcePackSetListener;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.reader.ModelReader;
@@ -91,6 +92,7 @@ public class ModelEnginePlugin extends JavaPlugin {
         getLogger().info("Registering commands, listeners and tasks...");
         registerCommand("model", new ModelCommand(registry, spawner));
         registerListener(new ResourcePackSetListener(pack, resourcePackUrl));
+        registerListener(new DebugListener(this));
     }
 
     @Override
