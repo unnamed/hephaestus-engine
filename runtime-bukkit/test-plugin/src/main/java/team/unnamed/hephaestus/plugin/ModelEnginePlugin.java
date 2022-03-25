@@ -81,7 +81,8 @@ public class ModelEnginePlugin extends JavaPlugin {
             resourcePackServer.start();
             getLogger().info("Resource pack server listening on port " + port);
             // important: HTTPS is currently not supported by creative-server
-            resourcePackUrl = "http://" + hostname + ':' + port;
+            resourcePackUrl = "http://" + hostname + ':' + port + '/' + pack.hash() + ".zip";
+            getLogger().info("Resource pack available at " + resourcePackUrl);
         } catch (IOException e) {
             getLogger().log(Level.SEVERE, "Cannot start resource pack server", e);
             setEnabled(false);
