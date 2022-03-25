@@ -52,7 +52,7 @@ public class ModelEntitySpawner_v1_18_R2 implements ModelEntitySpawner {
             = Access.findFieldByType(PersistentEntitySectionManager.class, LevelCallback.class);
 
     public ModelEntitySpawner_v1_18_R2(Plugin plugin) {
-        Bukkit.getPluginManager().registerEvents(new ModelInteractListener(), plugin);
+        Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin), plugin);
     }
 
     @Override

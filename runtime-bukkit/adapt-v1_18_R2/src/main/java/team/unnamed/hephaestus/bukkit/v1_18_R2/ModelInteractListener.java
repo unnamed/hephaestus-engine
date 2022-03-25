@@ -36,9 +36,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.plugin.Plugin;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
 
 import java.util.Objects;
@@ -49,11 +52,32 @@ final class ModelInteractListener implements Listener {
     private static final double LARGE_RANGE = 5.0D;
     private static final double NORMAL_RANGE = 4.5D;
 
+    private static final String TAG_IS_DROP = "hephaestus:is_drop";
+
+    private final Plugin plugin;
+
+    public ModelInteractListener(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
     // TODO: Spectating model entities, leashing, hooking, etc
+
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent event) {
+        event.getPlayer().setMetadata(TAG_IS_DROP, new FixedMetadataValue(plugin, Boolean.TRUE));
+    }
 
     @EventHandler
     public void onArmSwing(PlayerArmSwingEvent event) {
         Player player = event.getPlayer();
+
+        if (player.hasMetadata(TAG_IS_DROP)) {
+            // if arm swing is caused by an item drop, do
+            // not do anything
+            player.removeMetadata(TAG_IS_DROP, plugin);
+            return;
+        }
+
         checkInteraction(player, modelEntity ->
                 ((CraftPlayer) player).getHandle().attack(((CraftModelEntity) modelEntity).getHandle()));
     }
