@@ -24,7 +24,7 @@
 package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
 import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftMob;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
@@ -39,8 +39,8 @@ import java.util.Collection;
  * interface, and adapter for {@code net.minecraft.server}-based
  * {@link ModelEntityImpl} class
  */
-final class CraftModelEntity
-        extends CraftLivingEntity
+public class CraftModelEntity
+        extends CraftMob
         implements ModelEntity {
 
     public CraftModelEntity(CraftServer server, ModelEntityImpl entity) {

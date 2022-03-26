@@ -29,7 +29,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import team.unnamed.creative.base.Vector3Float;
@@ -42,7 +42,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 @MethodsReturnNonnullByDefault
-final class ModelEntityImpl extends LivingEntity {
+public class ModelEntityImpl extends Mob {
 
     private final Model model;
     private final ImmutableMap<String, BoneViewImpl> bones;
@@ -50,7 +50,7 @@ final class ModelEntityImpl extends LivingEntity {
 
     private final CraftModelEntity bukkitEntity;
 
-    public ModelEntityImpl(EntityType<? extends LivingEntity> type, Level world, Model model) {
+    public ModelEntityImpl(EntityType<? extends Mob> type, Level world, Model model) {
         super(type, world);
         this.model = model;
         this.bones = instantiateBones();
