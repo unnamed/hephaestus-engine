@@ -38,6 +38,7 @@ import net.minestom.server.event.player.PlayerHandAnimationEvent;
 import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
+import team.unnamed.hephaestus.Minecraft;
 
 import java.util.function.Function;
 
@@ -64,7 +65,9 @@ public final class ModelClickListener {
         double originY = position.y() + eyeHeight;
         double originZ = position.z();
 
-        double range = player.getGameMode() == GameMode.CREATIVE ? 5D : 4.5D;
+        double range = player.getGameMode() == GameMode.CREATIVE
+                ? Minecraft.PLAYER_CREATIVE_PICK_RANGE
+                : Minecraft.PLAYER_DEFAULT_PICK_RANGE;
 
         double lenX = (range - (Math.abs(originX) % range)) / Math.abs(directionX);
         double lenY = (range - (Math.abs(originY) % range)) / Math.abs(directionY);

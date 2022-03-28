@@ -38,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.Minecraft;
 import team.unnamed.hephaestus.view.BaseBoneView;
 
 import java.util.concurrent.CompletableFuture;
@@ -53,9 +54,6 @@ import java.util.concurrent.CompletableFuture;
 public final class BoneEntity
         extends LivingEntity
         implements BaseBoneView {
-
-    private static final float SMALL_OFFSET = 0.726F;
-    private static final float LARGE_OFFSET = 1.452F; // todo: this must be tested
 
     private static final ItemStack BASE_HELMET =
             ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
@@ -78,7 +76,9 @@ public final class BoneEntity
         super(EntityType.ARMOR_STAND);
         this.view = view;
         this.bone = bone;
-        this.offset = bone.small() ? SMALL_OFFSET : LARGE_OFFSET;
+        this.offset = bone.small()
+                ? Minecraft.ARMOR_STAND_SMALL_VERTICAL_OFFSET
+                : Minecraft.ARMOR_STAND_DEFAULT_VERTICAL_OFFSET;
         initialize();
     }
 

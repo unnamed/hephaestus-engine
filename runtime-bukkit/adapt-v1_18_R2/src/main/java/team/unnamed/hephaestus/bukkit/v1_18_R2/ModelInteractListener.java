@@ -42,15 +42,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import team.unnamed.hephaestus.Minecraft;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
 
 import java.util.Objects;
 import java.util.function.Consumer;
 
 final class ModelInteractListener implements Listener {
-
-    private static final double LARGE_RANGE = 5.0D;
-    private static final double NORMAL_RANGE = 4.5D;
 
     private static final String TAG_IS_DROP = "hephaestus:is_drop";
 
@@ -99,7 +97,7 @@ final class ModelInteractListener implements Listener {
         ServerPlayer player = ((CraftPlayer) bukkitPlayer).getHandle();
 
         boolean creative = player.gameMode.getGameModeForPlayer().isCreative();
-        double pickRange = creative ? LARGE_RANGE : NORMAL_RANGE;
+        double pickRange = creative ? Minecraft.PLAYER_CREATIVE_PICK_RANGE : Minecraft.PLAYER_DEFAULT_PICK_RANGE;
         // HitResult result = player.pick(pickRange, 1.0F, false);
 
         Vec3 eyePosition = player.getEyePosition();
