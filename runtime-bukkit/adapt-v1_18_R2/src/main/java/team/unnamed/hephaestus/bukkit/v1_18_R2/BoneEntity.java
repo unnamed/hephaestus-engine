@@ -47,11 +47,11 @@ import team.unnamed.hephaestus.bukkit.BoneView;
 import java.util.List;
 import java.util.function.Consumer;
 
-final class BoneViewImpl
+final class BoneEntity
         extends ArmorStand
         implements BoneView {
 
-    private final ModelEntityImpl view;
+    private final MinecraftModelEntity view;
     private final Bone bone;
 
     // synchronization data
@@ -59,7 +59,7 @@ final class BoneViewImpl
     public long lastPx, lastPy, lastPz;
     // public Vector3Float lastRotation = null;
 
-    BoneViewImpl(ModelEntityImpl view, Bone bone) {
+    BoneEntity(MinecraftModelEntity view, Bone bone) {
         super(EntityType.ARMOR_STAND, view.level);
         this.view = view;
         this.bone = bone;

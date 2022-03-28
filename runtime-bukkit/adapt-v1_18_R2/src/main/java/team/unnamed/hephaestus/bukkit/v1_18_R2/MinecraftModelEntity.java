@@ -42,15 +42,15 @@ import java.util.Collections;
 import java.util.Objects;
 
 @MethodsReturnNonnullByDefault
-public class ModelEntityImpl extends Mob {
+public class MinecraftModelEntity extends Mob {
 
     private final Model model;
-    private final ImmutableMap<String, BoneViewImpl> bones;
+    private final ImmutableMap<String, BoneEntity> bones;
     private final AnimationController animationController;
 
     private final CraftModelEntity bukkitEntity;
 
-    public ModelEntityImpl(EntityType<? extends Mob> type, Level world, Model model) {
+    public MinecraftModelEntity(EntityType<? extends Mob> type, Level world, Model model) {
         super(type, world);
         this.model = model;
         this.bones = instantiateBones();
@@ -58,9 +58,9 @@ public class ModelEntityImpl extends Mob {
         this.animationController = AnimationController.create(bukkitEntity);
     }
 
-    private ImmutableMap<String, BoneViewImpl> instantiateBones() {
+    private ImmutableMap<String, BoneEntity> instantiateBones() {
         // create the bone entities
-        ImmutableMap.Builder<String, BoneViewImpl> bones = ImmutableMap.builder();
+        ImmutableMap.Builder<String, BoneEntity> bones = ImmutableMap.builder();
         for (Bone bone : model.bones()) {
             instantiateBone(bone, Vector3Float.ZERO, bones);
         }
@@ -70,10 +70,10 @@ public class ModelEntityImpl extends Mob {
     private void instantiateBone(
             Bone bone,
             Vector3Float parentPosition,
-            ImmutableMap.Builder<String, BoneViewImpl> into
+            ImmutableMap.Builder<String, BoneEntity> into
     ) {
         var position = bone.position().add(parentPosition);
-        var entity = new BoneViewImpl(this, bone);
+        var entity = new BoneEntity(this, bone);
         entity.position(position);
         into.put(bone.name(), entity);
 
@@ -86,7 +86,7 @@ public class ModelEntityImpl extends Mob {
         return model;
     }
 
-    public ImmutableMap<String, BoneViewImpl> bones() {
+    public ImmutableMap<String, BoneEntity> bones() {
         return bones;
     }
 

@@ -41,12 +41,12 @@ import static net.minecraft.network.protocol.game.ClientboundMoveEntityPacket.pa
 @ParametersAreNonnullByDefault
 final class ModelServerEntity extends ServerEntity {
 
-    private final ModelEntityImpl entity;
+    private final MinecraftModelEntity entity;
     private final Consumer<Packet<?>> broadcast;
 
     public ModelServerEntity(
             ServerLevel level,
-            ModelEntityImpl entity,
+            MinecraftModelEntity entity,
             Consumer<Packet<?>> broadcast,
             Set<ServerPlayerConnection> trackedPlayers
     ) {

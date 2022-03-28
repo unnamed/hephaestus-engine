@@ -37,19 +37,19 @@ import java.util.Collection;
 /**
  * The implementation of the Bukkit-based {@link ModelEntity}
  * interface, and adapter for {@code net.minecraft.server}-based
- * {@link ModelEntityImpl} class
+ * {@link MinecraftModelEntity} class
  */
 public class CraftModelEntity
         extends CraftMob
         implements ModelEntity {
 
-    public CraftModelEntity(CraftServer server, ModelEntityImpl entity) {
+    public CraftModelEntity(CraftServer server, MinecraftModelEntity entity) {
         super(server, entity);
     }
 
     @Override
-    public ModelEntityImpl getHandle() {
-        return (ModelEntityImpl) super.getHandle();
+    public MinecraftModelEntity getHandle() {
+        return (MinecraftModelEntity) super.getHandle();
     }
 
     @Override

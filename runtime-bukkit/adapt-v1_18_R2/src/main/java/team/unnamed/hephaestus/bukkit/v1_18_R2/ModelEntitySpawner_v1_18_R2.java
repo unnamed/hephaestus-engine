@@ -67,7 +67,7 @@ public class ModelEntitySpawner_v1_18_R2 implements ModelEntitySpawner {
         InjectedLevelCallback.injectAt(level);
 
         // create and the model entity
-        var entity = new ModelEntityImpl(EntityType.SLIME, level, model); // TODO: Create our own EntityType
+        var entity = new MinecraftModelEntity(EntityType.SLIME, level, model); // TODO: Create our own EntityType
         entity.setPos(location.getX(), location.getY(), location.getZ());
         entity.setHealth(entity.getMaxHealth());
 
@@ -86,7 +86,7 @@ public class ModelEntitySpawner_v1_18_R2 implements ModelEntitySpawner {
 
         @Override
         public void onTrackingStart(Entity entity) {
-            if (entity instanceof ModelEntityImpl modelEntity) {
+            if (entity instanceof MinecraftModelEntity modelEntity) {
                 AsyncCatcher.catchOp("entity register");
 
                 entity.valid = true;

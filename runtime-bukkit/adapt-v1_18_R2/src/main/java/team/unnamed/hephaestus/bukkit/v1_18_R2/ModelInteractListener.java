@@ -120,7 +120,7 @@ final class ModelInteractListener implements Listener {
             Vec3 loc = result.getLocation();
             double distance = eyePosition.distanceToSqr(loc);
 
-            if (distance <= 9.0D && distance < rangeSqr && entity instanceof ModelEntityImpl modelEntity) {
+            if (distance <= 9.0D && distance < rangeSqr && entity instanceof MinecraftModelEntity modelEntity) {
                 callback.accept(modelEntity.getBukkitEntity());
                 return true;
             }
