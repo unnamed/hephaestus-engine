@@ -35,7 +35,7 @@ import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
 import team.unnamed.hephaestus.plugin.ModelRegistry;
 import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.bukkit.ModelEntitySpawner;
+import team.unnamed.hephaestus.bukkit.ModelEngine;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -53,11 +53,11 @@ public class ModelCommand
         implements CommandExecutor, TabCompleter {
 
     private final ModelRegistry modelRegistry;
-    private final ModelEntitySpawner modelSpawner;
+    private final ModelEngine modelSpawner;
 
     public ModelCommand(
             ModelRegistry modelRegistry,
-            ModelEntitySpawner modelSpawner
+            ModelEngine modelSpawner
     ) {
         this.modelRegistry = modelRegistry;
         this.modelSpawner = modelSpawner;

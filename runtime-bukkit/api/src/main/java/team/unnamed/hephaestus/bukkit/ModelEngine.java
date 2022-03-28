@@ -29,13 +29,13 @@ import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.view.BaseModelView;
 
 /**
- * Responsible for spawning {@link Model} /
- * converting {@link Model} to {@link BaseModelView}
- * concrete instances at specific world locations
+ * The hephaestus model engine abstraction for
+ * Bukkit-based server implementations such as
+ * Spigot and Paper
  *
  * @since 1.0.0
  */
-public interface ModelEntitySpawner {
+public interface ModelEngine {
 
     /**
      * Spawns the given {@link Model} model

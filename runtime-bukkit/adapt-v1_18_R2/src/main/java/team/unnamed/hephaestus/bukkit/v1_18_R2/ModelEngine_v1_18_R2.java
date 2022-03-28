@@ -39,11 +39,13 @@ import org.bukkit.plugin.Plugin;
 import org.spigotmc.AsyncCatcher;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
-import team.unnamed.hephaestus.bukkit.ModelEntitySpawner;
+import team.unnamed.hephaestus.bukkit.ModelEngine;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-public class ModelEntitySpawner_v1_18_R2 implements ModelEntitySpawner {
+import static java.util.Objects.requireNonNull;
+
+public final class ModelEngine_v1_18_R2 implements ModelEngine {
 
     private static final Access.FieldReflect<ServerEntity> SERVER_ENTITY_FIELD
             = Access.findFieldByType(ChunkMap.TrackedEntity.class, ServerEntity.class);
@@ -51,7 +53,8 @@ public class ModelEntitySpawner_v1_18_R2 implements ModelEntitySpawner {
     private static final Access.FieldReflect<LevelCallback<?>> CALLBACKS_FIELD
             = Access.findFieldByType(PersistentEntitySectionManager.class, LevelCallback.class);
 
-    public ModelEntitySpawner_v1_18_R2(Plugin plugin) {
+    private ModelEngine_v1_18_R2(Plugin plugin) {
+        requireNonNull(plugin, "plugin");
         Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin), plugin);
     }
 
@@ -76,6 +79,10 @@ public class ModelEntitySpawner_v1_18_R2 implements ModelEntitySpawner {
         level.addFreshEntity(entity, reason);
 
         return entity.getBukkitEntity();
+    }
+
+    public static ModelEngine create(Plugin plugin) {
+        return new ModelEngine_v1_18_R2(plugin);
     }
 
     @ParametersAreNonnullByDefault

@@ -34,13 +34,13 @@ import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
 import team.unnamed.creative.server.ResourcePackServer;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.bukkit.v1_18_R2.ModelEntitySpawner_v1_18_R2;
+import team.unnamed.hephaestus.bukkit.v1_18_R2.ModelEngine_v1_18_R2;
 import team.unnamed.hephaestus.plugin.command.ModelCommand;
 import team.unnamed.hephaestus.plugin.listener.DebugListener;
 import team.unnamed.hephaestus.plugin.listener.ResourcePackSetListener;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.reader.ModelReader;
-import team.unnamed.hephaestus.bukkit.ModelEntitySpawner;
+import team.unnamed.hephaestus.bukkit.ModelEngine;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class ModelEnginePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        ModelEntitySpawner spawner = new ModelEntitySpawner_v1_18_R2(this);
+        ModelEngine spawner = ModelEngine_v1_18_R2.create(this);
 
         // load models from resources
         getLogger().info("Loading models...");
