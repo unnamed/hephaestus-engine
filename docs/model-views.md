@@ -1,11 +1,11 @@
 ## Model Views
 
-`api` defines an interface `ModelView`, which can be used for basic and
-platform independent operations such as animations, colors, movements,
+`api` defines an interface `BaseModelView`, which can be used for basic
+and platform independent operations such as animations, colors, movements,
 animation ticking, etc.
 
 To get a more specialized model view, you can use the platform specific
-implementations (i.e. BukkitModelView, MinestomModelView)
+implementations
 
 
 ### Creating Views
@@ -17,28 +17,16 @@ Creating a model view depends on the platform
 
 To use hephaestus-engine in Bukkit, you will have to include the Runtime
 Bukkit API `hephaestus-runtime-bukkit-api` and some implementation like 
-`hephaestus-runtime-bukkit-adapt-v1_18_R2` for Spigot 1.18.2
+`hephaestus-runtime-bukkit-adapt-v1_18_R2` for Paper 1.18.2
 
 ```java
-// renderer can be reused
-ModelViewRenderer renderer = new ModelViewRenderer_v1_18_R2();
+// engine can be reused
+ModelEngine engine = ModelEngine_v1_18_R2.create();
 
 Model model = ...;
 Location location = new Location(world, 0, 60, 0);
 
-// note that BukkitModelView is the specialized ModelView
-// implementation for Bukkit
-BukkitModelView view = renderer.render(model, location);
-
-// show the view to a player
-view.addViewer(player);
-
-// hide the view from a player
-view.removeViewer(player);
-
-// IMPORTANT: hephaestus-engine does not manage vision range
-// so you will have to manually add and remove viewers to/from
-// a view
+ModelEntity view = engine.render(model, location);
 ```
 
 
@@ -48,18 +36,18 @@ TODO!
 
 ### Coloring
 
-Model views can be colored with any RGB color, just use `ModelView#colorize`
-or `BoneView#colorize` to colorize a specific bone
+Model views can be colored with any RGB color, just use `BaseModelView#colorize`
+or `BaseBoneView#colorize` to colorize a specific bone
 
 Example:
 
 ```java
-public void setRedColor(ModelView<?> view) {
+public void setRedColor(BaseModelView view) {
     view.colorize(255, 0, 0);    
 }
 ```
 
-
+<!--
 ### Animation
 
 Animations require the programmer to tick animations in every model view
@@ -87,3 +75,4 @@ public void animate(ModelView<?> view) {
     view.animationController().queue(walkAnimation);
 }
 ```
+-->
