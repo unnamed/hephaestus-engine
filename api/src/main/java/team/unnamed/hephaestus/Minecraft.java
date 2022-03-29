@@ -28,7 +28,7 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public final class Minecraft {
 
-    public static final float ARMOR_STAND_SMALL_VERTICAL_OFFSET = 0.726F;
+    public static final float ARMOR_STAND_SMALL_VERTICAL_OFFSET = 0.63F;
     public static final float ARMOR_STAND_DEFAULT_VERTICAL_OFFSET = 1.452F; // todo: this must be tested
 
     public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
