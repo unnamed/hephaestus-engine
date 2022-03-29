@@ -42,6 +42,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.Minecraft;
 import team.unnamed.hephaestus.bukkit.BoneView;
 
 import java.util.List;
@@ -143,9 +144,12 @@ final class BoneEntity
     @Override
     public void position(Vector3Float position) {
         Vec3 root = view.position();
+        float offset = bone.small()
+                ? Minecraft.ARMOR_STAND_SMALL_VERTICAL_OFFSET
+                : Minecraft.ARMOR_STAND_DEFAULT_VERTICAL_OFFSET;
         super.setPos(
                 root.x + position.x(),
-                root.y + position.y(),
+                root.y + position.y() - offset,
                 root.z + position.z()
         );
     }
