@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.process;
 
+import org.jetbrains.annotations.ApiStatus;
 import team.unnamed.creative.base.Axis3D;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.model.Element;
@@ -32,6 +33,7 @@ import team.unnamed.hephaestus.partial.ElementAsset;
 import java.util.ArrayList;
 import java.util.List;
 
+@ApiStatus.Internal
 public class ElementScale {
 
     /**
