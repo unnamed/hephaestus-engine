@@ -23,9 +23,6 @@
  */
 package team.unnamed.hephaestus.minestom;
 
-import net.minestom.server.collision.BoundingBox;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
@@ -36,7 +33,6 @@ import net.minestom.server.event.item.ItemDropEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.player.PlayerHandAnimationEvent;
 import net.minestom.server.event.player.PlayerUseItemEvent;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.tag.Tag;
 import team.unnamed.hephaestus.Minecraft;
 
@@ -53,41 +49,17 @@ public final class ModelClickListener {
     }
 
     private void checkInteraction(Player player, Function<ModelEntity, Event> eventFactory) {
-        Pos position = player.getPosition();
-        Vec direction = position.direction();
-        double eyeHeight = player.getEyeHeight();
-
-        double directionX = direction.x();
-        double directionY = direction.y();
-        double directionZ = direction.z();
-
-        double originX = position.x();
-        double originY = position.y() + eyeHeight;
-        double originZ = position.z();
-
         double range = player.getGameMode() == GameMode.CREATIVE
                 ? Minecraft.PLAYER_CREATIVE_PICK_RANGE
                 : Minecraft.PLAYER_DEFAULT_PICK_RANGE;
 
-        double lenX = (range - (Math.abs(originX) % range)) / Math.abs(directionX);
-        double lenY = (range - (Math.abs(originY) % range)) / Math.abs(directionY);
-        double lenZ = (range - (Math.abs(originZ) % range)) / Math.abs(directionZ);
+        Entity found = player.getLineOfSightEntity(range, entity -> entity != player);
 
-        double minLen = Math.min(lenX, Math.min(lenY, lenZ));
-
-        double targetX = originX + (directionX * minLen);
-        double targetY = originY + (directionY * minLen);
-        double targetZ = originZ + (directionZ * minLen);
-
-        Instance instance = player.getInstance();
-        for (Entity entity : instance.getNearbyEntities(position, range * range)) {
-            if (entity instanceof ModelEntity modelEntity) {
-                BoundingBox boundingBox = entity.getBoundingBox();
-                if (boundingBox.intersect(originX, originY, originZ, targetX, targetY, targetZ)) {
-                    node.call(eventFactory.apply(modelEntity));
-                    break;
-                }
-            }
+        if (found instanceof BoneEntity boneEntity) {
+            found = boneEntity.view();
+        }
+        if (found instanceof ModelEntity modelEntity) {
+            node.call(eventFactory.apply(modelEntity));
         }
     }
 
