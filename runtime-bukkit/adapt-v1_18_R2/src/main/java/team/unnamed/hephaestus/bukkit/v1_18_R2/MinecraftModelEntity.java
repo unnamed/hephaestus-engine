@@ -26,12 +26,16 @@ package team.unnamed.hephaestus.bukkit.v1_18_R2;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
@@ -44,11 +48,14 @@ import java.util.Objects;
 @MethodsReturnNonnullByDefault
 public class MinecraftModelEntity extends Mob {
 
+    private static final Access.FieldReflect<EntityDimensions> DIMENSIONS_FIELD = Access.findFieldByType(Entity.class, EntityDimensions.class);
+
     private final Model model;
     private final ImmutableMap<String, BoneEntity> bones;
     private final AnimationController animationController;
 
     private final CraftModelEntity bukkitEntity;
+    private final EntityDimensions modelDimensions;
 
     public MinecraftModelEntity(EntityType<? extends Mob> type, Level world, Model model) {
         super(type, world);
@@ -56,6 +63,20 @@ public class MinecraftModelEntity extends Mob {
         this.bones = instantiateBones();
         this.bukkitEntity = new CraftModelEntity(super.level.getCraftServer(), this);
         this.animationController = AnimationController.create(bukkitEntity);
+
+        Vector2Float bb = model.boundingBox();
+        this.modelDimensions = EntityDimensions.scalable(bb.x(), bb.y());
+
+        // set our model dimensions
+        DIMENSIONS_FIELD.set(this, modelDimensions);
+
+        // update bounding box
+        setPos(0.0D, 0.0D, 0.0D);
+    }
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose) {
+        return modelDimensions;
     }
 
     private ImmutableMap<String, BoneEntity> instantiateBones() {
