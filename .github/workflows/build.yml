@@ -13,3 +13,9 @@ jobs:
                   java-version: 17
             - name: 'build'
               run: './gradlew build'
+            - name: 'publish'
+              if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+              run: './gradlew publish'
+              env:
+                  REPO_USER: '${{ secrets.REPO_USER }}'
+                  REPO_PASSWORD: '${{ secrets.REPO_PASSWORD }}'
