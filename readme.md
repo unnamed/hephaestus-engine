@@ -3,8 +3,6 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](license.txt)
 [![Discord](https://img.shields.io/discord/683899335405994062)](https://discord.gg/xbba2fy)
 
-*Work in progress!*
-
 `hephaestus-engine` is a custom model creation, animation and interaction library
 for *vanilla* Minecraft: Java Edition, you can use it in multiple platforms like
 Spigot, [Paper](https://papermc.io/) and [Minestom](https://minestom.net/)
