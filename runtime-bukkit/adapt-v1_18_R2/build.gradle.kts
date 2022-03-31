@@ -20,3 +20,13 @@ dependencies {
     implementation(project(":hephaestus-runtime-bukkit-api"))
     implementation("net.kyori:adventure-platform-bukkit:4.0.1")
 }
+
+publishing {
+    publications {
+        getByName<MavenPublication>("maven") {
+            artifact(tasks.reobfJar) {
+                classifier = "reobf"
+            }
+        }
+    }
+}
