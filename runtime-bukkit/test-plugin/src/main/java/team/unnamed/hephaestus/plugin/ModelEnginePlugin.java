@@ -100,7 +100,7 @@ public class ModelEnginePlugin extends JavaPlugin {
     public void onDisable() {
         if (resourcePackServer != null) {
             getLogger().info("Stopping resource pack server");
-            resourcePackServer.stop(1);
+            resourcePackServer.stop(0);
         }
     }
 
