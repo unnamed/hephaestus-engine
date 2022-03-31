@@ -23,12 +23,16 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
+import net.minecraft.core.Rotations;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -65,6 +69,10 @@ final class ModelServerEntity extends ServerEntity {
     @Override
     public void sendChanges() {
         for (var bone : entity.bones().values()) {
+
+            // check metadata changes
+            // (rotation, ...)
+            sendDirtyEntityData(bone);
 
             // check position changes
             Vec3 position = bone.position();
@@ -128,6 +136,13 @@ final class ModelServerEntity extends ServerEntity {
 
         for (var bone : entity.bones().values()) {
             bone.show(packetConsumer);
+        }
+    }
+
+    private void sendDirtyEntityData(BoneEntity bone) {
+        SynchedEntityData data = bone.getEntityData();
+        if (data.isDirty()) {
+            this.broadcast.accept(new ClientboundSetEntityDataPacket(bone.getId(), data, false));
         }
     }
 

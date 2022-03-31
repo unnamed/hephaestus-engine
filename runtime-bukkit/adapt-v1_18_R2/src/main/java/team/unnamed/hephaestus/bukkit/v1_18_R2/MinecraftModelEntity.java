@@ -79,6 +79,12 @@ public class MinecraftModelEntity extends Mob {
         return modelDimensions;
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        this.animationController.tick(Math.toRadians(yRot));
+    }
+
     private ImmutableMap<String, BoneEntity> instantiateBones() {
         // create the bone entities
         ImmutableMap.Builder<String, BoneEntity> bones = ImmutableMap.builder();
