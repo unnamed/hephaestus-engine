@@ -56,9 +56,8 @@ final class BoneEntity
     private final Bone bone;
 
     // synchronization data
-    // public Color lastColor = Color.WHITE;
     public long lastPx, lastPy, lastPz;
-    // public Vector3Float lastRotation = null;
+    public boolean dirtyColor;
 
     BoneEntity(MinecraftModelEntity view, Bone bone) {
         super(EntityType.ARMOR_STAND, view.level);
@@ -68,9 +67,6 @@ final class BoneEntity
     }
 
     private void initialize() {
-
-//        Location rootLocation = view.location();
-//        super.setRot(rootLocation.getYaw(), rootLocation.getPitch());
 
         super.setSilent(true);
         super.setNoGravity(true);
@@ -128,17 +124,19 @@ final class BoneEntity
         // todo: we could avoid bukkit<->nms item conversions
         var nmsItem = super.getItemBySlot(EquipmentSlot.HEAD);
 
-        var item = nmsItem == null
-                ? new ItemStack(Material.LEATHER_HORSE_ARMOR)
-                : CraftItemStack.asBukkitCopy(nmsItem);
+        var item = CraftItemStack.asBukkitCopy(nmsItem);
         var meta = (LeatherArmorMeta) item.getItemMeta();
 
-        meta.setColor(color);
-        item.setItemMeta(meta);
+        Color previous = meta.getColor();
+        if (!color.equals(previous)) {
+            meta.setColor(color);
+            item.setItemMeta(meta);
 
-        nmsItem = CraftItemStack.asNMSCopy(item);
+            nmsItem = CraftItemStack.asNMSCopy(item);
 
-        super.setItemSlot(EquipmentSlot.HEAD, nmsItem);
+            super.setItemSlot(EquipmentSlot.HEAD, nmsItem);
+            this.dirtyColor = true;
+        }
     }
 
     @Override

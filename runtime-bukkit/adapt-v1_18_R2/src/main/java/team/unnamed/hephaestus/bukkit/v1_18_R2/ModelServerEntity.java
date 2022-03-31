@@ -23,7 +23,7 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_18_R2;
 
-import net.minecraft.core.Rotations;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -31,11 +31,12 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -73,6 +74,18 @@ final class ModelServerEntity extends ServerEntity {
             // check metadata changes
             // (rotation, ...)
             sendDirtyEntityData(bone);
+
+            // check color changes (equipment)
+            if (bone.dirtyColor) {
+                ItemStack helmet = bone.getItemBySlot(EquipmentSlot.HEAD);
+                this.broadcast.accept(new ClientboundSetEquipmentPacket(
+                        bone.getId(),
+                        List.of(
+                                Pair.of(EquipmentSlot.HEAD, helmet)
+                        )
+                ));
+                bone.dirtyColor = false;
+            }
 
             // check position changes
             Vec3 position = bone.position();
