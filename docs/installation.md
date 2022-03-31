@@ -20,17 +20,17 @@ Add the necessary dependencies
 ```kotlin
 dependencies {
     // Core API, necessary for everything
-    implementation("team.unnamed:hephaestus-api:0.1.0")
+    implementation("team.unnamed:hephaestus-api:0.1.0-SNAPSHOT")
     
     // Blockbench model reader (optional)
-    implementation("team.unnamed:hephaestus-reader-blockbench:0.1.0")
+    implementation("team.unnamed:hephaestus-reader-blockbench:0.1.0-SNAPSHOT")
     
-    // Bukkit runtime projects
-    implementation("team.unnamed:hephaestus-runtime-bukkit-api:0.1.0")
-    implementation("team.unnamed:hephaestus-runtime-bukkit-adapt-v1_18_R2:0.1.0")
+    // Bukkit runtime projects (you might want to add :reobf classifier to adapt-v1_18_R2)
+    implementation("team.unnamed:hephaestus-runtime-bukkit-api:0.1.0-SNAPSHOT")
+    implementation("team.unnamed:hephaestus-runtime-bukkit-adapt-v1_18_R2:0.1.0-SNAPSHOT")
     
     // Minestom runtime
-    implementation("team.unnamed:hephaestus-runtime-minestom:0.1.0")
+    implementation("team.unnamed:hephaestus-runtime-minestom:0.1.0-SNAPSHOT")
 }
 ```
 
@@ -51,6 +51,6 @@ Add the necessary dependencies
 <dependency>
     <groupId>team.unnamed</groupId>
     <artifactId>hephaestus-api</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.0-SNAPSHOT</version>
 </dependency>
 ```
