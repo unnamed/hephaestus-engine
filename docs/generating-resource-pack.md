@@ -4,6 +4,9 @@ Hephaestus-engine uses [creative](https://github.com/unnamed/creative) to
 interact with resource pack data, we convert a `Model` and its bones to
 creative's block models 
 
+See [creative documentation](https://github.com/unnamed/creative/) for
+resource-pack hosting/serving
+
 
 ### Writing to a resource pack ZIP
 
