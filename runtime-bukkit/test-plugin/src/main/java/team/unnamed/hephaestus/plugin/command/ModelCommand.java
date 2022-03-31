@@ -23,7 +23,8 @@
  */
 package team.unnamed.hephaestus.plugin.command;
 
-import org.bukkit.Location;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,10 +33,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.bukkit.ModelEntity;
-import team.unnamed.hephaestus.plugin.ModelRegistry;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.bukkit.ModelEngine;
+import team.unnamed.hephaestus.bukkit.ModelEntity;
+import team.unnamed.hephaestus.plugin.ModelRegistry;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.bukkit.ChatColor.DARK_GREEN;
 import static org.bukkit.ChatColor.DARK_RED;
@@ -63,10 +65,40 @@ public class ModelCommand
         this.modelSpawner = modelSpawner;
     }
 
+    private void spawn(Player source, Model model) {
+        ModelEntity entity = modelSpawner.spawn(model, source.getLocation());
+        source.sendMessage(GREEN + "Created view with id "
+                + DARK_GREEN + entity.getUniqueId()
+                + GREEN + " with model "
+                + DARK_GREEN + model.name());
+    }
+
+    private void animate(Player source, ModelEntity entity, String animationName) {
+        Map<String, Animation> animations = entity.model().animations();
+        @Nullable Animation animation = animations.get(animationName);
+
+        if (animation == null) {
+            source.sendMessage(
+                    RED + "Animation not found: "
+                            + DARK_RED + animationName
+                            + RED + ". Available animations: "
+                            + DARK_RED + String.join(", ", animations.keySet())
+            );
+        } else {
+            entity.animationController().queue(animation);
+        }
+    }
+
     @Override
     @ParametersAreNonnullByDefault
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(RED + "You must be a player to do this");
+            return true;
+        }
+
+        // we need a subcommand
         if (args.length < 1) {
             sender.sendMessage(RED + "/" + label);
             return true;
@@ -76,17 +108,12 @@ public class ModelCommand
 
         switch (subcommand) {
             case "spawn" -> {
-                if (!(sender instanceof Player player)) {
-                    sender.sendMessage(RED + "You must be a player to do this");
-                    return true;
-                }
-
                 if (args.length != 2) {
                     sender.sendMessage(RED + "/" + label + " spawn <type>");
                     return true;
                 }
 
-                String modelName = args[1].toLowerCase(Locale.ROOT);
+                String modelName = args[1];
                 @Nullable Model model = modelRegistry.model(modelName);
 
                 if (model == null) {
@@ -94,16 +121,7 @@ public class ModelCommand
                     return true;
                 }
 
-                Location location = player.getLocation();
-                String viewId = ModelRegistry.generateViewId();
-                ModelEntity entity = modelSpawner.spawn(model, location);
-
-                // register so it is shown for players in next iterations
-                modelRegistry.registerView(viewId, entity);
-                sender.sendMessage(GREEN + "Created view with id "
-                        + DARK_GREEN + viewId
-                        + GREEN + " with model "
-                        + DARK_GREEN + modelName);
+                spawn(player, model);
             }
             case "view" -> {
                 if (args.length < 2) {
@@ -112,10 +130,9 @@ public class ModelCommand
                 }
 
                 String viewId = args[1];
+                @Nullable ModelEntity entity = getModelEntityById(viewId);
 
-                @Nullable ModelEntity view = modelRegistry.view(viewId);
-
-                if (view == null) {
+                if (entity == null) {
                     sender.sendMessage(RED + "View not found: " + DARK_RED + viewId);
                     return true;
                 }
@@ -127,21 +144,7 @@ public class ModelCommand
                             return true;
                         }
 
-                        String animationName = args[3];
-                        Map<String, Animation> animations = view.model().animations();
-                        @Nullable Animation animation = animations.get(animationName);
-
-                        if (animation == null) {
-                            sender.sendMessage(
-                                    RED + "Animation not found: "
-                                            + DARK_RED + animationName
-                                            + RED + ". Available animations: "
-                                            + DARK_RED + String.join(", ", animations.keySet())
-                            );
-                            return true;
-                        }
-
-                        view.animationController().queue(animation);
+                        animate(player, entity, args[3]);
                     }
                     case "colorize" -> {
                         if (args.length != 4) {
@@ -163,19 +166,10 @@ public class ModelCommand
                             return true;
                         }
 
-                        view.colorize(color);
+                        entity.colorize(color);
                     }
-                    case "tphere" -> {
-                        if (sender instanceof Entity entity) {
-                            view.teleport(entity);
-                        } else {
-                            sender.sendMessage(RED + "You must be an entity to do this");
-                        }
-                    }
-                    case "delete" -> {
-                        view.remove();
-                        modelRegistry.removeView(viewId);
-                    }
+                    case "tphere" -> entity.teleport(player);
+                    case "delete" -> entity.remove();
                 }
             }
             default -> sender.sendMessage(RED + "Unknown subcommand");
@@ -187,31 +181,55 @@ public class ModelCommand
     @Override
     @ParametersAreNonnullByDefault
     public @Nullable List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+
+        if (args.length == 0) {
+            return List.of();
+        }
+
         List<String> suggestions = new ArrayList<>();
+        String subcommand = args[0].toLowerCase(Locale.ROOT);
 
-        switch (args.length) {
-            case 1 -> StringUtil.copyPartialMatches(args[0], List.of("spawn", "view"), suggestions);
-            case 2 ->  {
-                Iterable<String> toSuggest = switch (args[0].toLowerCase(Locale.ROOT)) {
-                    case "spawn" -> modelRegistry.modelNames();
-                    case "view" -> modelRegistry.viewIds();
-                    default -> List.of();
-                };
+        if (args.length == 1) {
+            // complete the subcommand
+            StringUtil.copyPartialMatches(subcommand, List.of("spawn", "view"), suggestions);
+            return suggestions;
+        }
 
-                StringUtil.copyPartialMatches(args[1], toSuggest, suggestions);
-            }
-            case 3 -> {
-                if (args[0].equalsIgnoreCase("view")) {
-                    StringUtil.copyPartialMatches(args[2], List.of("animate", "colorize", "tphere", "delete"), suggestions);
+        switch (subcommand) {
+            case "spawn" -> {
+                if (args.length == 2) {
+                    StringUtil.copyPartialMatches(args[1], modelRegistry.modelNames(), suggestions);
                 }
             }
-            case 4 -> {
-                if (args[0].equalsIgnoreCase("view")) {
-                    String viewId = args[1];
-                    @Nullable ModelEntity view = modelRegistry.view(viewId);
+            case "view" -> {
+                String viewId = args[1];
 
-                    if (view != null && args[2].equalsIgnoreCase("animate")) {
-                        StringUtil.copyPartialMatches(args[3], view.model().animations().keySet(), suggestions);
+                if (args.length == 2) {
+                    // complete view id
+                    List<String> ids = new ArrayList<>();
+                    for (World world : Bukkit.getWorlds()) {
+                        for (Entity entity : world.getEntities()) {
+                            if (entity instanceof ModelEntity) {
+                                ids.add(entity.getUniqueId().toString());
+                            }
+                        }
+                    }
+                    StringUtil.copyPartialMatches(viewId, ids, suggestions);
+                    break;
+                }
+
+                String action = args[2].toLowerCase(Locale.ROOT);
+                if (args.length == 3) {
+                    // complete action
+                    StringUtil.copyPartialMatches(action, List.of("animate", "colorize", "tphere", "delete"), suggestions);
+                    break;
+                }
+
+                if ("animate".equals(action) && args.length == 4) {
+                    // complete animations
+                    ModelEntity entity = getModelEntityById(viewId);
+                    if (entity != null) {
+                        StringUtil.copyPartialMatches(args[3], entity.model().animations().keySet(), suggestions);
                     }
                 }
             }
@@ -219,6 +237,20 @@ public class ModelCommand
 
         suggestions.sort(String.CASE_INSENSITIVE_ORDER);
         return suggestions;
+    }
+
+    private @Nullable ModelEntity getModelEntityById(String id) {
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(id);
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
+
+        Entity entity = Bukkit.getEntity(uuid);
+        return entity instanceof ModelEntity modelEntity
+                ? modelEntity
+                : null;
     }
 
 }
