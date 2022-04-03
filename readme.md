@@ -5,7 +5,7 @@
 
 `hephaestus-engine` is a custom model creation, animation and interaction library
 for *vanilla* Minecraft: Java Edition, you can use it in multiple platforms like
-Spigot, [Paper](https://papermc.io/) and [Minestom](https://minestom.net/)
+[Paper](https://papermc.io/) and [Minestom](https://minestom.net/)
 
 Check the [documentation](./docs/getting-started.md) for
 installation and usage information for this project
