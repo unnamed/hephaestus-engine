@@ -28,7 +28,6 @@ import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.entity.LevelCallback;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import org.bukkit.Bukkit;
@@ -53,8 +52,11 @@ public final class ModelEngine_v1_18_R2 implements ModelEngine {
     private static final Access.FieldReflect<LevelCallback<?>> CALLBACKS_FIELD
             = Access.findFieldByType(PersistentEntitySectionManager.class, LevelCallback.class);
 
-    private ModelEngine_v1_18_R2(Plugin plugin) {
+    private final EntityFactory entityFactory;
+
+    private ModelEngine_v1_18_R2(Plugin plugin, EntityFactory entityFactory) {
         requireNonNull(plugin, "plugin");
+        this.entityFactory = requireNonNull(entityFactory, "entityFactory");
         Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin), plugin);
     }
 
@@ -70,7 +72,7 @@ public final class ModelEngine_v1_18_R2 implements ModelEngine {
         InjectedLevelCallback.injectAt(level);
 
         // create and the model entity
-        var entity = new MinecraftModelEntity(EntityType.SLIME, level, model); // TODO: Create our own EntityType
+        var entity = entityFactory.create(level, model);
         entity.setPos(location.getX(), location.getY(), location.getZ());
         entity.setHealth(entity.getMaxHealth());
 
@@ -81,8 +83,12 @@ public final class ModelEngine_v1_18_R2 implements ModelEngine {
         return entity.getBukkitEntity();
     }
 
+    public static ModelEngine create(Plugin plugin, EntityFactory entityFactory) {
+        return new ModelEngine_v1_18_R2(plugin, entityFactory);
+    }
+
     public static ModelEngine create(Plugin plugin) {
-        return new ModelEngine_v1_18_R2(plugin);
+        return create(plugin, EntityFactory.DEFAULT);
     }
 
     @ParametersAreNonnullByDefault
