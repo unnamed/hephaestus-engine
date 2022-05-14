@@ -7,7 +7,7 @@ annotations = "23.0.0"
 gson = "2.8.0"
 
 # runtime-minestom
-minestom = "244f8785ff"
+minestom = "737b663a4c"
 
 
 [libraries]
