@@ -3,21 +3,18 @@ plugins {
     `maven-publish`
 }
 
+val repositoryName: String by project
 val snapshotRepository: String by project
 val releaseRepository: String by project
 
 publishing {
     repositories {
         maven {
-            val isSnapshot = project.version.toString().endsWith("-SNAPSHOT")
+            val snapshot = project.version.toString().endsWith("-SNAPSHOT")
 
-            url = uri(if (isSnapshot) { snapshotRepository } else { releaseRepository })
-            credentials {
-                username = project.properties["UNNAMED_REPO_USER"] as String?
-                    ?: System.getenv("REPO_USER")
-                password = project.properties["UNNAMED_REPO_PASSWORD"] as String?
-                    ?: System.getenv("REPO_PASSWORD")
-            }
+            name = repositoryName
+            url = uri(if (snapshot) { snapshotRepository } else { releaseRepository })
+            credentials(PasswordCredentials::class)
         }
     }
     publications {
