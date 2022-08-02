@@ -100,10 +100,8 @@ final class AnimationControllerImpl implements AnimationController {
             Vector3Float parentRotation,
             Vector3Float parentPosition
     ) {
-
         KeyFrame frame = nextFrame(bone.name());
         Vector3Float framePosition = frame.position();
-
         Vector3Float frameRotation = Vectors.toRadians(frame.rotation());
 
         Vector3Float defaultPosition = bone.position();
@@ -202,20 +200,23 @@ final class AnimationControllerImpl implements AnimationController {
                 // the animation finished
                 noNext = 0;
                 switch (current.loopMode()) {
-                    case ONCE:
+                    case ONCE -> {
                         nextAnimation();
                         // animation ended, lastFrames are removed
                         // so that next calls will return INITIAL
                         lastFrames.remove(boneName);
                         return frame;
-                    case LOOP:
+                    }
+                    case LOOP -> {
                         createIterators(current);
                         return frame;
-                    case HOLD:
+                    }
+                    case HOLD -> {
                         nextAnimation();
                         // frame is kept
                         lastFrames.put(boneName, frame);
                         return frame;
+                    }
                 }
             }
         }

@@ -38,39 +38,13 @@ import java.util.stream.Stream;
  *
  * @since 1.0.0
  */
-public final class KeyFrame implements Examinable {
+public record KeyFrame(Vector3Float position, Vector3Float rotation, Vector3Float scale) implements Examinable {
 
     public static final KeyFrame INITIAL = new KeyFrame(
             Vector3Float.ZERO,
             Vector3Float.ZERO,
             Vector3Float.ONE
     );
-
-    private final Vector3Float position;
-    private final Vector3Float rotation;
-    private final Vector3Float scale;
-
-    public KeyFrame(
-            Vector3Float position,
-            Vector3Float rotation,
-            Vector3Float scale
-    ) {
-        this.position = position;
-        this.rotation = rotation;
-        this.scale = scale;
-    }
-
-    public Vector3Float position() {
-        return position;
-    }
-
-    public Vector3Float rotation() {
-        return rotation;
-    }
-
-    public Vector3Float scale() {
-        return scale;
-    }
 
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {

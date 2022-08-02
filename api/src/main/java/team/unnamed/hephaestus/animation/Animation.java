@@ -40,11 +40,8 @@ import java.util.stream.Stream;
  *
  * @since 1.0.0
  */
-public final class Animation implements Examinable {
-
-    private final String name;
-    private final LoopMode loopMode;
-    private final Map<String, Timeline> timelines;
+public record Animation(String name, team.unnamed.hephaestus.animation.Animation.LoopMode loopMode,
+                        Map<String, Timeline> timelines) implements Examinable {
 
     public Animation(
             String name,
@@ -62,6 +59,7 @@ public final class Animation implements Examinable {
      * @return The animation name
      * @since 1.0.0
      */
+    @Override
     public String name() {
         return name;
     }
@@ -75,6 +73,7 @@ public final class Animation implements Examinable {
      * @return The animation loop mode
      * @since 1.0.0
      */
+    @Override
     public LoopMode loopMode() {
         return loopMode;
     }
@@ -91,6 +90,7 @@ public final class Animation implements Examinable {
      * @return The animation bone timelines
      * @since 1.0.0
      */
+    @Override
     public Map<String, Timeline> timelines() {
         return timelines;
     }
@@ -112,11 +112,6 @@ public final class Animation implements Examinable {
         return name.equals(that.name)
                 && loopMode == that.loopMode
                 && timelines.equals(that.timelines);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, loopMode, timelines);
     }
 
     @Override

@@ -55,6 +55,11 @@ public interface Timeline extends Iterable<KeyFrame> {
     @Override
     Iterator<KeyFrame> iterator();
 
+    /**
+     * Returns sorted timeline by its position
+     */
+    Timeline sorted();
+
     enum Channel {
         POSITION,
         ROTATION,

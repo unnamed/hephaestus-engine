@@ -29,6 +29,7 @@ import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,20 +50,16 @@ final class DynamicTimeline implements Timeline {
         list.add(new AnimationEntry(position, value));
     }
 
-    private static final class AnimationEntry {
-
-        private final int pos;
-        private final Vector3Float value;
-
-        public AnimationEntry(
-                int pos,
-                Vector3Float value
-        ) {
-            this.pos = pos;
-            this.value = value;
+    @Override
+    public Timeline sorted() {
+        for (Channel channel : Channel.values()) {
+            List<AnimationEntry> entryList = entries[channel.ordinal()];
+            if (entryList != null) entryList.sort(Comparator.comparing(AnimationEntry::pos));
         }
-
+        return this;
     }
+
+    private record AnimationEntry(int pos, Vector3Float value) { }
 
     @Override
     public @NotNull Iterator<KeyFrame> iterator() {
@@ -85,7 +82,7 @@ final class DynamicTimeline implements Timeline {
         /**
          * Underlying iterator for {@link AnimationEntry}, they
          * specify channel, position and value
-         *
+         * <p>
          * <strong>They must be ordered!</strong>
          */
         private final Iterator<AnimationEntry>[] iterators;
@@ -201,18 +198,9 @@ final class DynamicTimeline implements Timeline {
                 }
 
                 switch (channel) {
-                    case POSITION: {
-                        position = value;
-                        break;
-                    }
-                    case ROTATION: {
-                        rotation = value;
-                        break;
-                    }
-                    case SCALE: {
-                        scale = value;
-                        break;
-                    }
+                    case ROTATION -> rotation = value;
+                    case POSITION -> position = value;
+                    case SCALE -> scale = value;
                 }
             }
 

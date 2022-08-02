@@ -71,7 +71,6 @@ public final class BBModelReader implements ModelReader {
 
     @Override
     public Model read(InputStream input) throws IOException {
-
         Reader reader = new InputStreamReader(input);
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
         JsonObject meta = json.get("meta").getAsJsonObject();
@@ -254,7 +253,6 @@ public final class BBModelReader implements ModelReader {
                         Vector3Float.ZERO,
                         cubeIdMap,
                         element.getAsJsonObject(),
-
                         bones,
                         boneAssets
                 );
@@ -282,7 +280,6 @@ public final class BBModelReader implements ModelReader {
             Vector3Float parentAbsolutePosition,
             Map<String, ElementAsset> cubeIdMap,
             JsonObject json,
-
             Map<String, Bone> siblings,
             Map<String, BoneAsset> siblingAssets
     ) throws IOException {
@@ -297,7 +294,7 @@ public final class BBModelReader implements ModelReader {
         // The initial rotation of this bone
         Vector3Float rotation = GsonUtil.isNullOrAbsent(json, "rotation")
                 ? Vector3Float.ZERO
-                : GsonUtil.getVector3FloatFromJson(json.get("rotation"));
+                : GsonUtil.getVector3FloatFromJson(json.get("rotation")).multiply(-1, -1, 1);
 
         // The position of this bone, in Minecraft units
         Vector3Float absolutePosition = unitAbsolutePosition.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
@@ -316,7 +313,6 @@ public final class BBModelReader implements ModelReader {
                         absolutePosition,
                         cubeIdMap,
                         childElement.getAsJsonObject(),
-
                         children,
                         childrenAssets
                 );
@@ -426,9 +422,9 @@ public final class BBModelReader implements ModelReader {
             return v -> v.equals(value);
         }
 
-        private static Predicate<String> prefixed(String prefix) {
-            return v -> v.startsWith(prefix);
-        }
+//        private static Predicate<String> prefixed(String prefix) {
+//            return v -> v.startsWith(prefix);
+//        }
     }
 
 }

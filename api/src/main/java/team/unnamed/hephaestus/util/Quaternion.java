@@ -53,7 +53,7 @@ final class Quaternion {
      * Returns this quaternion represented as an
      * Euler Angle (in ZXY order) in radians.
      *
-     * <p>See https://www.euclideanspace.com/maths/
+     * <p>See <a href="https://www.euclideanspace.com/maths/">...</a>
      * geometry/rotations/conversions/quaternionToEuler
      * /indexLocal.htm</p>
      */
@@ -61,7 +61,7 @@ final class Quaternion {
 
         double test = x * z + y * w;
 
-        // singularity at north pole
+        // singularity at North Pole
         if (test > 0.499F) {
             return new Vector3Float(
                     (float) Math.atan2(x, w),
@@ -70,7 +70,7 @@ final class Quaternion {
             );
         }
 
-        // singularity at south pole
+        // singularity at South Pole
         if (test < -0.499F) {
             return new Vector3Float(
                     (float) -Math.atan2(x, w),

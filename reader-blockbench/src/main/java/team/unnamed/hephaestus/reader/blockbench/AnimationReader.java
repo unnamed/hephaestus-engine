@@ -61,7 +61,8 @@ final class AnimationReader {
 
             String name = animationJson.get("name").getAsString();
             Animation.LoopMode loopMode = getLoopMode(animationJson);
-            int length = Math.round(GsonUtil.parseLenientFloat(animationJson.get("length")) * TICKS_PER_SECOND);
+            // its not used anyway
+            // int length = Math.round(GsonUtil.parseLenientFloat(animationJson.get("length")) * TICKS_PER_SECOND);
 
             if (GsonUtil.isNullOrAbsent(animationJson, "animators")) {
                 // empty animation, no keyframes of any kind
@@ -94,20 +95,16 @@ final class AnimationReader {
                     String channel = keyframeJson.get("channel").getAsString();
                     int time = Math.round(GsonUtil.parseLenientFloat(keyframeJson.get("time")) * TICKS_PER_SECOND);
 
-                    if (channel.equals("scale")) {
-                        // TODO: support scale frames
-                        throw new IOException("Scale frames aren't supported yet." +
-                                " Check animation " + name + " and bone " + boneName);
+                    switch (channel) {
+                        case "position" -> frames.put(time, Timeline.Channel.POSITION, value.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE));
+                        case "rotation" -> frames.put(time, Timeline.Channel.ROTATION, value);
+                        case "scale" -> // TODO: support scale frames
+                                throw new IOException("Scale frames aren't supported yet." +
+                                        " Check animation " + name + " and bone " + boneName);
                     }
-
-                    if (channel.equals("position")) {
-                        value = value.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
-                    }
-
-                    frames.put(time, Timeline.Channel.valueOf(channel.toUpperCase()), value);
                 }
 
-                animators.put(boneName, frames);
+                animators.put(boneName, frames.sorted());
             }
 
             animations.put(name, new Animation(name, loopMode, animators));

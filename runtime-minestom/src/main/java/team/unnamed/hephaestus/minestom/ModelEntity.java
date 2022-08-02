@@ -167,10 +167,10 @@ public class ModelEntity
     }
 
     @Override
-    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
-        return super.setInstance(instance, spawnPosition)
+    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos position) {
+        return super.setInstance(instance, position)
                 .thenAccept(ignored -> {
-                    double yawRadians = Math.toRadians(spawnPosition.yaw());
+                    double yawRadians = Math.toRadians(position.yaw());
                     for (Bone bone : model.bones()) {
                         setBoneInstance(yawRadians, bone, Vector3Float.ZERO);
                     }
