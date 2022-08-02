@@ -107,7 +107,7 @@ final class AnimationReader {
                     frames.put(time, Timeline.Channel.valueOf(channel.toUpperCase()), value);
                 }
 
-                animators.put(boneName, frames);
+                animators.put(boneName, frames.sorted());
             }
 
             animations.put(name, new Animation(name, loopMode, animators));

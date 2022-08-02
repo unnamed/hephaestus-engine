@@ -54,4 +54,19 @@ public class TimelineTest {
         }
     }
 
+    @Test
+    @DisplayName("Test dynamic timeline sorting")
+    public void test_timeline_sorting() {
+        Timeline timeline = Timeline.dynamic();
+
+        timeline.put(2, Timeline.Channel.POSITION, Vector3Float.ZERO);
+        timeline.put(0, Timeline.Channel.POSITION, Vector3Float.ONE);
+        timeline.put(1, Timeline.Channel.POSITION, Vector3Float.ZERO);
+
+        Assertions.assertEquals(
+                timeline.sorted().iterator().next().position(),
+                Vector3Float.ONE
+        );
+    }
+
 }

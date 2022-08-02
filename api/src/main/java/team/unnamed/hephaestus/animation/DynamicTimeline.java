@@ -29,6 +29,7 @@ import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -62,6 +63,9 @@ final class DynamicTimeline implements Timeline {
             this.value = value;
         }
 
+        public int getPos() {
+            return pos;
+        }
     }
 
     @Override
@@ -77,6 +81,15 @@ final class DynamicTimeline implements Timeline {
             iterators[index] = entryList.iterator();
         }
         return new DynamicKeyFrameIterator(iterators);
+    }
+
+    @Override
+    public Timeline sorted() {
+        for (Channel channel :Channel.values()) {
+            List<AnimationEntry> entryList = entries[channel.ordinal()];
+            if (entryList != null) entryList.sort(Comparator.comparing(AnimationEntry::getPos));
+        }
+        return this;
     }
 
     private static class DynamicKeyFrameIterator
