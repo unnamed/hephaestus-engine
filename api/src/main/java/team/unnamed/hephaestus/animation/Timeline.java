@@ -56,7 +56,9 @@ public interface Timeline extends Iterable<KeyFrame> {
     Iterator<KeyFrame> iterator();
 
     /**
-     * Returns sorted timeline by its position
+     * Sorts timeline entries by its position
+     *
+     * @return Timeline with sorted entries
      */
     Timeline sorted();
 

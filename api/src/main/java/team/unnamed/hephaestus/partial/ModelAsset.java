@@ -33,15 +33,52 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public record ModelAsset(String name, Map<String, Writable> textures, Map<Integer, String> textureMapping,
-                         Map<String, BoneAsset> boneMap) implements Examinable {
+public class ModelAsset implements Examinable {
+
+    private final String name;
+    private final Map<String, Writable> textures;
+    private final Map<Integer, String> textureMapping;
+    private final Map<String, BoneAsset> bones;
+
+    public ModelAsset(
+            String name,
+            Map<String, Writable> textures,
+            Map<Integer, String> textureMapping,
+            Map<String, BoneAsset> bones
+    ) {
+        this.name = name;
+        this.textures = textures;
+        this.textureMapping = textureMapping;
+        this.bones = bones;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public Map<String, Writable> textures() {
+        return textures;
+    }
+
+    public Map<Integer, String> textureMapping() {
+        return textureMapping;
+    }
+
+    public Collection<BoneAsset> bones() {
+        return bones.values();
+    }
+
+    public Map<String, BoneAsset> boneMap() {
+        return bones;
+    }
+
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
                 ExaminableProperty.of("name", name),
                 ExaminableProperty.of("textures", textures),
                 ExaminableProperty.of("textureMapping", textureMapping),
-                ExaminableProperty.of("bones", boneMap)
+                ExaminableProperty.of("bones", bones)
         );
     }
 
@@ -50,7 +87,4 @@ public record ModelAsset(String name, Map<String, Writable> textures, Map<Intege
         return examine(StringExaminer.simpleEscaping());
     }
 
-    public Collection<BoneAsset> bones() {
-        return boneMap.values();
-    }
 }

@@ -36,8 +36,40 @@ import team.unnamed.creative.model.ElementRotation;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public record ElementAsset(Vector3Float from, Vector3Float to, ElementRotation rotation,
-                           Map<CubeFace, ElementFace> faces) implements Examinable {
+public class ElementAsset implements Examinable {
+
+    private final Vector3Float from;
+    private final Vector3Float to;
+    private final ElementRotation rotation;
+    private final Map<CubeFace, ElementFace> faces;
+
+    public ElementAsset(
+            Vector3Float from,
+            Vector3Float to,
+            ElementRotation rotation,
+            Map<CubeFace, ElementFace> faces
+    ) {
+        this.from = from;
+        this.to = to;
+        this.rotation = rotation;
+        this.faces = faces;
+    }
+
+    public Vector3Float from() {
+        return from;
+    }
+
+    public Vector3Float to() {
+        return to;
+    }
+
+    public ElementRotation rotation() {
+        return rotation;
+    }
+
+    public Map<CubeFace, ElementFace> faces() {
+        return faces;
+    }
 
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {

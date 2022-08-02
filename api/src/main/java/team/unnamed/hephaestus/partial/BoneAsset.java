@@ -34,8 +34,61 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public record BoneAsset(String name, Vector3Float pivot, int customModelData, Vector3Float offset,
-                        List<ElementAsset> cubes, boolean small, Map<String, BoneAsset> childrenMap) implements Examinable {
+public class BoneAsset implements Examinable {
+
+    private final String name;
+    private final Vector3Float pivot;
+    private final int customModelData;
+    private final Vector3Float offset;
+    private final List<ElementAsset> cubes;
+    private final boolean small;
+    private final Map<String, BoneAsset> children;
+
+    public BoneAsset(
+            String name,
+            Vector3Float pivot,
+            int customModelData,
+            Vector3Float offset,
+            List<ElementAsset> cubes,
+            boolean small,
+            Map<String, BoneAsset> children
+    ) {
+        this.name = name;
+        this.pivot = pivot;
+        this.customModelData = customModelData;
+        this.offset = offset;
+        this.cubes = cubes;
+        this.small = small;
+        this.children = children;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public Vector3Float pivot() {
+        return pivot;
+    }
+
+    public int customModelData() {
+        return customModelData;
+    }
+
+    public Vector3Float offset() {
+        return offset;
+    }
+
+    public List<ElementAsset> cubes() {
+        return cubes;
+    }
+
+    public boolean small() {
+        return small;
+    }
+
+    public Collection<BoneAsset> children() {
+        return children.values();
+    }
 
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
@@ -44,16 +97,13 @@ public record BoneAsset(String name, Vector3Float pivot, int customModelData, Ve
                 ExaminableProperty.of("pivot", pivot),
                 ExaminableProperty.of("customModelData", customModelData),
                 ExaminableProperty.of("cubes", cubes),
-                ExaminableProperty.of("children", childrenMap)
+                ExaminableProperty.of("children", children)
         );
-    }
-
-    public Collection<BoneAsset> children() {
-        return childrenMap.values();
     }
 
     @Override
     public String toString() {
         return examine(StringExaminer.simpleEscaping());
     }
+
 }

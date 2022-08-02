@@ -50,16 +50,23 @@ final class DynamicTimeline implements Timeline {
         list.add(new AnimationEntry(position, value));
     }
 
-    @Override
-    public Timeline sorted() {
-        for (Channel channel : Channel.values()) {
-            List<AnimationEntry> entryList = entries[channel.ordinal()];
-            if (entryList != null) entryList.sort(Comparator.comparing(AnimationEntry::pos));
-        }
-        return this;
-    }
+    private static final class AnimationEntry {
 
-    private record AnimationEntry(int pos, Vector3Float value) { }
+        private final int pos;
+        private final Vector3Float value;
+
+        public AnimationEntry(
+                int pos,
+                Vector3Float value
+        ) {
+            this.pos = pos;
+            this.value = value;
+        }
+
+        public int getPos() {
+            return pos;
+        }
+    }
 
     @Override
     public @NotNull Iterator<KeyFrame> iterator() {
@@ -76,13 +83,22 @@ final class DynamicTimeline implements Timeline {
         return new DynamicKeyFrameIterator(iterators);
     }
 
+    @Override
+    public Timeline sorted() {
+        for (Channel channel :Channel.values()) {
+            List<AnimationEntry> entryList = entries[channel.ordinal()];
+            if (entryList != null) entryList.sort(Comparator.comparing(AnimationEntry::getPos));
+        }
+        return this;
+    }
+
     private static class DynamicKeyFrameIterator
             implements Iterator<KeyFrame> {
 
         /**
          * Underlying iterator for {@link AnimationEntry}, they
          * specify channel, position and value
-         * <p>
+         *
          * <strong>They must be ordered!</strong>
          */
         private final Iterator<AnimationEntry>[] iterators;
@@ -198,9 +214,18 @@ final class DynamicTimeline implements Timeline {
                 }
 
                 switch (channel) {
-                    case ROTATION -> rotation = value;
-                    case POSITION -> position = value;
-                    case SCALE -> scale = value;
+                    case POSITION: {
+                        position = value;
+                        break;
+                    }
+                    case ROTATION: {
+                        rotation = value;
+                        break;
+                    }
+                    case SCALE: {
+                        scale = value;
+                        break;
+                    }
                 }
             }
 

@@ -71,6 +71,7 @@ public final class BBModelReader implements ModelReader {
 
     @Override
     public Model read(InputStream input) throws IOException {
+
         Reader reader = new InputStreamReader(input);
         JsonObject json = JSON_PARSER.parse(reader).getAsJsonObject();
         JsonObject meta = json.get("meta").getAsJsonObject();
@@ -253,6 +254,7 @@ public final class BBModelReader implements ModelReader {
                         Vector3Float.ZERO,
                         cubeIdMap,
                         element.getAsJsonObject(),
+
                         bones,
                         boneAssets
                 );
@@ -280,6 +282,7 @@ public final class BBModelReader implements ModelReader {
             Vector3Float parentAbsolutePosition,
             Map<String, ElementAsset> cubeIdMap,
             JsonObject json,
+
             Map<String, Bone> siblings,
             Map<String, BoneAsset> siblingAssets
     ) throws IOException {
@@ -313,6 +316,7 @@ public final class BBModelReader implements ModelReader {
                         absolutePosition,
                         cubeIdMap,
                         childElement.getAsJsonObject(),
+
                         children,
                         childrenAssets
                 );
@@ -422,9 +426,9 @@ public final class BBModelReader implements ModelReader {
             return v -> v.equals(value);
         }
 
-//        private static Predicate<String> prefixed(String prefix) {
-//            return v -> v.startsWith(prefix);
-//        }
+        private static Predicate<String> prefixed(String prefix) {
+            return v -> v.startsWith(prefix);
+        }
     }
 
 }
