@@ -77,11 +77,7 @@ public final class BBModelReader implements ModelReader {
         JsonObject meta = json.get("meta").getAsJsonObject();
 
         // TODO: we can take the "meta.creation_time" date for generating resource pack
-        String modelName = json.get("geometry_name").getAsString();
-        if (modelName.isEmpty()) {
-            // fallback to "name"
-            modelName = json.get("name").getAsString();
-        }
+        String modelName = json.get("name").getAsString();
 
         // check for box uv
         if (!GsonUtil.isNullOrAbsent(meta, "box_uv") && meta.get("box_uv").getAsBoolean()) {
@@ -297,7 +293,7 @@ public final class BBModelReader implements ModelReader {
         // The initial rotation of this bone
         Vector3Float rotation = GsonUtil.isNullOrAbsent(json, "rotation")
                 ? Vector3Float.ZERO
-                : GsonUtil.getVector3FloatFromJson(json.get("rotation"));
+                : GsonUtil.getVector3FloatFromJson(json.get("rotation")).multiply(-1, -1, 1);
 
         // The position of this bone, in Minecraft units
         Vector3Float absolutePosition = unitAbsolutePosition.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);

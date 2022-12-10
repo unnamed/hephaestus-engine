@@ -27,12 +27,17 @@ import net.kyori.adventure.text.Component;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
+import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.LivingEntity;
+import net.minestom.server.entity.Player;
+import net.minestom.server.entity.metadata.other.AreaEffectCloudMeta;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
+import net.minestom.server.network.packet.server.play.SetPassengersPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
@@ -40,6 +45,7 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Minecraft;
 import team.unnamed.hephaestus.view.BaseBoneView;
 
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -50,7 +56,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @since 1.0.0
  */
-public final class BoneEntity extends GenericBoneEntity {
+public final class AreaEffectCloudBoneEntity extends GenericBoneEntity {
 
     private static final ItemStack BASE_HELMET =
             ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
@@ -62,32 +68,44 @@ public final class BoneEntity extends GenericBoneEntity {
     private final ModelEntity view;
     private final Bone bone;
 
+    private final EntityCreature armorstand;
+
     // cached height offset, either SMALL_OFFSET
     // or LARGE_OFFSET
     private final float offset;
 
-    public BoneEntity(
+    public AreaEffectCloudBoneEntity(
             ModelEntity view,
             Bone bone
     ) {
-        super(EntityType.ARMOR_STAND);
+        super(EntityType.AREA_EFFECT_CLOUD);
         this.view = view;
         this.bone = bone;
         this.offset = bone.small()
                 ? Minecraft.ARMOR_STAND_SMALL_VERTICAL_OFFSET
                 : Minecraft.ARMOR_STAND_DEFAULT_VERTICAL_OFFSET;
+
+        this.armorstand = new EntityCreature(EntityType.ARMOR_STAND);
         initialize();
     }
 
     private void initialize() {
-        ArmorStandMeta meta = (ArmorStandMeta) getEntityMeta();
+        setNoGravity(true);
+        setInvulnerable(true);
+        setSilent(true);
+        setInvulnerable(true);
+
+        AreaEffectCloudMeta cloudMeta = (AreaEffectCloudMeta) getEntityMeta();
+        cloudMeta.setRadius(0);
+
+        ArmorStandMeta meta = (ArmorStandMeta) armorstand.getEntityMeta();
         meta.setSilent(true);
         meta.setHasNoGravity(true);
         meta.setSmall(bone.small());
         meta.setInvisible(true);
 
         // set helmet with custom model data from our bone
-        setHelmet(BASE_HELMET.withMeta(itemMeta ->
+        armorstand.setHelmet(BASE_HELMET.withMeta(itemMeta ->
                 itemMeta.customModelData(bone.customModelData())));
     }
 
@@ -133,7 +151,7 @@ public final class BoneEntity extends GenericBoneEntity {
      */
     @Override
     public void colorize(Color color) {
-        setHelmet(getHelmet().withMeta(LeatherArmorMeta.class, meta -> meta.color(color)));
+        armorstand.setHelmet(armorstand.getHelmet().withMeta(LeatherArmorMeta.class, meta -> meta.color(color)));
     }
 
     @Override
@@ -157,7 +175,7 @@ public final class BoneEntity extends GenericBoneEntity {
 
     @Override
     public void rotation(Vector3Float rotation) {
-        ArmorStandMeta meta = (ArmorStandMeta) getEntityMeta();
+        ArmorStandMeta meta = (ArmorStandMeta) armorstand.getEntityMeta();
         meta.setHeadRotation(new Vec(
                 rotation.x(),
                 rotation.y(),
@@ -172,7 +190,16 @@ public final class BoneEntity extends GenericBoneEntity {
 
     @Override
     public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos pos) {
-        return super.setInstance(instance, pos.sub(0, offset, 0));
+        return super.setInstance(instance, pos.sub(0, offset, 0)).thenAccept(ignored -> {
+            armorstand.setInstance(instance, pos).join();
+        });
     }
 
+    @Override
+    public void updateNewViewer(@NotNull Player player) {
+        super.updateNewViewer(player);
+        this.scheduleNextTick(entity -> player.sendPacket(
+                new SetPassengersPacket(getEntityId(), Collections.singletonList(this.armorstand.getEntityId()))
+        ));
+    }
 }

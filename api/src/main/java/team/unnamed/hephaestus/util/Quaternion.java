@@ -87,11 +87,11 @@ final class Quaternion {
         double y2 = y + y;
         double z2 = z + z;
 
-        return new Vector3Float(
+        return Vectors.toDegrees(new Vector3Float(
                 (float) Math.atan2(w * x2 - y * z2, 1 - 2 * (sqx + sqy)),
                 (float) -Math.asin(2 * test),
                 (float) Math.atan2(w * z2 - x * y2, 1 - 2 * (sqz + sqy))
-        );
+        ));
     }
 
     /**
@@ -121,6 +121,7 @@ final class Quaternion {
      * {@code euler} angles (in radians)
      */
     public static Quaternion fromEuler(Vector3Float euler) {
+        euler = Vectors.toRadians(euler);
 
         // based on https://www.javatips.net/api/rotation-vector
         // -compass-master/RotationVectorCompass/src/com/adamrat

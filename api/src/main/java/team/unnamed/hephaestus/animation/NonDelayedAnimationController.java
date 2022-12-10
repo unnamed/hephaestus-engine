@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-final class AnimationControllerImpl implements AnimationController {
+final class NonDelayedAnimationController implements AnimationController {
 
     private final Deque<Animation> queue = new LinkedList<>();
     private final BaseModelView view;
@@ -48,7 +48,7 @@ final class AnimationControllerImpl implements AnimationController {
     // Reference to the animation currently being played
     private @Nullable Animation current;
 
-    AnimationControllerImpl(BaseModelView view) {
+    NonDelayedAnimationController(BaseModelView view) {
         this.view = view;
     }
 
@@ -101,19 +101,21 @@ final class AnimationControllerImpl implements AnimationController {
             Vector3Float parentPosition
     ) {
 
-        KeyFrame frame = nextFrame(bone.name());
-        Vector3Float framePosition = frame.position();
-
-        Vector3Float frameRotation = Vectors.toRadians(frame.rotation());
-
-        Vector3Float defaultPosition = bone.position();
-        Vector3Float defaultRotation = Vectors.toRadians(bone.rotation());
-
-        Vector3Float localPosition = framePosition.add(defaultPosition);
-        Vector3Float localRotation = defaultRotation.add(frameRotation);
+        BaseBoneView boneView = view.bone(bone.name());
+        assert boneView != null;
 
         Vector3Float globalPosition;
         Vector3Float globalRotation;
+
+        KeyFrame frame = nextFrame(bone.name());
+        Vector3Float framePosition = frame.position();
+        Vector3Float frameRotation = frame.rotation();
+
+        Vector3Float defaultPosition = bone.position();
+        Vector3Float defaultRotation = bone.rotation();
+
+        Vector3Float localPosition = framePosition.add(defaultPosition);
+        Vector3Float localRotation = defaultRotation.add(frameRotation);
 
         if (parent == null) {
             globalPosition = Vectors.rotateAroundY(localPosition, yaw);
@@ -125,8 +127,7 @@ final class AnimationControllerImpl implements AnimationController {
             ).add(parentPosition);
             globalRotation = Vectors.combineRotations(localRotation, parentRotation);
         }
-
-        BaseBoneView boneView = view.bone(bone.name());
+        
         boneView.position(globalPosition);
         boneView.rotation(globalRotation);
 
@@ -191,11 +192,11 @@ final class AnimationControllerImpl implements AnimationController {
             // if there are more key frames for current
             // bone name
             KeyFrame frame = iterator.next();
+            lastFrames.put(boneName, frame);
 
             if (iterator.hasNext()) {
                 // if current bone animation iterator did not
                 // finish, use the current frame
-                lastFrames.put(boneName, frame);
                 return frame;
             } else if (++noNext >= iterators.size()) {
                 // all iterators fully consumed, this means
@@ -213,8 +214,6 @@ final class AnimationControllerImpl implements AnimationController {
                         return frame;
                     case HOLD:
                         nextAnimation();
-                        // frame is kept
-                        lastFrames.put(boneName, frame);
                         return frame;
                 }
             }

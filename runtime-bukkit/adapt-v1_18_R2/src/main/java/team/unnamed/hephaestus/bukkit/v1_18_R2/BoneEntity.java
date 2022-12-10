@@ -155,9 +155,9 @@ final class BoneEntity
     @Override
     public void rotation(Vector3Float rotation) {
         super.setHeadPose(new Rotations(
-                (float) Math.toDegrees(rotation.x()),
-                (float) Math.toDegrees(rotation.y()),
-                (float) Math.toDegrees(rotation.z())
+                rotation.x(),
+                rotation.y(),
+                rotation.z()
         ));
     }
 

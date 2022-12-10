@@ -58,6 +58,7 @@ public final class Vectors {
     }
 
     public static Vector3Float rotate(Vector3Float vector, Vector3Float rotation) {
+        rotation = toRadians(rotation);
 
         double cosX = Math.cos(rotation.x()), sinX = Math.sin(rotation.x());
         double cosY = Math.cos(rotation.y()), sinY = Math.sin(rotation.y());

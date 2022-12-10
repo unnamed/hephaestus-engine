@@ -74,7 +74,16 @@ public interface AnimationController {
     void tick(double yaw);
 
     static AnimationController create(BaseModelView view) {
-        return new AnimationControllerImpl(view);
+        return new DelayedAnimationController(view);
+    }
+
+    /**
+     * ONLY USE WHEN USING AREA EFFECT CLOUDS SO THERE IS NO VISIBLE DELAY BETWEEN THE BONES
+     * @param view the model view to use
+     * @return Animation controller
+     */
+    static AnimationController nonDelayed(BaseModelView view) {
+        return new NonDelayedAnimationController(view);
     }
 
 }

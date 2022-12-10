@@ -48,20 +48,37 @@ public class ModelEntity
         extends EntityCreature
         implements BaseModelView {
 
+    public enum BoneType {
+        ARMOR_STAND,
+        AREA_EFFECT_CLOUD
+    }
+
     private final Model model;
+    private final BoneType boneType;
 
-    private final Map<String, BoneEntity> bones = new ConcurrentHashMap<>();
-
+    private final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
     private final AnimationController animationController;
+
+    public ModelEntity(
+            EntityType type,
+            Model model,
+            BoneType boneType
+    ) {
+        super(type);
+        this.model = model;
+        this.boneType = boneType;
+        this.animationController = boneType == BoneType.ARMOR_STAND
+                ? AnimationController.create(this)
+                : AnimationController.nonDelayed(this);
+
+        initialize();
+    }
 
     public ModelEntity(
             EntityType type,
             Model model
     ) {
-        super(type);
-        this.model = model;
-        this.animationController = AnimationController.create(this);
-        initialize();
+        this(type, model, BoneType.ARMOR_STAND);
     }
 
     private void initialize() {
@@ -76,7 +93,10 @@ public class ModelEntity
     }
 
     private void createBone(Bone bone) {
-        bones.put(bone.name(), new BoneEntity(this, bone));
+        bones.put(bone.name(), boneType == BoneType.ARMOR_STAND
+                ? new BoneEntity(this, bone)
+                : new AreaEffectCloudBoneEntity(this, bone)
+        );
         for (Bone child : bone.children()) {
             createBone(child);
         }
@@ -98,18 +118,18 @@ public class ModelEntity
     }
 
     public void colorize(Color color) {
-        for (BoneEntity entity : bones.values()) {
+        for (GenericBoneEntity entity : bones.values()) {
             entity.colorize(color);
         }
     }
 
     @Override
-    public Collection<BoneEntity> bones() {
+    public Collection<GenericBoneEntity> bones() {
         return bones.values();
     }
 
     @Override
-    public @Nullable BoneEntity bone(String name) {
+    public @Nullable GenericBoneEntity bone(String name) {
         return bones.get(name);
     }
 
@@ -131,7 +151,7 @@ public class ModelEntity
         Vector3Float position = bone.position().add(parentPosition);
         Vector3Float rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
 
-        BoneEntity entity = bone(bone.name());
+        GenericBoneEntity entity = bone(bone.name());
         if (entity != null) {
             entity.setInstance(instance, super.position.add(
                     rotatedPosition.x(),

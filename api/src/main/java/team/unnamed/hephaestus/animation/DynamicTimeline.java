@@ -29,6 +29,7 @@ import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -74,7 +75,8 @@ final class DynamicTimeline implements Timeline {
             if (entryList == null) {
                 entryList = Collections.emptyList();
             }
-            iterators[index] = entryList.iterator();
+            entryList.sort(Comparator.comparingInt(entry -> entry.pos));
+            iterators[index] = new ArrayList<>(entryList).iterator();
         }
         return new DynamicKeyFrameIterator(iterators);
     }
