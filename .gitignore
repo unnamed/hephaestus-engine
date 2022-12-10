@@ -2,8 +2,9 @@
 .gradle
 
 # ide files
-.idea
+/.idea/*
 *.iml
+!/.idea/copyright/
 
 # target dirs
 build
