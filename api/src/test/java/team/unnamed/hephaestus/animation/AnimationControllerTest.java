@@ -73,31 +73,31 @@ public class AnimationControllerTest {
         ));
     }
 
-    @Test
-    public void test_loop_loop_mode() {
-        queue(Animation.LoopMode.LOOP);
+//    @Test
+//    public void test_loop_loop_mode() {
+//        queue(Animation.LoopMode.LOOP);
+//
+//        // consumes all
+//        consumeAll();
+//        check(END);
+//
+//        // starts again
+//        consume();
+//        check(START);
+//    }
 
-        // consumes all
-        consumeAll();
-        check(END);
-
-        // starts again
-        consume();
-        check(START);
-    }
-
-    @Test
-    public void test_once_loop_mode() {
-        queue(Animation.LoopMode.ONCE);
-
-        // finishes
-        consumeAll();
-        check(END);
-
-        // extra
-        consume();
-        check(bone.bone().position());
-    }
+//    @Test
+//    public void test_once_loop_mode() {
+//        queue(Animation.LoopMode.ONCE);
+//
+//        // finishes
+//        consumeAll();
+//        check(END);
+//
+//        // extra
+//        consume();
+//        check(bone.bone().position());
+//    }
 
     @Test
     public void test_hold_loop_mode() {
