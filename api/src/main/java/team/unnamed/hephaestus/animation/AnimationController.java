@@ -74,7 +74,7 @@ public interface AnimationController {
     void tick(double yaw);
 
     static AnimationController create(BaseModelView view) {
-        return new DelayedAnimationController(view);
+        return new DetailedAnimationController(view);
     }
 
     /**
@@ -83,7 +83,7 @@ public interface AnimationController {
      * @return Animation controller
      */
     static AnimationController nonDelayed(BaseModelView view) {
-        return new NonDelayedAnimationController(view);
+        return new NormalAnimationController(view);
     }
 
 }

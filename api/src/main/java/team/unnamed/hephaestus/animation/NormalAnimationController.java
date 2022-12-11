@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-final class NonDelayedAnimationController implements AnimationController {
+class NormalAnimationController implements AnimationController {
 
     private final Deque<Animation> queue = new LinkedList<>();
     private final BaseModelView view;
@@ -48,7 +48,7 @@ final class NonDelayedAnimationController implements AnimationController {
     // Reference to the animation currently being played
     private @Nullable Animation current;
 
-    NonDelayedAnimationController(BaseModelView view) {
+    NormalAnimationController(BaseModelView view) {
         this.view = view;
     }
 
@@ -127,9 +127,9 @@ final class NonDelayedAnimationController implements AnimationController {
             ).add(parentPosition);
             globalRotation = Vectors.combineRotations(localRotation, parentRotation);
         }
-        
-        boneView.position(globalPosition);
-        boneView.rotation(globalRotation);
+
+        // TODO: Ugly design, why does it just return rotation? Should we use mutable positions/rotations?
+        globalRotation = updateBonePositionAndRotation(boneView, globalPosition, globalRotation);
 
         for (Bone child : bone.children()) {
             updateBone(
@@ -140,6 +140,16 @@ final class NonDelayedAnimationController implements AnimationController {
                     globalPosition
             );
         }
+    }
+
+    protected Vector3Float updateBonePositionAndRotation(
+            BaseBoneView boneView,
+            Vector3Float position,
+            Vector3Float rotation
+    ) {
+        boneView.position(position);
+        boneView.rotation(rotation);
+        return rotation;
     }
 
     @Override
