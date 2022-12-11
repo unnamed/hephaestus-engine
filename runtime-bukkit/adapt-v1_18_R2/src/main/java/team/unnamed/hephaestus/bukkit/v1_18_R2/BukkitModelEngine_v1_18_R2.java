@@ -38,13 +38,13 @@ import org.bukkit.plugin.Plugin;
 import org.spigotmc.AsyncCatcher;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
-import team.unnamed.hephaestus.bukkit.ModelEngine;
+import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static java.util.Objects.requireNonNull;
 
-public final class ModelEngine_v1_18_R2 implements ModelEngine {
+public final class BukkitModelEngine_v1_18_R2 implements BukkitModelEngine {
 
     private static final Access.FieldReflect<ServerEntity> SERVER_ENTITY_FIELD
             = Access.findFieldByType(ChunkMap.TrackedEntity.class, ServerEntity.class);
@@ -54,7 +54,7 @@ public final class ModelEngine_v1_18_R2 implements ModelEngine {
 
     private final EntityFactory entityFactory;
 
-    private ModelEngine_v1_18_R2(Plugin plugin, EntityFactory entityFactory) {
+    private BukkitModelEngine_v1_18_R2(Plugin plugin, EntityFactory entityFactory) {
         requireNonNull(plugin, "plugin");
         this.entityFactory = requireNonNull(entityFactory, "entityFactory");
         Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin), plugin);
@@ -83,11 +83,11 @@ public final class ModelEngine_v1_18_R2 implements ModelEngine {
         return entity.getBukkitEntity();
     }
 
-    public static ModelEngine create(Plugin plugin, EntityFactory entityFactory) {
-        return new ModelEngine_v1_18_R2(plugin, entityFactory);
+    public static BukkitModelEngine create(Plugin plugin, EntityFactory entityFactory) {
+        return new BukkitModelEngine_v1_18_R2(plugin, entityFactory);
     }
 
-    public static ModelEngine create(Plugin plugin) {
+    public static BukkitModelEngine create(Plugin plugin) {
         return create(plugin, EntityFactory.DEFAULT);
     }
 

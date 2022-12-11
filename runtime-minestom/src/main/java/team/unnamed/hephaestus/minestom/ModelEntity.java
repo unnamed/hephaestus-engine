@@ -38,6 +38,7 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.animation.AnimationController;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseModelView;
+import static team.unnamed.hephaestus.minestom.MinestomModelEngine.BoneType;
 
 import java.util.Collection;
 import java.util.Map;
@@ -47,11 +48,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ModelEntity
         extends EntityCreature
         implements BaseModelView {
-
-    public enum BoneType {
-        ARMOR_STAND,
-        AREA_EFFECT_CLOUD
-    }
 
     private final Model model;
     private final BoneType boneType;
