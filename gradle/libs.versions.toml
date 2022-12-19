@@ -1,5 +1,5 @@
 [versions]
-creative = "0.3.0-SNAPSHOT"
+creative = "0.5.1-SNAPSHOT"
 adventure = "4.9.3"
 annotations = "23.0.0"
 
