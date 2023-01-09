@@ -30,24 +30,24 @@ import team.unnamed.hephaestus.util.Vectors;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 final class DynamicTimeline implements Timeline {
 
-    private static final int CHANNEL_COUNT = Channel.values().length;
-
-    @SuppressWarnings("unchecked")
-    private final List<AnimationEntry>[] entries = new List[CHANNEL_COUNT];
+    private final Map<Channel, List<AnimationEntry>> entries = new HashMap<>();
 
     @Override
     public void put(int position, Channel channel, Vector3Float value) {
-        int index = channel.ordinal();
-        List<AnimationEntry> list = entries[index];
-        if (list == null) {
-            list = entries[index] = new ArrayList<>();
-        }
-        list.add(new AnimationEntry(position, value));
+         entries.computeIfAbsent(channel, k -> new ArrayList<>())
+                 .add(new AnimationEntry(position, value));
+    }
+
+    @Override
+    public @NotNull Iterator<KeyFrame> iterator() {
+        return new DynamicKeyFrameIterator(entries);
     }
 
     private static final class AnimationEntry {
@@ -65,30 +65,16 @@ final class DynamicTimeline implements Timeline {
 
     }
 
-    @Override
-    public @NotNull Iterator<KeyFrame> iterator() {
-        @SuppressWarnings("unchecked")
-        Iterator<AnimationEntry>[] iterators = new Iterator[CHANNEL_COUNT];
-        for (Channel channel : Channel.values()) {
-            int index = channel.ordinal();
-            List<AnimationEntry> entryList = entries[index];
-            if (entryList == null) {
-                entryList = Collections.emptyList();
-            }
-            entryList.sort(Comparator.comparingInt(entry -> entry.pos));
-            iterators[index] = new ArrayList<>(entryList).iterator();
-        }
-        return new DynamicKeyFrameIterator(iterators);
-    }
-
     private static class DynamicKeyFrameIterator
             implements Iterator<KeyFrame> {
+
+        private static final int CHANNEL_COUNT = Channel.values().length;
 
         /**
          * Underlying iterator for {@link AnimationEntry}, they
          * specify channel, position and value
          *
-         * <strong>They must be ordered!</strong>
+         * <p><strong>They must be ordered!</strong></p>
          */
         private final Iterator<AnimationEntry>[] iterators;
 
@@ -105,16 +91,19 @@ final class DynamicTimeline implements Timeline {
         private final int[] nextPositions = new int[CHANNEL_COUNT];
         private final Vector3Float[] nextValues = new Vector3Float[CHANNEL_COUNT];
 
-        public DynamicKeyFrameIterator(Iterator<AnimationEntry>[] iterators) {
-            this.iterators = iterators;
+        @SuppressWarnings({"unchecked"})
+        public DynamicKeyFrameIterator(Map<Channel, List<AnimationEntry>> entries) {
+            this.iterators = new Iterator[CHANNEL_COUNT];
 
-            // initialize previous and next values
             for (Channel channel : Channel.values()) {
                 int index = channel.ordinal();
 
-                previousValues[index] = channel == Channel.SCALE
-                        ? Vector3Float.ONE
-                        : Vector3Float.ZERO;
+                List<AnimationEntry> entryList = entries.getOrDefault(channel, Collections.emptyList());
+                entryList.sort(Comparator.comparingInt(entry -> entry.pos));
+                this.iterators[channel.ordinal()] = new ArrayList<>(entryList).iterator();
+
+                // initialize previous and last values
+                previousValues[index] = channel.initialValue();
 
                 Iterator<AnimationEntry> iterator = iterators[index];
 

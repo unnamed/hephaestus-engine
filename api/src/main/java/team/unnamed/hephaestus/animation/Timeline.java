@@ -56,9 +56,19 @@ public interface Timeline extends Iterable<KeyFrame> {
     Iterator<KeyFrame> iterator();
 
     enum Channel {
-        POSITION,
-        ROTATION,
-        SCALE
+        POSITION(Vector3Float.ZERO),
+        ROTATION(Vector3Float.ZERO),
+        SCALE(Vector3Float.ONE);
+
+        private final Vector3Float initialValue;
+
+        Channel(Vector3Float initialValue) {
+            this.initialValue = initialValue;
+        }
+
+        public Vector3Float initialValue() {
+            return initialValue;
+        }
     }
 
     /**
