@@ -1,7 +1,7 @@
 <component name="CopyrightManager">
-  <settings default="hephaestus-engine - MIT License">
+  <settings default="hephaestus-engine-mit-license">
     <module2copyright>
-      <element module="All" copyright="hephaestus-engine - MIT License" />
+      <element module="All" copyright="hephaestus-engine-mit-license" />
     </module2copyright>
     <LanguageOptions name="__TEMPLATE__">
       <option name="addBlankAfter" value="false" />
