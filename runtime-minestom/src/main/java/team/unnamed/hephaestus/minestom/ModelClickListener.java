@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.minestom;
 
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
@@ -91,7 +92,8 @@ public final class ModelClickListener {
             node.call(new PlayerEntityInteractEvent(
                     event.getPlayer(),
                     bone.view(),
-                    event.getHand()
+                    event.getHand(),
+                    event.getInteractPosition()
             ));
         }
     }
@@ -102,7 +104,7 @@ public final class ModelClickListener {
 
     private void onItemUse(PlayerUseItemEvent event) {
         Player player = event.getPlayer();
-        checkInteraction(player, model -> new PlayerEntityInteractEvent(player, model, event.getHand()));
+        checkInteraction(player, model -> new PlayerEntityInteractEvent(player, model, event.getHand(), Pos.ZERO));
     }
 
     public static void register(EventNode<Event> node) {
