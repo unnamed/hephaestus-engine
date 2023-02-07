@@ -25,37 +25,41 @@ package team.unnamed.hephaestus.minestom;
 
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
-import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.creative.util.Validate;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelEngine;
+import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
-public class MinestomModelEngine implements ModelEngine {
+public class MinestomModelEngine implements ModelEngine<Player, MinestomLocation> {
+
+    private final MinestomViewTracker tracker = new MinestomViewTracker();
 
     private MinestomModelEngine() {
+    }
+
+    @Override
+    public ModelViewTracker<Player> tracker() {
+        return tracker;
     }
 
     public ModelEntity spawn(EntityType entityType, Model model, BoneType boneType) {
         return new ModelEntity(entityType, model, boneType);
     }
 
-    public ModelEntity spawn(EntityType entityType, Model model, BoneType boneType, Pos position, Instance world) {
+    public ModelEntity spawn(EntityType entityType, Model model, BoneType boneType, Instance world, Pos position) {
         ModelEntity modelEntity = new ModelEntity(entityType, model, boneType);
         modelEntity.setInstance(world, position);
         return modelEntity;
     }
 
+    public ModelEntity spawn(Model model, Instance instance, Pos position) {
+        return spawn(EntityType.ARMOR_STAND, model, BoneType.ARMOR_STAND, instance, position);
+    }
+
     @Override
-    public ModelEntity spawn(Model model, Vector3Float position, float yaw, float pitch, Object world) {
-        Validate.isTrue(world instanceof Instance);
-        return spawn(
-                EntityType.ARMOR_STAND,
-                model,
-                BoneType.ARMOR_STAND,
-                new Pos(position.x(), position.y(), position.z(), yaw, pitch),
-                (Instance) world
-        );
+    public ModelEntity spawn(Model model, MinestomLocation location) {
+        return spawn(model, location.instance(), location.position());
     }
 
     public enum BoneType {

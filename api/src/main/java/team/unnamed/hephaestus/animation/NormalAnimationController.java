@@ -39,7 +39,7 @@ import java.util.Map;
 class NormalAnimationController implements AnimationController {
 
     private final Deque<Animation> queue = new LinkedList<>();
-    private final BaseModelView view;
+    private final BaseModelView<?> view;
 
     private final Map<String, KeyFrame> lastFrames = new HashMap<>();
     private final Map<String, Iterator<KeyFrame>> iterators = new HashMap<>();
@@ -48,7 +48,7 @@ class NormalAnimationController implements AnimationController {
     // Reference to the animation currently being played
     private @Nullable Animation current;
 
-    NormalAnimationController(BaseModelView view) {
+    NormalAnimationController(BaseModelView<?> view) {
         this.view = view;
     }
 

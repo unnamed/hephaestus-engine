@@ -25,9 +25,12 @@ package team.unnamed.hephaestus;
 
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
-public interface ModelEngine {
+public interface ModelEngine<TViewer, TLocation> {
 
-    BaseModelView spawn(Model model, Vector3Float position, float yaw, float pitch, Object world);
+    ModelViewTracker<TViewer> tracker();
+
+    BaseModelView<TViewer> spawn(Model model, TLocation location);
 
 }

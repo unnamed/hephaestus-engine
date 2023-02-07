@@ -28,6 +28,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +48,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ModelEntity
         extends EntityCreature
-        implements BaseModelView {
+        implements BaseModelView<Player> {
 
     private final Model model;
     private final BoneType boneType;
@@ -96,6 +97,11 @@ public class ModelEntity
         for (Bone child : bone.children()) {
             createBone(child);
         }
+    }
+
+    @Override
+    public Collection<Player> viewers() {
+        return super.viewers;
     }
 
     @Override

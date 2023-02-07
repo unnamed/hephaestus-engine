@@ -21,20 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit;
+package team.unnamed.hephaestus.view.track;
 
-import org.bukkit.entity.Mob;
-import org.bukkit.entity.Player;
-import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.view.BaseModelView;
 
-/**
- * Represents a concrete {@link Model} instance
- * entity in a world
- *
- * @since 1.0.0
- */
-public interface ModelEntity
-        extends Mob, BaseModelView<Player> {
+@FunctionalInterface
+public interface ModelViewTrackingRule<TViewer> {
+
+    boolean shouldView(BaseModelView<TViewer> view, TViewer candidate);
+
+    static <TViewer> ModelViewTrackingRule<TViewer> all() {
+        return (view, candidate) -> true;
+    }
 
 }

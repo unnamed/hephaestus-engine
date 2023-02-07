@@ -28,13 +28,16 @@ import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.AnimationController;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-public class MockModelView implements BaseModelView {
+public class MockModelView implements BaseModelView<Object> {
 
     private final Model model;
     private final AnimationController animationController;
     private final Map<String, BaseBoneView> bones;
+    private final Set<Object> viewers = new HashSet<>();
 
     public MockModelView(
             Model model,
@@ -49,6 +52,21 @@ public class MockModelView implements BaseModelView {
     @Override
     public Model model() {
         return model;
+    }
+
+    @Override
+    public Collection<Object> viewers() {
+        return viewers;
+    }
+
+    @Override
+    public boolean addViewer(Object o) {
+        return viewers.add(o);
+    }
+
+    @Override
+    public boolean removeViewer(Object o) {
+        return viewers.remove(o);
     }
 
     @Override

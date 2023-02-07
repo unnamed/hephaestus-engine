@@ -24,13 +24,10 @@
 package team.unnamed.hephaestus.bukkit;
 
 import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.creative.util.Validate;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelEngine;
-import team.unnamed.hephaestus.view.BaseModelView;
 
 /**
  * The hephaestus model engine abstraction for
@@ -39,7 +36,7 @@ import team.unnamed.hephaestus.view.BaseModelView;
  *
  * @since 1.0.0
  */
-public interface BukkitModelEngine extends ModelEngine {
+public interface BukkitModelEngine extends ModelEngine<Player, Location> {
 
     /**
      * Spawns the given {@link Model} model
@@ -62,13 +59,9 @@ public interface BukkitModelEngine extends ModelEngine {
      * @return The created model entity
      * @since 1.0.0
      */
+    @Override
     default ModelEntity spawn(Model model, Location location) {
         return spawn(model, location, CreatureSpawnEvent.SpawnReason.DEFAULT);
     }
 
-    @Override
-    default BaseModelView spawn(Model model, Vector3Float position, float yaw, float pitch, Object world) {
-        Validate.isTrue(world instanceof World);
-        return spawn(model, new Location((World) world, position.x(), position.y(), position.z(), yaw, pitch));
-    }
 }

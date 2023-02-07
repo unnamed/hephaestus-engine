@@ -21,20 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit;
+package team.unnamed.hephaestus.minestom;
 
-import org.bukkit.entity.Mob;
-import org.bukkit.entity.Player;
-import team.unnamed.hephaestus.Model;
+import net.minestom.server.entity.Player;
 import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.track.ModelViewTracker;
+import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
 
-/**
- * Represents a concrete {@link Model} instance
- * entity in a world
- *
- * @since 1.0.0
- */
-public interface ModelEntity
-        extends Mob, BaseModelView<Player> {
+final class MinestomViewTracker implements ModelViewTracker<Player> {
+
+    @Override
+    public boolean startTracking(BaseModelView<Player> view, ModelViewTrackingRule<Player> trackingRule) {
+        // TODO:
+        return false;
+    }
+
+    @Override
+    public boolean stopTracking(BaseModelView<Player> view) {
+        // TODO:
+        return false;
+    }
 
 }

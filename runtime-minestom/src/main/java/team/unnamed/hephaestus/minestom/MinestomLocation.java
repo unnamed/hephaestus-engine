@@ -21,20 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit;
+package team.unnamed.hephaestus.minestom;
 
-import org.bukkit.entity.Mob;
-import org.bukkit.entity.Player;
-import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.view.BaseModelView;
+import net.minestom.server.coordinate.Pos;
+import net.minestom.server.instance.Instance;
 
-/**
- * Represents a concrete {@link Model} instance
- * entity in a world
- *
- * @since 1.0.0
- */
-public interface ModelEntity
-        extends Mob, BaseModelView<Player> {
+public class MinestomLocation {
+
+    private final Instance instance;
+    private final Pos position;
+
+    public MinestomLocation(Instance instance, Pos position) {
+        this.instance = instance;
+        this.position = position;
+    }
+
+    public Instance instance() {
+        return instance;
+    }
+
+    public Pos position() {
+        return position;
+    }
 
 }

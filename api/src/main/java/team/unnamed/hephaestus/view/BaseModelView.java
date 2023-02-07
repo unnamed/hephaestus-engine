@@ -41,13 +41,19 @@ import java.util.Objects;
  *
  * @since 1.0.0
  */
-public interface BaseModelView {
+public interface BaseModelView<TViewer> {
 
     /**
      * Returns the model being viewed
      * from this view instance
      */
     Model model();
+
+    Collection<TViewer> viewers();
+
+    boolean addViewer(TViewer viewer);
+
+    boolean removeViewer(TViewer viewer);
 
     /**
      * Colorizes this view using the specified
