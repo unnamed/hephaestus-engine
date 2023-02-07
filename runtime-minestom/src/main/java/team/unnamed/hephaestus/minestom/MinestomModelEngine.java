@@ -7,13 +7,10 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.util.Validate;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelEngine;
-import team.unnamed.hephaestus.view.BaseModelView;
 
 public class MinestomModelEngine implements ModelEngine {
 
-    public enum BoneType {
-        ARMOR_STAND,
-        AREA_EFFECT_CLOUD
+    private MinestomModelEngine() {
     }
 
     public ModelEntity spawn(EntityType entityType, Model model, BoneType boneType) {
@@ -27,7 +24,7 @@ public class MinestomModelEngine implements ModelEngine {
     }
 
     @Override
-    public BaseModelView spawn(Model model, Vector3Float position, float yaw, float pitch, Object world) {
+    public ModelEntity spawn(Model model, Vector3Float position, float yaw, float pitch, Object world) {
         Validate.isTrue(world instanceof Instance);
         return spawn(
                 EntityType.ARMOR_STAND,
@@ -37,4 +34,14 @@ public class MinestomModelEngine implements ModelEngine {
                 (Instance) world
         );
     }
+
+    public enum BoneType {
+        ARMOR_STAND,
+        AREA_EFFECT_CLOUD
+    }
+
+    public static MinestomModelEngine minestom() {
+        return new MinestomModelEngine();
+    }
+
 }
