@@ -33,6 +33,7 @@ import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.view.BaseBoneView;
 import team.unnamed.hephaestus.view.MockBoneView;
 import team.unnamed.hephaestus.view.MockModelView;
+import team.unnamed.hephaestus.view.animation.AnimationController;
 
 import java.util.Collections;
 import java.util.HashMap;

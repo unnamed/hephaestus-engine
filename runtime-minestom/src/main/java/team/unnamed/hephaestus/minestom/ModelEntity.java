@@ -36,7 +36,7 @@ import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.animation.AnimationController;
+import team.unnamed.hephaestus.view.animation.AnimationController;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseModelView;
 import static team.unnamed.hephaestus.minestom.MinestomModelEngine.BoneType;

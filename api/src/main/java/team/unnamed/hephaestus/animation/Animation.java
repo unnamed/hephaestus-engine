@@ -28,6 +28,7 @@ import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.animation.AnimationController;
 
 import java.util.Map;
 import java.util.Objects;

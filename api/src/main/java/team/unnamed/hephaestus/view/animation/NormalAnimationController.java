@@ -21,11 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation;
+package team.unnamed.hephaestus.view.animation;
 
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.animation.Animation;
+import team.unnamed.hephaestus.animation.KeyFrame;
+import team.unnamed.hephaestus.animation.Timeline;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseBoneView;
 import team.unnamed.hephaestus.view.BaseModelView;
@@ -63,7 +66,7 @@ class NormalAnimationController implements AnimationController {
         Map<String, Timeline> framesByBone = new HashMap<>();
 
         lastFrames.forEach((boneName, frame) -> {
-            Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicTimeline());
+            Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> Timeline.dynamic());
             keyFrames.put(0, Timeline.Channel.POSITION, frame.position());
             keyFrames.put(0, Timeline.Channel.ROTATION, frame.rotation());
             keyFrames.put(0, Timeline.Channel.SCALE, frame.scale());
@@ -76,7 +79,7 @@ class NormalAnimationController implements AnimationController {
             if (iterator.hasNext()) {
                 KeyFrame firstFrame = frames.iterator().next();
 
-                Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> new DynamicTimeline());
+                Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> Timeline.dynamic());
                 keyFrames.put(transitionTicks, Timeline.Channel.POSITION, firstFrame.position());
                 keyFrames.put(transitionTicks, Timeline.Channel.ROTATION, firstFrame.rotation());
                 keyFrames.put(transitionTicks, Timeline.Channel.SCALE, firstFrame.scale());
