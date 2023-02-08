@@ -35,12 +35,6 @@ import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
 import team.unnamed.creative.server.ResourcePackServer;
-import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Objects;
 
 public class Server {
 
@@ -51,20 +45,21 @@ public class Server {
 
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
 
-        MinecraftServer.getExtensionManager().setLoadOnStartup(false);
+        MinecraftServer.getExtensionManager().setLoadOnStartup(false); // disable extension loading
 
         GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
         eventHandler.addListener(PlayerLoginEvent.class, event -> {
             Player player = event.getPlayer();
             player.setGameMode(GameMode.CREATIVE);
             event.setSpawningInstance(instance);
-            player.setRespawnPoint(new Pos(0, 72, 0));
+            player.setRespawnPoint(new Pos(0, 42, 0));
         });
 
+        // Register model interaction listener
         ModelClickListener.register(eventHandler);
 
         ModelRegistry registry = new ModelRegistry();
-        registry.model(modelFromResource("redstone_monstrosity.bbmodel"));
+        registry.loadModelFromResource("redstone_monstrosity.bbmodel");
 
         ResourcePackProvider provider = new ResourcePackProvider(tree -> {
             tree.write(Metadata.builder()
@@ -76,24 +71,19 @@ public class Server {
             // write models
             registry.write(tree);
         });
+
+        MinecraftServer.getCommandManager().register(new HephaestusCommand(registry, provider));
+
+        // create resource pack server, start and schedule stop
         ResourcePackServer resourcePackServer = ResourcePackServer.builder()
                 .address("127.0.0.1", 7270)
                 .handler(provider)
                 .build();
-
-        MinecraftServer.getCommandManager().register(new HephaestusCommand(registry, provider));
-
         resourcePackServer.start();
+        MinecraftServer.getSchedulerManager().buildShutdownTask(() -> resourcePackServer.stop(0));
+
+        // start minecraft server
         server.start("127.0.0.1", 25565);
-
-        MinecraftServer.getSchedulerManager().buildShutdownTask(() -> resourcePackServer.stop(10));
-    }
-
-    private static Model modelFromResource(String name) throws IOException {
-        try (InputStream input = Server.class.getClassLoader().getResourceAsStream(name)) {
-            Objects.requireNonNull(input, "Model not found: " + name);
-            return BBModelReader.blockbench().read(input);
-        }
     }
 
 }

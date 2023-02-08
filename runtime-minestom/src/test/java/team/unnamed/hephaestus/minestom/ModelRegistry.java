@@ -26,16 +26,24 @@ package team.unnamed.hephaestus.minestom;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.file.FileTree;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.ModelDataCursor;
+import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public final class ModelRegistry {
 
     private final Map<String, Model> models = new HashMap<>();
     private final Map<String, ModelEntity> views = new HashMap<>();
+
+    private final ModelDataCursor modelDataCursor = new ModelDataCursor(0);
 
     public void write(FileTree tree) {
         ModelWriter.resource().write(tree, models.values());
@@ -43,6 +51,15 @@ public final class ModelRegistry {
 
     public void model(Model model) {
         models.put(model.name(), model);
+    }
+
+    public void loadModelFromResource(String name) {
+        try (InputStream input = ModelRegistry.class.getClassLoader().getResourceAsStream(name)) {
+            Objects.requireNonNull(input, "Model not found: " + name);
+            model(BBModelReader.blockbench(modelDataCursor).read(input));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Failed to load model " + name, e);
+        }
     }
 
     public @Nullable Model model(String name) {
