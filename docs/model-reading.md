@@ -31,7 +31,8 @@ ModelReader reader = BBModelReader.blockbench(modelDataCursor);
 Reading a Blockbench model from a file
 
 ```java
-Model model = BBModelReader.blockbench().read(new File("model.bbmodel"));
+ModelReader reader = BBModelReader.blockbench(new ModelDataCursor(0));
+Model model = reader.read(new File("model.bbmodel"));
 
 // do something with 'model'
 ```
