@@ -29,13 +29,8 @@ import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
-import net.minestom.server.instance.Chunk;
-import net.minestom.server.instance.ChunkGenerator;
-import net.minestom.server.instance.ChunkPopulator;
 import net.minestom.server.instance.InstanceContainer;
-import net.minestom.server.instance.batch.ChunkBatch;
 import net.minestom.server.instance.block.Block;
-import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.metadata.PackMeta;
@@ -45,7 +40,6 @@ import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Objects;
 
 public class Server {
@@ -55,16 +49,7 @@ public class Server {
         MinecraftServer server = MinecraftServer.init();
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
 
-        instance.setChunkGenerator(new ChunkGenerator() {
-            @Override
-            public void generateChunkData(@NotNull ChunkBatch batch, int chunkX, int chunkZ) {
-                for (byte x = 0; x < Chunk.CHUNK_SIZE_X; x++)
-                    for (byte z = 0; z < Chunk.CHUNK_SIZE_Z; z++)
-                        batch.setBlock(x, 70, z, Block.GRASS_BLOCK);
-            }
-            @Override
-            public List<ChunkPopulator> getPopulators() { return null; }
-        });
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
 
         MinecraftServer.getExtensionManager().setLoadOnStartup(false);
 
