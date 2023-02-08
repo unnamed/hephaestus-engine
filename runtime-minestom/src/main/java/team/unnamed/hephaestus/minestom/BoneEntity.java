@@ -50,7 +50,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @since 1.0.0
  */
-public final class BoneEntity extends GenericBoneEntity {
+final class BoneEntity extends GenericBoneEntity {
 
     private static final ItemStack BASE_HELMET =
             ItemStack.builder(Material.LEATHER_HORSE_ARMOR)

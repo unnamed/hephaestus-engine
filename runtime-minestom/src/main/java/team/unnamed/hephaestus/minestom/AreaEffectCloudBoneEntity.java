@@ -29,7 +29,6 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.LivingEntity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.AreaEffectCloudMeta;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
@@ -43,7 +42,6 @@ import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Minecraft;
-import team.unnamed.hephaestus.view.BaseBoneView;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -56,7 +54,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @since 1.0.0
  */
-public final class AreaEffectCloudBoneEntity extends GenericBoneEntity {
+final class AreaEffectCloudBoneEntity extends GenericBoneEntity {
 
     private static final ItemStack BASE_HELMET =
             ItemStack.builder(Material.LEATHER_HORSE_ARMOR)

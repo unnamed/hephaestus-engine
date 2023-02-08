@@ -26,22 +26,5 @@ package team.unnamed.hephaestus.minestom;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.instance.Instance;
 
-public class MinestomLocation {
-
-    private final Instance instance;
-    private final Pos position;
-
-    public MinestomLocation(Instance instance, Pos position) {
-        this.instance = instance;
-        this.position = position;
-    }
-
-    public Instance instance() {
-        return instance;
-    }
-
-    public Pos position() {
-        return position;
-    }
-
+public record MinestomLocation(Instance instance, Pos position) {
 }

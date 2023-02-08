@@ -29,7 +29,7 @@ import net.minestom.server.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.view.BaseBoneView;
 
-public abstract class GenericBoneEntity extends EntityCreature implements BaseBoneView {
+abstract class GenericBoneEntity extends EntityCreature implements BaseBoneView {
 
     public GenericBoneEntity(@NotNull EntityType entityType) {
         super(entityType);

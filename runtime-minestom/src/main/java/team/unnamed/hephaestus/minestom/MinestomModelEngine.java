@@ -29,7 +29,6 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelEngine;
-import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
 public final class MinestomModelEngine implements ModelEngine<Player, MinestomLocation> {
