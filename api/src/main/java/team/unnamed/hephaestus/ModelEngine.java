@@ -26,10 +26,56 @@ package team.unnamed.hephaestus;
 import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
+/**
+ * The model engine facade
+ *
+ * @param <TViewer> The model viewer/player type, depends on platform
+ * @param <TLocation> The location type, depends on platform
+ * @since 1.0.0
+ */
 public interface ModelEngine<TViewer, TLocation> {
 
+    /**
+     * Returns the model view tracker for this model engine
+     *
+     * @return The model view tracker
+     */
     ModelViewTracker<TViewer> tracker();
 
-    BaseModelView<TViewer> spawn(Model model, TLocation location);
+    /**
+     * Creates a new view for the given {@code model} at the
+     * given {@code location}, note that the returned view
+     * <strong>is not tracked</strong>, this means that it will not
+     * be automatically shown when someone enters its vision range
+     *
+     * <p>To create a tracked view use the {@link ModelEngine#createViewAndTrack}
+     * method, or use the tracker that the {@link ModelEngine#tracker()}
+     * method returns to start tracking the view that this method returns</p>
+     *
+     * @param model The model that the created view will represent
+     * @param location The view location
+     * @return The created model view
+     */
+    BaseModelView<TViewer> createView(Model model, TLocation location);
+
+    /**
+     * Creates a new view for the given {@code model} at the
+     * given {@code location}, the returned view <strong>is tracked</strong>,
+     * this means that it will be automatically shown/hidden when
+     * someone enters/leaves its vision range
+     *
+     * <p>This method is equivalent to use {@link ModelEngine#createView} and
+     * then invoking {@link ModelViewTracker#startGlobalTracking} on the created
+     * view</p>
+     *
+     * @param model The model that the created view will represent
+     * @param location The view location
+     * @return The created model view (tracked)
+     */
+    default BaseModelView<TViewer> createViewAndTrack(Model model, TLocation location) {
+        BaseModelView<TViewer> view = createView(model, location);
+        tracker().startGlobalTracking(view);
+        return view;
+    }
 
 }

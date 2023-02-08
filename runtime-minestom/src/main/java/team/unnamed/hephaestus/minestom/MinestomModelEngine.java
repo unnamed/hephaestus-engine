@@ -29,9 +29,10 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelEngine;
+import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
-public class MinestomModelEngine implements ModelEngine<Player, MinestomLocation> {
+public final class MinestomModelEngine implements ModelEngine<Player, MinestomLocation> {
 
     private MinestomModelEngine() {
     }
@@ -41,23 +42,38 @@ public class MinestomModelEngine implements ModelEngine<Player, MinestomLocation
         return MinestomModelViewTracker.INSTANCE;
     }
 
-    public ModelEntity spawn(EntityType entityType, Model model, BoneType boneType) {
+    public ModelEntity createView(EntityType entityType, Model model, BoneType boneType) {
         return new ModelEntity(entityType, model, boneType);
     }
 
-    public ModelEntity spawn(EntityType entityType, Model model, BoneType boneType, Instance world, Pos position) {
+    public ModelEntity createView(Model model) {
+        return new ModelEntity(EntityType.ARMOR_STAND, model, BoneType.ARMOR_STAND);
+    }
+
+    public ModelEntity createView(EntityType entityType, Model model, BoneType boneType, Instance world, Pos position) {
         ModelEntity modelEntity = new ModelEntity(entityType, model, boneType);
         modelEntity.setInstance(world, position);
         return modelEntity;
     }
 
-    public ModelEntity spawn(Model model, Instance instance, Pos position) {
-        return spawn(EntityType.ARMOR_STAND, model, BoneType.ARMOR_STAND, instance, position);
+    public ModelEntity createView(Model model, Instance instance, Pos position) {
+        return createView(EntityType.ARMOR_STAND, model, BoneType.ARMOR_STAND, instance, position);
     }
 
     @Override
-    public ModelEntity spawn(Model model, MinestomLocation location) {
-        return spawn(model, location.instance(), location.position());
+    public ModelEntity createView(Model model, MinestomLocation location) {
+        return createView(model, location.instance(), location.position());
+    }
+
+    public ModelEntity createViewAndTrack(Model model, Instance instance, Pos position) {
+        ModelEntity view = createView(model, instance, position);
+        tracker().startGlobalTracking(view);
+        return view;
+    }
+
+    @Override
+    public ModelEntity createViewAndTrack(Model model, MinestomLocation location) {
+        return createViewAndTrack(model, location.instance(), location.position());
     }
 
     public enum BoneType {

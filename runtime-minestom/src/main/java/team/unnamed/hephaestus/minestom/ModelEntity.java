@@ -68,6 +68,8 @@ public class ModelEntity
                 ? AnimationController.create(this)
                 : AnimationController.nonDelayed(this);
 
+        // model entity is not auto-viewable by default
+        super.setAutoViewable(false); // "super" so it doesn't call our override
         initialize();
     }
 
@@ -143,6 +145,21 @@ public class ModelEntity
     @Override
     public void tickAnimations() {
         animationController.tick(Math.toRadians(getPosition().yaw()));
+    }
+
+    @Override
+    public void tick(long time) {
+        super.tick(time);
+        // TODO: I don't think this should be done by default like this
+        this.tickAnimations();
+    }
+
+    @Override
+    public void setAutoViewable(boolean autoViewable) {
+        super.setAutoViewable(autoViewable);
+        for (GenericBoneEntity boneEntity : bones.values()) {
+            boneEntity.setAutoViewable(autoViewable);
+        }
     }
 
     private void setBoneInstance(

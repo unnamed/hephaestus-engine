@@ -25,11 +25,33 @@ package team.unnamed.hephaestus.view.track;
 
 import team.unnamed.hephaestus.view.BaseModelView;
 
+/**
+ * Functional interface that determines whether a viewer candidate
+ * should actually be added as a model's viewer
+ *
+ * @param <TViewer> The viewer/player type, depends on platform
+ * @since 1.0.0
+ */
 @FunctionalInterface
 public interface ModelViewTrackingRule<TViewer> {
 
+    /**
+     * Function called every time a new viewer candidate is found,
+     * commonly, when it enters the model's vision range
+     *
+     * @param view The model view
+     * @param candidate The viewer candidate
+     * @return True if the candidate should be added as viewer
+     */
     boolean shouldView(BaseModelView<TViewer> view, TViewer candidate);
 
+    /**
+     * A tracking rule that lets <strong>all</strong> the players
+     * see the model
+     *
+     * @return A {@link ModelViewTrackingRule} instance that always returns true
+     * @param <TViewer> The viewer/player type, depends on platform
+     */
     static <TViewer> ModelViewTrackingRule<TViewer> all() {
         return (view, candidate) -> true;
     }

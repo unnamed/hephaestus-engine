@@ -38,30 +38,14 @@ import team.unnamed.hephaestus.ModelEngine;
  */
 public interface BukkitModelEngine extends ModelEngine<Player, Location> {
 
-    /**
-     * Spawns the given {@link Model} model
-     * instance at the given world location
-     *
-     * @param model    The spawned model
-     * @param location The model entity location
-     * @param reason The model entity spawn reason
-     * @return The spawned model entity
-     * @since 1.0.0
-     */
-    ModelEntity spawn(Model model, Location location, CreatureSpawnEvent.SpawnReason reason);
+    ModelEntity createViewAndTrack(Model model, Location location, CreatureSpawnEvent.SpawnReason reason);
 
-    /**
-     * Spawns a {@link Model} instance at the
-     * given location
-     *
-     * @param model The spawned model
-     * @param location The model entity location
-     * @return The created model entity
-     * @since 1.0.0
-     */
     @Override
-    default ModelEntity spawn(Model model, Location location) {
-        return spawn(model, location, CreatureSpawnEvent.SpawnReason.DEFAULT);
+    default ModelEntity createViewAndTrack(Model model, Location location) {
+        return createViewAndTrack(model, location, CreatureSpawnEvent.SpawnReason.CUSTOM);
     }
+
+    @Override
+    ModelEntity createView(Model model, Location location);
 
 }

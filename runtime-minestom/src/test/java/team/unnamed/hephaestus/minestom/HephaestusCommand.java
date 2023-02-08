@@ -32,7 +32,6 @@ import net.minestom.server.command.builder.CommandExecutor;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.suggestion.SuggestionEntry;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.entity.EntityAttackEvent;
 import net.minestom.server.resourcepack.ResourcePack;
@@ -40,7 +39,6 @@ import net.minestom.server.utils.time.TimeUnit;
 import team.unnamed.hephaestus.Model;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 
 // available commands:
@@ -94,13 +92,11 @@ final class HephaestusCommand extends Command {
                     return;
                 }
 
-                ModelEntity view = new ModelEntity(EntityType.ARMOR_STAND, model) {
-                    @Override
-                    public void tick(long time) {
-                        super.tick(time);
-                        tickAnimations();
-                    }
-                };
+                ModelEntity view = MinestomModelEngine.minestom().createViewAndTrack(
+                        model,
+                        player.getInstance(),
+                        player.getPosition()
+                );
 
                 view.eventNode()
                     .addListener(EntityAttackEvent.class, event -> {
@@ -121,10 +117,6 @@ final class HephaestusCommand extends Command {
                                 view
                         );
                     });
-                view.setInstance(
-                        Objects.requireNonNull(player.getInstance(), "player instance"),
-                        player.getPosition()
-                );
 
                 String viewId = ModelRegistry.generateViewId();
                 registry.view(viewId, view);
