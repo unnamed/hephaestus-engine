@@ -28,18 +28,47 @@ import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
 
-final class MinestomViewTracker implements ModelViewTracker<Player> {
+final class MinestomModelViewTracker implements ModelViewTracker<Player> {
+
+    static final MinestomModelViewTracker INSTANCE = new MinestomModelViewTracker();
+
+    private MinestomModelViewTracker() {
+    }
 
     @Override
+    @SuppressWarnings("UnstableApiUsage") // TODO: Remove when stable
     public boolean startTracking(BaseModelView<Player> view, ModelViewTrackingRule<Player> trackingRule) {
-        // TODO:
-        return false;
+        ModelEntity entity = ensureModelEntity(view);
+        entity.updateViewableRule(player -> trackingRule.shouldView(view, player));
+
+        boolean autoViewable = entity.isAutoViewable();
+        if (autoViewable) {
+            return false;
+        } else {
+            entity.setAutoViewable(true);
+            return true;
+        }
     }
 
     @Override
     public boolean stopTracking(BaseModelView<Player> view) {
-        // TODO:
-        return false;
+        ModelEntity entity = ensureModelEntity(view);
+        boolean autoViewable = entity.isAutoViewable();
+        if (autoViewable) {
+            entity.setAutoViewable(false);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static ModelEntity ensureModelEntity(BaseModelView<Player> view) {
+        if (view instanceof ModelEntity entity) {
+            return entity;
+        } else {
+            throw new IllegalArgumentException("Provided model view is not" +
+                    " compatible with this tracker implementation");
+        }
     }
 
 }

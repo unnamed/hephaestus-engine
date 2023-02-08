@@ -33,14 +33,12 @@ import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
 public class MinestomModelEngine implements ModelEngine<Player, MinestomLocation> {
 
-    private final MinestomViewTracker tracker = new MinestomViewTracker();
-
     private MinestomModelEngine() {
     }
 
     @Override
     public ModelViewTracker<Player> tracker() {
-        return tracker;
+        return MinestomModelViewTracker.INSTANCE;
     }
 
     public ModelEntity spawn(EntityType entityType, Model model, BoneType boneType) {
