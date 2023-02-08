@@ -38,7 +38,7 @@ final class DetailedAnimationController extends NormalAnimationController {
 
     private boolean update = true;
 
-    DetailedAnimationController(BaseModelView view) {
+    DetailedAnimationController(BaseModelView<?> view) {
         super(view);
     }
 
