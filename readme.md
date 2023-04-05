@@ -7,5 +7,5 @@
 for *vanilla* Minecraft: Java Edition, you can use it in multiple platforms like
 [Paper](https://papermc.io/) and [Minestom](https://minestom.net/)
 
-Check the [documentation](./docs/getting-started.md) for
+Check the [documentation](https://unnamed.team/docs/hephaestus-engine) for
 installation and usage information for this project
