@@ -21,43 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.minestom;
+package team.unnamed.hephaestus.minestomce;
 
-import com.sun.net.httpserver.HttpExchange;
+import team.unnamed.creative.BuiltResourcePack;
 import team.unnamed.creative.ResourcePack;
-import team.unnamed.creative.file.FileTreeWriter;
-import team.unnamed.creative.server.ResourcePackRequest;
-import team.unnamed.creative.server.ResourcePackRequestHandler;
+import team.unnamed.creative.base.Writable;
+import team.unnamed.creative.serialize.minecraft.MinecraftResourcePackWriter;
 
-import java.io.IOException;
+public final class ResourcePackFactory {
 
-/**
- * {@link ResourcePackRequestHandler} implementation that re-builds
- * the resource-pack after every request
- */
-public class ResourcePackProvider implements ResourcePackRequestHandler {
+    public static BuiltResourcePack create(ModelRegistry registry) {
+        ResourcePack resourcePack = ResourcePack.create();
+        resourcePack.packMeta(15, "Hephaestus generated resource pack");
+        resourcePack.icon(Writable.resource(Server.class.getClassLoader(), "hephaestus.png"));
+        registry.write(resourcePack);
 
-    private final FileTreeWriter writer;
-    private ResourcePack pack;
-
-    public ResourcePackProvider(FileTreeWriter writer) {
-        this.writer = writer;
-        this.pack = ResourcePack.build(writer);
-    }
-
-    @Override
-    public void onRequest(ResourcePackRequest request, HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "application/zip");
-        exchange.sendResponseHeaders(200, pack.bytes().length);
-        exchange.getResponseBody().write(pack.bytes());
-
-        // rebuild is done *after* the resource-pack is created,
-        // to ensure stored hash is correct
-        pack = ResourcePack.build(writer);
-    }
-
-    public ResourcePack pack() {
-        return pack;
+        return MinecraftResourcePackWriter.minecraft().build(resourcePack);
     }
 
 }

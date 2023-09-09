@@ -1,5 +1,5 @@
 [versions]
-creative = "0.5.4-SNAPSHOT"
+creative = "0.9.1-SNAPSHOT"
 adventure = "4.9.3"
 annotations = "23.0.0"
 
@@ -8,11 +8,14 @@ gson = "2.8.0"
 
 # runtime-minestom
 minestom = "aebf72de90"
+minestomce = "a99fdee831"
 
 
 [libraries]
 creative-api = { group = "team.unnamed", name = "creative-api", version.ref =  "creative" }
 creative-server = { group = "team.unnamed", name = "creative-server", version.ref = "creative" }
+creative-serializer-minecraft = { group = "team.unnamed", name = "creative-serializer-minecraft", version.ref = "creative" }
+
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 
@@ -21,3 +24,4 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 # runtime-minestom
 minestom = { group = "com.github.Minestom", name = "Minestom", version.ref = "minestom" }
+minestomce = { group = "dev.hollowcube", name = "minestom-ce", version.ref = "minestomce" }

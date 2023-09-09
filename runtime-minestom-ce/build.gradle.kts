@@ -3,18 +3,18 @@ plugins {
 }
 
 repositories {
-    maven("https://jitpack.io/")
+    maven("https://jitpack.io")
     mavenCentral()
 }
 
 dependencies {
     api(project(":hephaestus-api"))
-    compileOnly(libs.minestom)
+    compileOnly(libs.minestomce)
 
     testImplementation(libs.creative.api)
     testImplementation(libs.creative.server)
     testImplementation(libs.creative.serializer.minecraft)
 
-    testImplementation(libs.minestom)
+    testImplementation(libs.minestomce)
     testImplementation(project(":hephaestus-reader-blockbench"))
 }

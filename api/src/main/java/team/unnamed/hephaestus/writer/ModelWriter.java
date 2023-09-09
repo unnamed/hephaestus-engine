@@ -23,7 +23,7 @@
  */
 package team.unnamed.hephaestus.writer;
 
-import team.unnamed.creative.file.FileTree;
+import team.unnamed.creative.ResourcePack;
 import team.unnamed.hephaestus.Model;
 
 import java.util.Collection;
@@ -50,25 +50,25 @@ public interface ModelWriter<T> {
     /**
      * Creates a new {@link ModelWriter} instance that
      * writes {@link Model} instances to a final resource
-     * pack represented by {@link FileTree}
+     * pack represented by {@link ResourcePack}
      *
      * @param namespace The models namespace
      * @return The created {@link ModelWriter} instance
      * @since 1.0.0
      */
-    static ModelWriter<FileTree> resource(String namespace) {
+    static ModelWriter<ResourcePack> resource(String namespace) {
         return new ResourceModelWriter(namespace);
     }
 
     /**
      * Creates a new {@link ModelWriter} instance that
      * writes {@link Model} instances to a final resource
-     * pack represented by {@link FileTree}
+     * pack represented by {@link ResourcePack}
      *
      * @return The created {@link ModelWriter} instance
      * @since 1.0.0
      */
-    static ModelWriter<FileTree> resource() {
+    static ModelWriter<ResourcePack> resource() {
         return new ResourceModelWriter();
     }
 

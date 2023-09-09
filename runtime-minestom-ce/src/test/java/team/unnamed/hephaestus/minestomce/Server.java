@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.minestom;
+package team.unnamed.hephaestus.minestomce;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
@@ -30,21 +30,23 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.instance.InstanceContainer;
+import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.block.Block;
 import team.unnamed.creative.BuiltResourcePack;
+import team.unnamed.creative.ResourcePack;
+import team.unnamed.creative.base.Writable;
+import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.server.ResourcePackRequestHandler;
 import team.unnamed.creative.server.ResourcePackServer;
 
 public class Server {
 
     public static void main(String[] args) throws Exception {
-
         MinecraftServer server = MinecraftServer.init();
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
 
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
-
-        MinecraftServer.getExtensionManager().setLoadOnStartup(false); // disable extension loading
+        instance.setChunkSupplier(LightingChunk::new);
 
         GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
         eventHandler.addListener(PlayerLoginEvent.class, event -> {
@@ -63,6 +65,15 @@ public class Server {
         BuiltResourcePack resourcePack = ResourcePackFactory.create(registry);
         MinecraftServer.getCommandManager().register(new HephaestusCommand(registry, resourcePack));
 
+        ModelEntity testView = MinestomModelEngine.minestom().createViewAndTrack(
+                registry.model("redstone_monstrosity"),
+                instance,
+                new Pos(0, 43, 0),
+                0.25f
+        );
+
+        registry.view("test", testView);
+
         // create resource pack server, start and schedule stop
         ResourcePackServer resourcePackServer = ResourcePackServer.builder()
                 .address("127.0.0.1", 7270)
@@ -75,5 +86,4 @@ public class Server {
         // start minecraft server
         server.start("127.0.0.1", 25565);
     }
-
 }

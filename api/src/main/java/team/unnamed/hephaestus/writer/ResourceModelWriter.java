@@ -25,18 +25,22 @@ package team.unnamed.hephaestus.writer;
 
 import net.kyori.adventure.key.Key;
 import org.intellij.lang.annotations.Subst;
+import team.unnamed.creative.ResourcePack;
+import team.unnamed.creative.atlas.Atlas;
+import team.unnamed.creative.atlas.AtlasSource;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.base.Writable;
-import team.unnamed.creative.file.FileTree;
 import team.unnamed.creative.model.Element;
 import team.unnamed.creative.model.ItemOverride;
 import team.unnamed.creative.model.ItemPredicate;
 import team.unnamed.creative.model.ItemTransform;
 import team.unnamed.creative.model.ModelTexture;
+import team.unnamed.creative.model.ModelTextures;
 import team.unnamed.creative.texture.Texture;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.partial.ModelAsset;
 import team.unnamed.hephaestus.partial.BoneAsset;
+import team.unnamed.hephaestus.util.Path;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,12 +53,12 @@ import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link ModelWriter} that writes
- * {@link Model} instances to a {@link FileTree}, which
+ * {@link Model} instances to a {@link ResourcePack}, which
  * represents a resource pack
  *
  * @since 1.0.0
  */
-final class ResourceModelWriter implements ModelWriter<FileTree> {
+final class ResourceModelWriter implements ModelWriter<ResourcePack> {
 
     private static final Key LEATHER_HORSE_ARMOR_KEY = Key.key("item/leather_horse_armor");
     private static final String DEFAULT_NAMESPACE = "hephaestus";
@@ -81,7 +85,7 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
     }
 
     private void writeBones(
-            FileTree tree,
+            ResourcePack resourcePack,
             ModelAsset model,
             Collection<ItemOverride> overrides,
             Collection<BoneAsset> assets
@@ -95,10 +99,10 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                     ItemPredicate.customModelData(bone.customModelData())
             ));
 
-            tree.write(toCreative(key, model, bone));
+            resourcePack.model(toCreative(key, model, bone));
 
             // write children
-            writeBones(tree, model, overrides, bone.children());
+            writeBones(resourcePack, model, overrides, bone.children());
         }
     }
 
@@ -107,9 +111,9 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
      * given {@code output}
      */
     @Override
-    public void write(FileTree tree, Collection<Model> models) {
-
+    public void write(ResourcePack resourcePack, Collection<Model> models) {
         List<ItemOverride> overrides = new ArrayList<>();
+        List<AtlasSource> sources = new ArrayList<>();
 
         for (Model model : models) {
             ModelAsset asset = model.asset();
@@ -125,14 +129,16 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                 @Subst("model/texture") String path = model.name() + '/' + texture.getKey();
 
                 // write the texture
-                tree.write(Texture.builder()
+                resourcePack.texture(Texture.builder()
                         .key(Key.key(namespace, path))
                         .data(texture.getValue())
-                        .build());
+                        .build()
+                );
             }
 
             // write all the model bones
-            writeBones(tree, asset, overrides, asset.bones());
+            writeBones(resourcePack, asset, overrides, asset.bones());
+            sources.add(AtlasSource.directory(model.name(), model.name() + "/"));
         }
 
         // sort overrides comparing by customModelData
@@ -141,16 +147,23 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
             return (Integer) predicate.value();
         }));
 
-        tree.write(team.unnamed.creative.model.Model.builder()
+        resourcePack.model(team.unnamed.creative.model.Model.builder()
                 .key(LEATHER_HORSE_ARMOR_KEY)
                 .parent(team.unnamed.creative.model.Model.ITEM_HANDHELD)
-                .textures(ModelTexture.builder()
+                .textures(ModelTextures.builder()
                         .layers(Collections.singletonList(
-                                LEATHER_HORSE_ARMOR_KEY
+                                ModelTexture.ofKey(LEATHER_HORSE_ARMOR_KEY)
                         ))
                         .build())
                 .overrides(overrides)
-                .build());
+                .build()
+        );
+
+        resourcePack.atlas(Atlas.builder()
+                .key(Atlas.BLOCKS)
+                .sources(sources)
+                .build()
+        );
     }
 
     /**
@@ -176,18 +189,29 @@ final class ResourceModelWriter implements ModelWriter<FileTree> {
                         -offset.z() * ItemTransform.MAX_SCALE
                 ))
                 .scale(SCALE)
-                .build());
+                .build()
+        );
 
-        Map<String, Key> textureMappings = new HashMap<>();
+        displays.put(ItemTransform.Type.THIRDPERSON_LEFTHAND, ItemTransform.builder()
+                .translation(new Vector3Float(
+                        -offset.x() * ItemTransform.MAX_SCALE,
+                        -offset.y() * ItemTransform.MAX_SCALE,
+                        -offset.z() * ItemTransform.MAX_SCALE
+                ))
+                .scale(SCALE)
+                .build()
+        );
+        Map<String, ModelTexture> textureMappings = new HashMap<>();
         model.textureMapping().forEach((id, texturePath) -> {
-            @Subst("model/texture") String path = model.name() + '/' + texturePath;
-            textureMappings.put(id.toString(), Key.key(namespace, path));
+            @Subst("model/texture") String path = model.name() + '/' + Path.withotExtension(texturePath);
+            textureMappings.put(id.toString(), ModelTexture.ofKey(Key.key(namespace, path)));
         });
+
 
         return team.unnamed.creative.model.Model.builder()
                 .key(key)
                 .display(displays)
-                .textures(ModelTexture.builder()
+                .textures(ModelTextures.builder()
                         .variables(textureMappings)
                         .build())
                 .elements(bone.cubes().stream().map(cube -> Element.builder()

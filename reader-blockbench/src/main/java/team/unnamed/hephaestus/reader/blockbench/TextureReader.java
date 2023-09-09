@@ -61,11 +61,6 @@ final class TextureReader {
 
             String base64Source = source.substring(BASE_64_PREFIX.length());
 
-            // remove PNG extension
-            if (name.endsWith(".png")) {
-                name = name.substring(0, name.length() - ".png".length());
-            }
-
             // map to index
             textureMappings.put(index, name);
             textures.put(name, Writable.bytes(Base64.getDecoder().decode(base64Source)));

@@ -35,7 +35,7 @@ import java.util.Objects;
  * <p>See <a href="https://en.wikipedia.org/wiki/Quaternion">
  *     Quaternion in Wikipedia</a></p>
  */
-final class Quaternion {
+public final class Quaternion {
 
     private final double x;
     private final double y;
@@ -47,6 +47,22 @@ final class Quaternion {
         this.y = y;
         this.z = z;
         this.w = w;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
+    }
+
+    public double getW() {
+        return w;
     }
 
     /**

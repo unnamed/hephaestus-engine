@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.minestom;
+package team.unnamed.hephaestus.minestomce;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -96,7 +96,8 @@ final class HephaestusCommand extends Command {
                 ModelEntity view = MinestomModelEngine.minestom().createViewAndTrack(
                         model,
                         player.getInstance(),
-                        player.getPosition()
+                        player.getPosition(),
+                        0.25f
                 );
 
                 view.eventNode()

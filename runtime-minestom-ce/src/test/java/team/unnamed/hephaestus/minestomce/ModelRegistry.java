@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.minestom;
+package team.unnamed.hephaestus.minestomce;
 
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.ResourcePack;
