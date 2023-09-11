@@ -29,7 +29,6 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
-import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
@@ -38,9 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.Minecraft;
 import team.unnamed.hephaestus.util.Quaternion;
-import team.unnamed.hephaestus.view.BaseBoneView;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -102,10 +99,10 @@ public final class BoneEntity extends GenericBoneEntity {
         meta.setInterpolationStartDelta(0);
 
         meta.setRightRotation(new float[]{
-                (float) quaternion.getX(),
-                (float) quaternion.getY(),
-                (float) quaternion.getZ(),
-                (float) quaternion.getW(),
+                (float) quaternion.x(),
+                (float) quaternion.y(),
+                (float) quaternion.z(),
+                (float) quaternion.w(),
         });
 
         meta.setNotifyAboutChanges(true);

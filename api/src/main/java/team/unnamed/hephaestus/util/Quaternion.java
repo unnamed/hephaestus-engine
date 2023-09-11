@@ -51,19 +51,19 @@ public final class Quaternion {
         this.w = w;
     }
 
-    public double getX() {
+    public double x() {
         return x;
     }
 
-    public double getY() {
+    public double y() {
         return y;
     }
 
-    public double getZ() {
+    public double z() {
         return z;
     }
 
-    public double getW() {
+    public double w() {
         return w;
     }
 
