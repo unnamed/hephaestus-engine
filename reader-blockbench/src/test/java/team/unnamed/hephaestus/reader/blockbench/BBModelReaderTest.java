@@ -64,11 +64,11 @@ public class BBModelReaderTest {
 
             Map<String, Writable> textures = asset.textures();
             assertEquals(1, textures.size());
-            assertNotNull(textures.get("cube_default"));
+            assertNotNull(textures.get("cube_default.png"));
 
             Map<Integer, String> textureMapping = asset.textureMapping();
             assertEquals(1, textureMapping.size());
-            assertEquals("cube_default", textureMapping.get(0));
+            assertEquals("cube_default.png", textureMapping.get(0));
 
             BoneAsset root = asset.boneMap().get("root");
             assertNotNull(root);
