@@ -28,12 +28,14 @@ import team.unnamed.creative.base.Vector3Float;
 import java.util.Objects;
 
 /**
- * Immutable representation of a 4-element quaternion
- * represented by a 64-bit floating point x, y, z and
- * w coordinates.
+ * Immutable implementation of Quaternions, a mathematical
+ * number system that extends the complex numbers
  *
- * <p>See <a href="https://en.wikipedia.org/wiki/Quaternion">
- *     Quaternion in Wikipedia</a></p>
+ * <p>Quaternions are particularly applied for calculations
+ * involving three-dimensional rotations, can be used with,
+ * and as alternative of, euler angles and rotation matrices</p>
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Quaternion">Quaternion on Wikipedia</a>
  */
 public final class Quaternion {
 
