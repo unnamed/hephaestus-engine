@@ -98,12 +98,7 @@ public final class BoneEntity extends GenericBoneEntity {
         meta.setNotifyAboutChanges(false);
         meta.setInterpolationStartDelta(0);
 
-        meta.setRightRotation(new float[]{
-                (float) quaternion.x(),
-                (float) quaternion.y(),
-                (float) quaternion.z(),
-                (float) quaternion.w(),
-        });
+        meta.setRightRotation(quaternion.toFloatArray());
 
         meta.setNotifyAboutChanges(true);
     }

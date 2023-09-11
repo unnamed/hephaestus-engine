@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.util;
 
+import org.jetbrains.annotations.Contract;
 import team.unnamed.creative.base.Vector3Float;
 
 import java.util.Objects;
@@ -36,6 +37,7 @@ import java.util.Objects;
  * and as alternative of, euler angles and rotation matrices</p>
  *
  * @see <a href="https://en.wikipedia.org/wiki/Quaternion">Quaternion on Wikipedia</a>
+ * @since 1.0.0
  */
 public final class Quaternion {
 
@@ -51,20 +53,73 @@ public final class Quaternion {
         this.w = w;
     }
 
+    /**
+     * Returns the first component of this quaternion
+     *
+     * @return The first component
+     * @since 1.0.0
+     */
     public double x() {
         return x;
     }
 
+    /**
+     * Returns the real part of the second component
+     * of this quaternion
+     *
+     * @return The second component real part
+     * @since 1.0.0
+     */
     public double y() {
         return y;
     }
 
+    /**
+     * Returns the real part of the third component
+     * of this quaternion
+     *
+     * @return The third component real part
+     * @since 1.0.0
+     */
     public double z() {
         return z;
     }
 
+    /**
+     * Returns the real part of the fourth component
+     * of this quaternion
+     *
+     * @return The fourth component real part
+     * @since 1.0.0
+     */
     public double w() {
         return w;
+    }
+
+    /**
+     * Convert this quaternion to a {@code double} array
+     * with fixed-size of 4, containing all the real parts
+     * of the quaternion, in order
+     *
+     * @return The created array representing this quaternion
+     * @since 1.0.0
+     */
+    @Contract("-> new")
+    public double[] toArray() {
+        return new double[] { x, y, z, w };
+    }
+
+    /**
+     * Convert this quaternion to a {@code float} array
+     * with fixed-size of 4, containing all the real parts
+     * of the quaternion, in order, cast to float
+     *
+     * @return The created array representing this quaternion
+     * @since 1.0.0
+     */
+    @Contract("-> new")
+    public float[] toFloatArray() {
+        return new float[] { (float) x, (float) y, (float) z, (float) w };
     }
 
     /**
@@ -192,12 +247,7 @@ public final class Quaternion {
 
     @Override
     public String toString() {
-        return "Quaternion{" +
-                "x=" + x +
-                ", y=" + y +
-                ", z=" + z +
-                ", w=" + w +
-                '}';
+        return "Quaternion (" + x + ", " + y + ", " + z + ", " + w + ')';
     }
 
 }
