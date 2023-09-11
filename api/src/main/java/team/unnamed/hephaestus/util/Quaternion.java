@@ -54,9 +54,10 @@ public final class Quaternion {
     }
 
     /**
-     * Returns the first component of this quaternion
+     * Returns the real part of the first component
+     * of this quaternion
      *
-     * @return The first component
+     * @return The first component real part
      * @since 1.0.0
      */
     public double x() {
@@ -86,10 +87,9 @@ public final class Quaternion {
     }
 
     /**
-     * Returns the real part of the fourth component
-     * of this quaternion
+     * Returns the fourth component of this quaternion
      *
-     * @return The fourth component real part
+     * @return The fourth component
      * @since 1.0.0
      */
     public double w() {
@@ -97,7 +97,7 @@ public final class Quaternion {
     }
 
     /**
-     * Convert this quaternion to a {@code double} array
+     * Converts this quaternion to a {@code double} array
      * with fixed-size of 4, containing all the real parts
      * of the quaternion, in order
      *
@@ -110,7 +110,7 @@ public final class Quaternion {
     }
 
     /**
-     * Convert this quaternion to a {@code float} array
+     * Converts this quaternion to a {@code float} array
      * with fixed-size of 4, containing all the real parts
      * of the quaternion, in order, cast to float
      *
