@@ -40,7 +40,6 @@ import team.unnamed.creative.texture.Texture;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.partial.ModelAsset;
 import team.unnamed.hephaestus.partial.BoneAsset;
-import team.unnamed.hephaestus.util.Path;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -203,7 +202,7 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
         );
         Map<String, ModelTexture> textureMappings = new HashMap<>();
         model.textureMapping().forEach((id, texturePath) -> {
-            @Subst("model/texture") String path = model.name() + '/' + Path.withotExtension(texturePath);
+            @Subst("model/texture") String path = model.name() + '/' + withoutExtension(texturePath);
             textureMappings.put(id.toString(), ModelTexture.ofKey(Key.key(namespace, path)));
         });
 
@@ -221,6 +220,11 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
                         .faces(cube.faces())
                         .build()).collect(Collectors.toList()))
                 .build();
+    }
+
+    private static String withoutExtension(final String file) {
+        int dotIndex = file.lastIndexOf('.');
+        return (dotIndex == -1) ? file : file.substring(0, dotIndex);
     }
 
 }
