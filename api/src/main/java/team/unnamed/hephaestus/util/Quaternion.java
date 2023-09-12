@@ -196,36 +196,32 @@ public final class Quaternion {
     public static Quaternion fromEuler(Vector3Float euler) {
         euler = Vectors.toRadians(euler);
 
-        // based on https://www.javatips.net/api/rotation-vector
-        // -compass-master/RotationVectorCompass/src/com/adamrat
-        // ana/rotationvectorcompass/math/Quaternion.java
-
         // common values
-        double halfX = euler.x() / 2D;
-        double negHalfY = euler.y() / -2D;
-        double halfZ = euler.z() / 2D;
+        double halfX = euler.x() * 0.5D;
+        double halfY = euler.y() * 0.5D;
+        double halfZ = euler.z() * 0.5D;
 
         // compute cos
         double cosX = Math.cos(halfX);
-        double cosY = Math.cos(negHalfY);
+        double cosY = Math.cos(halfY);
         double cosZ = Math.cos(halfZ);
 
         // compute sin
         double sinX = Math.sin(halfX);
-        double sinY = Math.sin(negHalfY);
+        double sinY = Math.sin(halfY);
         double sinZ = Math.sin(halfZ);
 
-        // common values
+        // common products
         double sinXCosY = sinX * cosY;
         double cosXSinY = cosX * sinY;
         double cosXCosY = cosX * cosY;
         double sinXSinY = sinX * sinY;
 
         return new Quaternion(
-                sinXCosY * cosZ + cosXSinY * sinZ,
-                cosXSinY * cosZ - sinXCosY * sinZ,
-                cosXCosY * sinZ + sinXSinY * cosZ,
-                cosXCosY * cosZ - sinXSinY * sinZ
+                sinXCosY * cosZ - cosXSinY * sinZ,
+                cosXSinY * cosZ + sinXCosY * sinZ,
+                cosXCosY * sinZ - sinXSinY * cosZ,
+                cosXCosY * cosZ + sinXSinY * sinZ
         );
     }
 
