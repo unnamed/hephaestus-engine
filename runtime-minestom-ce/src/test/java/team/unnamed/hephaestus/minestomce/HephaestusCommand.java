@@ -56,17 +56,21 @@ final class HephaestusCommand extends Command {
         var modelArg = ArgumentType.Word("model")
                 .setSuggestionCallback((sender, context, suggestion) -> {
                     String input = suggestion.getInput();
+                    int start = suggestion.getStart();
+                    String typing = input.substring(start, start + suggestion.getLength() - 1);
                     registry.models().stream()
                             .map(Model::name)
-                            .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(input))
+                            .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(typing))
                             .forEach(name -> suggestion.addEntry(new SuggestionEntry(name)));
                 });
 
         var viewArg = ArgumentType.Word("view")
                 .setSuggestionCallback((sender, context, suggestion) -> {
                     String input = suggestion.getInput();
+                    int start = suggestion.getStart();
+                    String typing = input.substring(start, start + suggestion.getLength() - 1);
                     registry.viewIds().stream()
-                            .filter(id -> id.toLowerCase(Locale.ROOT).startsWith(input))
+                            .filter(id -> id.toLowerCase(Locale.ROOT).startsWith(typing))
                             .forEach(id -> suggestion.addEntry(new SuggestionEntry(id)));
                 });
 
