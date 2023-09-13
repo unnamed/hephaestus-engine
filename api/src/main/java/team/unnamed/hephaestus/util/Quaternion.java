@@ -23,10 +23,14 @@
  */
 package team.unnamed.hephaestus.util;
 
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Immutable implementation of Quaternions, a mathematical
@@ -39,7 +43,7 @@ import java.util.Objects;
  * @see <a href="https://en.wikipedia.org/wiki/Quaternion">Quaternion on Wikipedia</a>
  * @since 1.0.0
  */
-public final class Quaternion {
+public final class Quaternion implements Examinable {
 
     private final double x;
     private final double y;
@@ -279,6 +283,16 @@ public final class Quaternion {
                 cosXSinY * cosZ + sinXCosY * sinZ,
                 cosXCosY * sinZ - sinXSinY * cosZ,
                 cosXCosY * cosZ + sinXSinY * sinZ
+        );
+    }
+
+    @Override
+    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("x", x),
+                ExaminableProperty.of("y", y),
+                ExaminableProperty.of("z", z),
+                ExaminableProperty.of("w", w)
         );
     }
 
