@@ -123,48 +123,60 @@ public final class Quaternion {
     }
 
     /**
-     * Returns this quaternion represented as an
-     * Euler Angle (in ZXY order) in radians.
+     * Multiplies this quaternion by the given {@code scalar}
+     * number.
      *
-     * <p>See https://www.euclideanspace.com/maths/
-     * geometry/rotations/conversions/quaternionToEuler
-     * /indexLocal.htm</p>
+     * @param scalar The factor
+     * @return The quaternion, with all of its components
+     * multiplied by the factor
+     * @since 1.0.0
      */
-    public Vector3Float toEuler() {
+    public Quaternion multiply(double scalar) {
+        return new Quaternion(
+                x * scalar,
+                y * scalar,
+                z * scalar,
+                w * scalar
+        );
+    }
 
-        double test = x * z + y * w;
+    /**
+     * Negates {@code this} quaternion by multiplying all
+     * of its components by {@code -1}. Equivalent to
+     * using {@link Quaternion#multiply(double)} and
+     * passing {@code -1}.
+     *
+     * @return The negated quaternion
+     * @since 1.0.0
+     */
+    public Quaternion negate() {
+        return new Quaternion(
+                x * -1D,
+                y * -1D,
+                z * -1D,
+                w * -1D
+        );
+    }
 
-        // singularity at north pole
-        if (test > 0.499F) {
-            return new Vector3Float(
-                    (float) Math.atan2(x, w),
-                    (float) (Math.PI / 2F),
-                    0F
-            );
-        }
-
-        // singularity at south pole
-        if (test < -0.499F) {
-            return new Vector3Float(
-                    (float) -Math.atan2(x, w),
-                    (float) (-Math.PI / 2F),
-                    0F
-            );
-        }
-
-        double sqx = x * x;
-        double sqy = y * y;
-        double sqz = z * z;
-
-        double x2 = x + x;
-        double y2 = y + y;
-        double z2 = z + z;
-
-        return Vectors.toDegrees(new Vector3Float(
-                (float) Math.atan2(w * x2 - y * z2, 1 - 2 * (sqx + sqy)),
-                (float) -Math.asin(2 * test),
-                (float) Math.atan2(w * z2 - x * y2, 1 - 2 * (sqz + sqy))
-        ));
+    /**
+     * Test if {@code this} quaternion is equivalent to the given
+     * {@code other} quaternion.
+     *
+     * <p>This method checks if the quaternion is approximately
+     * equal, component-by-component, to either "other" or
+     * "other.negate()"</p>
+     *
+     * @param other The other quaternion
+     * @param threshold The comparison threshold
+     * @return True if they are equivalent
+     * @since 1.0.0
+     */
+    public boolean isEquivalentTo(Quaternion other, double threshold) {
+        // Two quaternions (a, b) represent the same rotation if:
+        //   1.- "a" is component wise approximately equal to "b" OR
+        //   2.- "a" is component wise approximately equal to "-b"
+        // https://gamedev.stackexchange.com/questions/75072/
+        return equals(other, threshold) || equals(other.negate(), threshold);
     }
 
     /**
@@ -190,8 +202,53 @@ public final class Quaternion {
     }
 
     /**
-     * Creates a {@link Quaternion} representation of the given
-     * {@code euler} angles (in radians)
+     * Converts {@code this} quaternion to an Euler Angle representation
+     * in degrees.
+     *
+     * @return An Euler Angle representation for this Quaternion, in degrees
+     * @since 1.0.0
+     */
+    public Vector3Float toEuler() {
+
+        // originally saw this on WorldSeedEntityEngine's Quaternion implementation
+        // https://github.com/AtlasEngineCa/WorldSeedEntityEngine/blob/master/src/main/java/net/worldseed/multipart/Quaternion.java#L53
+        // originally from http://marc-b-reynolds.github.io/math/2017/04/18/TaitEuler.html written in C, also originally
+        // adapted to Java by iam4722202468
+
+        double t0 = (x + z) * (x - z);     // x^2 - z^2
+        double t1 = (w + y) * (w - y);     // w^2 - y^2
+        double xx = 0.5 * (t0 + t1);       // 1/2 x of x'
+        double xy = x * y + w * z;         // 1/2 y of x'
+        double xz = w * y - x * z;         // 1/2 z of x'
+        double t  = xx * xx + xy * xy;     // cos(theta)^2
+        double yz = 2.0 * (y * z + w * x); // z of y'
+
+        double vz = (float) Math.atan2(xy, xx);           // yaw (psi)
+        // todo(yusshu): how about using fast inverse square root?
+        double vy = (float) Math.atan(xz / Math.sqrt(t)); // pitch (theta)
+        double vx;
+
+        if (t != 0) {
+            vx = (float) Math.atan2(yz, t1 - t0);
+        } else {
+            vx = (float) (2.0 * Math.atan2(x, w) - Math.signum(xz) * vz);
+        }
+
+        return Vectors.toDegrees(new Vector3Float(
+                (float) vx,
+                (float) vy,
+                (float) vz
+        ));
+    }
+
+    /**
+     * Creates a new {@link Quaternion} instance equivalent to the
+     * given euler angle (rotation in X, Y, Z), which should be
+     * specified in degrees
+     *
+     * @param euler The euler angle to represent
+     * @return The quaternion representing the euler angle
+     * @since 1.0.0
      */
     public static Quaternion fromEuler(Vector3Float euler) {
         euler = Vectors.toRadians(euler);
@@ -223,6 +280,25 @@ public final class Quaternion {
                 cosXCosY * sinZ - sinXSinY * cosZ,
                 cosXCosY * cosZ + sinXSinY * sinZ
         );
+    }
+
+    /**
+     * Tests if {@code this} quaternion is equal to the given
+     * {@code other} quaternion, having an error range or
+     * threshold (because floating-point operations are not
+     * the best)
+     *
+     * @param other The compared quaternion
+     * @param threshold The test threshold
+     * @return True if they are equal
+     * @since 1.0.0
+     */
+    public boolean equals(Quaternion other, double threshold) {
+        if (other == null) return false;
+        return Math.abs(x - other.x) < threshold
+                && Math.abs(y - other.y) < threshold
+                && Math.abs(z - other.z) < threshold
+                && Math.abs(w - other.w) < threshold;
     }
 
     @Override
