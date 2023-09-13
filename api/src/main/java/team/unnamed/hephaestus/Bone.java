@@ -34,9 +34,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * Represents a {@link Model} movable part, in the
- * game, it has its own Creative's {@link team.unnamed.creative.model.Model}
- * and its own armor_stand entity
+ * Represents an in-game {@link Model} movable part.
  *
  * @since 1.0.0
  */
