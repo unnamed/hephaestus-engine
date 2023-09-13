@@ -93,7 +93,8 @@ public final class BoneEntity extends GenericBoneEntity {
     @Override
     public void rotation(Vector3Float rotation) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        Quaternion quaternion = Quaternion.fromEuler(rotation);
+        Quaternion q = Quaternion.fromEuler(new Vector3Float(0, 360 - view.getPosition().yaw(), 0));
+        Quaternion quaternion = q.multiply(Quaternion.fromEuler(rotation));
 
         meta.setNotifyAboutChanges(false);
         meta.setInterpolationStartDelta(0);
@@ -161,11 +162,11 @@ public final class BoneEntity extends GenericBoneEntity {
 
     @Override
     public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position, long @Nullable [] chunks) {
-        return super.teleport(position, chunks);
+        return super.teleport(position.withView(0, 0), chunks);
     }
 
     @Override
     public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos pos) {
-        return super.setInstance(instance, pos);
+        return super.setInstance(instance, pos.withView(0, 0));
     }
 }
