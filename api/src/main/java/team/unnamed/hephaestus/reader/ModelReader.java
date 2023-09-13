@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.reader;
 
+import team.unnamed.creative.base.Readable;
 import team.unnamed.hephaestus.Model;
 
 import java.io.File;
@@ -52,6 +53,21 @@ public interface ModelReader {
      * @since 1.0.0
      */
     Model read(InputStream input) throws IOException;
+
+    /**
+     * Reads a model from the given {@code readable}
+     * instance
+     *
+     * @param readable The readable object
+     * @return The read model
+     * @throws IOException If read or parsing fails
+     * @since 1.0.0
+     */
+    default Model read(Readable readable) throws IOException {
+        try (InputStream input = readable.open()) {
+            return read(input);
+        }
+    }
 
     /**
      * Reads a model from a {@link File}
