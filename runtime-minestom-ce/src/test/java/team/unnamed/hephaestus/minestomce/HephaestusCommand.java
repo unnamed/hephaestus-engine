@@ -80,9 +80,11 @@ final class HephaestusCommand extends Command {
                     ModelEntity view = registry.view(viewId);
                     if (view != null) {
                         String input = suggestion.getInput();
+                        int start = suggestion.getStart();
+                        String typing = input.substring(start, start + suggestion.getLength() - 1);
                         view.model().animations().keySet()
                                 .stream()
-                                .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(input))
+                                .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(typing))
                                 .forEach(name -> suggestion.addEntry(new SuggestionEntry(name)));
                     }
                 });
