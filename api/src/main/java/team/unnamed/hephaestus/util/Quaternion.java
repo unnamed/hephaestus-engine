@@ -214,13 +214,12 @@ public final class Quaternion implements Examinable {
 
     /**
      * Converts {@code this} quaternion to an Euler Angle representation
-     * in degrees.
+     * in radians.
      *
-     * @return An Euler Angle representation for this Quaternion, in degrees
+     * @return An Euler Angle representation for this Quaternion, in radians
      * @since 1.0.0
      */
-    public Vector3Float toEuler() {
-
+    public Vector3Float toEulerRadians() {
         // originally saw this on WorldSeedEntityEngine's Quaternion implementation
         // https://github.com/AtlasEngineCa/WorldSeedEntityEngine/blob/master/src/main/java/net/worldseed/multipart/Quaternion.java#L53
         // originally from http://marc-b-reynolds.github.io/math/2017/04/18/TaitEuler.html written in C, also originally
@@ -245,25 +244,30 @@ public final class Quaternion implements Examinable {
             vx = (float) (2.0 * Math.atan2(x, w) - Math.signum(xz) * vz);
         }
 
-        return Vectors.toDegrees(new Vector3Float(
-                (float) vx,
-                (float) vy,
-                (float) vz
-        ));
+        return new Vector3Float((float) vx, (float) vy, (float) vz);
+    }
+
+    /**
+     * Converts {@code this} quaternion to an Euler Angle representation
+     * in degrees.
+     *
+     * @return An Euler Angle representation for this Quaternion, in degrees
+     * @since 1.0.0
+     */
+    public Vector3Float toEulerDegrees() {
+        return Vectors.toDegrees(toEulerRadians());
     }
 
     /**
      * Creates a new {@link Quaternion} instance equivalent to the
      * given euler angle (rotation in X, Y, Z), which should be
-     * specified in degrees
+     * specified in radians
      *
      * @param euler The euler angle to represent
      * @return The quaternion representing the euler angle
      * @since 1.0.0
      */
-    public static Quaternion fromEuler(Vector3Float euler) {
-        euler = Vectors.toRadians(euler);
-
+    public static Quaternion fromEulerRadians(Vector3Float euler) {
         // common values
         double halfX = euler.x() * 0.5D;
         double halfY = euler.y() * 0.5D;
@@ -291,6 +295,19 @@ public final class Quaternion implements Examinable {
                 cosXCosY * sinZ - sinXSinY * cosZ,
                 cosXCosY * cosZ + sinXSinY * sinZ
         );
+    }
+
+    /**
+     * Creates a new {@link Quaternion} instance equivalent to the
+     * given euler angle (rotation in X, Y, Z), which should be
+     * specified in degrees
+     *
+     * @param euler The euler angle to represent
+     * @return The quaternion representing the euler angle
+     * @since 1.0.0
+     */
+    public static Quaternion fromEulerDegrees(Vector3Float euler) {
+        return fromEulerRadians(Vectors.toRadians(euler));
     }
 
     @Override

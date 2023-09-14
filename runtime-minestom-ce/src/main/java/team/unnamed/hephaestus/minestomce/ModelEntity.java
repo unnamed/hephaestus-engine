@@ -150,7 +150,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
             Vector3Float parentPosition
     ) {
         Vector3Float position = bone.position().multiply(scale).add(parentPosition);
-        Vector3Float rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
+        Vector3Float rotatedPosition = Vectors.rotateAroundYRadians(position, yawRadians);
 
         GenericBoneEntity entity = bone(bone.name());
         if (entity != null) {
@@ -172,7 +172,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
             Vector3Float parentPosition
     ) {
         Vector3Float position = bone.position().multiply(scale).add(parentPosition);
-        Vector3Float rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
+        Vector3Float rotatedPosition = Vectors.rotateAroundYRadians(position, yawRadians);
         Entity entity = bones.get(bone.name());
 
         if (entity != null) {

@@ -46,7 +46,7 @@ public final class Vectors {
         return vector.multiply(RADIAN);
     }
 
-    public static Vector3Float rotateAroundY(Vector3Float vector, double angle) {
+    public static Vector3Float rotateAroundYRadians(Vector3Float vector, double angle) {
         double sin =  Math.sin(angle);
         double cos = Math.cos(angle);
 
@@ -57,7 +57,7 @@ public final class Vectors {
         );
     }
 
-    public static Vector3Float rotate(Vector3Float vector, Vector3Float rotation) {
+    public static Vector3Float rotateDegrees(Vector3Float vector, Vector3Float rotation) {
         rotation = toRadians(rotation);
 
         double cosX = Math.cos(rotation.x()), sinX = Math.sin(rotation.x());
@@ -85,12 +85,6 @@ public final class Vectors {
 
     public static Vector3Float lerp(Vector3Float start, Vector3Float end, float percent) {
         return start.add(end.subtract(start).multiply(percent));
-    }
-
-    public static Vector3Float combineRotations(Vector3Float origin, Vector3Float delta) {
-        return Quaternion.fromEuler(origin)
-                .multiply(Quaternion.fromEuler(delta))
-                .toEuler();
     }
 
 }

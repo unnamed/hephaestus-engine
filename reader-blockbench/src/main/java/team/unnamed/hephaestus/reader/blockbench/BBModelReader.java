@@ -372,7 +372,7 @@ public final class BBModelReader implements ModelReader {
                 childrenAssets
         );
 
-        siblings.put(name, new Bone(name, position, Quaternion.fromEuler(rotation), children, asset.small(), asset.customModelData()));
+        siblings.put(name, new Bone(name, position, Quaternion.fromEulerDegrees(rotation), children, asset.small(), asset.customModelData()));
         siblingAssets.put(name, asset);
     }
 

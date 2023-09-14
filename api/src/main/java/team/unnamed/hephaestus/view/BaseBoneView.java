@@ -100,7 +100,7 @@ public interface BaseBoneView extends NamedEntity {
      * @param rotation The target rotation
      */
     default void rotation(Vector3Float rotation) {
-        rotation(Quaternion.fromEuler(rotation));
+        rotation(Quaternion.fromEulerDegrees(rotation));
     }
 
     /**

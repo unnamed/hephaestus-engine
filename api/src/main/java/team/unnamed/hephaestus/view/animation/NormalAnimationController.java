@@ -114,12 +114,12 @@ class NormalAnimationController implements AnimationController {
         Quaternion defaultRotation = bone.rotation();
 
         Vector3Float localPosition = defaultPosition.add(framePosition);
-        Quaternion localRotation = Quaternion.fromEuler(defaultRotation.toEuler().add(frameRotation));
+        Quaternion localRotation = Quaternion.fromEulerDegrees(defaultRotation.toEulerDegrees().add(frameRotation));
 
         Vector3Float globalPosition = parentPosition.add(localPosition);
         Quaternion globalRotation = parentRotation.multiply(localRotation);
 
-        boneView.position(Vectors.rotateAroundY(globalPosition, Math.toRadians(yaw)));
+        boneView.position(Vectors.rotateAroundYRadians(globalPosition, Math.toRadians(yaw)));
         boneView.rotation(globalRotation);
 
         for (Bone child : bone.children()) {
@@ -140,7 +140,7 @@ class NormalAnimationController implements AnimationController {
 
     @Override
     public synchronized void tick(double yaw) {
-        Quaternion bodyRotation = Quaternion.fromEuler(new Vector3Float(0,  (float) (360 - yaw), 0));
+        Quaternion bodyRotation = Quaternion.fromEulerDegrees(new Vector3Float(0,  (float) (360 - yaw), 0));
         for (Bone bone : view.model().bones()) {
             updateBone(
                     yaw,

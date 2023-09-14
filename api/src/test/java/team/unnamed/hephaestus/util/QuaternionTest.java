@@ -47,7 +47,7 @@ public class QuaternionTest {
 
     private static void assertQuaternionFromEuler(double x, double y, double z, double w, Vector3Float euler) {
         Quaternion expected = new Quaternion(x, y, z, w);
-        Quaternion quaternion = Quaternion.fromEuler(euler);
+        Quaternion quaternion = Quaternion.fromEulerDegrees(euler);
         Assertions.assertTrue(
                 expected.equals(quaternion, THRESHOLD),
                 "Unexpected quaternion values for EulerAngle: " + euler
@@ -70,11 +70,11 @@ public class QuaternionTest {
     private static void assertQuaternionToEuler(double x, double y, double z, double w, Vector3Float expected) {
         // convert quaternion to euler
         Quaternion original = new Quaternion(x, y, z, w);
-        Vector3Float got = original.toEuler(); // <--- the tested function
+        Vector3Float got = original.toEulerDegrees(); // <--- the tested function
 
         // convert euler to quaternion (so we forget about equivalent Euler Angles)
-        Quaternion quaternion = Quaternion.fromEuler(got); // <---- from the tested function
-        Quaternion expectation = Quaternion.fromEuler(expected); // <---- expectation
+        Quaternion quaternion = Quaternion.fromEulerDegrees(got); // <---- from the tested function
+        Quaternion expectation = Quaternion.fromEulerDegrees(expected); // <---- expectation
 
         Assertions.assertTrue(
                 expectation.isEquivalentTo(quaternion, THRESHOLD),
