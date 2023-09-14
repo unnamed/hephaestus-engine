@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.view;
 import net.kyori.adventure.text.Component;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.util.Quaternion;
 
 import java.awt.*;
 
@@ -73,6 +74,11 @@ public class MockBoneView implements BaseBoneView {
     @Override
     public void rotation(Vector3Float rotation) {
         this.rotation = rotation;
+    }
+
+    @Override
+    public void rotation(Quaternion rotation) {
+        throw new UnsupportedOperationException();
     }
 
     public Vector3Float rotation() {

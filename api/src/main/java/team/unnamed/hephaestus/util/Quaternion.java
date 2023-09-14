@@ -45,6 +45,13 @@ import java.util.stream.Stream;
  */
 public final class Quaternion implements Examinable {
 
+    /**
+     * An identity quaternion constant. An identity quaternion is a quaternion
+     * that doesn't change any quaternion it is multiplied with. An identity
+     * quaternion is thus a rotation of nothing.
+     */
+    public static final Quaternion IDENTITY = new Quaternion(0, 0, 0, 1);
+
     private final double x;
     private final double y;
     private final double z;

@@ -91,16 +91,11 @@ public final class BoneEntity extends GenericBoneEntity {
     }
 
     @Override
-    public void rotation(Vector3Float rotation) {
+    public void rotation(Quaternion rotation) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        Quaternion q = Quaternion.fromEuler(new Vector3Float(0, 360 - view.getPosition().yaw(), 0));
-        Quaternion quaternion = q.multiply(Quaternion.fromEuler(rotation));
-
         meta.setNotifyAboutChanges(false);
         meta.setInterpolationStartDelta(0);
-
-        meta.setRightRotation(quaternion.toFloatArray());
-
+        meta.setRightRotation(rotation.toFloatArray());
         meta.setNotifyAboutChanges(true);
     }
 

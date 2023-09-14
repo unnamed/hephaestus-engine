@@ -126,7 +126,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
 
     @Override
     public void tickAnimations() {
-        animationController.tick(Math.toRadians(getPosition().yaw()));
+        animationController.tick(getPosition().yaw());
     }
 
     @Override

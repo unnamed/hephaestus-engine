@@ -44,6 +44,7 @@ import team.unnamed.hephaestus.ModelDataCursor;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.process.ElementScale;
 import team.unnamed.hephaestus.reader.ModelReader;
+import team.unnamed.hephaestus.util.Quaternion;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -371,7 +372,7 @@ public final class BBModelReader implements ModelReader {
                 childrenAssets
         );
 
-        siblings.put(name, new Bone(name, position, rotation, children, asset.small(), asset.customModelData()));
+        siblings.put(name, new Bone(name, position, Quaternion.fromEuler(rotation), children, asset.small(), asset.customModelData()));
         siblingAssets.put(name, asset);
     }
 

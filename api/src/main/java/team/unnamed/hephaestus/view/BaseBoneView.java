@@ -25,6 +25,7 @@ package team.unnamed.hephaestus.view;
 
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.util.Quaternion;
 
 /**
  * Base abstraction for representing {@link Bone}
@@ -94,10 +95,19 @@ public interface BaseBoneView extends NamedEntity {
 
     /**
      * Sets the rotation of this bone to the given {@code rotation},
-     * specified in radians
+     * specified as an Euler Angle in degrees
      *
      * @param rotation The target rotation
      */
-    void rotation(Vector3Float rotation);
+    default void rotation(Vector3Float rotation) {
+        rotation(Quaternion.fromEuler(rotation));
+    }
+
+    /**
+     * Sets the rotation of this bone to the given {@code rotation}
+     *
+     * @param rotation The target rotation
+     */
+    void rotation(Quaternion rotation);
 
 }

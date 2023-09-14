@@ -29,6 +29,7 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.animation.KeyFrame;
 import team.unnamed.hephaestus.animation.Timeline;
+import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseBoneView;
 import team.unnamed.hephaestus.view.BaseModelView;
@@ -98,61 +99,37 @@ class NormalAnimationController implements AnimationController {
 
     private void updateBone(
             double yaw,
-            Bone parent,
             Bone bone,
-            Vector3Float parentRotation,
+            Quaternion parentRotation,
             Vector3Float parentPosition
     ) {
-
         BaseBoneView boneView = view.bone(bone.name());
         assert boneView != null;
-
-        Vector3Float globalPosition;
-        Vector3Float globalRotation;
 
         KeyFrame frame = nextFrame(bone.name());
         Vector3Float framePosition = frame.position();
         Vector3Float frameRotation = frame.rotation();
 
         Vector3Float defaultPosition = bone.position();
-        Vector3Float defaultRotation = bone.rotation();
+        Quaternion defaultRotation = bone.rotation();
 
-        Vector3Float localPosition = framePosition.add(defaultPosition);
-        Vector3Float localRotation = defaultRotation.add(frameRotation);
+        Vector3Float localPosition = defaultPosition.add(framePosition);
+        Quaternion localRotation = Quaternion.fromEuler(defaultRotation.toEuler().add(frameRotation));
 
-        if (parent == null) {
-            globalPosition = Vectors.rotateAroundY(localPosition, yaw);
-            globalRotation = localRotation;
-        } else {
-            globalPosition = Vectors.rotateAroundY(
-                    Vectors.rotate(localPosition, parentRotation),
-                    yaw
-            ).add(parentPosition);
-            globalRotation = Vectors.combineRotations(localRotation, parentRotation);
-        }
+        Vector3Float globalPosition = parentPosition.add(localPosition);
+        Quaternion globalRotation = parentRotation.multiply(localRotation);
 
-        // TODO: Ugly design, why does it just return rotation? Should we use mutable positions/rotations?
-        globalRotation = updateBonePositionAndRotation(boneView, globalPosition, globalRotation);
+        boneView.position(Vectors.rotateAroundY(globalPosition, Math.toRadians(yaw)));
+        boneView.rotation(globalRotation);
 
         for (Bone child : bone.children()) {
             updateBone(
                     yaw,
-                    bone,
                     child,
                     globalRotation,
                     globalPosition
             );
         }
-    }
-
-    protected Vector3Float updateBonePositionAndRotation(
-            BaseBoneView boneView,
-            Vector3Float position,
-            Vector3Float rotation
-    ) {
-        boneView.position(position);
-        boneView.rotation(rotation);
-        return rotation;
     }
 
     @Override
@@ -163,12 +140,12 @@ class NormalAnimationController implements AnimationController {
 
     @Override
     public synchronized void tick(double yaw) {
+        Quaternion bodyRotation = Quaternion.fromEuler(new Vector3Float(0,  (float) (360 - yaw), 0));
         for (Bone bone : view.model().bones()) {
             updateBone(
                     yaw,
-                    null,
                     bone,
-                    Vector3Float.ZERO,
+                    bodyRotation,
                     Vector3Float.ZERO
             );
         }

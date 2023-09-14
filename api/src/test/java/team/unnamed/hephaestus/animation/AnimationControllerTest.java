@@ -67,7 +67,7 @@ public class AnimationControllerTest {
         bones.put(baseBone.name(), baseBone);
         views.put(baseBone.name(), bone);
 
-        controller = AnimationController.create(new MockModelView(
+        controller = AnimationController.nonDelayed(new MockModelView(
                 new Model("test", bones, Vector2Float.ZERO, null, Collections.emptyMap()),
                 controller,
                 views

@@ -28,6 +28,7 @@ import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.util.Quaternion;
 
 import java.util.Collection;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class Bone implements Examinable {
     private final String name;
 
     private final Vector3Float position;
-    private final Vector3Float rotation;
+    private final Quaternion rotation;
 
     private final Map<String, Bone> children;
 
@@ -53,7 +54,7 @@ public class Bone implements Examinable {
     public Bone(
             String name,
             Vector3Float position,
-            Vector3Float rotation,
+            Quaternion rotation,
             Map<String, Bone> children,
             boolean small,
             int customModelData
@@ -91,7 +92,7 @@ public class Bone implements Examinable {
      *
      * @return The bone initial rotation
      */
-    public Vector3Float rotation() {
+    public Quaternion rotation() {
         return rotation;
     }
 
