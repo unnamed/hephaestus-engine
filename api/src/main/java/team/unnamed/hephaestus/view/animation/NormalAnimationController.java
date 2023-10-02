@@ -116,10 +116,14 @@ class NormalAnimationController implements AnimationController {
         Vector3Float localPosition = defaultPosition.add(framePosition);
         Quaternion localRotation = defaultRotation.multiply(Quaternion.fromEulerDegrees(frameRotation));
 
-        Vector3Float globalPosition = parentPosition.add(localPosition);
+        Vector3Float globalPosition = Vectors.rotateAroundYRadians(
+                Vectors.rotateDegrees(localPosition, parentRotation.toEulerDegrees()),
+                Math.toRadians(yaw)
+        ).add(parentPosition);
+
         Quaternion globalRotation = parentRotation.multiply(localRotation);
 
-        boneView.position(Vectors.rotateAroundYRadians(globalPosition, Math.toRadians(yaw)));
+        boneView.position(globalPosition);
         boneView.rotation(globalRotation);
 
         for (Bone child : bone.children()) {

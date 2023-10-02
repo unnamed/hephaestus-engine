@@ -64,15 +64,16 @@ public final class BoneEntity extends GenericBoneEntity {
     public BoneEntity(
             ModelEntity view,
             Bone bone,
+            Vector3Float initialPosition,
             float scale
     ) {
         super(EntityType.ITEM_DISPLAY);
         this.view = view;
         this.bone = bone;
-        initialize(scale);
+        initialize(initialPosition, scale);
     }
 
-    private void initialize(float scale) {
+    private void initialize(Vector3Float initialPosition, float scale) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
         meta.setScale(new Vec(scale, scale, scale));
         meta.setDisplayContext(ItemDisplayMeta.DisplayContext.THIRD_PERSON_LEFT_HAND);
@@ -82,12 +83,14 @@ public final class BoneEntity extends GenericBoneEntity {
 
         meta.setItemStack(BASE_HELMET.withMeta(itemMeta ->
                 itemMeta.customModelData(bone.customModelData())));
+
+        position(initialPosition);
     }
 
     @Override
     public void position(Vector3Float position) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(meta.getScale()));
+        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(2).mul(meta.getScale()));
     }
 
     @Override
@@ -153,15 +156,5 @@ public final class BoneEntity extends GenericBoneEntity {
     @Override
     public void colorize(int rgb) {
         colorize(new Color(rgb));
-    }
-
-    @Override
-    public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position, long @Nullable [] chunks) {
-        return super.teleport(position.withView(0, 0), chunks);
-    }
-
-    @Override
-    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos pos) {
-        return super.setInstance(instance, pos.withView(0, 0));
     }
 }
