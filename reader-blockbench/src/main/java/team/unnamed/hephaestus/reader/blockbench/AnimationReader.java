@@ -104,6 +104,10 @@ final class AnimationReader {
                         value = value.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
                     }
 
+//                    if (channel.equals("rotation")) {
+//                        value = value.multiply(1, 1, -1);
+//                    }
+
                     frames.put(time, Timeline.Channel.valueOf(channel.toUpperCase()), value);
                 }
 

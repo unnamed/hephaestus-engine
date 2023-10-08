@@ -84,30 +84,6 @@ public interface BaseBoneView extends NamedEntity {
         colorize(DEFAULT_COLOR);
     }
 
-    /**
-     * Sets the relative position of this bone to the given
-     * relative {@code position} (added to the global model
-     * position to obtain the global bone position)
-     *
-     * @param position The relative target position
-     */
-    void position(Vector3Float position);
-
-    /**
-     * Sets the rotation of this bone to the given {@code rotation},
-     * specified as an Euler Angle in degrees
-     *
-     * @param rotation The target rotation
-     */
-    default void rotation(Vector3Float rotation) {
-        rotation(Quaternion.fromEulerDegrees(rotation));
-    }
-
-    /**
-     * Sets the rotation of this bone to the given {@code rotation}
-     *
-     * @param rotation The target rotation
-     */
-    void rotation(Quaternion rotation);
+    void update(Vector3Float position, Quaternion rotation);
 
 }

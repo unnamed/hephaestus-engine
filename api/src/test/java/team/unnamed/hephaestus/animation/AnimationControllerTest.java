@@ -58,7 +58,8 @@ public class AnimationControllerTest {
 
         Bone baseBone = new Bone(
                 BONE_NAME,
-                Vector3Float.ZERO, Vector3Float.ZERO,
+                Vector3Float.ZERO,
+                Vector3Float.ZERO,
                 Collections.emptyMap(),
                 false, 0
         );

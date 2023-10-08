@@ -84,22 +84,7 @@ public final class BoneEntity extends GenericBoneEntity {
         meta.setItemStack(BASE_HELMET.withMeta(itemMeta ->
                 itemMeta.customModelData(bone.customModelData())));
 
-        position(initialPosition);
-    }
-
-    @Override
-    public void position(Vector3Float position) {
-        ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(2).mul(meta.getScale()));
-    }
-
-    @Override
-    public void rotation(Quaternion rotation) {
-        ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        meta.setNotifyAboutChanges(false);
-        meta.setInterpolationStartDelta(0);
-        meta.setRightRotation(rotation.toFloatArray());
-        meta.setNotifyAboutChanges(true);
+        update(initialPosition, Quaternion.IDENTITY);
     }
 
     /**
@@ -156,5 +141,17 @@ public final class BoneEntity extends GenericBoneEntity {
     @Override
     public void colorize(int rgb) {
         colorize(new Color(rgb));
+    }
+
+    @Override
+    public void update(Vector3Float position, Quaternion rotation) {
+        ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
+        meta.setNotifyAboutChanges(false);
+        meta.setInterpolationStartDelta(0);
+
+        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(2).mul(meta.getScale()));
+        meta.setRightRotation(rotation.toFloatArray());
+
+        meta.setNotifyAboutChanges(true);
     }
 }

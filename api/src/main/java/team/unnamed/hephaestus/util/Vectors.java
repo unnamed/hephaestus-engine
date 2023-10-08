@@ -68,19 +68,20 @@ public final class Vectors {
         double y = vector.y();
         double z = vector.z();
 
-        // rotate around X axis
-        double xy = y * cosX - z * sinX;
-        double xz = y * sinX + z * cosX;
-
-        // rotate around Y axis
-        double yx = x * cosY - xz * sinY;
-        double yz = x * sinY + xz * cosY;
 
         // rotate around Z axis
-        double zx = yx * cosZ + xy * sinZ;
-        double zy = -yx * sinZ + xy * cosZ;
+        double zx = x * cosZ + y * sinZ;
+        double zy = -x * sinZ + y * cosZ;
 
-        return new Vector3Float((float) zx, (float) zy, (float) yz);
+        // rotate around Y axis
+        double yx = zx * cosY - z * sinY;
+        double yz = zx * sinY + z * cosY;
+
+        // rotate around X axis
+        double xy = zy * cosX - yz * sinX;
+        double xz = zy * sinX + yz * cosX;
+
+        return new Vector3Float((float) yx, (float) xy, (float) xz);
     }
 
     public static Vector3Float lerp(Vector3Float start, Vector3Float end, float percent) {
