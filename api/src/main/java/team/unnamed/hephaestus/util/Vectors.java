@@ -46,6 +46,14 @@ public final class Vectors {
         return vector.multiply(RADIAN);
     }
 
+    /**
+     * Rotates the given vector around the Y axis by the given angle
+     * in radians, <b>counter-clockwise</b>.
+     *
+     * @param vector The vector to rotate
+     * @param angle The angle in radians
+     * @return The rotated vector
+     */
     public static Vector3Float rotateAroundYRadians(Vector3Float vector, double angle) {
         double sin =  Math.sin(angle);
         double cos = Math.cos(angle);
@@ -85,6 +93,12 @@ public final class Vectors {
 
     public static Vector3Float lerp(Vector3Float start, Vector3Float end, float percent) {
         return start.add(end.subtract(start).multiply(percent));
+    }
+
+    public static boolean equals(Vector3Float a, Vector3Float b, double epsilon) {
+        return Math.abs(a.x() - b.x()) < epsilon
+                && Math.abs(a.y() - b.y()) < epsilon
+                && Math.abs(a.z() - b.z()) < epsilon;
     }
 
 }

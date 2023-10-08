@@ -30,6 +30,7 @@ import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.BaseBoneView;
 import team.unnamed.hephaestus.view.MockBoneView;
 import team.unnamed.hephaestus.view.MockModelView;
@@ -58,7 +59,8 @@ public class AnimationControllerTest {
 
         Bone baseBone = new Bone(
                 BONE_NAME,
-                Vector3Float.ZERO, Vector3Float.ZERO,
+                Vector3Float.ZERO,
+                Quaternion.IDENTITY,
                 Collections.emptyMap(),
                 false, 0
         );
