@@ -30,20 +30,23 @@ import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
+import net.minestom.server.network.packet.server.play.SetPassengersPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.view.animation.AnimationController;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 
 public class ModelEntity extends EntityCreature implements BaseModelView<Player> {
@@ -51,6 +54,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     private final Model model;
     private final float scale;
 
+    private final Entity modelHolder;
     private final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
     private final AnimationController animationController;
 
@@ -60,26 +64,50 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         this.scale = scale;
         this.animationController = AnimationController.nonDelayed(this);
 
+        this.modelHolder = new Entity(EntityType.ARMOR_STAND) {
+            @Override
+            public void updateNewViewer(@NotNull Player player) {
+                super.updateNewViewer(player);
+
+                List<Integer> entities =  bones().stream()
+                        .map(Entity::getEntityId)
+                        .toList();
+
+                player.sendPacket(new SetPassengersPacket(
+                        this.getEntityId(),
+                        entities
+                ));
+            }
+        };
+
         // model entity is not auto-viewable by default
         super.setAutoViewable(false); // "super" so it doesn't call our override
+        modelHolder.setAutoViewable(false);
         initialize();
     }
 
     private void initialize() {
+        modelHolder.setSilent(true);
+        modelHolder.setInvisible(false);
+        modelHolder.setNoGravity(true);
+
         Vector2Float boundingBox = model.boundingBox();
         setBoundingBox(boundingBox.x(), boundingBox.y(), boundingBox.x());
         setInvisible(true);
         setNoGravity(true);
 
         for (Bone bone : model.bones()) {
-            createBone(bone);
+            createBone(bone, Vector3Float.ZERO);
         }
     }
 
-    private void createBone(Bone bone) {
-        bones.put(bone.name(), new BoneEntity(this, bone, scale));
+    private void createBone(Bone bone, Vector3Float parentPosition) {
+        Vector3Float position = bone.position().add(parentPosition);
+        BoneEntity boneEntity = new BoneEntity(this, bone, position, scale);
+        bones.put(bone.name(), boneEntity);
+
         for (Bone child : bone.children()) {
-            createBone(child);
+            createBone(child, position);
         }
     }
 
@@ -132,58 +160,16 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     @Override
     public void tick(long time) {
         super.tick(time);
-        // TODO: I don't think this should be done by default like this
         this.tickAnimations();
     }
 
     @Override
     public void setAutoViewable(boolean autoViewable) {
         super.setAutoViewable(autoViewable);
+        this.modelHolder.setAutoViewable(autoViewable);
+
         for (GenericBoneEntity boneEntity : bones.values()) {
             boneEntity.setAutoViewable(autoViewable);
-        }
-    }
-
-    private void setBoneInstance(
-            double yawRadians,
-            Bone bone,
-            Vector3Float parentPosition
-    ) {
-        Vector3Float position = bone.position().multiply(scale).add(parentPosition);
-        Vector3Float rotatedPosition = Vectors.rotateAroundYRadians(position, yawRadians);
-
-        GenericBoneEntity entity = bone(bone.name());
-        if (entity != null) {
-            entity.setInstance(instance, super.position.add(
-                    rotatedPosition.x(),
-                    rotatedPosition.y(),
-                    rotatedPosition.z()
-            )).join();
-        }
-
-        for (Bone child : bone.children()) {
-            setBoneInstance(yawRadians, child, position);
-        }
-    }
-
-    private void teleportBone(
-            double yawRadians,
-            Bone bone,
-            Vector3Float parentPosition
-    ) {
-        Vector3Float position = bone.position().multiply(scale).add(parentPosition);
-        Vector3Float rotatedPosition = Vectors.rotateAroundYRadians(position, yawRadians);
-        Entity entity = bones.get(bone.name());
-
-        if (entity != null) {
-            entity.teleport(super.position.add(
-                    rotatedPosition.x(),
-                    rotatedPosition.y(),
-                    rotatedPosition.z()
-            )).join();
-        }
-        for (Bone child : bone.children()) {
-            this.teleportBone(yawRadians, child, position);
         }
     }
 
@@ -191,9 +177,8 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
         return super.setInstance(instance, spawnPosition)
                 .thenAccept(ignored -> {
-                    double yawRadians = Math.toRadians(spawnPosition.yaw());
-                    for (Bone bone : model.bones()) {
-                        setBoneInstance(yawRadians, bone, Vector3Float.ZERO);
+                    for (GenericBoneEntity bone : bones()) {
+                        bone.setInstance(instance, spawnPosition);
                     }
                 });
     }
@@ -202,11 +187,9 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position) {
         return super.teleport(position)
                 .thenRun(() -> {
-                    double yawRadians = Math.toRadians(position.yaw());
-                    for (Bone bone : model.bones()) {
-                        teleportBone(yawRadians, bone, Vector3Float.ZERO);
+                    for (GenericBoneEntity bone : bones()) {
+                        bone.teleport(position);
                     }
                 });
     }
-
 }

@@ -116,7 +116,7 @@ public final class Vectors {
         double zx = yx * cosZ - xy * sinZ;
         double zy = yx * sinZ + xy * cosZ;
 
-        return new Vector3Float((float) zx, (float) zy, (float) yz);
+        return new Vector3Float((float) yx, (float) xy, (float) xz);
     }
 
     public static Vector3Float lerp(Vector3Float start, Vector3Float end, float percent) {
