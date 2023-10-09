@@ -149,7 +149,7 @@ public final class BoneEntity extends GenericBoneEntity {
         meta.setNotifyAboutChanges(false);
         meta.setInterpolationStartDelta(0);
 
-        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(2).mul(meta.getScale()));
+        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(2.40).mul(meta.getScale()));
         meta.setRightRotation(rotation.toFloatArray());
 
         meta.setNotifyAboutChanges(true);

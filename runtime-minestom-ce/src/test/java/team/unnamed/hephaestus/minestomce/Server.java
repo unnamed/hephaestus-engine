@@ -61,12 +61,14 @@ public class Server {
 
         ModelRegistry registry = new ModelRegistry();
         registry.loadModelFromResource("redstone_monstrosity.bbmodel");
+        registry.loadModelFromResource("dragon.bbmodel");
+        registry.loadModelFromResource("geometry.bbmodel");
 
         BuiltResourcePack resourcePack = ResourcePackFactory.create(registry);
         MinecraftServer.getCommandManager().register(new HephaestusCommand(registry, resourcePack));
 
         ModelEntity testView = MinestomModelEngine.minestom().createViewAndTrack(
-                registry.model("redstone_monstrosity"),
+                registry.model("dragon"),
                 instance,
                 new Pos(0, 43, 0),
                 0.25f

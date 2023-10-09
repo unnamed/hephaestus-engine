@@ -221,9 +221,12 @@ public final class BBModelReader implements ModelReader {
                         uvJson.get(3).getAsFloat() / textureHeight
                 );
 
+                int faceRotation = faceJson.has("rotation") ? faceJson.get("rotation").getAsInt() : ElementFace.DEFAULT_ROTATION;
+
                 if (!uv.equals(Vector4Float.ZERO)) {
                     faces.put(face, ElementFace.builder()
                             .uv(uv)
+                            .rotation(faceRotation)
                             .texture("#" + textureId)
                             .tintIndex(0)
                             .build());

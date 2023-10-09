@@ -94,19 +94,13 @@ final class AnimationReader {
                     String channel = keyframeJson.get("channel").getAsString();
                     int time = Math.round(GsonUtil.parseLenientFloat(keyframeJson.get("time")) * TICKS_PER_SECOND);
 
-                    if (channel.equals("scale")) {
-                        // TODO: support scale frames
-                        throw new IOException("Scale frames aren't supported yet." +
-                                " Check animation " + name + " and bone " + boneName);
-                    }
-
                     if (channel.equals("position")) {
                         value = value.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
                     }
 
-//                    if (channel.equals("rotation")) {
-//                        value = value.multiply(1, 1, -1);
-//                    }
+                    if (channel.equals("rotation")) {
+                        value = value.multiply(1, -1, -1);
+                    }
 
                     frames.put(time, Timeline.Channel.valueOf(channel.toUpperCase()), value);
                 }
