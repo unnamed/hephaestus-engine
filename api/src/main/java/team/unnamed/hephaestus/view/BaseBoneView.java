@@ -84,6 +84,13 @@ public interface BaseBoneView extends NamedEntity {
         colorize(DEFAULT_COLOR);
     }
 
+
+    /**
+     * Sets the relative position and the rotation of
+     * this bone
+     * @param position The relative target position
+     * @param rotation The target rotation
+     */
     void update(Vector3Float position, Quaternion rotation);
 
 }
