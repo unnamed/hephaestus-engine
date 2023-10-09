@@ -37,6 +37,7 @@ import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.view.animation.AnimationController;
 
@@ -97,17 +98,18 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         setNoGravity(true);
 
         for (Bone bone : model.bones()) {
-            createBone(bone, Vector3Float.ZERO);
+            createBone(bone, Vector3Float.ZERO, Quaternion.IDENTITY);
         }
     }
 
-    private void createBone(Bone bone, Vector3Float parentPosition) {
+    private void createBone(Bone bone, Vector3Float parentPosition, Quaternion parentRotation) {
         Vector3Float position = bone.position().add(parentPosition);
-        BoneEntity boneEntity = new BoneEntity(this, bone, position, scale);
+        Quaternion rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
+        BoneEntity boneEntity = new BoneEntity(this, bone, position, rotation, scale);
         bones.put(bone.name(), boneEntity);
 
         for (Bone child : bone.children()) {
-            createBone(child, position);
+            createBone(child, position, rotation);
         }
     }
 

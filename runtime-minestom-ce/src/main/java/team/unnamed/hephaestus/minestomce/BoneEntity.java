@@ -29,17 +29,12 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Quaternion;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Represents a {@link Bone} holder entity,
@@ -65,16 +60,18 @@ public final class BoneEntity extends GenericBoneEntity {
             ModelEntity view,
             Bone bone,
             Vector3Float initialPosition,
+            Quaternion initialRotation,
             float scale
     ) {
         super(EntityType.ITEM_DISPLAY);
         this.view = view;
         this.bone = bone;
-        initialize(initialPosition, scale);
+        initialize(initialPosition, initialRotation, scale);
     }
 
-    private void initialize(Vector3Float initialPosition, float scale) {
+    private void initialize(Vector3Float initialPosition, Quaternion initialRotation, float scale) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
+        meta.setRightRotation(initialRotation.toFloatArray());
         meta.setScale(new Vec(scale, scale, scale));
         meta.setDisplayContext(ItemDisplayMeta.DisplayContext.THIRD_PERSON_LEFT_HAND);
         meta.setInterpolationDuration(3);
