@@ -343,7 +343,7 @@ final class BBModelReaderImpl implements BBModelReader {
                 childrenAssets
         );
 
-        siblings.put(name, new Bone(name, position, rotation, children, asset.small(), asset.customModelData()));
+        siblings.put(name, new Bone(name, position, rotation, children, asset.customModelData()));
         siblingAssets.put(name, asset);
     }
 
