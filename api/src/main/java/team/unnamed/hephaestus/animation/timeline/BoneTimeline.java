@@ -24,7 +24,6 @@
 package team.unnamed.hephaestus.animation.timeline;
 
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.animation.Frame;
 
 /**
  *
@@ -75,9 +74,9 @@ public final class BoneTimeline {
             return tick;
         }
 
-        public Frame next() {
+        public BoneFrame next() {
             tick++;
-            return new Frame(
+            return new BoneFrame(
                     positions.next(),
                     rotations.next(),
                     scales.next()

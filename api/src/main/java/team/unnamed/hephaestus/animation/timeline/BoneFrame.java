@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation;
+package team.unnamed.hephaestus.animation.timeline;
 
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
@@ -32,9 +32,9 @@ import team.unnamed.creative.base.Vector3Float;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public final class Frame implements Examinable {
+public final class BoneFrame implements Examinable {
 
-    public static final Frame INITIAL = new Frame(
+    public static final BoneFrame INITIAL = new BoneFrame(
             Vector3Float.ZERO,
             Vector3Float.ZERO,
             Vector3Float.ONE
@@ -44,7 +44,7 @@ public final class Frame implements Examinable {
     private final Vector3Float rotation;
     private final Vector3Float scale;
 
-    public Frame(
+    public BoneFrame(
             Vector3Float position,
             Vector3Float rotation,
             Vector3Float scale
@@ -79,10 +79,10 @@ public final class Frame implements Examinable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Frame frame = (Frame) o;
-        return position.equals(frame.position)
-                && rotation.equals(frame.rotation)
-                && scale.equals(frame.scale);
+        BoneFrame boneFrame = (BoneFrame) o;
+        return position.equals(boneFrame.position)
+                && rotation.equals(boneFrame.rotation)
+                && scale.equals(boneFrame.scale);
     }
 
     @Override

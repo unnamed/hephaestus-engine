@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.animation.Frame;
+import team.unnamed.hephaestus.animation.timeline.BoneFrame;
 import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
@@ -46,7 +46,7 @@ class NormalAnimationController implements AnimationController {
 
     private final Map<String, BoneTimeline.StateIterator> iterators = new HashMap<>();
 
-    private final Map<String, Frame> lastFrames = new HashMap<>();
+    private final Map<String, BoneFrame> lastFrames = new HashMap<>();
 
     // Reference to the animation currently being played
     private @Nullable Animation currentAnimation;
@@ -69,11 +69,11 @@ class NormalAnimationController implements AnimationController {
         Map<String, BoneTimeline> boneTimelines = new HashMap<>();
         Animation transitionAnimation = Animation.animation("$transition", transitionTicks, Animation.LoopMode.HOLD, boneTimelines);
 
-        lastFrames.forEach((boneName, frame) -> {
+        lastFrames.forEach((boneName, boneFrame) -> {
             BoneTimeline timeline = BoneTimeline.create();
-            timeline.positions().put(0, frame.position());
-            timeline.rotations().put(0, frame.rotation());
-            timeline.scales().put(0, frame.scale());
+            timeline.positions().put(0, boneFrame.position());
+            timeline.rotations().put(0, boneFrame.rotation());
+            timeline.scales().put(0, boneFrame.scale());
             boneTimelines.put(boneName, timeline);
         });
 
@@ -103,9 +103,9 @@ class NormalAnimationController implements AnimationController {
         BaseBoneView boneView = view.bone(bone.name());
         assert boneView != null;
 
-        Frame frame = nextFrame(bone.name());
-        Vector3Float framePosition = frame.position();
-        Vector3Float frameRotation = frame.rotation();
+        BoneFrame boneFrame = nextFrame(bone.name());
+        Vector3Float framePosition = boneFrame.position();
+        Vector3Float frameRotation = boneFrame.rotation();
 
         Vector3Float defaultPosition = bone.position();
         Vector3Float defaultRotation = bone.rotation();
@@ -159,7 +159,7 @@ class NormalAnimationController implements AnimationController {
         animation.timelines().forEach((name, list) -> iterators.put(name, list.iterator()));
     }
 
-    private Frame nextFrame(String boneName) {
+    private BoneFrame nextFrame(String boneName) {
 
         if (currentAnimation == null) {
             // if no animation currently being played,
@@ -175,8 +175,8 @@ class NormalAnimationController implements AnimationController {
         BoneTimeline.StateIterator iterator = iterators.get(boneName);
 
         if (iterator != null) {
-            Frame frame = iterator.next();
-            lastFrames.put(boneName, frame);
+            BoneFrame boneFrame = iterator.next();
+            lastFrames.put(boneName, boneFrame);
 
             if (iterator.tick() >= currentAnimation.length()) {
                 // animation ended!
@@ -186,13 +186,13 @@ class NormalAnimationController implements AnimationController {
                         // animation ended, lastFrames are removed
                         // so that next calls will return INITIAL
                         lastFrames.remove(boneName);
-                        return frame;
+                        return boneFrame;
                     case LOOP:
                         createIterators(currentAnimation);
-                        return frame;
+                        return boneFrame;
                     case HOLD:
                         nextAnimation();
-                        return frame;
+                        return boneFrame;
                 }
             }
         }
@@ -200,8 +200,8 @@ class NormalAnimationController implements AnimationController {
         return fallback(boneName);
     }
 
-    private Frame fallback(String boneName) {
-        return lastFrames.getOrDefault(boneName, Frame.INITIAL);
+    private BoneFrame fallback(String boneName) {
+        return lastFrames.getOrDefault(boneName, BoneFrame.INITIAL);
     }
 
 }
