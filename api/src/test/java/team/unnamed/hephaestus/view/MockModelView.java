@@ -86,7 +86,7 @@ public class MockModelView implements BaseModelView<Object> {
 
     @Override
     public void tickAnimations() {
-        animationController.tick(0);
+        animationController.tick();
     }
 
 }
