@@ -21,66 +21,45 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation;
+package team.unnamed.hephaestus.animation.interpolation;
 
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.creative.base.Vector3Float;
-
-import java.util.Iterator;
 
 /**
- * Represents an animation timeline, holds and creates
- * iterators for {@link KeyFrame} instances in order to
- * perform model animations
+ * An interpolator is a class that interpolates
+ * between two values, using a given progress.
  *
+ * @param <T> The interpolated value type
  * @since 1.0.0
  */
-public interface Timeline extends Iterable<KeyFrame> {
+public interface Interpolation<T> {
 
     /**
-     * Adds the given {@code value} to the timeline in
-     * the specified {@code tick} and {@code channel}
+     * Returns the start value for the interpolator
      *
+     * @return The start value
      * @since 1.0.0
      */
-    void put(int position, Channel channel, Vector3Float value);
+    @NotNull T from();
 
     /**
-     * Creates an iterator that iterates over
-     * keyframes stored in this timeline
+     * Returns the end value for the interpolator
      *
+     * @return The end value
      * @since 1.0.0
      */
-    @NotNull
-    @Override
-    Iterator<KeyFrame> iterator();
-
-    enum Channel {
-        POSITION(Vector3Float.ZERO),
-        ROTATION(Vector3Float.ZERO),
-        SCALE(Vector3Float.ONE);
-
-        private final Vector3Float initialValue;
-
-        Channel(Vector3Float initialValue) {
-            this.initialValue = initialValue;
-        }
-
-        public Vector3Float initialValue() {
-            return initialValue;
-        }
-    }
+    @NotNull T to();
 
     /**
-     * Creates a new dynamic {@link Timeline} instance, it
-     * will generate synthetic keyframes during iteration
-     * and not during creation
+     * Interpolates between the given values
+     * using the given progress. The progress
+     * is a value between 0 and 1, where 0
+     * is the start value and 1 is the end value.
      *
-     * @return A new dynamic timeline instance
+     * @param progress The progress [0, 1]
+     * @return The interpolated value
      * @since 1.0.0
      */
-    static Timeline dynamic(int length) {
-        return new DynamicTimeline(length);
-    }
+    @NotNull T interpolate(final double progress);
 
 }

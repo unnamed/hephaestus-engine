@@ -27,7 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.animation.Timeline;
+import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
 import team.unnamed.hephaestus.process.ElementScale;
 
 import java.io.IOException;
@@ -69,7 +69,7 @@ final class AnimationReader {
                 continue;
             }
 
-            Map<String, Timeline> animators = new HashMap<>();
+            Map<String, BoneTimeline> animators = new HashMap<>();
 
             for (Map.Entry<String, JsonElement> animatorEntry : animationJson.get("animators")
                     .getAsJsonObject()
@@ -78,7 +78,7 @@ final class AnimationReader {
                 JsonObject animatorJson = animatorEntry.getValue().getAsJsonObject();
                 String boneName = animatorJson.get("name").getAsString();
 
-                Timeline frames = Timeline.dynamic(length);
+                BoneTimeline timeline = BoneTimeline.create();
 
                 for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
 
@@ -102,10 +102,20 @@ final class AnimationReader {
                         value = value.multiply(1, -1, -1);
                     }
 
-                    frames.put(time, Timeline.Channel.valueOf(channel.toUpperCase()), value);
+                    switch (channel.toLowerCase(Locale.ROOT)) {
+                        case "position":
+                            timeline.positions().put(time, value);
+                            break;
+                        case "rotation":
+                            timeline.rotations().put(time, value);
+                            break;
+                        case "scale":
+                            timeline.scales().put(time, value);
+                            break;
+                    }
                 }
 
-                animators.put(boneName, frames);
+                animators.put(boneName, timeline);
             }
 
             animations.put(name, new Animation(name, length, loopMode, animators));

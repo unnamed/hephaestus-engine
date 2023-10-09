@@ -23,35 +23,145 @@
  */
 package team.unnamed.hephaestus.animation;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.animation.timeline.TickIterator;
+import team.unnamed.hephaestus.animation.timeline.Timeline;
+import team.unnamed.hephaestus.animation.timeline.TimelineOptions;
 
-import java.util.Iterator;
+import java.util.function.Consumer;
 
-public class TimelineTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    private static final int DEPTH = 100;
+class TimelineTest {
+
+    private static void testTimeline(
+            Consumer<Timeline<Vector3Float>> configurer,
+            Vector3Float... expected
+    ) {
+        Timeline<Vector3Float> timeline = Timeline.timeline(TimelineOptions.POSITION);
+        configurer.accept(timeline);
+
+        TickIterator<Vector3Float> it = timeline.tickiterator();
+        Vector3Float lastValue = null;
+        for (Vector3Float expectedValue : expected) {
+            assertEquals(expectedValue, it.next());
+            lastValue = expectedValue;
+        }
+
+        if (lastValue != null) {
+            for (int i = 0; i < 10; i++) {
+                // should be kept on last value
+                assertEquals(lastValue, it.next());
+            }
+        }
+    }
 
     @Test
-    @DisplayName("Test that dynamic timeline keyframe linear interpolation works")
-    public void test_linear_interpolation() {
-        Timeline timeline = Timeline.dynamic(DEPTH);
+    void test_simple() {
+        testTimeline(
+                timeline -> {
+                    timeline.put(0, new Vector3Float(0, 0, 0));
+                    timeline.put(10, new Vector3Float(20, 20, 20));
+                },
+                new Vector3Float(0, 0, 0), // keyframe
+                new Vector3Float(2, 2, 2),
+                new Vector3Float(4, 4, 4),
+                new Vector3Float(6, 6, 6),
+                new Vector3Float(8, 8, 8),
+                new Vector3Float(10, 10, 10),
+                new Vector3Float(12, 12, 12),
+                new Vector3Float(14, 14, 14),
+                new Vector3Float(16, 16, 16),
+                new Vector3Float(18, 18, 18),
+                new Vector3Float(20, 20, 20) // keyframe
+        );
+    }
 
-        timeline.put(0, Timeline.Channel.POSITION, Vector3Float.ZERO);
-        timeline.put(DEPTH, Timeline.Channel.POSITION, Vector3Float.ONE);
+    @Test
+    void test_simple_2() {
+        testTimeline(
+                timeline -> {
+                    timeline.put(0, new Vector3Float(0, 0, 0));
+                    timeline.put(8, new Vector3Float(4, 4, 4));
+                },
+                new Vector3Float(0, 0, 0), // keyframe
+                new Vector3Float(0.5F, 0.5F, 0.5F),
+                new Vector3Float(1, 1, 1),
+                new Vector3Float(1.5F, 1.5F, 1.5F),
+                new Vector3Float(2, 2, 2),
+                new Vector3Float(2.5F, 2.5F, 2.5F),
+                new Vector3Float(3, 3, 3),
+                new Vector3Float(3.5F, 3.5F, 3.5F),
+                new Vector3Float(4, 4, 4) // keyframe
+        );
+    }
 
-        Iterator<KeyFrame> iterator = timeline.iterator();
+    @Test
+    void test_different() {
+        testTimeline(
+                timeline -> {
+                    timeline.put(0, new Vector3Float(0, 0, 0));
+                    timeline.put(8, new Vector3Float(4, 2, 0));
+                },
+                new Vector3Float(0, 0, 0), // keyframe
+                new Vector3Float(0.5F, 0.25F, 0),
+                new Vector3Float(1, 0.5F, 0),
+                new Vector3Float(1.5F, 0.75F, 0),
+                new Vector3Float(2, 1, 0),
+                new Vector3Float(2.5F, 1.25F, 0),
+                new Vector3Float(3, 1.5F, 0),
+                new Vector3Float(3.5F, 1.75F, 0),
+                new Vector3Float(4, 2, 0) // keyframe
+        );
+    }
 
-        for (int i = 0; i <= DEPTH; i++) {
-            float expected = (float) i / DEPTH;
-            KeyFrame frame = iterator.next();
-            Assertions.assertEquals(
-                    new Vector3Float(expected, expected, expected),
-                    frame.position()
-            );
-        }
+    @Test
+    void test_multiple_keyframes() {
+        testTimeline(
+                timeline -> {
+                    timeline.put(0, new Vector3Float(0, 0, 0));
+                    timeline.put(2, new Vector3Float(4, 2, 0));
+                    timeline.put(6, new Vector3Float(0, 4, 1));
+                },
+                new Vector3Float(0, 0, 0), // keyframe
+                new Vector3Float(2, 1, 0),
+                new Vector3Float(4, 2, 0), // keyframe
+                new Vector3Float(3, 2.5F, 0.25F),
+                new Vector3Float(2, 3, 0.5F),
+                new Vector3Float(1, 3.5F, 0.75F),
+                new Vector3Float(0, 4, 1) // keyframe
+        );
+    }
+
+    @Test
+    void test_multiple_keyframes_2() {
+        testTimeline(
+                timeline -> {
+                    timeline.put(0, new Vector3Float(0, 0, 0)); // "normal speed"
+                    timeline.put(4, new Vector3Float(4, 4, 4)); // "normal speed"
+                    timeline.put(8, new Vector3Float(0, 0, 0)); // "normal speed"
+                    timeline.put(12, new Vector3Float(8, 8, 8)); // "double speed"
+                    timeline.put(16, new Vector3Float(6, 6, 6)); // "half speed"
+                },
+                new Vector3Float(0, 0, 0), // keyframe
+                new Vector3Float(1, 1, 1),
+                new Vector3Float(2, 2, 2),
+                new Vector3Float(3, 3, 3),
+                new Vector3Float(4, 4, 4), // keyframe
+                new Vector3Float(3, 3, 3),
+                new Vector3Float(2, 2, 2),
+                new Vector3Float(1, 1, 1),
+                new Vector3Float(0, 0, 0), // keyframe
+                new Vector3Float(2, 2, 2),
+                new Vector3Float(4, 4, 4),
+                new Vector3Float(6, 6, 6),
+                new Vector3Float(8, 8, 8), // keyframe
+                new Vector3Float(7.5F, 7.5F, 7.5F),
+                new Vector3Float(7, 7, 7),
+                new Vector3Float(6.5F, 6.5F, 6.5F),
+                new Vector3Float(6, 6, 6) // keyframe
+        );
     }
 
 }

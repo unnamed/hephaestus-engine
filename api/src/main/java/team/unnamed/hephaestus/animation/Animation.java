@@ -27,6 +27,7 @@ import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
+import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
 import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.view.animation.AnimationController;
 
@@ -46,13 +47,13 @@ public final class Animation implements Examinable {
     private final String name;
     private final int length;
     private final LoopMode loopMode;
-    private final Map<String, Timeline> timelines;
+    private final Map<String, BoneTimeline> timelines;
 
     public Animation(
             String name,
             int length,
             LoopMode loopMode,
-            Map<String, Timeline> timelines
+            Map<String, BoneTimeline> timelines
     ) {
         this.name = Objects.requireNonNull(name, "name");
         this.length = length;
@@ -106,7 +107,7 @@ public final class Animation implements Examinable {
      * @return The animation bone timelines
      * @since 1.0.0
      */
-    public Map<String, Timeline> timelines() {
+    public Map<String, BoneTimeline> timelines() {
         return timelines;
     }
 

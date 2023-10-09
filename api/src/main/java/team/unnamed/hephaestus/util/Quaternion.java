@@ -152,6 +152,18 @@ public final class Quaternion implements Examinable {
     }
 
     /**
+     * Calculates the dot product between {@code this} quaternion
+     * and the given {@code other} quaternion.
+     *
+     * @param other The other quaternion
+     * @return The dot product between the two quaternions
+     * @since 1.0.0
+     */
+    public double dot(Quaternion other) {
+        return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w;
+    }
+
+    /**
      * Negates {@code this} quaternion by multiplying all
      * of its components by {@code -1}. Equivalent to
      * using {@link Quaternion#multiply(double)} and
