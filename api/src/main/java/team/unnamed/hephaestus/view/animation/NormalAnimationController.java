@@ -67,7 +67,7 @@ class NormalAnimationController implements AnimationController {
         // the last frame of the current animation and the first frame
         // of the next animation
         Map<String, BoneTimeline> boneTimelines = new HashMap<>();
-        Animation transitionAnimation = new Animation("$transition", transitionTicks, Animation.LoopMode.HOLD, boneTimelines);
+        Animation transitionAnimation = Animation.animation("$transition", transitionTicks, Animation.LoopMode.HOLD, boneTimelines);
 
         lastFrames.forEach((boneName, frame) -> {
             BoneTimeline timeline = BoneTimeline.create();

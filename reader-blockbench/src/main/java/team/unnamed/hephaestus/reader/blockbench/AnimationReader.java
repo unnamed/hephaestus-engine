@@ -65,7 +65,7 @@ final class AnimationReader {
 
             if (GsonUtil.isNullOrAbsent(animationJson, "animators")) {
                 // empty animation, no keyframes of any kind
-                animations.put(name, new Animation(name, length, loopMode, Collections.emptyMap()));
+                animations.put(name, Animation.animation(name, length, loopMode, Collections.emptyMap()));
                 continue;
             }
 
@@ -118,7 +118,7 @@ final class AnimationReader {
                 animators.put(boneName, timeline);
             }
 
-            animations.put(name, new Animation(name, length, loopMode, animators));
+            animations.put(name, Animation.animation(name, length, loopMode, animators));
         }
     }
 
