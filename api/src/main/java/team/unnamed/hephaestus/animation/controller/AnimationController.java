@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view.animation;
+package team.unnamed.hephaestus.animation.controller;
 
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.view.BaseModelView;

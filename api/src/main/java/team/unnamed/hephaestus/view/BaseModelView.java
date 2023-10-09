@@ -25,7 +25,7 @@ package team.unnamed.hephaestus.view;
 
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.view.animation.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationController;
 import team.unnamed.hephaestus.animation.Animation;
 
 import java.util.Collection;

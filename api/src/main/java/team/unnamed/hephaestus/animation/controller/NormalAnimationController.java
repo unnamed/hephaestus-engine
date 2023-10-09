@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.view.animation;
+package team.unnamed.hephaestus.animation.controller;
 
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;

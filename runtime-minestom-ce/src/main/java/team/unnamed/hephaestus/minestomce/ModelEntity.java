@@ -39,15 +39,13 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.BaseModelView;
-import team.unnamed.hephaestus.view.animation.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationController;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 
 public class ModelEntity extends EntityCreature implements BaseModelView<Player> {
