@@ -79,8 +79,8 @@ public interface Timeline extends Iterable<KeyFrame> {
      * @return A new dynamic timeline instance
      * @since 1.0.0
      */
-    static Timeline dynamic() {
-        return new DynamicTimeline();
+    static Timeline dynamic(int length) {
+        return new DynamicTimeline(length);
     }
 
 }

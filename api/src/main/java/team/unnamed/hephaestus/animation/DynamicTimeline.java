@@ -34,10 +34,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 final class DynamicTimeline implements Timeline {
 
     private final Map<Channel, List<AnimationEntry>> entries = new HashMap<>();
+    private final int length;
+
+    DynamicTimeline(int length) {
+        this.length = length;
+    }
 
     @Override
     public void put(int position, Channel channel, Vector3Float value) {
@@ -47,7 +53,7 @@ final class DynamicTimeline implements Timeline {
 
     @Override
     public @NotNull Iterator<KeyFrame> iterator() {
-        return new DynamicKeyFrameIterator(entries);
+        return new DynamicKeyFrameIterator(entries, length);
     }
 
     private static final class AnimationEntry {
@@ -78,6 +84,8 @@ final class DynamicTimeline implements Timeline {
          */
         private final Iterator<AnimationEntry>[] iterators;
 
+        private final int length;
+
         /**
          * Represents the current tick of the iteration,
          * it increments in 1 in every next() call when
@@ -92,8 +100,9 @@ final class DynamicTimeline implements Timeline {
         private final Vector3Float[] nextValues = new Vector3Float[CHANNEL_COUNT];
 
         @SuppressWarnings({"unchecked"})
-        public DynamicKeyFrameIterator(Map<Channel, List<AnimationEntry>> entries) {
+        public DynamicKeyFrameIterator(Map<Channel, List<AnimationEntry>> entries, int length) {
             this.iterators = new Iterator[CHANNEL_COUNT];
+            this.length = length;
 
             for (Channel channel : Channel.values()) {
                 int index = channel.ordinal();
@@ -122,6 +131,9 @@ final class DynamicTimeline implements Timeline {
 
         @Override
         public boolean hasNext() {
+            if (tick >= length) {
+                return false;
+            }
             // if there are next frames, there must be non-explored
             // entries or currently exploring entries must not be
             // finishing
@@ -137,6 +149,10 @@ final class DynamicTimeline implements Timeline {
 
         @Override
         public KeyFrame next() {
+
+            if (tick >= length) {
+                throw new NoSuchElementException("No more keyframes in the timeline! (tick >= length)");
+            }
 
             Vector3Float position = Vector3Float.ZERO;
             Vector3Float rotation = Vector3Float.ZERO;

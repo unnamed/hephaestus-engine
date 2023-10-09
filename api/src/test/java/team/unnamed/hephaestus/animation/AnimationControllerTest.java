@@ -115,13 +115,13 @@ public class AnimationControllerTest {
     }
 
     private void queue(Animation.LoopMode loopMode) {
-        Timeline timeline = Timeline.dynamic();
+        Timeline timeline = Timeline.dynamic(LENGTH);
         timeline.put(0, Timeline.Channel.POSITION, START);
         timeline.put(LENGTH, Timeline.Channel.POSITION, END);
 
         Map<String, Timeline> timelines = new HashMap<>();
         timelines.put("bone", timeline);
-        controller.queue(new Animation("test", loopMode, timelines));
+        controller.queue(new Animation("test", LENGTH, loopMode, timelines));
     }
 
     private void consume() {

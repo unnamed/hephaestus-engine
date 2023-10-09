@@ -44,15 +44,18 @@ import java.util.stream.Stream;
 public final class Animation implements Examinable {
 
     private final String name;
+    private final int length;
     private final LoopMode loopMode;
     private final Map<String, Timeline> timelines;
 
     public Animation(
             String name,
+            int length,
             LoopMode loopMode,
             Map<String, Timeline> timelines
     ) {
         this.name = Objects.requireNonNull(name, "name");
+        this.length = length;
         this.loopMode = Objects.requireNonNull(loopMode, "loopMode");
         this.timelines = Objects.requireNonNull(timelines, "timelines");
     }
@@ -65,6 +68,17 @@ public final class Animation implements Examinable {
      */
     public String name() {
         return name;
+    }
+
+    /**
+     * Returns the animation length, in
+     * ticks
+     *
+     * @return The animation length
+     * @since 1.0.0
+     */
+    public int length() {
+        return length;
     }
 
     /**
@@ -100,6 +114,7 @@ public final class Animation implements Examinable {
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
                 ExaminableProperty.of("name", name),
+                ExaminableProperty.of("length", length),
                 ExaminableProperty.of("loopMode", loopMode),
                 ExaminableProperty.of("timelines", timelines)
         );
@@ -111,13 +126,14 @@ public final class Animation implements Examinable {
         if (o == null || getClass() != o.getClass()) return false;
         Animation that = (Animation) o;
         return name.equals(that.name)
+                && length == that.length
                 && loopMode == that.loopMode
                 && timelines.equals(that.timelines);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, loopMode, timelines);
+        return Objects.hash(name, length, loopMode, timelines);
     }
 
     @Override

@@ -37,7 +37,7 @@ public class TimelineTest {
     @Test
     @DisplayName("Test that dynamic timeline keyframe linear interpolation works")
     public void test_linear_interpolation() {
-        Timeline timeline = Timeline.dynamic();
+        Timeline timeline = Timeline.dynamic(DEPTH);
 
         timeline.put(0, Timeline.Channel.POSITION, Vector3Float.ZERO);
         timeline.put(DEPTH, Timeline.Channel.POSITION, Vector3Float.ONE);

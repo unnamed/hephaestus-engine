@@ -65,7 +65,7 @@ final class AnimationReader {
 
             if (GsonUtil.isNullOrAbsent(animationJson, "animators")) {
                 // empty animation, no keyframes of any kind
-                animations.put(name, new Animation(name, loopMode, Collections.emptyMap()));
+                animations.put(name, new Animation(name, length, loopMode, Collections.emptyMap()));
                 continue;
             }
 
@@ -78,7 +78,7 @@ final class AnimationReader {
                 JsonObject animatorJson = animatorEntry.getValue().getAsJsonObject();
                 String boneName = animatorJson.get("name").getAsString();
 
-                Timeline frames = Timeline.dynamic();
+                Timeline frames = Timeline.dynamic(length);
 
                 for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
 
@@ -108,7 +108,7 @@ final class AnimationReader {
                 animators.put(boneName, frames);
             }
 
-            animations.put(name, new Animation(name, loopMode, animators));
+            animations.put(name, new Animation(name, length, loopMode, animators));
         }
     }
 

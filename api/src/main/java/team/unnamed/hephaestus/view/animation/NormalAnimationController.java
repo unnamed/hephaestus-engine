@@ -67,7 +67,7 @@ class NormalAnimationController implements AnimationController {
         Map<String, Timeline> framesByBone = new HashMap<>();
 
         lastFrames.forEach((boneName, frame) -> {
-            Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> Timeline.dynamic());
+            Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> Timeline.dynamic(animation.length()));
             keyFrames.put(0, Timeline.Channel.POSITION, frame.position());
             keyFrames.put(0, Timeline.Channel.ROTATION, frame.rotation());
             keyFrames.put(0, Timeline.Channel.SCALE, frame.scale());
@@ -80,7 +80,7 @@ class NormalAnimationController implements AnimationController {
             if (iterator.hasNext()) {
                 KeyFrame firstFrame = frames.iterator().next();
 
-                Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> Timeline.dynamic());
+                Timeline keyFrames = framesByBone.computeIfAbsent(boneName, k -> Timeline.dynamic(animation.length()));
                 keyFrames.put(transitionTicks, Timeline.Channel.POSITION, firstFrame.position());
                 keyFrames.put(transitionTicks, Timeline.Channel.ROTATION, firstFrame.rotation());
                 keyFrames.put(transitionTicks, Timeline.Channel.SCALE, firstFrame.scale());
@@ -89,6 +89,7 @@ class NormalAnimationController implements AnimationController {
 
         queue.addFirst(new Animation(
                 "generated-transition",
+                transitionTicks,
                 Animation.LoopMode.HOLD,
                 framesByBone
         ));
