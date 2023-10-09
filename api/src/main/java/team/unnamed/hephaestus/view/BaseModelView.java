@@ -148,6 +148,8 @@ public interface BaseModelView<TViewer> {
      * Ticks animations, makes required bones pass
      * to the next animation frame
      */
-    void tickAnimations();
+    default void tickAnimations() {
+        animationController().tick();
+    }
 
 }

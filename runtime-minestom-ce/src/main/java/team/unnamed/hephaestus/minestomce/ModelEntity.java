@@ -153,11 +153,6 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     }
 
     @Override
-    public void tickAnimations() {
-        animationController.tick();
-    }
-
-    @Override
     public void tick(long time) {
         super.tick(time);
         this.tickAnimations();
