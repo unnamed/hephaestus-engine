@@ -36,14 +36,6 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Quaternion;
 
-/**
- * Represents a {@link Bone} holder entity,
- * it is an armor stand with a LEATHER_HORSE_ARMOR
- * item as helmet using a custom model data to
- * apply the bone model
- *
- * @since 1.0.0
- */
 public final class BoneEntity extends GenericBoneEntity {
 
     private static final ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
