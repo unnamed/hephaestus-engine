@@ -27,6 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
+import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
 import team.unnamed.hephaestus.process.ElementScale;
@@ -79,9 +80,15 @@ final class AnimationReader {
                 JsonObject animatorJson = animatorEntry.getValue().getAsJsonObject();
                 String boneName = animatorJson.get("name").getAsString();
 
-                Timeline.Builder<Vector3Float> positionsTimeline = Timeline.timeline();
-                Timeline.Builder<Vector3Float> rotationsTimeline = Timeline.timeline();
-                Timeline.Builder<Vector3Float> scalesTimeline = Timeline.timeline();
+                Timeline.Builder<Vector3Float> positionsTimeline = Timeline.<Vector3Float>timeline()
+                        .initial(Vector3Float.ZERO)
+                        .defaultInterpolator(Interpolator.lerpVector3Float());
+                Timeline.Builder<Vector3Float> rotationsTimeline = Timeline.<Vector3Float>timeline()
+                        .initial(Vector3Float.ZERO)
+                        .defaultInterpolator(Interpolator.lerpVector3Float());
+                Timeline.Builder<Vector3Float> scalesTimeline = Timeline.<Vector3Float>timeline()
+                        .initial(Vector3Float.ONE)
+                        .defaultInterpolator(Interpolator.lerpVector3Float());
 
                 for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
 
@@ -105,15 +112,35 @@ final class AnimationReader {
                         value = value.multiply(1, -1, -1);
                     }
 
+                    String interpolation = keyframeJson.has("interpolation")
+                            ? keyframeJson.get("interpolation").getAsString()
+                            : "linear";
+                    Interpolator<Vector3Float> interpolator;
+                    switch (interpolation.toLowerCase()) {
+                        case "bezier": // <-- parse bezier as linear
+                        case "linear":
+                            interpolator = Interpolator.lerpVector3Float();
+                            break;
+                        case "catmullrom":
+                        case "smooth": // <-- smooth is the displayed name of catmullrom, it is the same
+                            interpolator = Interpolator.catmullRomSplineVector3Float();
+                            break;
+                        case "step":
+                            interpolator = Interpolator.stepVector3Float();
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Unsupported interpolation type: '" + interpolation + "'");
+                    }
+
                     switch (channel.toLowerCase(Locale.ROOT)) {
                         case "position":
-                            positionsTimeline.keyFrame(time, value);
+                            positionsTimeline.keyFrame(time, value, interpolator);
                             break;
                         case "rotation":
-                            rotationsTimeline.keyFrame(time, value);
+                            rotationsTimeline.keyFrame(time, value, interpolator);
                             break;
                         case "scale":
-                            scalesTimeline.keyFrame(time, value);
+                            scalesTimeline.keyFrame(time, value, interpolator);
                             break;
                     }
                 }
