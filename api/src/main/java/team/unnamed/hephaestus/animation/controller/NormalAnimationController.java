@@ -29,6 +29,8 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.animation.timeline.BoneFrame;
 import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
+import team.unnamed.hephaestus.animation.timeline.BoneTimelinePlayhead;
+import team.unnamed.hephaestus.animation.timeline.Timeline;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseBoneView;
@@ -39,12 +41,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
+
 class NormalAnimationController implements AnimationController {
 
     private final Deque<Animation> queue = new LinkedList<>();
     private final BaseModelView<?> view;
 
-    private final Map<String, BoneTimeline.StateIterator> iterators = new HashMap<>();
+    private final Map<String, BoneTimelinePlayhead> iterators = new HashMap<>();
 
     private final Map<String, BoneFrame> lastFrames = new HashMap<>();
 
@@ -57,7 +61,10 @@ class NormalAnimationController implements AnimationController {
 
     @Override
     public synchronized void queue(Animation animation, int transitionTicks) {
+        requireNonNull(animation, "animation");
+
         if (transitionTicks <= 0) {
+            // no transition ticks, just queue the animation
             queue.addFirst(animation);
             nextAnimation();
             return;
@@ -66,31 +73,48 @@ class NormalAnimationController implements AnimationController {
         // create a synthetic animation that will transition between
         // the last frame of the current animation and the first frame
         // of the next animation
-        Map<String, BoneTimeline> boneTimelines = new HashMap<>();
-        Animation transitionAnimation = Animation.animation("$transition", transitionTicks, Animation.LoopMode.HOLD, boneTimelines);
+        final Animation.Builder transitionAnimationBuilder = Animation.animation()
+                .name("$$hephaestus_transition_animation")
+                .length(transitionTicks)
+                .loopMode(Animation.LoopMode.HOLD);
 
-        lastFrames.forEach((boneName, boneFrame) -> {
-            BoneTimeline timeline = BoneTimeline.create();
-            timeline.positions().put(0, boneFrame.position());
-            timeline.rotations().put(0, boneFrame.rotation());
-            timeline.scales().put(0, boneFrame.scale());
-            boneTimelines.put(boneName, timeline);
-        });
+        for (Map.Entry<String, BoneFrame> entry : lastFrames.entrySet()) {
+            String boneName = entry.getKey();
+            BoneFrame lastFrame = entry.getValue();
 
-        animation.timelines().forEach((boneName, nextTimeline) -> {
-            BoneTimeline timeline = boneTimelines.get(boneName);
-            if (timeline == null) {
+            // put last states (initial from next animation)
+            BoneTimeline nextTimeline = animation.timelines().get(boneName);
+            if (nextTimeline == null) {
                 // this new animation animates an unknown bone?
-                return;
+                continue;
             }
 
-            timeline.positions().put(transitionTicks, nextTimeline.positions().tickiterator().next());
-            timeline.rotations().put(transitionTicks, nextTimeline.rotations().tickiterator().next());
-            timeline.scales().put(transitionTicks, nextTimeline.scales().tickiterator().next());
-        });
+            BoneTimeline.Builder timeline = BoneTimeline.boneTimeline();
+
+            timeline.positions(
+                    Timeline.<Vector3Float>timeline()
+                            .keyFrame(0, lastFrame.position())
+                            .keyFrame(transitionTicks, nextTimeline.positions().createPlayhead().next())
+                            .build()
+            );
+            timeline.rotations(
+                    Timeline.<Vector3Float>timeline()
+                            .keyFrame(0, lastFrame.rotation())
+                            .keyFrame(transitionTicks, nextTimeline.rotations().createPlayhead().next())
+                            .build()
+            );
+            timeline.scales(
+                    Timeline.<Vector3Float>timeline()
+                            .keyFrame(0, lastFrame.scale())
+                            .keyFrame(transitionTicks, nextTimeline.scales().createPlayhead().next())
+                            .build()
+            );
+
+            transitionAnimationBuilder.timeline(boneName, timeline.build());
+        }
 
         // queue transition and animation itself
-        queue.addFirst(transitionAnimation);
+        queue.addFirst(transitionAnimationBuilder.build());
         queue.addFirst(animation);
         nextAnimation();
     }
@@ -156,7 +180,7 @@ class NormalAnimationController implements AnimationController {
 
     private void createIterators(Animation animation) {
         iterators.clear();
-        animation.timelines().forEach((name, list) -> iterators.put(name, list.iterator()));
+        animation.timelines().forEach((name, list) -> iterators.put(name, list.createPlayhead()));
     }
 
     private BoneFrame nextFrame(String boneName) {
@@ -172,7 +196,7 @@ class NormalAnimationController implements AnimationController {
             }
         }
 
-        BoneTimeline.StateIterator iterator = iterators.get(boneName);
+        BoneTimelinePlayhead iterator = iterators.get(boneName);
 
         if (iterator != null) {
             BoneFrame boneFrame = iterator.next();

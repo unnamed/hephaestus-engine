@@ -28,6 +28,7 @@ import com.google.gson.JsonObject;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
+import team.unnamed.hephaestus.animation.timeline.Timeline;
 import team.unnamed.hephaestus.process.ElementScale;
 
 import java.io.IOException;
@@ -78,7 +79,9 @@ final class AnimationReader {
                 JsonObject animatorJson = animatorEntry.getValue().getAsJsonObject();
                 String boneName = animatorJson.get("name").getAsString();
 
-                BoneTimeline timeline = BoneTimeline.create();
+                Timeline.Builder<Vector3Float> positionsTimeline = Timeline.timeline();
+                Timeline.Builder<Vector3Float> rotationsTimeline = Timeline.timeline();
+                Timeline.Builder<Vector3Float> scalesTimeline = Timeline.timeline();
 
                 for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
 
@@ -104,18 +107,22 @@ final class AnimationReader {
 
                     switch (channel.toLowerCase(Locale.ROOT)) {
                         case "position":
-                            timeline.positions().put(time, value);
+                            positionsTimeline.keyFrame(time, value);
                             break;
                         case "rotation":
-                            timeline.rotations().put(time, value);
+                            rotationsTimeline.keyFrame(time, value);
                             break;
                         case "scale":
-                            timeline.scales().put(time, value);
+                            scalesTimeline.keyFrame(time, value);
                             break;
                     }
                 }
 
-                animators.put(boneName, timeline);
+                animators.put(boneName, BoneTimeline.boneTimeline()
+                        .positions(positionsTimeline.build())
+                        .rotations(rotationsTimeline.build())
+                        .scales(scalesTimeline.build())
+                        .build());
             }
 
             animations.put(name, Animation.animation(name, length, loopMode, animators));

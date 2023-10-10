@@ -25,9 +25,8 @@ package team.unnamed.hephaestus.animation;
 
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.animation.timeline.TickIterator;
+import team.unnamed.hephaestus.animation.timeline.Playhead;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
-import team.unnamed.hephaestus.animation.timeline.TimelineOptions;
 
 import java.util.function.Consumer;
 
@@ -42,7 +41,7 @@ class TimelineTest {
         Timeline<Vector3Float> timeline = Timeline.timeline(TimelineOptions.POSITION);
         configurer.accept(timeline);
 
-        TickIterator<Vector3Float> it = timeline.tickiterator();
+        Playhead<Vector3Float> it = timeline.createPlayhead();
         Vector3Float lastValue = null;
         for (Vector3Float expectedValue : expected) {
             assertEquals(expectedValue, it.next());

@@ -23,57 +23,66 @@
  */
 package team.unnamed.hephaestus.animation.timeline;
 
-import net.kyori.examination.Examinable;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 
+import java.util.Comparator;
 import java.util.List;
 
-/**
- * Represents a timeline. A timeline is an ordered collection
- * of keyframes, where a keyframe is a state at a given time.
- *
- * <p>Keyframes may have more options such as the interpolation
- * function to use when tick-iterating over them.</p>
- *
- * @param <T> The type of values in this timeline
- */
-public interface Timeline<T> extends Examinable {
-    static <T> Builder<T> timeline() {
-        return new TimelineImpl.BuilderImpl<>();
+final class TimelineImpl<T> implements Timeline<T> {
+
+    private final T initialValue;
+    private final Interpolator<T> defaultInterpolator;
+    private final List<KeyFrame<T>> keyFrames;
+
+    TimelineImpl(T initialValue, Interpolator<T> defaultInterpolator, List<KeyFrame<T>> keyFrames) {
+        this.initialValue = initialValue;
+        this.defaultInterpolator = defaultInterpolator;
+        this.keyFrames = keyFrames;
+        keyFrames.sort(Comparator.comparing(KeyFrame::time));
     }
 
-    @NotNull T initial();
-
-    @NotNull Interpolator<T> defaultInterpolator();
-
-    @NotNull @Unmodifiable List<KeyFrame<T>> keyFrames();
-
-    @Contract("-> new")
-    Playhead<T> createPlayhead();
-
-    interface Builder<T> {
-
-        Builder<T> initial(T value);
-
-        Builder<T> defaultInterpolator(Interpolator<T> interpolator);
-
-        Builder<T> keyFrame(KeyFrame<T> keyFrame);
-
-        @Contract("_, _ -> this")
-        default @NotNull Builder<T> keyFrame(final int time, final @NotNull T value) {
-            return keyFrame(new KeyFrame<>(time, value, null));
-        }
-
-        @Contract("_, _, _ -> this")
-        default @NotNull Builder<T> keyFrame(final int time, final @NotNull T value, final @NotNull Interpolator<T> interpolator) {
-            return keyFrame(new KeyFrame<>(time, value, interpolator));
-        }
-
-        Timeline<T> build();
-
+    @Override
+    public @NotNull T initial() {
+        return initialValue;
     }
 
+    @Override
+    public @NotNull Interpolator<T> defaultInterpolator() {
+        return defaultInterpolator;
+    }
+
+    @Override
+    public @NotNull @Unmodifiable List<KeyFrame<T>> keyFrames() {
+        return keyFrames;
+    }
+
+    @Override
+    public Playhead<T> createPlayhead() {
+        return null;
+    }
+
+    static final class BuilderImpl<T> implements Builder<T> {
+
+        @Override
+        public Builder<T> initial(T value) {
+            return null;
+        }
+
+        @Override
+        public Builder<T> defaultInterpolator(Interpolator<T> interpolator) {
+            return null;
+        }
+
+        @Override
+        public Builder<T> keyFrame(KeyFrame<T> keyFrame) {
+            return null;
+        }
+
+        @Override
+        public Timeline<T> build() {
+            return null;
+        }
+    }
 }

@@ -21,33 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+/**
+ * Classes related to animation timelines. Timelines are an ordered
+ * collection of keyframes.
+ */
 package team.unnamed.hephaestus.animation.timeline;
-
-import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.animation.interpolation.Interpolator;
-
-public final class KeyFrame<T> {
-
-    private final int time;
-    private final T value;
-    private final @Nullable Interpolator<T> interpolator;
-
-    public KeyFrame(int time, T value, @Nullable Interpolator<T> interpolator) {
-        this.time = time;
-        this.value = value;
-        this.interpolator = interpolator;
-    }
-
-    public int time() {
-        return time;
-    }
-
-    public T value() {
-        return value;
-    }
-
-    public Interpolator<T> interpolator() {
-        return interpolator;
-    }
-
-}

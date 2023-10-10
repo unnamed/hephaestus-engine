@@ -23,66 +23,67 @@
  */
 package team.unnamed.hephaestus.animation.timeline;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 
 /**
  *
  * @since 1.0.0
  */
-public final class BoneTimeline {
-
-    private final Timeline<Vector3Float> positionTimeline = Timeline.timeline(TimelineOptions.POSITION);
-    private final Timeline<Vector3Float> rotationTimeline = Timeline.timeline(TimelineOptions.ROTATION);
-    private final Timeline<Vector3Float> scaleTimeline = Timeline.timeline(TimelineOptions.SCALE);
-
-    public Timeline<Vector3Float> positions() {
-        return positionTimeline;
-    }
-
-    public Timeline<Vector3Float> rotations() {
-        return rotationTimeline;
-    }
-
-    public Timeline<Vector3Float> scales() {
-        return scaleTimeline;
-    }
-
-    public StateIterator iterator() {
-        return new StateIterator();
-    }
+public interface BoneTimeline {
 
     /**
-     * Creates a new dynamic {@link BoneTimeline} instance, it
-     * will generate synthetic keyframes during iteration
-     * and not during creation
-     *
      * @return A new dynamic timeline instance
      * @since 1.0.0
      */
-    public static BoneTimeline create() {
-        return new BoneTimeline();
+    static @NotNull Builder boneTimeline() {
+        return new BoneTimelineImpl.BuilderImpl();
     }
 
-    public class StateIterator {
+    @NotNull Timeline<Vector3Float> positions();
 
-        private final TickIterator<Vector3Float> positions = positions().tickiterator();
-        private final TickIterator<Vector3Float> rotations = rotations().tickiterator();
-        private final TickIterator<Vector3Float> scales = scales().tickiterator();
-        private int tick;
+    @NotNull Timeline<Vector3Float> rotations();
 
-        public int tick() {
-            return tick;
-        }
+    @NotNull Timeline<Vector3Float> scales();
 
-        public BoneFrame next() {
-            tick++;
-            return new BoneFrame(
-                    positions.next(),
-                    rotations.next(),
-                    scales.next()
-            );
-        }
-
+    default @NotNull BoneTimelinePlayhead createPlayhead() {
+        return new BoneTimelinePlayhead(this);
     }
 
+    interface Builder {
+
+        /**
+         * Set the positions timeline
+         *
+         * @param positions The positions timeline
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder positions(final @NotNull Timeline<Vector3Float> positions);
+
+        /**
+         * Set the rotations timeline
+         *
+         * @param rotations The rotations timeline
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder rotations(final @NotNull Timeline<Vector3Float> rotations);
+
+        /**
+         * Set the scales timeline
+         *
+         * @param scales The scales timeline
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder scales(final @NotNull Timeline<Vector3Float> scales);
+
+        @NotNull BoneTimeline build();
+
+    }
 }

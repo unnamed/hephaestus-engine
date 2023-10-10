@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 
-public final class TickIterator<T> {
+public final class Playhead<T> {
 
     private final Iterator<KeyFrame<T>> keyFrameIterator;
 
@@ -40,12 +40,10 @@ public final class TickIterator<T> {
     // the current tick
     private int tick = 0;
 
-    TickIterator(
-            Timeline<T> timeline
-    ) {
+    Playhead(Timeline<T> timeline) {
         // set up
         keyFrameIterator = timeline.keyFrames().iterator();
-        previous = new KeyFrame<>(0, timeline.options().initialValue(), timeline.options().defaultInterpolator());
+        previous = new KeyFrame<>(0, timeline.initial(), timeline.defaultInterpolator());
         if (keyFrameIterator.hasNext()) {
             next = keyFrameIterator.next();
         }

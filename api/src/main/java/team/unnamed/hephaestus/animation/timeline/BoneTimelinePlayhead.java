@@ -24,28 +24,33 @@
 package team.unnamed.hephaestus.animation.timeline;
 
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 
-public final class TimelineOptions<T> {
+public class BoneTimelinePlayhead {
 
-    public static final TimelineOptions<Vector3Float> POSITION = new TimelineOptions<>(Vector3Float.ZERO, Interpolator.lerpVector3Float());
-    public static final TimelineOptions<Vector3Float> ROTATION = new TimelineOptions<>(Vector3Float.ZERO, Interpolator.lerpVector3Float());
-    public static final TimelineOptions<Vector3Float> SCALE = new TimelineOptions<>(Vector3Float.ZERO, Interpolator.lerpVector3Float());
+    private final Playhead<Vector3Float> positions;
+    private final Playhead<Vector3Float> rotations;
+    private final Playhead<Vector3Float> scales;
+    private final BoneTimeline boneTimeline;
+    private int tick;
 
-    private final T initialValue;
-    private final Interpolator<T> defaultInterpolator;
-
-    public TimelineOptions(T initialValue, Interpolator<T> defaultInterpolator) {
-        this.initialValue = initialValue;
-        this.defaultInterpolator = defaultInterpolator;
+    public BoneTimelinePlayhead(BoneTimeline boneTimeline) {
+        this.boneTimeline = boneTimeline;
+        this.positions = boneTimeline.positions().createPlayhead();
+        this.rotations = boneTimeline.rotations().createPlayhead();
+        this.scales = boneTimeline.scales().createPlayhead();
     }
 
-    public T initialValue() {
-        return initialValue;
+    public int tick() {
+        return tick;
     }
 
-    public Interpolator<T> defaultInterpolator() {
-        return defaultInterpolator;
+    public BoneFrame next() {
+        tick++;
+        return new BoneFrame(
+                positions.next(),
+                rotations.next(),
+                scales.next()
+        );
     }
 
 }
