@@ -166,4 +166,35 @@ class TimelineTest {
         );
     }
 
+    @Test
+    void test_catmullrom_interpolated_timeline() {
+        testTimeline(
+                timeline -> {
+                    timeline.defaultInterpolator(Interpolator.catmullRomSplineVector3Float());
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0));
+                    timeline.keyFrame(4, new Vector3Float(-4, -4, -4));
+                    timeline.keyFrame(8, new Vector3Float(4, 4, 4));
+                    timeline.keyFrame(12, new Vector3Float(0, 0, 0));
+                    timeline.keyFrame(16, new Vector3Float(-4, -4, -4));
+                },
+                new Vector3Float(0, 0, 0), // keyframe
+                new Vector3Float(-1, -1, -1),
+                new Vector3Float(-2.5F, -2.5F, -2.5F),
+                new Vector3Float(-3.75F, -3.75F, -3.75F),
+                new Vector3Float(-4, -4, -4), // keyframe
+                new Vector3Float(-2.5625F, -2.5625F, -2.5625F),
+                new Vector3Float(0, 0, 0),
+                new Vector3Float(2.5625F, 2.5625F, 2.5625F),
+                new Vector3Float(4, 4, 4), // keyframe
+                new Vector3Float(3.84375F, 3.84375F, 3.84375F),
+                new Vector3Float(2.75F, 2.75F, 2.75F),
+                new Vector3Float(1.28125F, 1.28125F, 1.28125F),
+                new Vector3Float(0, 0, 0), // keyframe
+                new Vector3Float(-1.09375F, -1.09375F, -1.09375F),
+                new Vector3Float(-2.25F, -2.25F, -2.25F),
+                new Vector3Float(-3.28125F, -3.28125F, -3.28125F),
+                new Vector3Float(-4, -4, -4) // keyframe
+        );
+    }
+
 }

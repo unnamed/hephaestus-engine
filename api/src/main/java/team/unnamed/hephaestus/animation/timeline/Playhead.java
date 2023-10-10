@@ -104,7 +104,9 @@ public final class Playhead<T> {
         }
 
         // interpolate the previous and next keyframes
-        return interpolation.interpolate((double) (tick++ - previous.time()) / (next.time() - previous.time()));
+        double progress = ((double) (tick - previous.time())) / ((double) (next.time() - previous.time()));
+        tick++;
+        return interpolation.interpolate(progress);
     }
 
 }
