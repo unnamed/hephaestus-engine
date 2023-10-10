@@ -30,7 +30,8 @@ import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 import team.unnamed.hephaestus.util.Quaternion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static team.unnamed.hephaestus.util.StructureAssertEquals.assertQuaternionEquals;
+import static team.unnamed.hephaestus.util.StructureAssertEquals.assertVectorEquals;
 
 class InterpolationTest {
 
@@ -57,11 +58,11 @@ class InterpolationTest {
                 new Quaternion(0, 0.707, 0, 0.707) // 90 deg (Y only)
         );
 
-        assertEquals(new Quaternion(0, 0, 0, 1), interpolation.interpolate(0));
-        assertTrue(interpolation.interpolate(0.25).equals(new Quaternion(0, 0.195, 0, 0.981), 0.001));
-        assertTrue(interpolation.interpolate(0.5).equals(new Quaternion(0, 0.383, 0, 0.924), 0.001));
-        assertTrue(interpolation.interpolate(0.75).equals(new Quaternion(0, 0.556, 0, 0.831), 0.001));
-        assertEquals(new Quaternion(0, 0.707, 0, 0.707), interpolation.interpolate(1));
+        assertQuaternionEquals(new Quaternion(0, 0, 0, 1), interpolation.interpolate(0), 0.001);
+        assertQuaternionEquals(new Quaternion(0, 0.195, 0, 0.981), interpolation.interpolate(0.25), 0.001);
+        assertQuaternionEquals(new Quaternion(0, 0.383, 0, 0.924), interpolation.interpolate(0.5), 0.001);
+        assertQuaternionEquals(new Quaternion(0, 0.556, 0, 0.831), interpolation.interpolate(0.75), 0.001);
+        assertQuaternionEquals(new Quaternion(0, 0.707, 0, 0.707), interpolation.interpolate(1), 0.001);
     }
 
     @Test
@@ -71,11 +72,11 @@ class InterpolationTest {
                 new Quaternion(0.5, 0.5, 0.5, 0.5) // [ 90, 90, 0 ]
         );
 
-        assertEquals(new Quaternion(0, 0, 0, 1), interpolation.interpolate(0));
-        assertTrue(interpolation.interpolate(0.25).equals(new Quaternion(0.149, 0.149, 0.149, 0.965), 0.001));
-        assertTrue(interpolation.interpolate(0.5).equals(new Quaternion(0.289, 0.289, 0.289, 0.866), 0.001));
-        assertTrue(interpolation.interpolate(0.75).equals(new Quaternion(0.408, 0.408, 0.408, 0.707), 0.001));
-        assertEquals(new Quaternion(0.5, 0.5, 0.5, 0.5), interpolation.interpolate(1));
+        assertQuaternionEquals(new Quaternion(0, 0, 0, 1), interpolation.interpolate(0), 0.001);
+        assertQuaternionEquals(new Quaternion(0.149, 0.149, 0.149, 0.965), interpolation.interpolate(0.25), 0.001);
+        assertQuaternionEquals(new Quaternion(0.289, 0.289, 0.289, 0.866), interpolation.interpolate(0.5), 0.001);
+        assertQuaternionEquals(new Quaternion(0.408, 0.408, 0.408, 0.707), interpolation.interpolate(0.75), 0.001);
+        assertQuaternionEquals(new Quaternion(0.5, 0.5, 0.5, 0.5), interpolation.interpolate(1), 0.001);
     }
 
     @Test
@@ -91,12 +92,6 @@ class InterpolationTest {
         assertVectorEquals(new Vector3Float(15.938F, 15.938F, 15.938F), interpolation.interpolate(0.75), 0.001);
         assertVectorEquals(new Vector3Float(19.296F, 19.296F, 19.296F), interpolation.interpolate(0.94), 0.001);
         assertVectorEquals(new Vector3Float(20, 20, 20), interpolation.interpolate(1), 0.001); // to
-    }
-
-    private static void assertVectorEquals(Vector3Float expected, Vector3Float got, double epsilon) {
-        assertEquals(expected.x(), got.x(), epsilon, "Expected: " + expected + " but got: " + got);
-        assertEquals(expected.y(), got.y(), epsilon, "Expected: " + expected + " but got: " + got);
-        assertEquals(expected.z(), got.z(), epsilon, "Expected: " + expected + " but got: " + got);
     }
 
 }
