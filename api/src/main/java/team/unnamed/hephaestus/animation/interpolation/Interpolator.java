@@ -24,6 +24,7 @@
 package team.unnamed.hephaestus.animation.interpolation;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.util.Quaternion;
 
@@ -66,6 +67,31 @@ public interface Interpolator<T> {
      * @since 1.0.0
      */
     @NotNull Interpolation<T> interpolation(final @NotNull T from, final @NotNull T to);
+
+    /**
+     * Creates an interpolation between the given
+     * values, using the function of this implementation.
+     *
+     * <p>This method accepts extra points for better
+     * interpolation, those points are {@code before}
+     * (a point before the {@code from} point) and
+     * {@code after} (a point after the {@code to} point)
+     * </p>
+     *
+     * <p>Note that {@link Interpolation#interpolate(double)}
+     * will still give values between {@code from} and
+     * {@code to}.</p>
+     *
+     * @param before The point before the {@code from} point
+     * @param from The start value
+     * @param to The end value
+     * @param after The point after the {@code to} point
+     * @return The interpolation
+     * @since 1.0.0
+     */
+    default @NotNull Interpolation<T> interpolation(final @Nullable T before, final @NotNull T from, final @NotNull T to, final @Nullable T after) {
+        return interpolation(from, to);
+    }
 
     /**
      * Returns an interpolator for lineally interpolating
@@ -111,6 +137,18 @@ public interface Interpolator<T> {
      */
     static @NotNull Interpolator<Vector3Float> stepVector3Float() {
         return StepVectorInterpolator.INSTANCE;
+    }
+
+    /**
+     * Returns a Catmull-Rom interpolator for {@link Vector3Float 3d vectors},
+     * which interpolates between the given points using the Catmull-Rom
+     * spline algorithm.
+     *
+     * @return The interpolator
+     * @since 1.0.0
+     */
+    static @NotNull Interpolator<Vector3Float> catmullRomSplineVector3Float() {
+        return CatmullRomInterpolator.INSTANCE;
     }
 
 }
