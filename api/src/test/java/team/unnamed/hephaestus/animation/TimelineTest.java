@@ -26,7 +26,7 @@ package team.unnamed.hephaestus.animation;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
-import team.unnamed.hephaestus.animation.timeline.Playhead;
+import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
 
 import java.util.function.Consumer;

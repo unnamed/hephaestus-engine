@@ -151,4 +151,33 @@ public interface Interpolator<T> {
         return CatmullRomInterpolator.INSTANCE;
     }
 
+    /**
+     * Returns an interpolator that will create interpolations that always
+     * return the provided {@code interpolated} value and will not perform
+     * any other calculation.
+     *
+     * @param interpolated The value to return
+     * @return The interpolator
+     * @param <T> The interpolated value type
+     * @since 1.0.0
+     */
+    static <T> @NotNull Interpolator<T> always(final @NotNull T interpolated) {
+        return (from, to) -> new Interpolation<>() {
+            @Override
+            public @NotNull T from() {
+                return from;
+            }
+
+            @Override
+            public @NotNull T to() {
+                return to;
+            }
+
+            @Override
+            public @NotNull T interpolate(final double progress) {
+                return interpolated;
+            }
+        };
+    }
+
 }

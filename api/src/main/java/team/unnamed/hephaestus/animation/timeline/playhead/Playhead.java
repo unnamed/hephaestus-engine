@@ -21,37 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.playhead;
 
-import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
+import org.jetbrains.annotations.NotNull;
+import team.unnamed.hephaestus.animation.timeline.Timeline;
 
-public class BoneTimelinePlayhead {
+public interface Playhead<T> {
 
-    private final Playhead<Vector3Float> positions;
-    private final Playhead<Vector3Float> rotations;
-    private final Playhead<Vector3Float> scales;
-    private final BoneTimeline boneTimeline;
-    private int tick = -1;
+    @NotNull T next();
 
-    public BoneTimelinePlayhead(BoneTimeline boneTimeline) {
-        this.boneTimeline = boneTimeline;
-        this.positions = boneTimeline.positions().createPlayhead();
-        this.rotations = boneTimeline.rotations().createPlayhead();
-        this.scales = boneTimeline.scales().createPlayhead();
-    }
-
-    public int tick() {
-        return tick;
-    }
-
-    public BoneFrame next() {
-        tick++;
-        return new BoneFrame(
-                positions.next(),
-                rotations.next(),
-                scales.next()
-        );
+    static <T> Playhead<T> playhead(Timeline<T> timeline) {
+        int len = timeline.keyFrames().size();
+        if (len == 0) {
+            // empty playheads always return the default value
+            return new SingletonPlayhead<>(timeline.initial());
+        } else if (len == 1) {
+            // when a timeline has only one keyframe, no matter its time,
+            // the playhead will always return that keyframe's value
+            return new SingletonPlayhead<>(timeline.keyFrames().get(0).value());
+        } else {
+            return new PlayheadImpl<>(timeline);
+        }
     }
 
 }

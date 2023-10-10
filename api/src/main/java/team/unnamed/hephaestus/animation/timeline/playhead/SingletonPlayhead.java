@@ -21,37 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.playhead;
 
-import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
+import org.jetbrains.annotations.NotNull;
 
-public class BoneTimelinePlayhead {
+import java.util.Objects;
 
-    private final Playhead<Vector3Float> positions;
-    private final Playhead<Vector3Float> rotations;
-    private final Playhead<Vector3Float> scales;
-    private final BoneTimeline boneTimeline;
-    private int tick = -1;
+final class SingletonPlayhead<T> implements Playhead<T> {
 
-    public BoneTimelinePlayhead(BoneTimeline boneTimeline) {
-        this.boneTimeline = boneTimeline;
-        this.positions = boneTimeline.positions().createPlayhead();
-        this.rotations = boneTimeline.rotations().createPlayhead();
-        this.scales = boneTimeline.scales().createPlayhead();
+    private final T value;
+
+    SingletonPlayhead(final @NotNull T value) {
+        this.value = Objects.requireNonNull(value, "value");
     }
 
-    public int tick() {
-        return tick;
-    }
-
-    public BoneFrame next() {
-        tick++;
-        return new BoneFrame(
-                positions.next(),
-                rotations.next(),
-                scales.next()
-        );
+    @Override
+    public @NotNull T next() {
+        return value;
     }
 
 }

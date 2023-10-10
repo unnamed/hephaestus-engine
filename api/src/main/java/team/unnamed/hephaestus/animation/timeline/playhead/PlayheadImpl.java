@@ -21,14 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.playhead;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolation;
+import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.timeline.KeyFrame;
+import team.unnamed.hephaestus.animation.timeline.Timeline;
 
 import java.util.Iterator;
 
-public final class Playhead<T> {
+final class PlayheadImpl<T> implements Playhead<T> {
 
     private final Timeline<T> timeline;
     private final Iterator<KeyFrame<T>> keyFrameIterator;
@@ -48,23 +52,38 @@ public final class Playhead<T> {
     // the current tick
     private int tick = 0;
 
-    Playhead(Timeline<T> timeline) {
+    PlayheadImpl(Timeline<T> timeline) {
         this.timeline = timeline;
         // set up
+        // it is ensured from Playhead#playhead that the keyframes
+        // list will have at least two elements
         keyFrameIterator = timeline.keyFrames().iterator();
-        previous = new KeyFrame<>(0, timeline.initial(), timeline.defaultInterpolator());
-        if (keyFrameIterator.hasNext()) {
-            next = keyFrameIterator.next();
-            if (keyFrameIterator.hasNext()) {
-                after = keyFrameIterator.next();
-            }
+        KeyFrame<T> firstKeyFrame = keyFrameIterator.next();
+        KeyFrame<T> secondKeyFrame = keyFrameIterator.next();
 
-            interpolation = previous.interpolatorOr(timeline.defaultInterpolator())
-                    .interpolation(previous.value(), next.value());
+        if (firstKeyFrame.time() > 0) {
+            // if first key frame is not located at the start,
+            // create a key frame with time 0 and the same value
+            // as the first keyframe
+            // |-|         |           |
+            // (X)        first       second
+            previous = new KeyFrame<>(0, firstKeyFrame.value(), Interpolator.always(firstKeyFrame.value()));
+            next = firstKeyFrame;
+            after = secondKeyFrame;
+        } else {
+            //   |-|        |           |
+            //  first     second      after?
+            previous = firstKeyFrame;
+            next = secondKeyFrame;
+            after = keyFrameIterator.hasNext() ? keyFrameIterator.next() : null;
         }
+
+        interpolation = previous.interpolatorOr(timeline.defaultInterpolator())
+                .interpolation(null, previous.value(), next.value(), after == null ? null : after.value());
     }
 
-    public T next() {
+    @Override
+    public @NotNull T next() {
         // if there is no next keyframe to interpolate,
         // just return the previous keyframe
         if (next == null) {

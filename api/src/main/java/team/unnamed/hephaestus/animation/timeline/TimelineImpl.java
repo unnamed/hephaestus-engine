@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.animation.timeline;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -40,9 +41,9 @@ final class TimelineImpl<T> implements Timeline<T> {
     private final List<KeyFrame<T>> keyFrames;
 
     TimelineImpl(T initialValue, Interpolator<T> defaultInterpolator, List<KeyFrame<T>> keyFrames) {
-        this.initialValue = initialValue;
-        this.defaultInterpolator = defaultInterpolator;
-        this.keyFrames = keyFrames;
+        this.initialValue = requireNonNull(initialValue, "initial");
+        this.defaultInterpolator = requireNonNull(defaultInterpolator, "defaultInterpolator");
+        this.keyFrames = requireNonNull(keyFrames, "keyFrames");
         keyFrames.sort(Comparator.comparing(KeyFrame::time));
     }
 
@@ -63,7 +64,7 @@ final class TimelineImpl<T> implements Timeline<T> {
 
     @Override
     public Playhead<T> createPlayhead() {
-        return new Playhead<>(this);
+        return Playhead.playhead(this);
     }
 
     static final class BuilderImpl<T> implements Builder<T> {
