@@ -78,4 +78,21 @@ class InterpolationTest {
         assertEquals(new Quaternion(0.5, 0.5, 0.5, 0.5), interpolation.interpolate(1));
     }
 
+    @Test
+    void test() {
+        Interpolation<Vector3Float> interpolation = Interpolator.catmullRomSplineVector3Float().interpolation(
+                null,
+                new Vector3Float(72, 72, 72),
+                new Vector3Float(64, 64, 64),
+                new Vector3Float(80, 80, 80)
+        );
+
+        double step = 0.01;
+        double t = 0;
+        while (t <= 1) {
+            System.out.println("(" + (t * 20-40) + ", " + interpolation.interpolate(t).y() + ")");
+            t+= step;
+        }
+    }
+
 }
