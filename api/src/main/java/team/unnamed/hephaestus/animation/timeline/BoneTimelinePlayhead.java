@@ -31,7 +31,7 @@ public class BoneTimelinePlayhead {
     private final Playhead<Vector3Float> rotations;
     private final Playhead<Vector3Float> scales;
     private final BoneTimeline boneTimeline;
-    private int tick;
+    private int tick = -1;
 
     public BoneTimelinePlayhead(BoneTimeline boneTimeline) {
         this.boneTimeline = boneTimeline;

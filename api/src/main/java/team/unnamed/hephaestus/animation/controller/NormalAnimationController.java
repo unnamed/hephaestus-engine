@@ -180,6 +180,7 @@ class NormalAnimationController implements AnimationController {
 
     private void createIterators(Animation animation) {
         iterators.clear();
+        lastFrames.clear();
         animation.timelines().forEach((name, list) -> iterators.put(name, list.createPlayhead()));
     }
 
@@ -200,9 +201,10 @@ class NormalAnimationController implements AnimationController {
 
         if (iterator != null) {
             BoneFrame boneFrame = iterator.next();
+            int tick = iterator.tick();
             lastFrames.put(boneName, boneFrame);
 
-            if (iterator.tick() >= currentAnimation.length()) {
+            if (tick + 1 >= currentAnimation.length()) {
                 // animation ended!
                 switch (currentAnimation.loopMode()) {
                     case ONCE:
@@ -218,6 +220,7 @@ class NormalAnimationController implements AnimationController {
                         nextAnimation();
                         return boneFrame;
                 }
+
             }
         }
 
