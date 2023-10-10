@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_18_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.network.protocol.Packet;
@@ -39,9 +39,6 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import static net.minecraft.network.protocol.game.ClientboundMoveEntityPacket.entityToPacket;
-import static net.minecraft.network.protocol.game.ClientboundMoveEntityPacket.packetToEntity;
 
 @ParametersAreNonnullByDefault
 final class ModelServerEntity extends ServerEntity {
@@ -122,7 +119,7 @@ final class ModelServerEntity extends ServerEntity {
                             (short) pdx,
                             (short) pdy,
                             (short) pdz,
-                            entity.isOnGround()
+                            entity.onGround()
                     ));
                 }
             }
@@ -142,7 +139,7 @@ final class ModelServerEntity extends ServerEntity {
     }
 
     @Override
-    public void sendPairingData(Consumer<Packet<?>> packetConsumer, ServerPlayer player) {
+    public void sendPairingData(ServerPlayer player, Consumer<Packet<ClientGamePacketListener>> packetConsumer) {
         if (this.entity.isRemoved()) {
             return;
         }
@@ -155,7 +152,7 @@ final class ModelServerEntity extends ServerEntity {
     private void sendDirtyEntityData(BoneEntity bone) {
         SynchedEntityData data = bone.getEntityData();
         if (data.isDirty()) {
-            this.broadcast.accept(new ClientboundSetEntityDataPacket(bone.getId(), data, false));
+            this.broadcast.accept(new ClientboundSetEntityDataPacket(bone.getId(), data.packDirty()));
         }
     }
 

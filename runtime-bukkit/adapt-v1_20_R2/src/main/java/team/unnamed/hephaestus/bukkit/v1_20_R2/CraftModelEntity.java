@@ -21,14 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_18_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
-import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftMob;
+import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftMob;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.animation.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationController;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
 import team.unnamed.hephaestus.view.BaseBoneView;
 
@@ -50,12 +50,6 @@ public class CraftModelEntity
     @Override
     public MinecraftModelEntity getHandle() {
         return (MinecraftModelEntity) super.getHandle();
-    }
-
-    @Override
-    public EntityType getType() {
-        // TODO: Create a custom EntityType when it stops being an enum
-        return EntityType.UNKNOWN;
     }
 
     @Override

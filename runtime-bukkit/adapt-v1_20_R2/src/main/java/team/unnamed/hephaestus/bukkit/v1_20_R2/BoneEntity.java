@@ -21,13 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_18_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
 import com.mojang.datafixers.util.Pair;
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.Rotations;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
@@ -85,9 +87,9 @@ final class BoneEntity
         setItemSlot(EquipmentSlot.HEAD, nmsItem, true);
     }
 
-    void show(Consumer<Packet<?>> packetConsumer) {
-        packetConsumer.accept(new ClientboundAddMobPacket(this));
-        packetConsumer.accept(new ClientboundSetEntityDataPacket(super.getId(), super.getEntityData(), true));
+    void show(Consumer<Packet<ClientGamePacketListener>> packetConsumer) {
+        packetConsumer.accept(new ClientboundAddEntityPacket(this));
+        packetConsumer.accept(new ClientboundSetEntityDataPacket(super.getId(), super.getEntityData().packDirty()));
         packetConsumer.accept(new ClientboundSetEquipmentPacket(super.getId(), List.of(new Pair<>(
                 EquipmentSlot.HEAD,
                 super.getItemBySlot(EquipmentSlot.HEAD)
