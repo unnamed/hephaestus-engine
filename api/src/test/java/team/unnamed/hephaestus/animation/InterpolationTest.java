@@ -94,4 +94,29 @@ class InterpolationTest {
         assertVectorEquals(new Vector3Float(20, 20, 20), interpolation.interpolate(1), 0.001); // to
     }
 
+    @Test
+    void test_ternary_catmullrom_interpolation() {
+        Interpolation<Vector3Float> interpolation = Interpolator.catmullRomSplineVector3Float().interpolation(
+                null,
+                new Vector3Float(4.5F, 4.5F, 4.5F),
+                new Vector3Float(4F, 4F, 4F),
+                new Vector3Float(5F, 5F, 5F)
+        );
+
+        assertVectorEquals(new Vector3Float(4.5F, 4.5F, 4.5F), interpolation.interpolate(0), 0.001); // from
+        assertVectorEquals(new Vector3Float(4.473F, 4.473F, 4.473F), interpolation.interpolate(0.0769), 0.001);
+        assertVectorEquals(new Vector3Float(4.435F, 4.435F, 4.435F), interpolation.interpolate(0.1538), 0.001);
+        assertVectorEquals(new Vector3Float(4.388F, 4.388F, 4.388F), interpolation.interpolate(0.2307), 0.001);
+        assertVectorEquals(new Vector3Float(4.333F, 4.333F, 4.333F), interpolation.interpolate(0.3076), 0.001);
+        assertVectorEquals(new Vector3Float(4.275F, 4.275F, 4.275F), interpolation.interpolate(0.3846), 0.001);
+        assertVectorEquals(new Vector3Float(4.216F, 4.216F, 4.216F), interpolation.interpolate(0.4615), 0.001);
+        assertVectorEquals(new Vector3Float(4.159F, 4.159F, 4.159F), interpolation.interpolate(0.5384), 0.001);
+        assertVectorEquals(new Vector3Float(4.105F, 4.105F, 4.105F), interpolation.interpolate(0.6153), 0.001);
+        assertVectorEquals(new Vector3Float(4.059F, 4.059F, 4.059F), interpolation.interpolate(0.6923), 0.001);
+        assertVectorEquals(new Vector3Float(4.023F, 4.023F, 4.023F), interpolation.interpolate(0.7692), 0.001);
+        assertVectorEquals(new Vector3Float(3.999F, 3.999F, 3.999F), interpolation.interpolate(0.8461), 0.001);
+        assertVectorEquals(new Vector3Float(3.990F, 3.990F, 3.990F), interpolation.interpolate(0.9230), 0.001);
+        assertVectorEquals(new Vector3Float(4F, 4F, 4F), interpolation.interpolate(1), 0.001); // to
+    }
+
 }
