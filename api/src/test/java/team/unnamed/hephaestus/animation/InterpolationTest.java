@@ -79,20 +79,24 @@ class InterpolationTest {
     }
 
     @Test
-    void test() {
+    void test_binary_catmullrom_interpolation() {
         Interpolation<Vector3Float> interpolation = Interpolator.catmullRomSplineVector3Float().interpolation(
-                null,
-                new Vector3Float(72, 72, 72),
-                new Vector3Float(64, 64, 64),
-                new Vector3Float(80, 80, 80)
+                new Vector3Float(0, 0, 0),
+                new Vector3Float(20, 20, 20)
         );
 
-        double step = 0.01;
-        double t = 0;
-        while (t <= 1) {
-            System.out.println("(" + (t * 20-40) + ", " + interpolation.interpolate(t).y() + ")");
-            t+= step;
-        }
+        assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0), 0.001); // from
+        assertVectorEquals(new Vector3Float(4.063F, 4.063F, 4.063F), interpolation.interpolate(0.25), 0.001);
+        assertVectorEquals(new Vector3Float(10, 10, 10), interpolation.interpolate(0.5), 0.001);
+        assertVectorEquals(new Vector3Float(15.938F, 15.938F, 15.938F), interpolation.interpolate(0.75), 0.001);
+        assertVectorEquals(new Vector3Float(19.296F, 19.296F, 19.296F), interpolation.interpolate(0.94), 0.001);
+        assertVectorEquals(new Vector3Float(20, 20, 20), interpolation.interpolate(1), 0.001); // to
+    }
+
+    private static void assertVectorEquals(Vector3Float expected, Vector3Float got, double epsilon) {
+        assertEquals(expected.x(), got.x(), epsilon, "Expected: " + expected + " but got: " + got);
+        assertEquals(expected.y(), got.y(), epsilon, "Expected: " + expected + " but got: " + got);
+        assertEquals(expected.z(), got.z(), epsilon, "Expected: " + expected + " but got: " + got);
     }
 
 }
