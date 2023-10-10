@@ -89,4 +89,16 @@ public interface Interpolator<T> {
         return SphericalQuaternionInterpolator.INSTANCE;
     }
 
+    /**
+     * Returns an interpolator for spherically interpolating
+     * euler angles (specified as a {@link Vector3Float 3d vector}),
+     * in degrees.
+     *
+     * @return The interpolator
+     * @since 1.0.0
+     */
+    static @NotNull Interpolator<Vector3Float> slerpDegreeEulerAngle() {
+        return SphericalEulerAngleInterpolator.INSTANCE;
+    }
+
 }
