@@ -101,4 +101,16 @@ public interface Interpolator<T> {
         return SphericalEulerAngleInterpolator.INSTANCE;
     }
 
+    /**
+     * Returns a "step" interpolator for {@link Vector3Float 3d vectors},
+     * which returns the start value until the progress is 1, then
+     * returns the end value.
+     *
+     * @return The interpolator
+     * @since 1.0.0
+     */
+    static @NotNull Interpolator<Vector3Float> stepVector3Float() {
+        return StepVectorInterpolator.INSTANCE;
+    }
+
 }
