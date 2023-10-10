@@ -23,12 +23,15 @@
  */
 package team.unnamed.hephaestus.animation.timeline;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import team.unnamed.hephaestus.animation.interpolation.Interpolation;
 
 import java.util.Iterator;
 
 public final class Playhead<T> {
 
+    private final Timeline<T> timeline;
     private final Iterator<KeyFrame<T>> keyFrameIterator;
 
     // the previous and next keyframes,
@@ -37,15 +40,23 @@ public final class Playhead<T> {
     private KeyFrame<T> previous;
     private @Nullable KeyFrame<T> next;
 
+    // the current interpolation between the previous
+    // and the next keyframes, it is null if the next
+    // keyframe is null
+    private Interpolation<T> interpolation;
+
     // the current tick
     private int tick = 0;
 
     Playhead(Timeline<T> timeline) {
+        this.timeline = timeline;
         // set up
         keyFrameIterator = timeline.keyFrames().iterator();
         previous = new KeyFrame<>(0, timeline.initial(), timeline.defaultInterpolator());
         if (keyFrameIterator.hasNext()) {
             next = keyFrameIterator.next();
+            interpolation = previous.interpolatorOr(timeline.defaultInterpolator())
+                    .interpolation(previous.value(), next.value());
         }
     }
 
@@ -65,20 +76,20 @@ public final class Playhead<T> {
         // then we need to update the previous and next keyframes
         if (tick > next.time()) {
             previous = next;
-            next = keyFrameIterator.hasNext() ? keyFrameIterator.next() : null;
-
-            // again, if there is no next keyframe to interpolate,
-            // just return the previous keyframe
-            if (next == null) {
+            if (keyFrameIterator.hasNext()) {
+                next = keyFrameIterator.next();
+                assert next != null;
+                interpolation = previous.interpolatorOr(timeline.defaultInterpolator())
+                        .interpolation(previous.value(), next.value());
+            } else {
+                next = null;
+                interpolation = null;
                 return previous.value();
             }
         }
 
         // interpolate the previous and next keyframes
-        return previous.interpolator().interpolation(
-                previous.value(),
-                next.value()
-        ).interpolate((double) (tick++ - previous.time()) / (next.time() - previous.time()));
+        return interpolation.interpolate((double) (tick++ - previous.time()) / (next.time() - previous.time()));
     }
 
 }

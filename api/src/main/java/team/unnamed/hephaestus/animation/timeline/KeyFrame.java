@@ -30,7 +30,7 @@ public final class KeyFrame<T> {
 
     private final int time;
     private final T value;
-    private final @Nullable Interpolator<T> interpolator;
+    private final Interpolator<T> interpolator;
 
     public KeyFrame(int time, T value, @Nullable Interpolator<T> interpolator) {
         this.time = time;
@@ -46,8 +46,12 @@ public final class KeyFrame<T> {
         return value;
     }
 
-    public Interpolator<T> interpolator() {
+    public @Nullable Interpolator<T> interpolator() {
         return interpolator;
+    }
+
+    public Interpolator<T> interpolatorOr(Interpolator<T> fallback) {
+        return interpolator == null ? fallback : interpolator;
     }
 
 }

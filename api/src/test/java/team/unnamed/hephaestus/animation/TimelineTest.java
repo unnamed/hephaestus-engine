@@ -25,6 +25,7 @@ package team.unnamed.hephaestus.animation;
 
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 import team.unnamed.hephaestus.animation.timeline.Playhead;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
 
@@ -35,12 +36,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TimelineTest {
 
     private static void testTimeline(
-            Consumer<Timeline<Vector3Float>> configurer,
+            Consumer<Timeline.Builder<Vector3Float>> configurer,
             Vector3Float... expected
     ) {
-        Timeline<Vector3Float> timeline = Timeline.timeline(TimelineOptions.POSITION);
-        configurer.accept(timeline);
-
+        Timeline.Builder<Vector3Float> builder = Timeline.<Vector3Float>timeline()
+                .initial(new Vector3Float(0, 0, 0))
+                .defaultInterpolator(Interpolator.lerpVector3Float());
+        configurer.accept(builder);
+        Timeline<Vector3Float> timeline = builder.build();
         Playhead<Vector3Float> it = timeline.createPlayhead();
         Vector3Float lastValue = null;
         for (Vector3Float expectedValue : expected) {
@@ -60,8 +63,8 @@ class TimelineTest {
     void test_simple() {
         testTimeline(
                 timeline -> {
-                    timeline.put(0, new Vector3Float(0, 0, 0));
-                    timeline.put(10, new Vector3Float(20, 20, 20));
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0));
+                    timeline.keyFrame(10, new Vector3Float(20, 20, 20));
                 },
                 new Vector3Float(0, 0, 0), // keyframe
                 new Vector3Float(2, 2, 2),
@@ -81,8 +84,8 @@ class TimelineTest {
     void test_simple_2() {
         testTimeline(
                 timeline -> {
-                    timeline.put(0, new Vector3Float(0, 0, 0));
-                    timeline.put(8, new Vector3Float(4, 4, 4));
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0));
+                    timeline.keyFrame(8, new Vector3Float(4, 4, 4));
                 },
                 new Vector3Float(0, 0, 0), // keyframe
                 new Vector3Float(0.5F, 0.5F, 0.5F),
@@ -100,8 +103,8 @@ class TimelineTest {
     void test_different() {
         testTimeline(
                 timeline -> {
-                    timeline.put(0, new Vector3Float(0, 0, 0));
-                    timeline.put(8, new Vector3Float(4, 2, 0));
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0));
+                    timeline.keyFrame(8, new Vector3Float(4, 2, 0));
                 },
                 new Vector3Float(0, 0, 0), // keyframe
                 new Vector3Float(0.5F, 0.25F, 0),
@@ -119,9 +122,9 @@ class TimelineTest {
     void test_multiple_keyframes() {
         testTimeline(
                 timeline -> {
-                    timeline.put(0, new Vector3Float(0, 0, 0));
-                    timeline.put(2, new Vector3Float(4, 2, 0));
-                    timeline.put(6, new Vector3Float(0, 4, 1));
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0));
+                    timeline.keyFrame(2, new Vector3Float(4, 2, 0));
+                    timeline.keyFrame(6, new Vector3Float(0, 4, 1));
                 },
                 new Vector3Float(0, 0, 0), // keyframe
                 new Vector3Float(2, 1, 0),
@@ -137,11 +140,11 @@ class TimelineTest {
     void test_multiple_keyframes_2() {
         testTimeline(
                 timeline -> {
-                    timeline.put(0, new Vector3Float(0, 0, 0)); // "normal speed"
-                    timeline.put(4, new Vector3Float(4, 4, 4)); // "normal speed"
-                    timeline.put(8, new Vector3Float(0, 0, 0)); // "normal speed"
-                    timeline.put(12, new Vector3Float(8, 8, 8)); // "double speed"
-                    timeline.put(16, new Vector3Float(6, 6, 6)); // "half speed"
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0)); // "normal speed"
+                    timeline.keyFrame(4, new Vector3Float(4, 4, 4)); // "normal speed"
+                    timeline.keyFrame(8, new Vector3Float(0, 0, 0)); // "normal speed"
+                    timeline.keyFrame(12, new Vector3Float(8, 8, 8)); // "double speed"
+                    timeline.keyFrame(16, new Vector3Float(6, 6, 6)); // "half speed"
                 },
                 new Vector3Float(0, 0, 0), // keyframe
                 new Vector3Float(1, 1, 1),

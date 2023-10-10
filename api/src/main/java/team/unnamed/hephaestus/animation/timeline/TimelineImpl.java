@@ -27,8 +27,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 final class TimelineImpl<T> implements Timeline<T> {
 
@@ -60,29 +63,37 @@ final class TimelineImpl<T> implements Timeline<T> {
 
     @Override
     public Playhead<T> createPlayhead() {
-        return null;
+        return new Playhead<>(this);
     }
 
     static final class BuilderImpl<T> implements Builder<T> {
 
+        private T initialValue;
+        private Interpolator<T> interpolator;
+        private final List<KeyFrame<T>> keyFrames = new ArrayList<>();
+
         @Override
         public Builder<T> initial(T value) {
-            return null;
+            this.initialValue = requireNonNull(value, "value");
+            return this;
         }
 
         @Override
         public Builder<T> defaultInterpolator(Interpolator<T> interpolator) {
-            return null;
+            this.interpolator = requireNonNull(interpolator, "interpolator");
+            return this;
         }
 
         @Override
         public Builder<T> keyFrame(KeyFrame<T> keyFrame) {
-            return null;
+            requireNonNull(keyFrame, "keyFrame");
+            keyFrames.add(keyFrame);
+            return this;
         }
 
         @Override
         public Timeline<T> build() {
-            return null;
+            return new TimelineImpl<>(initialValue, interpolator, keyFrames);
         }
     }
 }
