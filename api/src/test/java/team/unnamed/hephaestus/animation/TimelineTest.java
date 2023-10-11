@@ -29,9 +29,11 @@ import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static team.unnamed.hephaestus.util.StructureAssertEquals.assertVectorEquals;
 
 class TimelineTest {
 
@@ -47,14 +49,14 @@ class TimelineTest {
         Playhead<Vector3Float> it = timeline.createPlayhead();
         Vector3Float lastValue = null;
         for (Vector3Float expectedValue : expected) {
-            assertEquals(expectedValue, it.next());
+            assertVectorEquals(expectedValue, it.next(), 0.001);
             lastValue = expectedValue;
         }
 
         if (lastValue != null) {
             for (int i = 0; i < 10; i++) {
                 // should be kept on last value
-                assertEquals(lastValue, it.next());
+                assertVectorEquals(lastValue, it.next(), 0.001);
             }
         }
     }
@@ -195,6 +197,70 @@ class TimelineTest {
                 new Vector3Float(-3.28125F, -3.28125F, -3.28125F),
                 new Vector3Float(-4, -4, -4) // keyframe
         );
+    }
+
+    @Test
+    public void test_combine_lerp_and_smooth() {
+        testTimeline(
+                timeline -> {
+                    // linear + smooth = smooth
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0), Interpolator.lerpVector3Float());
+                    timeline.keyFrame(4, new Vector3Float(20, 20, 20), Interpolator.catmullRomSplineVector3Float());
+                },
+                new Vector3Float(0, 0, 0),
+                new Vector3Float(4.063F, 4.063F, 4.063F),
+                new Vector3Float(10, 10, 10),
+                new Vector3Float(15.938F, 15.938F, 15.938F),
+                new Vector3Float(20, 20, 20)
+        );
+    }
+
+    @Test
+    public void test_combine_step_and_any() {
+        List<Interpolator<Vector3Float>> interpolators = Arrays.asList(
+                Interpolator.stepVector3Float(),
+                Interpolator.lerpVector3Float(),
+                Interpolator.catmullRomSplineVector3Float(),
+                Interpolator.always(new Vector3Float(84, 84, 84))
+        );
+        for (Interpolator<Vector3Float> interpolator : interpolators) {
+            testTimeline(
+                    timeline -> {
+                        // step + any = step
+                        timeline.keyFrame(0, new Vector3Float(0, 0, 0), Interpolator.stepVector3Float());
+                        timeline.keyFrame(4, new Vector3Float(20, 20, 20), interpolator);
+                    },
+                    new Vector3Float(0, 0, 0),
+                    new Vector3Float(0, 0, 0),
+                    new Vector3Float(0, 0, 0),
+                    new Vector3Float(0, 0, 0),
+                    new Vector3Float(20, 20, 20)
+            );
+        }
+    }
+
+    @Test
+    public void test_combine_smooth_and_any() {
+        List<Interpolator<Vector3Float>> interpolators = Arrays.asList(
+                Interpolator.stepVector3Float(),
+                Interpolator.lerpVector3Float(),
+                Interpolator.catmullRomSplineVector3Float(),
+                Interpolator.always(new Vector3Float(84, 84, 84))
+        );
+        for (Interpolator<Vector3Float> interpolator : interpolators) {
+            testTimeline(
+                    timeline -> {
+                        // smooth + any = smooth
+                        timeline.keyFrame(0, new Vector3Float(0, 0, 0), Interpolator.catmullRomSplineVector3Float());
+                        timeline.keyFrame(4, new Vector3Float(20, 20, 20), interpolator);
+                    },
+                    new Vector3Float(0, 0, 0),
+                    new Vector3Float(4.063F, 4.063F, 4.063F),
+                    new Vector3Float(10, 10, 10),
+                    new Vector3Float(15.938F, 15.938F, 15.938F),
+                    new Vector3Float(20, 20, 20)
+            );
+        }
     }
 
 }
