@@ -63,9 +63,9 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
     private static final String DEFAULT_NAMESPACE = "hephaestus";
 
     private static final Vector3Float SCALE = new Vector3Float(
-            ItemTransform.MAX_SCALE,
-            ItemTransform.MAX_SCALE,
-            ItemTransform.MAX_SCALE
+            ItemTransform.MAX_SCALE / 2.40f,
+            ItemTransform.MAX_SCALE / 2.40f,
+            ItemTransform.MAX_SCALE / 2.40f
     );
 
     public static final float DISPLAY_TRANSLATION_Y = -6.4f;
@@ -181,21 +181,11 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
         Vector3Float offset = bone.offset();
 
         Map<ItemTransform.Type, ItemTransform> displays = new HashMap<>();
-        displays.put(ItemTransform.Type.HEAD, ItemTransform.builder()
-                .translation(new Vector3Float(
-                        -offset.x() * ItemTransform.MAX_SCALE,
-                        -offset.y() * ItemTransform.MAX_SCALE + DISPLAY_TRANSLATION_Y,
-                        -offset.z() * ItemTransform.MAX_SCALE
-                ))
-                .scale(SCALE)
-                .build()
-        );
-
         displays.put(ItemTransform.Type.THIRDPERSON_LEFTHAND, ItemTransform.builder()
                 .translation(new Vector3Float(
-                        -offset.x() * ItemTransform.MAX_SCALE,
-                        -offset.y() * ItemTransform.MAX_SCALE,
-                        -offset.z() * ItemTransform.MAX_SCALE
+                        -offset.x() * ItemTransform.MAX_SCALE / 2.40f,
+                        -offset.y() * ItemTransform.MAX_SCALE / 2.40f,
+                        -offset.z() * ItemTransform.MAX_SCALE / 2.40f
                 ))
                 .scale(SCALE)
                 .build()

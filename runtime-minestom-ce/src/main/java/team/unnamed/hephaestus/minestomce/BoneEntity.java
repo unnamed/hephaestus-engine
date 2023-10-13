@@ -49,7 +49,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @since 1.0.0
  */
-public final class BoneEntity extends GenericBoneEntity {
+public class BoneEntity extends GenericBoneEntity {
 
     private static final ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
                     .meta(new LeatherArmorMeta.Builder()
@@ -58,24 +58,25 @@ public final class BoneEntity extends GenericBoneEntity {
                     )
                     .build();
 
-    private final ModelEntity view;
-    private final Bone bone;
+    protected final ModelEntity view;
+    protected final Bone bone;
+    protected final float modelScale;
 
     public BoneEntity(
             ModelEntity view,
             Bone bone,
             Vector3Float initialPosition,
-            float scale
+            float modelScale
     ) {
         super(EntityType.ITEM_DISPLAY);
         this.view = view;
         this.bone = bone;
-        initialize(initialPosition, scale);
+        this.modelScale = modelScale;
+        initialize(initialPosition);
     }
 
-    private void initialize(Vector3Float initialPosition, float scale) {
+    protected void initialize(Vector3Float initialPosition) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        meta.setScale(new Vec(scale, scale, scale));
         meta.setDisplayContext(ItemDisplayMeta.DisplayContext.THIRD_PERSON_LEFT_HAND);
         meta.setInterpolationDuration(3);
         meta.setViewRange(1000);
@@ -84,7 +85,7 @@ public final class BoneEntity extends GenericBoneEntity {
         meta.setItemStack(BASE_HELMET.withMeta(itemMeta ->
                 itemMeta.customModelData(bone.customModelData())));
 
-        update(initialPosition, Quaternion.IDENTITY);
+        update(initialPosition, Quaternion.IDENTITY, Vector3Float.ONE);
     }
 
     /**
@@ -144,13 +145,18 @@ public final class BoneEntity extends GenericBoneEntity {
     }
 
     @Override
-    public void update(Vector3Float position, Quaternion rotation) {
+    public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
         meta.setNotifyAboutChanges(false);
         meta.setInterpolationStartDelta(0);
 
-        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(2.40).mul(meta.getScale()));
+        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(modelScale));
         meta.setRightRotation(rotation.toFloatArray());
+        meta.setScale(new Vec(
+                modelScale * scale.x(),
+                modelScale * scale.y(),
+                modelScale * scale.z())
+        );
 
         meta.setNotifyAboutChanges(true);
     }

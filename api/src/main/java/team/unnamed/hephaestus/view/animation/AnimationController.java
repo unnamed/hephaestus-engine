@@ -23,7 +23,9 @@
  */
 package team.unnamed.hephaestus.view.animation;
 
+import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
+import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.BaseModelView;
 
 /**
@@ -67,12 +69,27 @@ public interface AnimationController {
 
     /**
      * Passes to the next animation frame using
-     * the given model yaw
+     * the given model rotation
      *
-     * @param yaw The model yaw
+     * @param initialRotation The initial model rotation
      * @since 1.0.0
      */
-    void tick(double yaw);
+    void tick(Quaternion initialRotation);
+
+    /**
+     * Passes to the next animation frame using
+     * the given model pitch
+     *
+     * @param pitch The model pitch
+     * @since 1.0.0
+     */
+    default void tick(float pitch) {
+        tick(Quaternion.fromEulerDegrees(new Vector3Float(pitch, 0 ,0)));
+    };
+
+    default void tick() {
+        tick(Quaternion.IDENTITY);
+    }
 
     /**
      * ONLY USE WHEN USING AREA EFFECT CLOUDS SO THERE IS NO VISIBLE DELAY BETWEEN THE BONES

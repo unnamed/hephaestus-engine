@@ -99,22 +99,22 @@ class NormalAnimationController implements AnimationController {
     }
 
     private void tickBone(
-            double yaw,
             Bone bone,
             Quaternion parentRotation,
-            Vector3Float parentPosition
+            Vector3Float parentPosition,
+            Vector3Float parentScale
     ) {
-        BaseBoneView boneView = view.bone(bone.name());
-        assert boneView != null;
-
         KeyFrame frame = nextFrame(bone.name());
         Vector3Float framePosition = frame.position();
         Vector3Float frameRotation = frame.rotation();
+        Vector3Float frameScale = frame.scale();
 
         Vector3Float defaultPosition = bone.position();
         Vector3Float defaultRotation = bone.rotation();
 
-        Vector3Float localPosition = defaultPosition.add(framePosition);
+        Vector3Float globalScale = frameScale.multiply(parentScale);
+
+        Vector3Float localPosition = defaultPosition.add(framePosition).multiply(globalScale);
         Vector3Float localRotation = defaultRotation.add(frameRotation);
 
         Quaternion globalRotation = parentRotation.multiply(Quaternion.fromEulerDegrees(localRotation));
@@ -123,14 +123,18 @@ class NormalAnimationController implements AnimationController {
                 parentRotation.toEulerDegrees()
         ).add(parentPosition);
 
-        boneView.update(globalPosition, globalRotation);
+
+        BaseBoneView boneView = view.bone(bone.name());
+        if (boneView != null) {
+            boneView.update(globalPosition, globalRotation, globalScale);
+        }
 
         for (Bone child : bone.children()) {
             tickBone(
-                    yaw,
                     child,
                     globalRotation,
-                    globalPosition
+                    globalPosition,
+                    globalScale
             );
         }
     }
@@ -142,14 +146,13 @@ class NormalAnimationController implements AnimationController {
     }
 
     @Override
-    public synchronized void tick(double yaw) {
-        Quaternion bodyRotation = /*Quaternion.fromEulerDegrees(new Vector3Float(0,  (float) (360 - yaw), 0))*/ Quaternion.IDENTITY;
+    public synchronized void tick(Quaternion offset) {
         for (Bone bone : view.model().bones()) {
             tickBone(
-                    yaw,
                     bone,
-                    bodyRotation,
-                    Vector3Float.ZERO
+                    offset,
+                    Vector3Float.ZERO,
+                    Vector3Float.ONE
             );
         }
     }

@@ -25,6 +25,7 @@ package team.unnamed.hephaestus.minestomce;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
@@ -38,8 +39,15 @@ import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.server.ResourcePackRequestHandler;
 import team.unnamed.creative.server.ResourcePackServer;
+import team.unnamed.hephaestus.minestomce.playermodel.PlayerModelEntity;
+import team.unnamed.hephaestus.minestomce.skin.MinetoolsSkinProvider;
+import team.unnamed.hephaestus.minestomce.skin.SkinProvider;
+import team.unnamed.hephaestus.playermodel.PlayerModel;
+import team.unnamed.hephaestus.playermodel.Skin;
 
 public class Server {
+
+    private final static SkinProvider SKIN_PROVIDER = new MinetoolsSkinProvider();
 
     public static void main(String[] args) throws Exception {
         MinecraftServer server = MinecraftServer.init();
@@ -63,18 +71,32 @@ public class Server {
         registry.loadModelFromResource("redstone_monstrosity.bbmodel");
         registry.loadModelFromResource("dragon.bbmodel");
         registry.loadModelFromResource("geometry.bbmodel");
+        registry.loadModelFromResource("player_anims.bbmodel");
 
         BuiltResourcePack resourcePack = ResourcePackFactory.create(registry);
         MinecraftServer.getCommandManager().register(new HephaestusCommand(registry, resourcePack));
 
         ModelEntity testView = MinestomModelEngine.minestom().createViewAndTrack(
-                registry.model("dragon"),
+                registry.model("player_anims"),
                 instance,
                 new Pos(0, 43, 0),
-                0.25f
+                1f
         );
 
+        PlayerModelEntity playerModel = new PlayerModelEntity(
+                EntityType.ARMOR_STAND,
+                PlayerModel.fromModel(
+                        SKIN_PROVIDER.fetchSkin("biconsumer"),
+                        registry.model("player_anims")
+                ),
+                1f
+        );
+
+        playerModel.setInstance(instance, new Pos(5, 43, 0));
+        MinestomModelEngine.minestom().tracker().startGlobalTracking(playerModel);
+
         registry.view("test", testView);
+        registry.view("playertest", playerModel);
 
         // create resource pack server, start and schedule stop
         ResourcePackServer resourcePackServer = ResourcePackServer.builder()

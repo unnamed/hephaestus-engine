@@ -51,12 +51,11 @@ import java.util.stream.Collectors;
 
 public class ModelEntity extends EntityCreature implements BaseModelView<Player> {
 
-    private final Model model;
-    private final float scale;
+    protected final Model model;
+    protected final float scale;
 
-    private final Entity modelHolder;
-    private final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
-    private final AnimationController animationController;
+    protected final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
+    protected final AnimationController animationController;
 
     public ModelEntity(EntityType type, Model model, float scale) {
         super(type);
@@ -64,33 +63,12 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         this.scale = scale;
         this.animationController = AnimationController.nonDelayed(this);
 
-        this.modelHolder = new Entity(EntityType.ARMOR_STAND) {
-            @Override
-            public void updateNewViewer(@NotNull Player player) {
-                super.updateNewViewer(player);
-
-                List<Integer> entities =  bones().stream()
-                        .map(Entity::getEntityId)
-                        .toList();
-
-                player.sendPacket(new SetPassengersPacket(
-                        this.getEntityId(),
-                        entities
-                ));
-            }
-        };
-
         // model entity is not auto-viewable by default
         super.setAutoViewable(false); // "super" so it doesn't call our override
-        modelHolder.setAutoViewable(false);
         initialize();
     }
 
     private void initialize() {
-        modelHolder.setSilent(true);
-        modelHolder.setInvisible(false);
-        modelHolder.setNoGravity(true);
-
         Vector2Float boundingBox = model.boundingBox();
         setBoundingBox(boundingBox.x(), boundingBox.y(), boundingBox.x());
         setInvisible(true);
@@ -101,7 +79,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         }
     }
 
-    private void createBone(Bone bone, Vector3Float parentPosition) {
+    protected void createBone(Bone bone, Vector3Float parentPosition) {
         Vector3Float position = bone.position().add(parentPosition);
         BoneEntity boneEntity = new BoneEntity(this, bone, position, scale);
         bones.put(bone.name(), boneEntity);
@@ -154,7 +132,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
 
     @Override
     public void tickAnimations() {
-        animationController.tick(getPosition().yaw());
+        animationController.tick();
     }
 
     @Override
@@ -166,7 +144,6 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     @Override
     public void setAutoViewable(boolean autoViewable) {
         super.setAutoViewable(autoViewable);
-        this.modelHolder.setAutoViewable(autoViewable);
 
         for (GenericBoneEntity boneEntity : bones.values()) {
             boneEntity.setAutoViewable(autoViewable);
