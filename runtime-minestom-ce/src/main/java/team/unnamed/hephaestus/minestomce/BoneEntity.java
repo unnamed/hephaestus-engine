@@ -29,34 +29,21 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
-import net.minestom.server.instance.Instance;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Quaternion;
 
-import java.util.concurrent.CompletableFuture;
-
-/**
- * Represents a {@link Bone} holder entity,
- * it is an armor stand with a LEATHER_HORSE_ARMOR
- * item as helmet using a custom model data to
- * apply the bone model
- *
- * @since 1.0.0
- */
 public class BoneEntity extends GenericBoneEntity {
 
     private static final ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
-                    .meta(new LeatherArmorMeta.Builder()
-                            .color(new Color(0xFFFFFF))
-                            .build()
-                    )
-                    .build();
+            .meta(new LeatherArmorMeta.Builder()
+                    .color(new Color(0xFFFFFF))
+                    .build()
+            )
+            .build();
 
     protected final ModelEntity view;
     protected final Bone bone;
@@ -66,16 +53,17 @@ public class BoneEntity extends GenericBoneEntity {
             ModelEntity view,
             Bone bone,
             Vector3Float initialPosition,
+            Quaternion initialRotation,
             float modelScale
     ) {
         super(EntityType.ITEM_DISPLAY);
         this.view = view;
         this.bone = bone;
         this.modelScale = modelScale;
-        initialize(initialPosition);
+        initialize(initialPosition, initialRotation);
     }
 
-    protected void initialize(Vector3Float initialPosition) {
+    protected void initialize(Vector3Float initialPosition, Quaternion initialRotation) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
         meta.setDisplayContext(ItemDisplayMeta.DisplayContext.THIRD_PERSON_LEFT_HAND);
         meta.setInterpolationDuration(3);
@@ -85,7 +73,24 @@ public class BoneEntity extends GenericBoneEntity {
         meta.setItemStack(BASE_HELMET.withMeta(itemMeta ->
                 itemMeta.customModelData(bone.customModelData())));
 
-        update(initialPosition, Quaternion.IDENTITY, Vector3Float.ONE);
+        update(initialPosition, initialRotation, Vector3Float.ONE);
+    }
+
+    @Override
+    public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
+        ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
+        meta.setNotifyAboutChanges(false);
+        meta.setInterpolationStartDelta(0);
+
+        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(modelScale));
+        meta.setRightRotation(rotation.toFloatArray());
+        meta.setScale(new Vec(
+                modelScale * scale.x(),
+                modelScale * scale.y(),
+                modelScale * scale.z()
+        ));
+
+        meta.setNotifyAboutChanges(true);
     }
 
     /**
@@ -142,22 +147,5 @@ public class BoneEntity extends GenericBoneEntity {
     @Override
     public void colorize(int rgb) {
         colorize(new Color(rgb));
-    }
-
-    @Override
-    public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
-        ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        meta.setNotifyAboutChanges(false);
-        meta.setInterpolationStartDelta(0);
-
-        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(modelScale));
-        meta.setRightRotation(rotation.toFloatArray());
-        meta.setScale(new Vec(
-                modelScale * scale.x(),
-                modelScale * scale.y(),
-                modelScale * scale.z())
-        );
-
-        meta.setNotifyAboutChanges(true);
     }
 }

@@ -32,7 +32,8 @@ public final class ResourcePackFactory {
 
     public static BuiltResourcePack create(ModelRegistry registry) {
         ResourcePack resourcePack = ResourcePack.create();
-        resourcePack.packMeta(15, "Hephaestus generated resource pack");
+        // keep this up to date! https://minecraft.wiki/w/Pack_format#Resource_Pack
+        resourcePack.packMeta(18, "Hephaestus generated resource pack");
         resourcePack.icon(Writable.resource(Server.class.getClassLoader(), "hephaestus.png"));
         registry.write(resourcePack);
 

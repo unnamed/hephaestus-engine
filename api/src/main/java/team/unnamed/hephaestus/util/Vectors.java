@@ -119,10 +119,6 @@ public final class Vectors {
         return new Vector3Float((float) zx, (float) zy, (float) yz);
     }
 
-    public static Vector3Float lerp(Vector3Float start, Vector3Float end, float percent) {
-        return start.add(end.subtract(start).multiply(percent));
-    }
-
     public static boolean equals(Vector3Float a, Vector3Float b, double epsilon) {
         return Math.abs(a.x() - b.x()) < epsilon
                 && Math.abs(a.y() - b.y()) < epsilon

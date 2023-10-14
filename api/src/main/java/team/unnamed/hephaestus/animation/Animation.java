@@ -24,40 +24,48 @@
 package team.unnamed.hephaestus.animation;
 
 import net.kyori.examination.Examinable;
-import net.kyori.examination.ExaminableProperty;
-import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.view.BaseModelView;
-import team.unnamed.hephaestus.view.animation.AnimationController;
+import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
- * Represents a Model animation, applicable to
- * {@link BaseModelView} instances via their
- * {@link AnimationController} reference
+ * Represents a Model animation. Animations are a compound
+ * of keyframes by bone that modify the bone position,
+ * rotation and/or scale at a specific time.
  *
  * @since 1.0.0
  */
-public final class Animation implements Examinable {
-
-    private final String name;
-    private final int length;
-    private final LoopMode loopMode;
-    private final Map<String, Timeline> timelines;
-
-    public Animation(
-            String name,
-            int length,
-            LoopMode loopMode,
-            Map<String, Timeline> timelines
+public interface Animation extends Examinable {
+    /**
+     * Creates a new animation with the given
+     * name, length, loop mode and bone timelines
+     *
+     * @param name The animation name
+     * @param length The animation length, in ticks
+     * @param loopMode The animation loop mode
+     * @param timelines The animation bone timelines
+     * @return The created animation
+     * @since 1.0.0
+     */
+    static @NotNull Animation animation(
+            final @NotNull String name,
+            final int length,
+            final @NotNull LoopMode loopMode,
+            final @NotNull Map<String, BoneTimeline> timelines
     ) {
-        this.name = Objects.requireNonNull(name, "name");
-        this.length = length;
-        this.loopMode = Objects.requireNonNull(loopMode, "loopMode");
-        this.timelines = Objects.requireNonNull(timelines, "timelines");
+        return new AnimationImpl(name, length, loopMode, timelines);
+    }
+
+    /**
+     * Creates a new animation builder
+     *
+     * @return The created animation builder
+     * @since 1.0.0
+     */
+    static @NotNull Builder animation() {
+        return new AnimationImpl.BuilderImpl();
     }
 
     /**
@@ -66,9 +74,7 @@ public final class Animation implements Examinable {
      * @return The animation name
      * @since 1.0.0
      */
-    public String name() {
-        return name;
-    }
+    @NotNull String name();
 
     /**
      * Returns the animation length, in
@@ -77,9 +83,7 @@ public final class Animation implements Examinable {
      * @return The animation length
      * @since 1.0.0
      */
-    public int length() {
-        return length;
-    }
+    int length();
 
     /**
      * Returns the animation loop mode,
@@ -90,9 +94,7 @@ public final class Animation implements Examinable {
      * @return The animation loop mode
      * @since 1.0.0
      */
-    public LoopMode loopMode() {
-        return loopMode;
-    }
+    @NotNull LoopMode loopMode();
 
     /**
      * Returns the animation bone timelines,
@@ -106,40 +108,7 @@ public final class Animation implements Examinable {
      * @return The animation bone timelines
      * @since 1.0.0
      */
-    public Map<String, Timeline> timelines() {
-        return timelines;
-    }
-
-    @Override
-    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
-        return Stream.of(
-                ExaminableProperty.of("name", name),
-                ExaminableProperty.of("length", length),
-                ExaminableProperty.of("loopMode", loopMode),
-                ExaminableProperty.of("timelines", timelines)
-        );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Animation that = (Animation) o;
-        return name.equals(that.name)
-                && length == that.length
-                && loopMode == that.loopMode
-                && timelines.equals(that.timelines);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, length, loopMode, timelines);
-    }
-
-    @Override
-    public String toString() {
-        return examine(StringExaminer.simpleEscaping());
-    }
+    @NotNull Map<String, BoneTimeline> timelines();
 
     /**
      * An enum containing all the possible
@@ -149,7 +118,7 @@ public final class Animation implements Examinable {
      *
      * @since 1.0.0
      */
-    public enum LoopMode {
+    enum LoopMode {
 
         /**
          * ONCE, makes the animation play once
@@ -177,4 +146,71 @@ public final class Animation implements Examinable {
         LOOP
     }
 
+    /**
+     * A builder for animations
+     *
+     * @since 1.0.0
+     */
+    interface Builder {
+
+        /**
+         * Sets the animation name
+         *
+         * @param name The animation name
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder name(@NotNull String name);
+
+        /**
+         * Sets the animation length, in ticks
+         *
+         * @param length The animation length
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder length(final int length);
+
+        /**
+         * Sets the animation loop mode
+         *
+         * @param loopMode The animation loop mode
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder loopMode(final @NotNull LoopMode loopMode);
+
+        /**
+         * Sets the animation bone timelines
+         *
+         * @param timelines The animation bone timelines
+         * @return This builder
+         * @since 1.0.0
+         */
+        @NotNull Builder timelines(final @NotNull Map<String, BoneTimeline> timelines);
+
+        /**
+         * Adds a bone timeline to the animation
+         *
+         * @param boneName The bone name
+         * @param timeline The bone timeline
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_, _ -> this")
+        @NotNull Builder timeline(final @NotNull String boneName, final @NotNull BoneTimeline timeline);
+
+        /**
+         * Builds the animation
+         *
+         * @return The built animation
+         * @since 1.0.0
+         */
+        @Contract("-> new")
+        @NotNull Animation build();
+
+    }
 }

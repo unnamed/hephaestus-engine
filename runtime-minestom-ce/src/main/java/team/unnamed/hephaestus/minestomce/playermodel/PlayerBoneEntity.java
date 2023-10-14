@@ -57,13 +57,14 @@ public class PlayerBoneEntity extends BoneEntity {
             PlayerModelEntity view,
             Bone bone,
             Vector3Float initialPosition,
-            float modelScale
+            Quaternion parentRotation,
+            float scale
     ) {
-        super(view, bone, initialPosition, modelScale);
+        super(view, bone, initialPosition, parentRotation, scale);
     }
 
     @Override
-    protected void initialize(Vector3Float initialPosition) {
+    protected void initialize(Vector3Float initialPosition, Quaternion initialRotation) {
         this.skin = ((PlayerModel) view.model()).skin();
         this.boneType = PlayerBoneType.matchFor(skin, bone.name());
 
@@ -78,7 +79,7 @@ public class PlayerBoneEntity extends BoneEntity {
             itemMeta.customModelData(boneType.modelData());
         }));
 
-        update(initialPosition, Quaternion.IDENTITY, Vector3Float.ONE);
+        update(initialPosition, initialRotation, Vector3Float.ONE);
     }
 
     @Override

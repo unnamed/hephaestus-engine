@@ -21,47 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.reader.blockbench;
+package team.unnamed.hephaestus.animation.timeline;
 
-import org.jetbrains.annotations.ApiStatus;
-import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.ModelDataCursor;
-import team.unnamed.hephaestus.reader.ModelReader;
+import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 
-/**
- * Represents a reader that reads {@link Model} instances
- * from <a href="https://blockbench.net">Blockbench</a>'s
- * <b>BBMODEL</b> format.
- *
- * @since 1.0.0
- */
-@ApiStatus.NonExtendable
-public interface BBModelReader extends ModelReader {
+public class BoneTimelinePlayhead {
 
-    /**
-     * Creates a new {@link BBModelReader} instance.
-     *
-     * @return A new model reader
-     * @since 1.0.0
-     */
-    static ModelReader blockbench() {
-        return new BBModelReaderImpl(new ModelDataCursor(1));
+    private final Playhead<Vector3Float> positions;
+    private final Playhead<Vector3Float> rotations;
+    private final Playhead<Vector3Float> scales;
+    private final BoneTimeline boneTimeline;
+    private int tick = -1;
+
+    public BoneTimelinePlayhead(BoneTimeline boneTimeline) {
+        this.boneTimeline = boneTimeline;
+        this.positions = boneTimeline.positions().createPlayhead();
+        this.rotations = boneTimeline.rotations().createPlayhead();
+        this.scales = boneTimeline.scales().createPlayhead();
     }
 
-    /**
-     * Creates a new {@link BBModelReader} instance with
-     * the given model data cursor.
-     *
-     * <p>Model data cursor keeps track of the used custom
-     * model data so we can use a unique custom model data
-     * value for every model.</p>
-     *
-     * @param cursor The custom model data cursor reference
-     * @return A new model reader
-     * @since 1.0.0
-     */
-    static ModelReader blockbench(ModelDataCursor cursor) {
-        return new BBModelReaderImpl(cursor);
+    public int tick() {
+        return tick;
+    }
+
+    public BoneFrame next() {
+        tick++;
+        return new BoneFrame(
+                positions.next(),
+                rotations.next(),
+                scales.next()
+        );
     }
 
 }

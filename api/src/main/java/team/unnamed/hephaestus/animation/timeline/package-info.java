@@ -21,17 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus;
-
-import org.jetbrains.annotations.ApiStatus;
-
-@ApiStatus.Internal
-public final class Minecraft {
-
-    public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
-    public static final float PLAYER_DEFAULT_PICK_RANGE = 4.5F;
-
-    private Minecraft() {
-    }
-
-}
+/**
+ * Classes related to animation timelines. Timelines are an ordered
+ * collection of keyframes.
+ */
+package team.unnamed.hephaestus.animation.timeline;

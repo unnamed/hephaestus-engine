@@ -21,47 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.reader.blockbench;
+package team.unnamed.hephaestus.animation.timeline.playhead;
 
-import org.jetbrains.annotations.ApiStatus;
-import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.ModelDataCursor;
-import team.unnamed.hephaestus.reader.ModelReader;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * Represents a reader that reads {@link Model} instances
- * from <a href="https://blockbench.net">Blockbench</a>'s
- * <b>BBMODEL</b> format.
- *
- * @since 1.0.0
- */
-@ApiStatus.NonExtendable
-public interface BBModelReader extends ModelReader {
+import java.util.Objects;
 
-    /**
-     * Creates a new {@link BBModelReader} instance.
-     *
-     * @return A new model reader
-     * @since 1.0.0
-     */
-    static ModelReader blockbench() {
-        return new BBModelReaderImpl(new ModelDataCursor(1));
+final class SingletonPlayhead<T> implements Playhead<T> {
+
+    private final T value;
+
+    SingletonPlayhead(final @NotNull T value) {
+        this.value = Objects.requireNonNull(value, "value");
     }
 
-    /**
-     * Creates a new {@link BBModelReader} instance with
-     * the given model data cursor.
-     *
-     * <p>Model data cursor keeps track of the used custom
-     * model data so we can use a unique custom model data
-     * value for every model.</p>
-     *
-     * @param cursor The custom model data cursor reference
-     * @return A new model reader
-     * @since 1.0.0
-     */
-    static ModelReader blockbench(ModelDataCursor cursor) {
-        return new BBModelReaderImpl(cursor);
+    @Override
+    public @NotNull T next() {
+        return value;
     }
 
 }

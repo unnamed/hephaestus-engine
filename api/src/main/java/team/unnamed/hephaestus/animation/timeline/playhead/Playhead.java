@@ -21,17 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus;
+package team.unnamed.hephaestus.animation.timeline.playhead;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import team.unnamed.hephaestus.animation.timeline.Timeline;
 
-@ApiStatus.Internal
-public final class Minecraft {
+public interface Playhead<T> {
 
-    public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
-    public static final float PLAYER_DEFAULT_PICK_RANGE = 4.5F;
+    @NotNull T next();
 
-    private Minecraft() {
+    static <T> Playhead<T> playhead(Timeline<T> timeline) {
+        int len = timeline.keyFrames().size();
+        if (len == 0) {
+            // empty playheads always return the default value
+            return new SingletonPlayhead<>(timeline.initial());
+        } else if (len == 1) {
+            // when a timeline has only one keyframe, no matter its time,
+            // the playhead will always return that keyframe's value
+            return new SingletonPlayhead<>(timeline.keyFrames().get(0).value());
+        } else {
+            return new PlayheadImpl<>(timeline);
+        }
     }
 
 }

@@ -37,16 +37,15 @@ import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.BaseModelView;
-import team.unnamed.hephaestus.view.animation.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationController;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 
 public class ModelEntity extends EntityCreature implements BaseModelView<Player> {
@@ -75,17 +74,18 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         setNoGravity(true);
 
         for (Bone bone : model.bones()) {
-            createBone(bone, Vector3Float.ZERO);
+            createBone(bone, Vector3Float.ZERO, Quaternion.IDENTITY);
         }
     }
 
-    protected void createBone(Bone bone, Vector3Float parentPosition) {
+    protected void createBone(Bone bone, Vector3Float parentPosition, Quaternion parentRotation) {
         Vector3Float position = bone.position().add(parentPosition);
-        BoneEntity boneEntity = new BoneEntity(this, bone, position, scale);
+        Quaternion rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
+        BoneEntity boneEntity = new BoneEntity(this, bone, position, rotation, scale);
         bones.put(bone.name(), boneEntity);
 
         for (Bone child : bone.children()) {
-            createBone(child, position);
+            createBone(child, position, rotation);
         }
     }
 
@@ -131,11 +131,6 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     }
 
     @Override
-    public void tickAnimations() {
-        animationController.tick();
-    }
-
-    @Override
     public void tick(long time) {
         super.tick(time);
         this.tickAnimations();
@@ -168,5 +163,14 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
                         bone.teleport(position);
                     }
                 });
+    }
+
+    @Override
+    public void setView(float yaw, float pitch) {
+        super.setView(yaw, pitch);
+
+        for (GenericBoneEntity bone : bones()) {
+            bone.setView(yaw, pitch);
+        }
     }
 }

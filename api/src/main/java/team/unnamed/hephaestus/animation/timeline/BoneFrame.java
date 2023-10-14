@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation;
+package team.unnamed.hephaestus.animation.timeline;
 
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
@@ -32,15 +32,9 @@ import team.unnamed.creative.base.Vector3Float;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-/**
- * Represents a bone animation keyframe, a point in
- * the bone {@link Timeline}
- *
- * @since 1.0.0
- */
-public final class KeyFrame implements Examinable {
+public final class BoneFrame implements Examinable {
 
-    public static final KeyFrame INITIAL = new KeyFrame(
+    public static final BoneFrame INITIAL = new BoneFrame(
             Vector3Float.ZERO,
             Vector3Float.ZERO,
             Vector3Float.ONE
@@ -50,7 +44,7 @@ public final class KeyFrame implements Examinable {
     private final Vector3Float rotation;
     private final Vector3Float scale;
 
-    public KeyFrame(
+    public BoneFrame(
             Vector3Float position,
             Vector3Float rotation,
             Vector3Float scale
@@ -85,10 +79,10 @@ public final class KeyFrame implements Examinable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        KeyFrame keyFrame = (KeyFrame) o;
-        return position.equals(keyFrame.position)
-                && rotation.equals(keyFrame.rotation)
-                && scale.equals(keyFrame.scale);
+        BoneFrame boneFrame = (BoneFrame) o;
+        return position.equals(boneFrame.position)
+                && rotation.equals(boneFrame.rotation)
+                && scale.equals(boneFrame.scale);
     }
 
     @Override

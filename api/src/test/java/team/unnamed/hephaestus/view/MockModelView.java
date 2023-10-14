@@ -25,7 +25,7 @@ package team.unnamed.hephaestus.view;
 
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.view.animation.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationController;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -86,7 +86,7 @@ public class MockModelView implements BaseModelView<Object> {
 
     @Override
     public void tickAnimations() {
-        animationController.tick(0);
+        animationController.tick();
     }
 
 }

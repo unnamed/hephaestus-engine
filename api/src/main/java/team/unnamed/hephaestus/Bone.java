@@ -47,7 +47,6 @@ public class Bone implements Examinable {
 
     private final Map<String, Bone> children;
 
-    private final boolean small;
     private final int customModelData;
 
     public Bone(
@@ -55,14 +54,12 @@ public class Bone implements Examinable {
             Vector3Float position,
             Vector3Float rotation,
             Map<String, Bone> children,
-            boolean small,
             int customModelData
     ) {
         this.name = name;
         this.position = position;
         this.rotation = rotation;
         this.children = children;
-        this.small = small;
         this.customModelData = customModelData;
     }
 
@@ -114,16 +111,6 @@ public class Bone implements Examinable {
     }
 
     /**
-     * Determines whether to use small armor stands
-     * for this bone
-     *
-     * @return True to use small armor stands
-     */
-    public boolean small() {
-        return small;
-    }
-
-    /**
      * Returns this bone child bones
      *
      * @return The child bones
@@ -149,7 +136,6 @@ public class Bone implements Examinable {
                 ExaminableProperty.of("rotation", rotation),
                 ExaminableProperty.of("bones", children),
                 ExaminableProperty.of("offset", position),
-                ExaminableProperty.of("small", small),
                 ExaminableProperty.of("customModelData", customModelData)
         );
     }

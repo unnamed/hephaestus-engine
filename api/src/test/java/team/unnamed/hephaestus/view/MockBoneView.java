@@ -58,27 +58,18 @@ public class MockBoneView implements BaseBoneView {
         this.color = rgb;
     }
 
+    @Override
+    public void update(Vector3Float position, Quaternion rotation) {
+        this.position = position;
+        this.rotation = rotation.toEulerDegrees();
+    }
+
     public int color() {
         return color;
     }
 
-    @Override
-    public void position(Vector3Float position) {
-        this.position = position;
-    }
-
     public Vector3Float position() {
         return position;
-    }
-
-    @Override
-    public void rotation(Vector3Float rotation) {
-        this.rotation = rotation;
-    }
-
-    @Override
-    public void rotation(Quaternion rotation) {
-        throw new UnsupportedOperationException();
     }
 
     public Vector3Float rotation() {

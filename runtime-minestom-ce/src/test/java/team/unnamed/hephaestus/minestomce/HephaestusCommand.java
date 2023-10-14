@@ -30,6 +30,7 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.CommandContext;
 import net.minestom.server.command.builder.CommandExecutor;
 import net.minestom.server.command.builder.arguments.ArgumentType;
+import net.minestom.server.command.builder.suggestion.Suggestion;
 import net.minestom.server.command.builder.suggestion.SuggestionEntry;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
@@ -55,9 +56,7 @@ final class HephaestusCommand extends Command {
 
         var modelArg = ArgumentType.Word("model")
                 .setSuggestionCallback((sender, context, suggestion) -> {
-                    String input = suggestion.getInput();
-                    int start = suggestion.getStart();
-                    String typing = input.substring(start, start + suggestion.getLength() - 1);
+                    String typing = getSuggestionPrefix(suggestion);
                     registry.models().stream()
                             .map(Model::name)
                             .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(typing))
@@ -66,9 +65,7 @@ final class HephaestusCommand extends Command {
 
         var viewArg = ArgumentType.Word("view")
                 .setSuggestionCallback((sender, context, suggestion) -> {
-                    String input = suggestion.getInput();
-                    int start = suggestion.getStart();
-                    String typing = input.substring(start, start + suggestion.getLength() - 1);
+                    String typing = getSuggestionPrefix(suggestion);
                     registry.viewIds().stream()
                             .filter(id -> id.toLowerCase(Locale.ROOT).startsWith(typing))
                             .forEach(id -> suggestion.addEntry(new SuggestionEntry(id)));
@@ -79,9 +76,7 @@ final class HephaestusCommand extends Command {
                     String viewId = context.get(viewArg);
                     ModelEntity view = registry.view(viewId);
                     if (view != null) {
-                        String input = suggestion.getInput();
-                        int start = suggestion.getStart();
-                        String typing = input.substring(start, start + suggestion.getLength() - 1);
+                        String typing = getSuggestionPrefix(suggestion);
                         view.model().animations().keySet()
                                 .stream()
                                 .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(typing))
@@ -192,6 +187,16 @@ final class HephaestusCommand extends Command {
         return new Command(name) {{
             setDefaultExecutor(playerExecutor(executor));
         }};
+    }
+
+    private static String getSuggestionPrefix(Suggestion suggestion) {
+        String input = suggestion.getInput();
+        int start = suggestion.getStart() - 1;
+        String prefix = input.substring(start, start + suggestion.getLength());
+        if (prefix.equals("\0")) {
+            prefix = ""; // should match all
+        }
+        return prefix;
     }
 
 }

@@ -29,10 +29,12 @@ import net.minestom.server.instance.Instance;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.minestomce.BoneEntity;
 import team.unnamed.hephaestus.minestomce.GenericBoneEntity;
 import team.unnamed.hephaestus.minestomce.ModelEntity;
 import team.unnamed.hephaestus.playermodel.PlayerBoneType;
 import team.unnamed.hephaestus.playermodel.PlayerModel;
+import team.unnamed.hephaestus.util.Quaternion;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -49,40 +51,56 @@ public class PlayerModelEntity extends ModelEntity {
 
     @Override
     public void tickAnimations() {
-        animationController.tick(position.pitch());
+        animationController.tick(position.yaw(), position.pitch());
     }
 
     @Override
-    protected void createBone(Bone bone, Vector3Float parentPosition) {
+    protected void createBone(Bone bone, Vector3Float parentPosition, Quaternion parentRotation) {
         Vector3Float position = bone.position().add(parentPosition);
+        Quaternion rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
 
         PlayerBoneType boneType = PlayerBoneType.matchFor(model().skin(), bone.name());
+        GenericBoneEntity boneEntity;
+
         if (boneType != PlayerBoneType.UNKNOWN) {
-            PlayerBoneEntity boneEntity = new PlayerBoneEntity(this, bone, position, scale);
-            bones.put(bone.name(), boneEntity);
+            boneEntity = new PlayerBoneEntity(this, bone, position, rotation, scale);
+        } else {
+            boneEntity = new BoneEntity(this, bone, position, rotation, scale);
         }
 
+        bones.put(bone.name(), boneEntity);
+
         for (Bone child : bone.children()) {
-            createBone(child, position);
+            createBone(child, position, rotation);
         }
+    }
+
+    @Override
+    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
+
+        return super.setInstance(instance, spawnPosition)
+                .thenAccept(ignored -> {
+                    for (GenericBoneEntity bone : bones()) {
+                        bone.setInstance(instance, position.withView(0, 0));
+                    }
+                });
     }
 
     @Override
     public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position) {
         return super.teleport(position).thenAccept(ignored -> {
             for (GenericBoneEntity bone : bones()) {
-                bone.teleport(position.withPitch(0));
+                bone.teleport(position.withView(0, 0));
             }
         });
     }
 
     @Override
-    public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
-        return super.setInstance(instance, spawnPosition)
-                .thenAccept(ignored -> {
-                    for (GenericBoneEntity bone : bones()) {
-                        bone.setInstance(instance, position.withPitch(0));
-                    }
-                });
+    public void setView(float yaw, float pitch) {
+        super.setView(yaw, pitch);
+
+        for (GenericBoneEntity bone : bones()) {
+            bone.setView(0, 0);
+        }
     }
 }
