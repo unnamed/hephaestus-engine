@@ -119,7 +119,7 @@ final class AnimationReader {
                                     );
                                 }
 
-                                soundsTimeline.keyFrame(time, sounds, Interpolator.always(sounds));
+                                soundsTimeline.keyFrame(time, sounds);
                                 break;
                         }
                     }
