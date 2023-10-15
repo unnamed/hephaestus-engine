@@ -23,10 +23,11 @@
  */
 package team.unnamed.hephaestus.animation.timeline;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 
-public final class KeyFrame<T> {
+public final class KeyFrame<T> implements Comparable<KeyFrame<T>> {
 
     private final int time;
     private final T value;
@@ -62,4 +63,10 @@ public final class KeyFrame<T> {
                 ", interpolator=" + interpolator +
                 '}';
     }
+
+    @Override
+    public int compareTo(@NotNull KeyFrame<T> o) {
+        return Integer.compare(time, o.time);
+    }
+
 }

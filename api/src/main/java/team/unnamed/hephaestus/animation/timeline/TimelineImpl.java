@@ -28,9 +28,8 @@ import org.jetbrains.annotations.Unmodifiable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static java.util.Objects.requireNonNull;
 
@@ -38,13 +37,12 @@ final class TimelineImpl<T> implements Timeline<T> {
 
     private final T initialValue;
     private final Interpolator<T> defaultInterpolator;
-    private final List<KeyFrame<T>> keyFrames;
+    private final SortedSet<KeyFrame<T>> keyFrames;
 
-    TimelineImpl(T initialValue, Interpolator<T> defaultInterpolator, List<KeyFrame<T>> keyFrames) {
+    TimelineImpl(T initialValue, Interpolator<T> defaultInterpolator, SortedSet<KeyFrame<T>> keyFrames) {
         this.initialValue = requireNonNull(initialValue, "initial");
         this.defaultInterpolator = requireNonNull(defaultInterpolator, "defaultInterpolator");
         this.keyFrames = requireNonNull(keyFrames, "keyFrames");
-        keyFrames.sort(Comparator.comparing(KeyFrame::time));
     }
 
     @Override
@@ -58,7 +56,7 @@ final class TimelineImpl<T> implements Timeline<T> {
     }
 
     @Override
-    public @NotNull @Unmodifiable List<KeyFrame<T>> keyFrames() {
+    public @NotNull @Unmodifiable SortedSet<KeyFrame<T>> keyFrames() {
         return keyFrames;
     }
 
@@ -80,7 +78,7 @@ final class TimelineImpl<T> implements Timeline<T> {
 
         private T initialValue;
         private Interpolator<T> interpolator;
-        private final List<KeyFrame<T>> keyFrames = new ArrayList<>();
+        private final SortedSet<KeyFrame<T>> keyFrames = new TreeSet<>();
 
         @Override
         public Builder<T> initial(T value) {
