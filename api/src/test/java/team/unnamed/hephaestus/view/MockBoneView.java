@@ -59,7 +59,7 @@ public class MockBoneView implements BaseBoneView {
     }
 
     @Override
-    public void update(Vector3Float position, Quaternion rotation) {
+    public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
         this.position = position;
         this.rotation = rotation.toEulerDegrees();
     }

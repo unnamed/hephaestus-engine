@@ -263,4 +263,28 @@ class TimelineTest {
         }
     }
 
+    @Test
+    public void test_keyframes_with_same_time_are_removed() {
+        testTimeline(
+                timeline -> {
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0));
+                    timeline.keyFrame(0, new Vector3Float(20, 20, 20));
+                },
+                new Vector3Float(0, 0, 0)
+        );
+
+        testTimeline(
+                timeline -> {
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0));
+                    timeline.keyFrame(1, new Vector3Float(10, 10, 10));
+                    timeline.keyFrame(1, new Vector3Float(20, 20, 20));
+                    timeline.keyFrame(1, new Vector3Float(30, 30, 30));
+                    timeline.keyFrame(2, new Vector3Float(40, 40, 40));
+                },
+                new Vector3Float(0, 0, 0),
+                new Vector3Float(10, 10, 10),
+                new Vector3Float(40, 40, 40)
+        );
+    }
+
 }
