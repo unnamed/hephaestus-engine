@@ -21,28 +21,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline.effects;
+package team.unnamed.hephaestus.animation.timeline.effect;
 
 import net.kyori.adventure.sound.Sound;
-import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.NotNull;
 
-public class EffectsTimelinePlayhead {
+import java.util.Arrays;
+import java.util.stream.Stream;
 
-    private final Playhead<Sound[]> sounds;
-    private int tick = -1;
+public class EffectsFrame implements Examinable {
 
-    public EffectsTimelinePlayhead(EffectsTimeline effectsTimeline) {
-        this.sounds = effectsTimeline.sounds().createPlayhead();
+    public static EffectsFrame INITIAL = new EffectsFrame(
+            new Sound[0]
+    );
+
+    private final Sound[] sounds;
+
+    public EffectsFrame(Sound[] sounds) {
+        this.sounds = sounds;
     }
 
-    public int tick() {
-        return tick;
+    public Sound[] sounds() {
+        return sounds;
     }
 
-    public EffectsFrame next() {
-        tick++;
-        return new EffectsFrame(
-                sounds.next()
+    @Override
+    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("sounds", sounds)
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EffectsFrame that = (EffectsFrame) o;
+        return Arrays.equals(sounds, that.sounds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(sounds);
+    }
+
+    @Override
+    public String toString() {
+        return examine(StringExaminer.simpleEscaping());
     }
 }

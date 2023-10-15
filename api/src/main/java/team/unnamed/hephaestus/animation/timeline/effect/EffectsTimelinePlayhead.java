@@ -21,50 +21,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline.effects;
+package team.unnamed.hephaestus.animation.timeline.effect;
 
 import net.kyori.adventure.sound.Sound;
-import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.animation.timeline.Timeline;
 
-import static java.util.Objects.requireNonNull;
+public class EffectsTimelinePlayhead {
 
-final class EffectsTimelineImpl implements EffectsTimeline {
+    private final EffectsTimeline timeline;
+    private int tick = -1;
 
-    private final Timeline<Sound[]> sounds;
-
-    EffectsTimelineImpl(Timeline<Sound[]> sounds) {
-        this.sounds = requireNonNull(sounds, "sounds");
+    public EffectsTimelinePlayhead(EffectsTimeline timeline) {
+        this.timeline = timeline;
     }
 
-    @Override
-    public @NotNull Timeline<Sound[]> sounds() {
-        return sounds;
+    public int tick() {
+        return tick;
     }
 
-    @Override
-    public String toString() {
-        return "EffectsTimelineImpl{" +
-                "sounds=" + sounds +
-                '}';
-    }
-
-    static final class BuilderImpl implements Builder {
-
-        private Timeline<Sound[]> sounds;
-
-        BuilderImpl() {
-        }
-
-        @Override
-        public @NotNull Builder sounds(@NotNull Timeline<Sound[]> sounds) {
-            this.sounds = requireNonNull(sounds, "sounds");
-            return this;
-        }
-
-        @Override
-        public @NotNull EffectsTimeline build() {
-            return new EffectsTimelineImpl(sounds);
-        }
+    public EffectsFrame next() {
+        tick++;
+        return new EffectsFrame(
+                timeline.sounds().getOrDefault(tick, new Sound[0])
+        );
     }
 }

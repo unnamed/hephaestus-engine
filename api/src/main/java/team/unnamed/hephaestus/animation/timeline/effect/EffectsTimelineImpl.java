@@ -21,53 +21,51 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline.effects;
+package team.unnamed.hephaestus.animation.timeline.effect;
 
 import net.kyori.adventure.sound.Sound;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.animation.interpolation.Interpolator;
-import team.unnamed.hephaestus.animation.timeline.Timeline;
 
-/**
- *
- * @since 1.0.0
- */
-public interface EffectsTimeline {
+import java.util.Map;
 
-    static @NotNull EffectsTimeline.Builder effectsTimeline() {
-        return new EffectsTimelineImpl.BuilderImpl();
+import static java.util.Objects.requireNonNull;
+
+final class EffectsTimelineImpl implements EffectsTimeline {
+
+    private final Map<Integer, Sound[]> sounds;
+
+    EffectsTimelineImpl(Map<Integer, Sound[]> sounds) {
+        this.sounds = requireNonNull(sounds, "sounds");
     }
 
-    static @NotNull EffectsTimeline.Builder empty() {
-        return effectsTimeline()
-                .sounds(Timeline.<Sound[]>timeline()
-                        .initial(new Sound[0])
-                        .defaultInterpolator(Interpolator.staticInterpolator(new Sound[0]))
-                        .build()
-                );
+    @Override
+    public @NotNull Map<Integer, Sound[]> sounds() {
+        return sounds;
     }
 
-    default @NotNull EffectsTimelinePlayhead createPlayhead() {
-        return new EffectsTimelinePlayhead(this);
+    @Override
+    public String toString() {
+        return "EffectsTimelineImpl{" +
+                "sounds=" + sounds +
+                '}';
     }
 
-    @NotNull Timeline<Sound[]> sounds();
+    static final class BuilderImpl implements Builder {
 
-    interface Builder {
+        private Map<Integer, Sound[]> sounds;
 
-        /**
-         * Set the sounds timeline
-         *
-         * @param sounds The sounds timeline
-         * @return This builder
-         * @since 1.0.0
-         */
-        @Contract("_ -> this")
-        @NotNull Builder sounds(final @NotNull Timeline<Sound[]> sounds);
+        BuilderImpl() {
+        }
 
-        @NotNull EffectsTimeline build();
+        @Override
+        public @NotNull Builder sounds(@NotNull Map<Integer, Sound[]> sounds) {
+            this.sounds = requireNonNull(sounds, "sounds");
+            return this;
+        }
 
+        @Override
+        public @NotNull EffectsTimeline build() {
+            return new EffectsTimelineImpl(sounds);
+        }
     }
-
 }

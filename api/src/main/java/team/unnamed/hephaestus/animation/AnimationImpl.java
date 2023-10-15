@@ -27,7 +27,7 @@ import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
-import team.unnamed.hephaestus.animation.timeline.effects.EffectsTimeline;
+import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimeline;
 
 import java.util.HashMap;
 import java.util.Map;

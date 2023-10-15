@@ -33,7 +33,7 @@ import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
-import team.unnamed.hephaestus.animation.timeline.effects.EffectsTimeline;
+import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimeline;
 import team.unnamed.hephaestus.process.ElementScale;
 
 import java.io.IOException;
@@ -93,9 +93,7 @@ final class AnimationReader {
                 String type = animatorJson.get("type").getAsString();
 
                 if (type.equals("effect")) {
-                    Timeline.Builder<Sound[]> soundsTimeline = Timeline.<Sound[]>timeline()
-                            .initial(new Sound[0])
-                            .defaultInterpolator(Interpolator.staticInterpolator(new Sound[0]));
+                    Map<Integer, Sound[]> soundsTimeline = new HashMap<>();
 
                     for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
                         JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
@@ -119,12 +117,12 @@ final class AnimationReader {
                                     );
                                 }
 
-                                soundsTimeline.keyFrame(time, sounds);
+                                soundsTimeline.put(time, sounds);
                                 break;
                         }
                     }
 
-                    effectsTimeline.sounds(soundsTimeline.build());
+                    effectsTimeline.sounds(soundsTimeline);
                 } else if (type.equals("bone")) {
                     Timeline.Builder<Vector3Float> positionsTimeline = Timeline.<Vector3Float>timeline()
                             .initial(Vector3Float.ZERO)

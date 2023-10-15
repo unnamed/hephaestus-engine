@@ -21,55 +21,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline.effects;
+package team.unnamed.hephaestus.animation.timeline.effect;
 
 import net.kyori.adventure.sound.Sound;
-import net.kyori.examination.Examinable;
-import net.kyori.examination.ExaminableProperty;
-import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.Map;
 
-public class EffectsFrame implements Examinable {
+/**
+ *
+ * @since 1.0.0
+ */
+public interface EffectsTimeline {
 
-    public static EffectsFrame INITIAL = new EffectsFrame(
-            new Sound[0]
-    );
-
-    private final Sound[] sounds;
-
-    public EffectsFrame(Sound[] sounds) {
-        this.sounds = sounds;
+    static @NotNull EffectsTimeline.Builder effectsTimeline() {
+        return new EffectsTimelineImpl.BuilderImpl();
     }
 
-    public Sound[] sounds() {
-        return sounds;
+    static @NotNull EffectsTimeline.Builder empty() {
+        return effectsTimeline()
+                .sounds(Collections.emptyMap());
     }
 
-    @Override
-    public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
-        return Stream.of(
-                ExaminableProperty.of("sounds", sounds)
-        );
+    default @NotNull EffectsTimelinePlayhead createPlayhead() {
+        return new EffectsTimelinePlayhead(this);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        EffectsFrame that = (EffectsFrame) o;
-        return Arrays.equals(sounds, that.sounds);
+    @NotNull Map<Integer, Sound[]> sounds();
+
+    interface Builder {
+
+        /**
+         * Set the sounds timeline
+         *
+         * @param sounds The sounds timeline
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder sounds(final @NotNull Map<Integer, Sound[]> sounds);
+
+        @NotNull EffectsTimeline build();
+
     }
 
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(sounds);
-    }
-
-    @Override
-    public String toString() {
-        return examine(StringExaminer.simpleEscaping());
-    }
 }

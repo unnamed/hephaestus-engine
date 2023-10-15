@@ -33,9 +33,9 @@ import team.unnamed.hephaestus.animation.timeline.bone.BoneFrame;
 import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
 import team.unnamed.hephaestus.animation.timeline.bone.BoneTimelinePlayhead;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
-import team.unnamed.hephaestus.animation.timeline.effects.EffectsFrame;
-import team.unnamed.hephaestus.animation.timeline.effects.EffectsTimeline;
-import team.unnamed.hephaestus.animation.timeline.effects.EffectsTimelinePlayhead;
+import team.unnamed.hephaestus.animation.timeline.effect.EffectsFrame;
+import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimeline;
+import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimelinePlayhead;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseBoneView;
@@ -195,6 +195,7 @@ class NormalAnimationController implements AnimationController {
         Sound[] sounds = effectsFrame.sounds();
 
         for (Sound sound : sounds) {
+            System.out.println("play ");
             view.playSound(sound);
         }
     }
