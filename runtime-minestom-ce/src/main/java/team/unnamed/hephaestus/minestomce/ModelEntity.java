@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.minestomce;
 
+import net.kyori.adventure.sound.Sound;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 
 public class ModelEntity extends EntityCreature implements BaseModelView<Player> {
@@ -63,7 +65,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         this.animationController = AnimationController.nonDelayed(this);
 
         // model entity is not auto-viewable by default
-        super.setAutoViewable(false); // "super" so it doesn't call our override
+        setAutoViewable(false);
         initialize();
     }
 
@@ -92,6 +94,14 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     @Override
     public Collection<Player> viewers() {
         return super.viewers;
+    }
+
+    @Override
+    public void playSound(Sound sound) {
+        System.out.println("play sound");
+        for (Player viewer : viewers()) {
+            viewer.playSound(sound, position);
+        }
     }
 
     @Override
@@ -142,6 +152,15 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
 
         for (GenericBoneEntity boneEntity : bones.values()) {
             boneEntity.setAutoViewable(autoViewable);
+        }
+    }
+
+    @Override
+    public void updateViewableRule(@Nullable Predicate<Player> predicate) {
+        super.updateViewableRule(predicate);
+
+        for (GenericBoneEntity boneEntity : bones.values()) {
+            boneEntity.updateViewableRule(predicate);
         }
     }
 

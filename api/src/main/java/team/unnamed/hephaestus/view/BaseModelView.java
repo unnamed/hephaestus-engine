@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.view;
 
+import net.kyori.adventure.sound.Sound;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.controller.AnimationController;
@@ -54,6 +55,8 @@ public interface BaseModelView<TViewer> {
     boolean addViewer(TViewer viewer);
 
     boolean removeViewer(TViewer viewer);
+
+    void playSound(Sound sound);
 
     /**
      * Colorizes this view using the specified

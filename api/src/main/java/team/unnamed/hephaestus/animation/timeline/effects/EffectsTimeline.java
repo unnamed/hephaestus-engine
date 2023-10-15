@@ -21,45 +21,53 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.effects;
 
-import org.jetbrains.annotations.Nullable;
+import net.kyori.adventure.sound.Sound;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.timeline.Timeline;
 
-public final class KeyFrame<T> {
+/**
+ *
+ * @since 1.0.0
+ */
+public interface EffectsTimeline {
 
-    private final int time;
-    private final T value;
-    private final Interpolator<T> interpolator;
-
-    public KeyFrame(int time, T value, @Nullable Interpolator<T> interpolator) {
-        this.time = time;
-        this.value = value;
-        this.interpolator = interpolator;
+    static @NotNull EffectsTimeline.Builder effectsTimeline() {
+        return new EffectsTimelineImpl.BuilderImpl();
     }
 
-    public int time() {
-        return time;
+    static @NotNull EffectsTimeline.Builder empty() {
+        return effectsTimeline()
+                .sounds(Timeline.<Sound[]>timeline()
+                        .initial(new Sound[0])
+                        .defaultInterpolator(Interpolator.staticInterpolator(new Sound[0]))
+                        .build()
+                );
     }
 
-    public T value() {
-        return value;
+    default @NotNull EffectsTimelinePlayhead createPlayhead() {
+        return new EffectsTimelinePlayhead(this);
     }
 
-    public @Nullable Interpolator<T> interpolator() {
-        return interpolator;
+    @NotNull Timeline<Sound[]> sounds();
+
+    interface Builder {
+
+        /**
+         * Set the sounds timeline
+         *
+         * @param sounds The sounds timeline
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder sounds(final @NotNull Timeline<Sound[]> sounds);
+
+        @NotNull EffectsTimeline build();
+
     }
 
-    public Interpolator<T> interpolatorOr(Interpolator<T> fallback) {
-        return interpolator == null ? fallback : interpolator;
-    }
-
-    @Override
-    public String toString() {
-        return "KeyFrame{" +
-                "time=" + time +
-                ", value=" + value +
-                ", interpolator=" + interpolator +
-                '}';
-    }
 }

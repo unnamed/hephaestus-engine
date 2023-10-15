@@ -163,6 +163,10 @@ public interface Interpolator<T> {
         return CatmullRomInterpolator.INSTANCE;
     }
 
+    static <T> @NotNull Interpolator<T> staticInterpolator(T empty) {
+        return new StaticInterpolator<>(empty);
+    }
+
     /**
      * Returns an interpolator that will create interpolations that always
      * return the provided {@code interpolated} value and will not perform

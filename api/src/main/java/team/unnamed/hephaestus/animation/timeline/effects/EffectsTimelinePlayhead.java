@@ -21,37 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.effects;
 
-import team.unnamed.creative.base.Vector3Float;
+import net.kyori.adventure.sound.Sound;
 import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 
-public class BoneTimelinePlayhead {
+public class EffectsTimelinePlayhead {
 
-    private final Playhead<Vector3Float> positions;
-    private final Playhead<Vector3Float> rotations;
-    private final Playhead<Vector3Float> scales;
-    private final BoneTimeline boneTimeline;
+    private final Playhead<Sound[]> sounds;
     private int tick = -1;
 
-    public BoneTimelinePlayhead(BoneTimeline boneTimeline) {
-        this.boneTimeline = boneTimeline;
-        this.positions = boneTimeline.positions().createPlayhead();
-        this.rotations = boneTimeline.rotations().createPlayhead();
-        this.scales = boneTimeline.scales().createPlayhead();
+    public EffectsTimelinePlayhead(EffectsTimeline effectsTimeline) {
+        this.sounds = effectsTimeline.sounds().createPlayhead();
     }
 
     public int tick() {
         return tick;
     }
 
-    public BoneFrame next() {
+    public EffectsFrame next() {
         tick++;
-        return new BoneFrame(
-                positions.next(),
-                rotations.next(),
-                scales.next()
+        return new EffectsFrame(
+                sounds.next()
         );
     }
-
 }

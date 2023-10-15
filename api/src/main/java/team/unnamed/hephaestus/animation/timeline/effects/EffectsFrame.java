@@ -21,57 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.effects;
 
+import net.kyori.adventure.sound.Sound;
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.creative.base.Vector3Float;
 
-import java.util.Objects;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
-public final class BoneFrame implements Examinable {
+public class EffectsFrame implements Examinable {
 
-    public static final BoneFrame INITIAL = new BoneFrame(
-            Vector3Float.ZERO,
-            Vector3Float.ZERO,
-            Vector3Float.ONE
+    public static EffectsFrame INITIAL = new EffectsFrame(
+            new Sound[0]
     );
 
-    private final Vector3Float position;
-    private final Vector3Float rotation;
-    private final Vector3Float scale;
+    private final Sound[] sounds;
 
-    public BoneFrame(
-            Vector3Float position,
-            Vector3Float rotation,
-            Vector3Float scale
-    ) {
-        this.position = position;
-        this.rotation = rotation;
-        this.scale = scale;
+    public EffectsFrame(Sound[] sounds) {
+        this.sounds = sounds;
     }
 
-    public Vector3Float position() {
-        return position;
-    }
-
-    public Vector3Float rotation() {
-        return rotation;
-    }
-
-    public Vector3Float scale() {
-        return scale;
+    public Sound[] sounds() {
+        return sounds;
     }
 
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
-                ExaminableProperty.of("position", position),
-                ExaminableProperty.of("rotation", rotation),
-                ExaminableProperty.of("scale", scale)
+                ExaminableProperty.of("sounds", sounds)
         );
     }
 
@@ -79,20 +59,17 @@ public final class BoneFrame implements Examinable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BoneFrame boneFrame = (BoneFrame) o;
-        return position.equals(boneFrame.position)
-                && rotation.equals(boneFrame.rotation)
-                && scale.equals(boneFrame.scale);
+        EffectsFrame that = (EffectsFrame) o;
+        return Arrays.equals(sounds, that.sounds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, rotation, scale);
+        return Arrays.hashCode(sounds);
     }
 
     @Override
     public String toString() {
         return examine(StringExaminer.simpleEscaping());
     }
-
 }

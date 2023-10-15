@@ -67,6 +67,15 @@ final class TimelineImpl<T> implements Timeline<T> {
         return Playhead.playhead(this);
     }
 
+    @Override
+    public String toString() {
+        return "TimelineImpl{" +
+                "initialValue=" + initialValue +
+                ", defaultInterpolator=" + defaultInterpolator +
+                ", keyFrames=" + keyFrames +
+                '}';
+    }
+
     static final class BuilderImpl<T> implements Builder<T> {
 
         private T initialValue;

@@ -21,45 +21,56 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.interpolation;
 
-import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import org.jetbrains.annotations.NotNull;
 
-public final class KeyFrame<T> {
+final class StaticInterpolator<T> implements Interpolator<T> {
 
-    private final int time;
-    private final T value;
-    private final Interpolator<T> interpolator;
+    private final T empty;
 
-    public KeyFrame(int time, T value, @Nullable Interpolator<T> interpolator) {
-        this.time = time;
-        this.value = value;
-        this.interpolator = interpolator;
-    }
-
-    public int time() {
-        return time;
-    }
-
-    public T value() {
-        return value;
-    }
-
-    public @Nullable Interpolator<T> interpolator() {
-        return interpolator;
-    }
-
-    public Interpolator<T> interpolatorOr(Interpolator<T> fallback) {
-        return interpolator == null ? fallback : interpolator;
+    StaticInterpolator(T empty) {
+        this.empty = empty;
     }
 
     @Override
-    public String toString() {
-        return "KeyFrame{" +
-                "time=" + time +
-                ", value=" + value +
-                ", interpolator=" + interpolator +
-                '}';
+    public @NotNull Interpolation<T> interpolation(@NotNull T from, @NotNull T to) {
+        return new StaticInterpolation<>(empty, from, to);
+    }
+
+    static final class StaticInterpolation<T> implements Interpolation<T> {
+
+        private final T empty;
+        private final T from;
+        private final T to;
+
+        StaticInterpolation(
+                final @NotNull T empty,
+                final @NotNull T from,
+                final @NotNull T to
+        ) {
+            this.empty = empty;
+            this.from = from;
+            this.to = to;
+        }
+
+        @Override
+        public @NotNull T from() {
+            return from;
+        }
+
+        @Override
+        public @NotNull T to() {
+            return to;
+        }
+
+        @Override
+        public @NotNull T interpolate(final double progress) {
+            if (progress == 0) {
+                return to;
+            }
+
+            return empty;
+        }
     }
 }

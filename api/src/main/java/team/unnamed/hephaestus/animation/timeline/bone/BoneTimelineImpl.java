@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.bone;
 
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.animation.timeline.Timeline;
 
 import static java.util.Objects.requireNonNull;
 

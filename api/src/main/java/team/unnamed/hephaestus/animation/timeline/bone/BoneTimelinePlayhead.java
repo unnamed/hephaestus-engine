@@ -21,45 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.bone;
 
-import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 
-public final class KeyFrame<T> {
+public class BoneTimelinePlayhead {
 
-    private final int time;
-    private final T value;
-    private final Interpolator<T> interpolator;
+    private final Playhead<Vector3Float> positions;
+    private final Playhead<Vector3Float> rotations;
+    private final Playhead<Vector3Float> scales;
+    private final BoneTimeline boneTimeline;
+    private int tick = -1;
 
-    public KeyFrame(int time, T value, @Nullable Interpolator<T> interpolator) {
-        this.time = time;
-        this.value = value;
-        this.interpolator = interpolator;
+    public BoneTimelinePlayhead(BoneTimeline boneTimeline) {
+        this.boneTimeline = boneTimeline;
+        this.positions = boneTimeline.positions().createPlayhead();
+        this.rotations = boneTimeline.rotations().createPlayhead();
+        this.scales = boneTimeline.scales().createPlayhead();
     }
 
-    public int time() {
-        return time;
+    public int tick() {
+        return tick;
     }
 
-    public T value() {
-        return value;
+    public BoneFrame next() {
+        tick++;
+        return new BoneFrame(
+                positions.next(),
+                rotations.next(),
+                scales.next()
+        );
     }
 
-    public @Nullable Interpolator<T> interpolator() {
-        return interpolator;
-    }
-
-    public Interpolator<T> interpolatorOr(Interpolator<T> fallback) {
-        return interpolator == null ? fallback : interpolator;
-    }
-
-    @Override
-    public String toString() {
-        return "KeyFrame{" +
-                "time=" + time +
-                ", value=" + value +
-                ", interpolator=" + interpolator +
-                '}';
-    }
 }

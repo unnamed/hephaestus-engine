@@ -23,13 +23,17 @@
  */
 package team.unnamed.hephaestus.reader.blockbench;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
-import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
+import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
+import team.unnamed.hephaestus.animation.timeline.effects.EffectsTimeline;
 import team.unnamed.hephaestus.process.ElementScale;
 
 import java.io.IOException;
@@ -67,11 +71,18 @@ final class AnimationReader {
 
             if (GsonUtil.isNullOrAbsent(animationJson, "animators")) {
                 // empty animation, no keyframes of any kind
-                animations.put(name, Animation.animation(name, length, loopMode, Collections.emptyMap()));
+                animations.put(name, Animation.animation(
+                        name,
+                        length,
+                        loopMode,
+                        Collections.emptyMap(),
+                        EffectsTimeline.empty().build()
+                ));
                 continue;
             }
 
             Map<String, BoneTimeline> animators = new HashMap<>();
+            EffectsTimeline.Builder effectsTimeline = EffectsTimeline.empty();
 
             for (Map.Entry<String, JsonElement> animatorEntry : animationJson.get("animators")
                     .getAsJsonObject()
@@ -79,80 +90,123 @@ final class AnimationReader {
 
                 JsonObject animatorJson = animatorEntry.getValue().getAsJsonObject();
                 String boneName = animatorJson.get("name").getAsString();
+                String type = animatorJson.get("type").getAsString();
 
-                Timeline.Builder<Vector3Float> positionsTimeline = Timeline.<Vector3Float>timeline()
-                        .initial(Vector3Float.ZERO)
-                        .defaultInterpolator(Interpolator.lerpVector3Float());
-                Timeline.Builder<Vector3Float> rotationsTimeline = Timeline.<Vector3Float>timeline()
-                        .initial(Vector3Float.ZERO)
-                        .defaultInterpolator(Interpolator.lerpVector3Float());
-                Timeline.Builder<Vector3Float> scalesTimeline = Timeline.<Vector3Float>timeline()
-                        .initial(Vector3Float.ONE)
-                        .defaultInterpolator(Interpolator.lerpVector3Float());
+                if (type.equals("effect")) {
+                    Timeline.Builder<Sound[]> soundsTimeline = Timeline.<Sound[]>timeline()
+                            .initial(new Sound[0])
+                            .defaultInterpolator(Interpolator.staticInterpolator(new Sound[0]));
 
-                for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
+                    for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
+                        JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
+                        JsonArray dataPoints = keyframeJson.get("data_points").getAsJsonArray();
+                        String channel = keyframeJson.get("channel").getAsString();
+                        int time = Math.round(GsonUtil.parseLenientFloat(keyframeJson.get("time")) * TICKS_PER_SECOND);
 
-                    JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
-                    JsonObject dataPoint = keyframeJson.get("data_points").getAsJsonArray().get(0).getAsJsonObject();
+                        switch (channel) {
+                            case "sound":
+                                Sound[] sounds = new Sound[dataPoints.size()];
 
-                    float x = GsonUtil.parseLenientFloat(dataPoint.get("x"));
-                    float y = GsonUtil.parseLenientFloat(dataPoint.get("y"));
-                    float z = GsonUtil.parseLenientFloat(dataPoint.get("z"));
+                                for (int i = 0; i < sounds.length; i++) {
+                                    JsonObject dataPoint = dataPoints.get(i).getAsJsonObject();
+                                    String soundName = dataPoint.get("effect").getAsString();
 
-                    Vector3Float value = new Vector3Float(x, y, z);
+                                    sounds[i] = Sound.sound(
+                                            Key.key("hephaestus", soundName),
+                                            Sound.Source.AMBIENT,
+                                            1,
+                                            1
+                                    );
+                                }
 
-                    String channel = keyframeJson.get("channel").getAsString();
-                    int time = Math.round(GsonUtil.parseLenientFloat(keyframeJson.get("time")) * TICKS_PER_SECOND);
-
-                    if (channel.equals("position")) {
-                        value = value.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
+                                soundsTimeline.keyFrame(time, sounds, Interpolator.always(sounds));
+                                break;
+                        }
                     }
 
-                    if (channel.equals("rotation")) {
-                        value = value.multiply(1, -1, -1);
+                    effectsTimeline.sounds(soundsTimeline.build());
+                } else if (type.equals("bone")) {
+                    Timeline.Builder<Vector3Float> positionsTimeline = Timeline.<Vector3Float>timeline()
+                            .initial(Vector3Float.ZERO)
+                            .defaultInterpolator(Interpolator.lerpVector3Float());
+                    Timeline.Builder<Vector3Float> rotationsTimeline = Timeline.<Vector3Float>timeline()
+                            .initial(Vector3Float.ZERO)
+                            .defaultInterpolator(Interpolator.lerpVector3Float());
+                    Timeline.Builder<Vector3Float> scalesTimeline = Timeline.<Vector3Float>timeline()
+                            .initial(Vector3Float.ONE)
+                            .defaultInterpolator(Interpolator.lerpVector3Float());
+
+                    for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
+                        JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
+                        JsonArray dataPoints = keyframeJson.get("data_points").getAsJsonArray();
+
+                        String channel = keyframeJson.get("channel").getAsString();
+                        int time = Math.round(GsonUtil.parseLenientFloat(keyframeJson.get("time")) * TICKS_PER_SECOND);
+                        JsonObject dataPoint = dataPoints.get(0).getAsJsonObject();
+
+                        float x = GsonUtil.parseLenientFloat(dataPoint.get("x"));
+                        float y = GsonUtil.parseLenientFloat(dataPoint.get("y"));
+                        float z = GsonUtil.parseLenientFloat(dataPoint.get("z"));
+
+                        Vector3Float value = new Vector3Float(x, y, z);
+
+                        if (channel.equals("position")) {
+                            value = value.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
+                        }
+
+                        if (channel.equals("rotation")) {
+                            value = value.multiply(1, -1, -1);
+                        }
+
+                        String interpolation = keyframeJson.has("interpolation")
+                                ? keyframeJson.get("interpolation").getAsString()
+                                : "linear";
+                        Interpolator<Vector3Float> interpolator;
+                        switch (interpolation.toLowerCase()) {
+                            case "bezier": // <-- parse bezier as linear
+                            case "linear":
+                                interpolator = Interpolator.lerpVector3Float();
+                                break;
+                            case "catmullrom":
+                            case "smooth": // <-- smooth is the displayed name of catmullrom, it is the same
+                                interpolator = Interpolator.catmullRomSplineVector3Float();
+                                break;
+                            case "step":
+                                interpolator = Interpolator.stepVector3Float();
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unsupported interpolation type: '" + interpolation + "'");
+                        }
+
+                        switch (channel.toLowerCase(Locale.ROOT)) {
+                            case "position":
+                                positionsTimeline.keyFrame(time, value, interpolator);
+                                break;
+                            case "rotation":
+                                rotationsTimeline.keyFrame(time, value, interpolator);
+                                break;
+                            case "scale":
+                                scalesTimeline.keyFrame(time, value, interpolator);
+                                break;
+                        }
                     }
 
-                    String interpolation = keyframeJson.has("interpolation")
-                            ? keyframeJson.get("interpolation").getAsString()
-                            : "linear";
-                    Interpolator<Vector3Float> interpolator;
-                    switch (interpolation.toLowerCase()) {
-                        case "bezier": // <-- parse bezier as linear
-                        case "linear":
-                            interpolator = Interpolator.lerpVector3Float();
-                            break;
-                        case "catmullrom":
-                        case "smooth": // <-- smooth is the displayed name of catmullrom, it is the same
-                            interpolator = Interpolator.catmullRomSplineVector3Float();
-                            break;
-                        case "step":
-                            interpolator = Interpolator.stepVector3Float();
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Unsupported interpolation type: '" + interpolation + "'");
-                    }
-
-                    switch (channel.toLowerCase(Locale.ROOT)) {
-                        case "position":
-                            positionsTimeline.keyFrame(time, value, interpolator);
-                            break;
-                        case "rotation":
-                            rotationsTimeline.keyFrame(time, value, interpolator);
-                            break;
-                        case "scale":
-                            scalesTimeline.keyFrame(time, value, interpolator);
-                            break;
-                    }
+                    animators.put(boneName, BoneTimeline.boneTimeline()
+                            .positions(positionsTimeline.build())
+                            .rotations(rotationsTimeline.build())
+                            .scales(scalesTimeline.build())
+                            .build()
+                    );
                 }
-
-                animators.put(boneName, BoneTimeline.boneTimeline()
-                        .positions(positionsTimeline.build())
-                        .rotations(rotationsTimeline.build())
-                        .scales(scalesTimeline.build())
-                        .build());
             }
 
-            animations.put(name, Animation.animation(name, length, loopMode, animators));
+            animations.put(name, Animation.animation(
+                    name,
+                    length,
+                    loopMode,
+                    animators,
+                    effectsTimeline.build()
+            ));
         }
     }
 

@@ -23,14 +23,19 @@
  */
 package team.unnamed.hephaestus.animation.controller;
 
+import net.kyori.adventure.sound.Sound;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.animation.timeline.BoneFrame;
-import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
-import team.unnamed.hephaestus.animation.timeline.BoneTimelinePlayhead;
+import team.unnamed.hephaestus.animation.timeline.bone.BoneFrame;
+import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
+import team.unnamed.hephaestus.animation.timeline.bone.BoneTimelinePlayhead;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
+import team.unnamed.hephaestus.animation.timeline.effects.EffectsFrame;
+import team.unnamed.hephaestus.animation.timeline.effects.EffectsTimeline;
+import team.unnamed.hephaestus.animation.timeline.effects.EffectsTimelinePlayhead;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseBoneView;
@@ -49,6 +54,7 @@ class NormalAnimationController implements AnimationController {
     private final BaseModelView<?> view;
 
     private final Map<String, BoneTimelinePlayhead> iterators = new HashMap<>();
+    private @NotNull EffectsTimelinePlayhead effectsIterator = new EffectsTimelinePlayhead(EffectsTimeline.empty().build());
 
     private final Map<String, BoneFrame> lastFrames = new HashMap<>();
 
@@ -76,7 +82,8 @@ class NormalAnimationController implements AnimationController {
         final Animation.Builder transitionAnimationBuilder = Animation.animation()
                 .name("$$hephaestus_transition_animation")
                 .length(transitionTicks)
-                .loopMode(Animation.LoopMode.HOLD);
+                .loopMode(Animation.LoopMode.HOLD)
+                .effectsTimeline(EffectsTimeline.empty().build());
 
         for (Map.Entry<String, BoneFrame> entry : lastFrames.entrySet()) {
             String boneName = entry.getKey();
@@ -175,6 +182,21 @@ class NormalAnimationController implements AnimationController {
                     Vector3Float.ONE
             );
         }
+
+        if (currentAnimation == null) {
+            return;
+        }
+
+        EffectsFrame effectsFrame = effectsIterator.next();
+        if (effectsIterator.tick() + 1 >= currentAnimation.length()) {
+            return;
+        }
+
+        Sound[] sounds = effectsFrame.sounds();
+
+        for (Sound sound : sounds) {
+            view.playSound(sound);
+        }
     }
 
     private void nextAnimation() {
@@ -186,7 +208,9 @@ class NormalAnimationController implements AnimationController {
     private void createIterators(Animation animation) {
         iterators.clear();
         lastFrames.clear();
+
         animation.timelines().forEach((name, list) -> iterators.put(name, list.createPlayhead()));
+        effectsIterator = animation.effectsTimeline().createPlayhead();
     }
 
     private BoneFrame nextFrame(String boneName) {

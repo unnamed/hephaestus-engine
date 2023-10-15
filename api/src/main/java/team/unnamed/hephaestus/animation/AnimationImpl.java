@@ -26,7 +26,8 @@ package team.unnamed.hephaestus.animation;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
+import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
+import team.unnamed.hephaestus.animation.timeline.effects.EffectsTimeline;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,17 +42,20 @@ final class AnimationImpl implements Animation {
     private final int length;
     private final LoopMode loopMode;
     private final Map<String, BoneTimeline> timelines;
+    private final EffectsTimeline effectsTimeline;
 
     AnimationImpl(
             final @NotNull String name,
             final int length,
             final @NotNull LoopMode loopMode,
-            final @NotNull Map<String, BoneTimeline> timelines
+            final @NotNull Map<String, BoneTimeline> timelines,
+            final @NotNull EffectsTimeline effectsTimeline
     ) {
         this.name = requireNonNull(name, "name");
         this.length = length;
         this.loopMode = requireNonNull(loopMode, "loopMode");
         this.timelines = requireNonNull(timelines, "timelines");
+        this.effectsTimeline = requireNonNull(effectsTimeline, "effectsTimeline");;
     }
 
     @Override
@@ -72,6 +76,11 @@ final class AnimationImpl implements Animation {
     @Override
     public @NotNull Map<String, BoneTimeline> timelines() {
         return timelines;
+    }
+
+    @Override
+    public @NotNull EffectsTimeline effectsTimeline() {
+        return effectsTimeline;
     }
 
     @Override
@@ -111,6 +120,7 @@ final class AnimationImpl implements Animation {
         private int length;
         private LoopMode loopMode;
         private Map<String, BoneTimeline> timelines;
+        private EffectsTimeline effectsTimeline;
 
         @Override
         public @NotNull Builder name(final @NotNull String name) {
@@ -137,6 +147,12 @@ final class AnimationImpl implements Animation {
         }
 
         @Override
+        public @NotNull Builder effectsTimeline(@NotNull EffectsTimeline timeline) {
+            this.effectsTimeline = requireNonNull(timeline, "effectsTimeline");
+            return this;
+        }
+
+        @Override
         public @NotNull Builder timeline(@NotNull String boneName, @NotNull BoneTimeline timeline) {
             requireNonNull(boneName, "boneName");
             requireNonNull(timeline, "timeline");
@@ -149,7 +165,7 @@ final class AnimationImpl implements Animation {
 
         @Override
         public @NotNull Animation build() {
-            return new AnimationImpl(name, length, loopMode, timelines);
+            return new AnimationImpl(name, length, loopMode, timelines, effectsTimeline);
         }
     }
 }

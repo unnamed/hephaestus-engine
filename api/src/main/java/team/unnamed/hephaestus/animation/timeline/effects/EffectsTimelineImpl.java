@@ -21,45 +21,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.effects;
 
-import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import net.kyori.adventure.sound.Sound;
+import org.jetbrains.annotations.NotNull;
+import team.unnamed.hephaestus.animation.timeline.Timeline;
 
-public final class KeyFrame<T> {
+import static java.util.Objects.requireNonNull;
 
-    private final int time;
-    private final T value;
-    private final Interpolator<T> interpolator;
+final class EffectsTimelineImpl implements EffectsTimeline {
 
-    public KeyFrame(int time, T value, @Nullable Interpolator<T> interpolator) {
-        this.time = time;
-        this.value = value;
-        this.interpolator = interpolator;
+    private final Timeline<Sound[]> sounds;
+
+    EffectsTimelineImpl(Timeline<Sound[]> sounds) {
+        this.sounds = requireNonNull(sounds, "sounds");
     }
 
-    public int time() {
-        return time;
-    }
-
-    public T value() {
-        return value;
-    }
-
-    public @Nullable Interpolator<T> interpolator() {
-        return interpolator;
-    }
-
-    public Interpolator<T> interpolatorOr(Interpolator<T> fallback) {
-        return interpolator == null ? fallback : interpolator;
+    @Override
+    public @NotNull Timeline<Sound[]> sounds() {
+        return sounds;
     }
 
     @Override
     public String toString() {
-        return "KeyFrame{" +
-                "time=" + time +
-                ", value=" + value +
-                ", interpolator=" + interpolator +
+        return "EffectsTimelineImpl{" +
+                "sounds=" + sounds +
                 '}';
+    }
+
+    static final class BuilderImpl implements Builder {
+
+        private Timeline<Sound[]> sounds;
+
+        BuilderImpl() {
+        }
+
+        @Override
+        public @NotNull Builder sounds(@NotNull Timeline<Sound[]> sounds) {
+            this.sounds = requireNonNull(sounds, "sounds");
+            return this;
+        }
+
+        @Override
+        public @NotNull EffectsTimeline build() {
+            return new EffectsTimelineImpl(sounds);
+        }
     }
 }

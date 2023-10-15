@@ -42,6 +42,7 @@ import java.util.List;
  * @param <T> The type of values in this timeline
  */
 public interface Timeline<T> extends Examinable {
+
     static <T> Builder<T> timeline() {
         return new TimelineImpl.BuilderImpl<>();
     }

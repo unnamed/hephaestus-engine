@@ -26,7 +26,8 @@ package team.unnamed.hephaestus.animation;
 import net.kyori.examination.Examinable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
+import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
+import team.unnamed.hephaestus.animation.timeline.effects.EffectsTimeline;
 
 import java.util.Map;
 
@@ -53,9 +54,10 @@ public interface Animation extends Examinable {
             final @NotNull String name,
             final int length,
             final @NotNull LoopMode loopMode,
-            final @NotNull Map<String, BoneTimeline> timelines
+            final @NotNull Map<String, BoneTimeline> timelines,
+            final @NotNull EffectsTimeline effectsTimeline
     ) {
-        return new AnimationImpl(name, length, loopMode, timelines);
+        return new AnimationImpl(name, length, loopMode, timelines, effectsTimeline);
     }
 
     /**
@@ -109,6 +111,8 @@ public interface Animation extends Examinable {
      * @since 1.0.0
      */
     @NotNull Map<String, BoneTimeline> timelines();
+
+    @NotNull EffectsTimeline effectsTimeline();
 
     /**
      * An enum containing all the possible
@@ -191,6 +195,15 @@ public interface Animation extends Examinable {
          * @since 1.0.0
          */
         @NotNull Builder timelines(final @NotNull Map<String, BoneTimeline> timelines);
+
+        /**
+         * Sets the animation effects timeline
+         *
+         * @param timeline The animation effects timeline
+         * @return This builder
+         * @since 1.0.0
+         */
+        @NotNull Builder effectsTimeline(final @NotNull EffectsTimeline timeline);
 
         /**
          * Adds a bone timeline to the animation
