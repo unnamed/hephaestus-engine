@@ -81,13 +81,12 @@ public class BoneEntity extends GenericBoneEntity {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
         meta.setNotifyAboutChanges(false);
         meta.setInterpolationStartDelta(0);
-
-        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(modelScale));
+        meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(modelScale * bone.scale()));
         meta.setRightRotation(rotation.toFloatArray());
         meta.setScale(new Vec(
-                modelScale * scale.x(),
-                modelScale * scale.y(),
-                modelScale * scale.z()
+                modelScale * bone.scale() * scale.x(),
+                modelScale * bone.scale() * scale.y(),
+                modelScale * bone.scale() * scale.z()
         ));
 
         meta.setNotifyAboutChanges(true);

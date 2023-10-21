@@ -38,6 +38,7 @@ import team.unnamed.creative.model.ModelTexture;
 import team.unnamed.creative.model.ModelTextures;
 import team.unnamed.creative.texture.Texture;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.partial.ElementAsset;
 import team.unnamed.hephaestus.partial.ModelAsset;
 import team.unnamed.hephaestus.partial.BoneAsset;
 
@@ -61,14 +62,6 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
 
     private static final Key LEATHER_HORSE_ARMOR_KEY = Key.key("item/leather_horse_armor");
     private static final String DEFAULT_NAMESPACE = "hephaestus";
-
-    private static final Vector3Float SCALE = new Vector3Float(
-            ItemTransform.MAX_SCALE / 2.40f,
-            ItemTransform.MAX_SCALE / 2.40f,
-            ItemTransform.MAX_SCALE / 2.40f
-    );
-
-    public static final float DISPLAY_TRANSLATION_Y = -6.4f;
 
     @Subst(DEFAULT_NAMESPACE) private final String namespace;
 
@@ -178,16 +171,9 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
             ModelAsset model,
             BoneAsset bone
     ) {
-        Vector3Float offset = bone.offset();
-
         Map<ItemTransform.Type, ItemTransform> displays = new HashMap<>();
         displays.put(ItemTransform.Type.THIRDPERSON_LEFTHAND, ItemTransform.builder()
-                .translation(new Vector3Float(
-                        -offset.x() * ItemTransform.MAX_SCALE / 2.40f,
-                        -offset.y() * ItemTransform.MAX_SCALE / 2.40f,
-                        -offset.z() * ItemTransform.MAX_SCALE / 2.40f
-                ))
-                .scale(SCALE)
+                .scale(new Vector3Float(bone.scale(), bone.scale(), bone.scale()))
                 .build()
         );
         Map<String, ModelTexture> textureMappings = new HashMap<>();
@@ -196,6 +182,17 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
             textureMappings.put(id.toString(), ModelTexture.ofKey(Key.key(namespace, path)));
         });
 
+        final List<Element> elements = new ArrayList<>(bone.cubes().size());
+        for (final ElementAsset elementAsset : bone.cubes()) {
+            elements.add(
+                    Element.builder()
+                            .from(elementAsset.from())
+                            .to(elementAsset.to())
+                            .rotation(elementAsset.rotation())
+                            .faces(elementAsset.faces())
+                            .build()
+            );
+        }
 
         return team.unnamed.creative.model.Model.builder()
                 .key(key)
@@ -203,12 +200,7 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
                 .textures(ModelTextures.builder()
                         .variables(textureMappings)
                         .build())
-                .elements(bone.cubes().stream().map(cube -> Element.builder()
-                        .from(cube.from())
-                        .to(cube.to())
-                        .rotation(cube.rotation())
-                        .faces(cube.faces())
-                        .build()).collect(Collectors.toList()))
+                .elements(elements)
                 .build();
     }
 

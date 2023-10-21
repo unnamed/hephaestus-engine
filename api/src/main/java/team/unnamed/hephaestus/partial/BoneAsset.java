@@ -37,29 +37,26 @@ import java.util.stream.Stream;
 public class BoneAsset implements Examinable {
 
     private final String name;
-    private final Vector3Float pivot;
     private final int customModelData;
-    private final Vector3Float offset;
+    private final Vector3Float pivot;
     private final List<ElementAsset> cubes;
-    private final boolean small;
     private final Map<String, BoneAsset> children;
+    private final float scale;
 
     public BoneAsset(
             String name,
             Vector3Float pivot,
             int customModelData,
-            Vector3Float offset,
             List<ElementAsset> cubes,
-            boolean small,
-            Map<String, BoneAsset> children
+            Map<String, BoneAsset> children,
+            float scale
     ) {
         this.name = name;
         this.pivot = pivot;
         this.customModelData = customModelData;
-        this.offset = offset;
         this.cubes = cubes;
-        this.small = small;
         this.children = children;
+        this.scale = scale;
     }
 
     public String name() {
@@ -74,20 +71,29 @@ public class BoneAsset implements Examinable {
         return customModelData;
     }
 
-    public Vector3Float offset() {
-        return offset;
-    }
-
     public List<ElementAsset> cubes() {
         return cubes;
     }
 
-    public boolean small() {
-        return small;
-    }
-
     public Collection<BoneAsset> children() {
         return children.values();
+    }
+
+    /**
+     * Returns the bone's model scale to be
+     * written in the resource-pack.
+     *
+     * <p>If this scale is 4, it is probable that
+     * we should use {@link team.unnamed.hephaestus.Bone#scale()}
+     * too to compensate the remaining scale.</p>
+     *
+     * <p>The returned value is always 4, or less.</p>
+     *
+     * @return The bone's model scale
+     * @since 1.0.0
+     */
+    public float scale() {
+        return scale;
     }
 
     @Override

@@ -333,17 +333,20 @@ final class BBModelReaderImpl implements BBModelReader {
         }
 
         ElementScale.Result processResult = ElementScale.process(unitAbsolutePosition, cubes);
+        float scale = processResult.scale();
+        float resourcePackScale = Math.min(4F, scale);
+        float inGameScale = scale / resourcePackScale;
+
         BoneAsset asset = new BoneAsset(
                 name,
                 unitAbsolutePosition,
                 cursor.next(),
-                processResult.offset(),
                 processResult.elements(),
-                processResult.small(),
-                childrenAssets
+                childrenAssets,
+                resourcePackScale
         );
 
-        siblings.put(name, new Bone(name, position, rotation, children, asset.customModelData()));
+        siblings.put(name, new Bone(name, position, rotation, children, asset.customModelData(), inGameScale));
         siblingAssets.put(name, asset);
     }
 

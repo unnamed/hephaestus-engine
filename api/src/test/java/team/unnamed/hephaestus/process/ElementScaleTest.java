@@ -37,9 +37,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ElementScaleTest {
 
     @Test
-    @DisplayName("Test that a 16x16x16 block cube is processed as small")
+    @DisplayName("Test that a 16x16x16 block cube is correctly processed")
     public void test_single_small_block() {
-        MonoResult result = processSingle(Vector3Float.ZERO, new ElementAsset(
+        MonoResult monoResult = processSingleCube(new ElementAsset(
                 // 16x16x16 block
                 new Vector3Float(-8, -8, -8),
                 new Vector3Float(8, 8, 8),
@@ -47,64 +47,17 @@ public class ElementScaleTest {
                 Collections.emptyMap()
         ));
 
-        ElementAsset scaledElement = result.element;
+        assertEquals(1F, monoResult.scale);
 
-        // 9.6x9.6x9.6 cube, which is then multiplied
-        // by the scale (4, max scale) by the client,
-        // creating a 38.4x38.4x38.4 cube, which is the
-        // size of a block when using an item in a
-        // small armor stand head
-        assertEquals(new Vector3Float(3.2F, 3.2F, 3.2F), scaledElement.from(), "from");
-        assertEquals(new Vector3Float(12.8F, 12.8F, 12.8F), scaledElement.to(), "to");
-
-        assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
-        assertTrue(result.small, "Bone should be small");
+        ElementAsset scaledElement = monoResult.element;
+        assertEquals(new Vector3Float(0F, 0F, 0F), scaledElement.from(), "from");
+        assertEquals(new Vector3Float(16F, 16F, 16F), scaledElement.to(), "to");
     }
 
     @Test
-    @DisplayName("Test that a 80x80x80 block cube is processed as small")
-    public void test_single_small_block_max() {
-        MonoResult result = processSingle(Vector3Float.ZERO, new ElementAsset(
-                // 80x80x80 block
-                new Vector3Float(-40, -40, -40),
-                new Vector3Float(40, 40, 40),
-                ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
-                Collections.emptyMap()
-        ));
-
-        ElementAsset scaledElement = result.element;
-
-        assertEquals(new Vector3Float(-16F, -16F, -16F), scaledElement.from(), "from");
-        assertEquals(new Vector3Float(32F, 32F, 32F), scaledElement.to(), "to");
-
-        assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
-        assertTrue(result.small, "Bone should be small");
-    }
-
-    @Test
-    @DisplayName("Test that a 82x82x82 block cube is processed as large")
-    public void test_single_large_block_min() {
-        MonoResult result = processSingle(Vector3Float.ZERO, new ElementAsset(
-                // 82x82x82 block
-                new Vector3Float(-41, -41, -41),
-                new Vector3Float(41, 41, 41),
-                ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
-                Collections.emptyMap()
-        ));
-
-        ElementAsset scaledElement = result.element;
-
-        assertEquals(new Vector3Float(-7.37F, -7.37F, -7.37F), scaledElement.from(), "from");
-        assertEquals(new Vector3Float(23.38F, 23.38F, 23.38F), scaledElement.to(), "to");
-
-        assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
-        assertFalse(result.small, "Bone should be large");
-    }
-
-    @Test
-    @DisplayName("Test that a 128x128x128 block cube is processed as large")
-    public void test_single_large_block_max() {
-        MonoResult result = processSingle(Vector3Float.ZERO, new ElementAsset(
+    @DisplayName("Test that a 128x128x128 block cube is processed")
+    public void test_single_large_block_mid() {
+        MonoResult result = processSingleCube(new ElementAsset(
                 // 128x128x128 block
                 new Vector3Float(-64, -64, -64),
                 new Vector3Float(64, 64, 64),
@@ -112,49 +65,66 @@ public class ElementScaleTest {
                 Collections.emptyMap()
         ));
 
-        ElementAsset scaledElement = result.element;
+        assertEquals(2.6666667F, result.scale);
 
+        ElementAsset scaledElement = result.element;
         assertEquals(new Vector3Float(-16F, -16F, -16F), scaledElement.from(), "from");
         assertEquals(new Vector3Float(32F, 32F, 32F), scaledElement.to(), "to");
-
-        assertEquals(Vector3Float.ZERO, result.offset, "Offset should be zero");
-        assertFalse(result.small, "Bone should be large");
     }
 
     @Test
-    @DisplayName("Test cube out of bounds")
-    public void test_single_cube_out_of_bounds() {
-        assertThrows(IllegalStateException.class, () -> {
-            processSingle(Vector3Float.ZERO, new ElementAsset(
-                    new Vector3Float(-65, -65, -65),
-                    new Vector3Float(65, 65, 65),
-                    ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
-                    Collections.emptyMap()
-            ));
-        }, "Cube out of bounds");
+    @DisplayName("Test that a 192x192x192 block cube is processed")
+    public void test_single_large_block_max() {
+        MonoResult result = processSingleCube(new ElementAsset(
+                // 128x128x128 block
+                new Vector3Float(-96, -96, -96),
+                new Vector3Float(96, 96, 96),
+                ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
+                Collections.emptyMap()
+        ));
+
+        // scale is maximum here!
+        assertEquals(4F, result.scale);
+
+        ElementAsset scaledElement = result.element;
+        assertEquals(new Vector3Float(-16F, -16F, -16F), scaledElement.from(), "from");
+        assertEquals(new Vector3Float(32F, 32F, 32F), scaledElement.to(), "to");
+    }
+
+    @Test
+    @DisplayName("Test bigass block cube")
+    public void test_bigass_block_cube() {
+        MonoResult result = processSingleCube(new ElementAsset(
+                // 1024x1024x1024 cube (64x64x64 minecraft blocks! big as fuck!)
+                new Vector3Float(-512, -512, -512),
+                new Vector3Float(512, 512, 512),
+                ElementRotation.of(Vector3Float.ZERO, Axis3D.X, 0, false),
+                Collections.emptyMap()
+        ));
+
+        // scale is big as fuck too! and will be split into two scales, one applied
+        // by the resource-pack (max 4), and another, applied in-game (5.33333)
+        assertEquals(21.333334F, result.scale);
+
+        ElementAsset scaledElement = result.element;
+        assertEquals(new Vector3Float(-16F, -16F, -16F), scaledElement.from(), "from");
+        assertEquals(new Vector3Float(32F, 32F, 32F), scaledElement.to(), "to");
+    }
+
+    private static MonoResult processSingleCube(ElementAsset cube) {
+        ElementScale.Result result = ElementScale.process(Vector3Float.ZERO, Collections.singletonList(cube));
+        return new MonoResult(result.elements().get(0), result.scale());
     }
 
     private static class MonoResult {
 
-        private final Vector3Float offset;
         private final ElementAsset element;
-        private final boolean small;
+        private final float scale;
 
-        public MonoResult(Vector3Float offset, ElementAsset element, boolean small) {
-            this.offset = offset;
+        private MonoResult(ElementAsset element, float scale) {
             this.element = element;
-            this.small = small;
+            this.scale = scale;
         }
-
-    }
-
-    private static MonoResult processSingle(Vector3Float pivot, ElementAsset cube) {
-        ElementScale.Result result = ElementScale.process(pivot, Collections.singletonList(cube));
-        return new MonoResult(
-                result.offset(),
-                result.elements().get(0),
-                result.small()
-        );
     }
 
 }
