@@ -38,21 +38,18 @@ public class BoneAsset implements Examinable {
 
     private final String name;
     private final int customModelData;
-    private final Vector3Float pivot;
     private final List<ElementAsset> cubes;
     private final Map<String, BoneAsset> children;
     private final float scale;
 
     public BoneAsset(
             String name,
-            Vector3Float pivot,
             int customModelData,
             List<ElementAsset> cubes,
             Map<String, BoneAsset> children,
             float scale
     ) {
         this.name = name;
-        this.pivot = pivot;
         this.customModelData = customModelData;
         this.cubes = cubes;
         this.children = children;
@@ -61,10 +58,6 @@ public class BoneAsset implements Examinable {
 
     public String name() {
         return name;
-    }
-
-    public Vector3Float pivot() {
-        return pivot;
     }
 
     public int customModelData() {
@@ -100,7 +93,6 @@ public class BoneAsset implements Examinable {
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
                 ExaminableProperty.of("name", name),
-                ExaminableProperty.of("pivot", pivot),
                 ExaminableProperty.of("customModelData", customModelData),
                 ExaminableProperty.of("cubes", cubes),
                 ExaminableProperty.of("children", children)

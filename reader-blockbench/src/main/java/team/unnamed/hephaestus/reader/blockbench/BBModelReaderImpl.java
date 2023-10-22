@@ -137,13 +137,9 @@ final class BBModelReaderImpl implements BBModelReader {
 
             JsonObject cubeJson = cubeElement.getAsJsonObject();
 
-            Vector3Float pivot = GsonUtil.getVector3FloatFromJson(cubeJson.get("origin"))
-                    .multiply(-1, 1, 1);
+            Vector3Float pivot = GsonUtil.getVector3FloatFromJson(cubeJson.get("origin"));
             Vector3Float to = GsonUtil.getVector3FloatFromJson(cubeJson.get("to"));
             Vector3Float from = GsonUtil.getVector3FloatFromJson(cubeJson.get("from"));
-
-            Vector3Float origin = new Vector3Float(-to.x(), from.y(), from.z());
-            to = origin.add(to.subtract(from));
 
             Vector3Float rotation = GsonUtil.isNullOrAbsent(cubeJson, "rotation")
                     ? Vector3Float.ZERO
@@ -204,7 +200,7 @@ final class BBModelReaderImpl implements BBModelReader {
 
             String uuid = cubeJson.get("uuid").getAsString();
             ElementAsset cube = new ElementAsset(
-                    origin,
+                    from,
                     to,
                     ElementRotation.of(pivot, axis, angle, ElementRotation.DEFAULT_RESCALE),
                     faces
@@ -259,8 +255,7 @@ final class BBModelReaderImpl implements BBModelReader {
         BoneType boneType = BoneType.matchByBoneName(name);
 
         // The absolute position of this bone, in Blockbench units
-        Vector3Float unitAbsolutePosition = GsonUtil.getVector3FloatFromJson(json.get("origin"))
-                .multiply(-1, 1, 1);
+        Vector3Float unitOrigin = GsonUtil.getVector3FloatFromJson(json.get("origin"));
 
         // The initial rotation of this bone
         Vector3Float rotation = GsonUtil.isNullOrAbsent(json, "rotation")
@@ -268,7 +263,7 @@ final class BBModelReaderImpl implements BBModelReader {
                 : GsonUtil.getVector3FloatFromJson(json.get("rotation")).multiply(-1, 1, 1);
 
         // The position of this bone, in Minecraft units
-        Vector3Float absolutePosition = unitAbsolutePosition.divide(Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);
+        Vector3Float absolutePosition = unitOrigin.divide(-Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);
         Vector3Float position = absolutePosition.subtract(parentAbsolutePosition);
 
         List<ElementAsset> cubes = new ArrayList<>();
@@ -332,14 +327,13 @@ final class BBModelReaderImpl implements BBModelReader {
             return;
         }
 
-        ElementScale.Result processResult = ElementScale.process(unitAbsolutePosition, cubes);
+        ElementScale.Result processResult = ElementScale.process(unitOrigin, cubes);
         float scale = processResult.scale();
         float resourcePackScale = Math.min(4F, scale);
         float inGameScale = scale / resourcePackScale;
 
         BoneAsset asset = new BoneAsset(
                 name,
-                unitAbsolutePosition,
                 cursor.next(),
                 processResult.elements(),
                 childrenAssets,

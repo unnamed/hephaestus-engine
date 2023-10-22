@@ -73,7 +73,6 @@ public class BBModelReaderTest {
             BoneAsset root = asset.boneMap().get("root");
             assertNotNull(root);
             assertEquals("root", root.name());
-            assertEquals(Vector3Float.ZERO, root.pivot());
             assertEquals(1, root.cubes().size());
 
             ElementAsset element = root.cubes().get(0);

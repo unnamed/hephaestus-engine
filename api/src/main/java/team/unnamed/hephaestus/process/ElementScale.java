@@ -95,20 +95,11 @@ public class ElementScale {
             Vector3Float to = element.to();
 
             newElements[i] = new ElementAsset(
-                    clampCoordinate(new Vector3Float(
-                            origin.x() - to.x(), // special case <-- invert X axes (blockbench thing, todo: move)
-                            from.y() - origin.y(),
-                            from.z() - origin.z()
-                    ).divide(scale).add(MINECRAFT_ORIGIN)),
-                    clampCoordinate(new Vector3Float(
-                            origin.x() - from.x(), // special case <-- invert X axes (blockbench thing, todo: move)
-                            to.y() - origin.y(),
-                            to.z() - origin.z()
-                    ).divide(scale).add(MINECRAFT_ORIGIN)),
+                    clampCoordinate(from.subtract(origin).divide(scale).add(MINECRAFT_ORIGIN)),
+                    clampCoordinate(to.subtract(origin).divide(scale).add(MINECRAFT_ORIGIN)),
                     element.rotation().origin(
                             element.rotation().origin()
                                     .subtract(origin)
-                                    .multiply(-1, 1, 1) // special case <--- invert X axes (blockbench thing, todo: move!)
                                     .divide(scale)
                                     .add(MINECRAFT_ORIGIN)
                     ),
