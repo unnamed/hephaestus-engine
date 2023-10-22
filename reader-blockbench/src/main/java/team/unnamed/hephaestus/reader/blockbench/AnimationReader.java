@@ -34,11 +34,11 @@ import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
 import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimeline;
-import team.unnamed.hephaestus.process.ElementScale;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -51,14 +51,13 @@ final class AnimationReader {
      * object and puts them into the specified {@code animations}
      * map
      */
-    static void readAnimations(
-            JsonObject json,
-            Map<String, Animation> animations
-    ) throws IOException {
+    static Map<String, Animation> readAnimations(JsonObject json, BBModelData modelData) {
+
+        Map<String, Animation> animations = new LinkedHashMap<>();
 
         if (!json.has("animations")) {
             // Model doesn't have animations
-            return;
+            return animations;
         }
 
         for (JsonElement animationElement : json.get("animations").getAsJsonArray()) {
@@ -202,6 +201,7 @@ final class AnimationReader {
                     effectsTimeline.build()
             ));
         }
+        return animations;
     }
 
     private static Animation.LoopMode getLoopMode(JsonObject animationJson) {

@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.reader.blockbench;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import team.unnamed.creative.base.Writable;
+import team.unnamed.hephaestus.reader.ModelFormatException;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -42,10 +43,8 @@ final class TextureReader {
      */
     static void readTextures(
             JsonObject json,
-            Map<String, Writable> textures,
-            Map<Integer, String> textureMappings
-    ) throws IOException {
-
+            BBModelData modelData
+    ) {
         JsonArray texturesJson = json.get("textures").getAsJsonArray();
 
         for (int index = 0; index < texturesJson.size(); index++) {
@@ -55,15 +54,14 @@ final class TextureReader {
             String source = textureJson.get("source").getAsString();
 
             if (!(source.startsWith(BASE_64_PREFIX))) {
-                throw new IOException("Model doesn't contains a valid" +
-                        " texture source. Not Base64");
+                throw new ModelFormatException("Model doesn't contains a valid texture source. Not Base64");
             }
 
             String base64Source = source.substring(BASE_64_PREFIX.length());
 
             // map to index
-            textureMappings.put(index, name);
-            textures.put(name, Writable.bytes(Base64.getDecoder().decode(base64Source)));
+            modelData.textureMapping.put(index, name);
+            modelData.textures.put(name, Writable.bytes(Base64.getDecoder().decode(base64Source)));
         }
     }
 

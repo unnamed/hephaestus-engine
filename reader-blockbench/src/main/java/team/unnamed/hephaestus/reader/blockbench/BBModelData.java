@@ -23,46 +23,29 @@
  */
 package team.unnamed.hephaestus.reader.blockbench;
 
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.Model;
+import team.unnamed.creative.base.Vector2Float;
+import team.unnamed.creative.base.Writable;
+import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.ModelDataCursor;
-import team.unnamed.hephaestus.reader.ModelReader;
+import team.unnamed.hephaestus.partial.BoneAsset;
 
-/**
- * Represents a reader that reads {@link Model} instances
- * from <a href="https://blockbench.net">Blockbench</a>'s
- * <b>BBMODEL</b> format.
- *
- * @since 1.0.0
- */
-@ApiStatus.NonExtendable
-public interface BBModelReader extends ModelReader {
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-    /**
-     * Creates a new {@link BBModelReader} instance.
-     *
-     * @return A new model reader
-     * @since 1.0.0
-     */
-    static @NotNull ModelReader blockbench() {
-        return new BBModelReaderImpl(new ModelDataCursor(1));
-    }
+class BBModelData {
 
-    /**
-     * Creates a new {@link BBModelReader} instance with
-     * the given model data cursor.
-     *
-     * <p>Model data cursor keeps track of the used custom
-     * model data so we can use a unique custom model data
-     * value for every model.</p>
-     *
-     * @param cursor The custom model data cursor reference
-     * @return A new model reader
-     * @since 1.0.0
-     */
-    static @NotNull ModelReader blockbench(final @NotNull ModelDataCursor cursor) {
-        return new BBModelReaderImpl(cursor);
-    }
+    // todo: !!!!!! this is ugly, fix it
+    String name;
+    Vector2Float boundingBox = new Vector2Float(1, 1);
+
+    ModelDataCursor modelDataCursor;
+    final Map<String, Bone> bones = new LinkedHashMap<>();
+    final Map<String, Writable> textures = new HashMap<>();
+    final Map<Integer, String> textureMapping = new HashMap<>();
+    final Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
+
+    int textureWidth;
+    int textureHeight;
 
 }
