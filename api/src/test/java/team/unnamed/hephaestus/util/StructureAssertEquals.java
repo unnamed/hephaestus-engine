@@ -75,4 +75,24 @@ public final class StructureAssertEquals {
         }
     }
 
+    public static void assertQuaternionEquivalent(
+            final @Nullable Quaternion expected,
+            final @Nullable Quaternion actual,
+            final double threshold
+    ) {
+        boolean similarEnough;
+        if (expected == null) {
+            similarEnough = actual == null;
+        } else {
+            similarEnough = expected.isEquivalentTo(actual, threshold);
+        }
+        if (!similarEnough) {
+            throw new AssertionFailedError(
+                    String.format("Equivalent expected: <%s> but was: <%s>", expected, actual),
+                    expected,
+                    actual
+            );
+        }
+    }
+
 }
