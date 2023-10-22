@@ -260,7 +260,7 @@ final class BBModelReaderImpl implements BBModelReader {
         // The initial rotation of this bone
         Vector3Float rotation = GsonUtil.isNullOrAbsent(json, "rotation")
                 ? Vector3Float.ZERO
-                : GsonUtil.getVector3FloatFromJson(json.get("rotation")).multiply(-1, 1, 1);
+                : GsonUtil.getVector3FloatFromJson(json.get("rotation"));
 
         // The position of this bone, in Minecraft units
         Vector3Float absolutePosition = unitOrigin.divide(-Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);

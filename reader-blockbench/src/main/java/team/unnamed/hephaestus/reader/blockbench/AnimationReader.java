@@ -152,10 +152,6 @@ final class AnimationReader {
                             value = value.divide(Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);
                         }
 
-                        if (channel.equals("rotation")) {
-                            value = value.multiply(1, -1, -1);
-                        }
-
                         String interpolation = keyframeJson.has("interpolation")
                                 ? keyframeJson.get("interpolation").getAsString()
                                 : "linear";

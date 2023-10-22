@@ -141,7 +141,7 @@ class NormalAnimationController implements AnimationController {
         Vector3Float defaultRotation = bone.rotation();
 
         Vector3Float localPosition = defaultPosition.add(framePosition);
-        Vector3Float localRotation = defaultRotation.add(frameRotation);
+        Vector3Float localRotation = defaultRotation.subtract(frameRotation);
 
         Vector3Float globalScale = parentScale.multiply(frameScale);
 

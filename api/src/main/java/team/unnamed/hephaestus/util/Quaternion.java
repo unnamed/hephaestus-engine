@@ -273,33 +273,37 @@ public final class Quaternion implements Examinable {
     /**
      * Creates a new {@link Quaternion} instance equivalent to the
      * given euler angle (rotation in X, Y, Z), which should be
-     * specified in radians
+     * specified in radians.
+     *
+     * <p>The rotation is calculated in <b>XYZ order</b>, using a
+     * <b>Y-Up right-handed</b> coordinate system.</p>
      *
      * @param euler The euler angle to represent
      * @return The quaternion representing the euler angle
      * @since 1.0.0
      */
-    public static Quaternion fromEulerRadians(Vector3Float euler) {
+    @Contract("_ -> new")
+    public static @NotNull Quaternion fromEulerRadians(final @NotNull Vector3Float euler) {
         // common values
-        double halfX = euler.x() * 0.5D;
-        double halfY = euler.y() * 0.5D;
-        double halfZ = euler.z() * 0.5D;
+        final double halfX = euler.x() * -0.5D;
+        final double halfY = euler.y() * 0.5D;
+        final double halfZ = euler.z() * 0.5D;
 
         // compute cos
-        double cosX = Math.cos(halfX);
-        double cosY = Math.cos(halfY);
-        double cosZ = Math.cos(halfZ);
+        final double cosX = Math.cos(halfX);
+        final double cosY = Math.cos(halfY);
+        final double cosZ = Math.cos(halfZ);
 
         // compute sin
-        double sinX = Math.sin(halfX);
-        double sinY = Math.sin(halfY);
-        double sinZ = Math.sin(halfZ);
+        final double sinX = Math.sin(halfX);
+        final double sinY = Math.sin(halfY);
+        final double sinZ = Math.sin(halfZ);
 
         // common products
-        double sinXCosY = sinX * cosY;
-        double cosXSinY = cosX * sinY;
-        double cosXCosY = cosX * cosY;
-        double sinXSinY = sinX * sinY;
+        final double sinXCosY = sinX * cosY;
+        final double cosXSinY = cosX * sinY;
+        final double cosXCosY = cosX * cosY;
+        final double sinXSinY = sinX * sinY;
 
         return new Quaternion(
                 sinXCosY * cosZ - cosXSinY * sinZ,
