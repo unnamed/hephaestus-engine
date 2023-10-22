@@ -285,7 +285,7 @@ public final class Quaternion implements Examinable {
     @Contract("_ -> new")
     public static @NotNull Quaternion fromEulerRadians(final @NotNull Vector3Float euler) {
         // common values
-        final double halfX = euler.x() * -0.5D;
+        final double halfX = euler.x() * 0.5D;
         final double halfY = euler.y() * 0.5D;
         final double halfZ = euler.z() * 0.5D;
 
@@ -306,10 +306,10 @@ public final class Quaternion implements Examinable {
         final double sinXSinY = sinX * sinY;
 
         return new Quaternion(
-                sinXCosY * cosZ - cosXSinY * sinZ,
-                cosXSinY * cosZ + sinXCosY * sinZ,
-                cosXCosY * sinZ - sinXSinY * cosZ,
-                cosXCosY * cosZ + sinXSinY * sinZ
+                -sinXCosY * cosZ - cosXSinY * sinZ,
+                cosXSinY * cosZ - sinXCosY * sinZ,
+                cosXCosY * sinZ + sinXSinY * cosZ,
+                cosXCosY * cosZ - sinXSinY * sinZ
         );
     }
 
