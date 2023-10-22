@@ -268,7 +268,7 @@ final class BBModelReaderImpl implements BBModelReader {
                 : GsonUtil.getVector3FloatFromJson(json.get("rotation")).multiply(-1, 1, 1);
 
         // The position of this bone, in Minecraft units
-        Vector3Float absolutePosition = unitAbsolutePosition.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
+        Vector3Float absolutePosition = unitAbsolutePosition.divide(Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);
         Vector3Float position = absolutePosition.subtract(parentAbsolutePosition);
 
         List<ElementAsset> cubes = new ArrayList<>();
@@ -318,7 +318,7 @@ final class BBModelReaderImpl implements BBModelReader {
             ElementAsset boundingBoxCube = cubes.get(0);
             Vector3Float size = boundingBoxCube.to()
                     .subtract(boundingBoxCube.from())
-                    .divide(ElementScale.BLOCK_SIZE);
+                    .divide(Blockbench.BLOCK_SIZE);
 
             if (size.x() != size.z()) {
                 LOGGER.warning("Bounding-box cube (bone: " + name

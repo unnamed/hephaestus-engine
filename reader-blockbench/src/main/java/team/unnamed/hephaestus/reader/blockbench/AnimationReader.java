@@ -149,7 +149,7 @@ final class AnimationReader {
                         Vector3Float value = new Vector3Float(x, y, z);
 
                         if (channel.equals("position")) {
-                            value = value.divide(ElementScale.BLOCK_SIZE, ElementScale.BLOCK_SIZE, -ElementScale.BLOCK_SIZE);
+                            value = value.divide(Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);
                         }
 
                         if (channel.equals("rotation")) {

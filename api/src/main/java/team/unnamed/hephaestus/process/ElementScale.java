@@ -33,8 +33,6 @@ import java.util.List;
 @ApiStatus.Internal
 public class ElementScale {
 
-    public static final float BLOCK_SIZE = 16F;
-
     // Minecraft Models have a maximum size of 48x48x48 pixels, where normally,
     // with scale = 1, the size of 16x16x16 pixels is equal to one Minecraft block.
     //
