@@ -148,7 +148,7 @@ class NormalAnimationController implements AnimationController {
         Quaternion globalRotation = parentRotation.multiply(Quaternion.fromEulerDegrees(localRotation));
         Vector3Float globalPosition = Vectors.rotateDegrees(
                 localPosition.multiply(globalScale),
-                parentRotation.toEulerDegrees()
+                parentRotation.toEulerDegrees().multiply(-1, 1, 1)
         ).add(parentPosition);
 
         BaseBoneView boneView = view.bone(bone.name());

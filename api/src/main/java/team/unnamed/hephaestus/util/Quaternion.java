@@ -256,7 +256,8 @@ public final class Quaternion implements Examinable {
             vx = (float) (2.0 * Math.atan2(x, w) - Math.signum(xz) * vz);
         }
 
-        return new Vector3Float((float) vx, (float) vy, (float) vz);
+        // negate X, because we use a Y-Up right-handed coordinate system
+        return new Vector3Float((float) -vx, (float) vy, (float) vz);
     }
 
     /**
