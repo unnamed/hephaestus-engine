@@ -45,14 +45,13 @@ public class ElementScale {
     // (0, 0, 0) and the minimum point is (-24, -24, -24) and the maximum point
     // is (24, 24, 24).
 
-
     private static final Vector3Float MINECRAFT_ORIGIN = new Vector3Float(8F, 8F, 8F);
 
     private static final float MAXIMUM_ABSOLUTE_COORDINATE = 24F;
 
-    public static Result process(Vector3Float origin, List<ElementAsset> elements) {
+    public static Result process(Vector3Float origin, List<ElementAsset> originalElements) {
         //
-        // The semi length of the model cube. By default it is 24. the computation
+        // The semi length of the model cube. By default, it is 24. the computation
         // of the max coordinate is to check for elements that are outside the default
         // cube, and if they are, we will need to increase the semi length of the cube
         // so that the element is inside the cube.
@@ -62,11 +61,24 @@ public class ElementScale {
         //
         float maxAbsoluteCoordinate = MAXIMUM_ABSOLUTE_COORDINATE;
 
-        for (final ElementAsset element : elements) {
+        final int len = originalElements.size();
+        final ElementAsset[] elements = new ElementAsset[len];
+
+        for (int i = 0; i < len; ++i) {
+            final ElementAsset element = originalElements.get(i);
+
+            // subtract the provided origin from the element coordinates,
+            // makes the origin of the element to be (0, 0, 0)
             final Vector3Float from = element.from().subtract(origin);
             final Vector3Float to = element.to().subtract(origin);
+            elements[i] = new ElementAsset(
+                    from,
+                    to,
+                    element.rotation().origin(element.rotation().origin().subtract(origin)),
+                    element.faces()
+            );
 
-            // absolute max!
+            // calculate the maximum semi length of the model cube
             maxAbsoluteCoordinate = max(
                     maxAbsoluteCoordinate,
                     Math.abs(from.x()),
@@ -83,23 +95,19 @@ public class ElementScale {
         // Minecraft accepts a maximum scale of 4, so if our
         // scale exceeds that number, we must set scale 4 and
         // apply the compensation scale from the game
-        final float scale =  maxAbsoluteCoordinate / MAXIMUM_ABSOLUTE_COORDINATE;
+        final float scale = maxAbsoluteCoordinate / MAXIMUM_ABSOLUTE_COORDINATE;
 
-        final int elementLen = elements.size();
-        ElementAsset[] newElements = new ElementAsset[elementLen];
-
-        // divide all coordinates by the scale
-        for (int i = 0; i < elementLen; ++i) {
-            final ElementAsset element = elements.get(i);
-            Vector3Float from = element.from();
-            Vector3Float to = element.to();
-
-            newElements[i] = new ElementAsset(
-                    clampCoordinate(from.subtract(origin).divide(scale).add(MINECRAFT_ORIGIN)),
-                    clampCoordinate(to.subtract(origin).divide(scale).add(MINECRAFT_ORIGIN)),
+        // divide all coordinates by the scale and add the
+        // Minecraft origin to the coordinates, so that the
+        // origin of the model is located at (8, 8, 8), just
+        // like Minecraft likes.
+        for (int i = 0; i < len; ++i) {
+            final ElementAsset element = elements[i];
+            elements[i] = new ElementAsset(
+                    clampCoordinate(element.from().divide(scale).add(MINECRAFT_ORIGIN)),
+                    clampCoordinate(element.to().divide(scale).add(MINECRAFT_ORIGIN)),
                     element.rotation().origin(
                             element.rotation().origin()
-                                    .subtract(origin)
                                     .divide(scale)
                                     .add(MINECRAFT_ORIGIN)
                     ),
@@ -108,7 +116,7 @@ public class ElementScale {
         }
 
         return new Result(
-                Arrays.asList(newElements),
+                Arrays.asList(elements),
                 scale
         );
     }
