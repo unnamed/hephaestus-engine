@@ -11,6 +11,7 @@ includePrefixed("api")
 includePrefixed("reader-blockbench")
 includePrefixed("runtime-bukkit:api")
 includePrefixed("runtime-bukkit:adapt-v1_20_R2")
+includePrefixed("runtime-bukkit:test-plugin")
 includePrefixed("runtime-minestom-ce")
 
 fun includePrefixed(name: String) {
