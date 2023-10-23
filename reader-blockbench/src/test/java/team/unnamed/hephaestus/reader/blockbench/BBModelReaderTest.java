@@ -23,7 +23,6 @@
  */
 package team.unnamed.hephaestus.reader.blockbench;
 
-import net.kyori.adventure.key.Key;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.CubeFace;
@@ -31,11 +30,11 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.base.Vector4Float;
 import team.unnamed.creative.model.ElementFace;
 import team.unnamed.creative.model.ElementRotation;
-import team.unnamed.creative.texture.Texture;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.asset.BoneAsset;
 import team.unnamed.hephaestus.asset.ElementAsset;
 import team.unnamed.hephaestus.asset.ModelAsset;
+import team.unnamed.hephaestus.asset.TextureAsset;
 import team.unnamed.hephaestus.reader.ModelReader;
 
 import java.io.IOException;
@@ -63,11 +62,11 @@ public class BBModelReaderTest {
             assertNotNull(asset);
             assertEquals(1, asset.bones().size());
 
-            Map<String, Texture> textures = asset.textures();
+            Map<String, TextureAsset> textures = asset.textures();
             assertEquals(1, textures.size());
-            Texture texture = textures.get("0"); // "0" is the texture identifier
+            TextureAsset texture = textures.get("0"); // "0" is the texture identifier
             assertNotNull(texture);
-            assertEquals(Key.key("cube_default.png"), texture.key());
+            assertEquals("cube_default.png", texture.name());
 
             BoneAsset root = asset.boneMap().get("root");
             assertNotNull(root);
