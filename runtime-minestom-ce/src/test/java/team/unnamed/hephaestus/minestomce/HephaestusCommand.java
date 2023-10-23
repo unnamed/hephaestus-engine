@@ -98,7 +98,7 @@ final class HephaestusCommand extends Command {
                         model,
                         player.getInstance(),
                         player.getPosition(),
-                        0.25f
+                        1
                 );
 
                 view.eventNode()

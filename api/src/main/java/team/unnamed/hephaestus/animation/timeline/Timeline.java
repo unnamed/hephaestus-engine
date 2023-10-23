@@ -31,6 +31,7 @@ import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * Represents a timeline. A timeline is an ordered collection
@@ -42,6 +43,7 @@ import java.util.List;
  * @param <T> The type of values in this timeline
  */
 public interface Timeline<T> extends Examinable {
+
     static <T> Builder<T> timeline() {
         return new TimelineImpl.BuilderImpl<>();
     }
@@ -50,7 +52,7 @@ public interface Timeline<T> extends Examinable {
 
     @NotNull Interpolator<T> defaultInterpolator();
 
-    @NotNull @Unmodifiable List<KeyFrame<T>> keyFrames();
+    @NotNull @Unmodifiable SortedSet<KeyFrame<T>> keyFrames();
 
     @Contract("-> new")
     Playhead<T> createPlayhead();

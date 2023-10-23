@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.reader;
 
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Readable;
 import team.unnamed.hephaestus.Model;
 
@@ -52,7 +53,7 @@ public interface ModelReader {
      * @throws IOException If parsing fails
      * @since 1.0.0
      */
-    Model read(InputStream input) throws IOException;
+    @NotNull Model read(final @NotNull InputStream input) throws IOException;
 
     /**
      * Reads a model from the given {@code readable}

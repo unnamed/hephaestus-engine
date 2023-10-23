@@ -23,11 +23,15 @@
  */
 package team.unnamed.hephaestus;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Object holding a {@code cursor} for using unique
  * custom model data for all bones
  */
-public class ModelDataCursor {
+public final class ModelDataCursor {
+
+    private static final ModelDataCursor GLOBAL = new ModelDataCursor(1);
 
     // Represents the next custom model
     // data to be returned by next()
@@ -54,4 +58,7 @@ public class ModelDataCursor {
         return cursor++;
     }
 
+    public static @NotNull ModelDataCursor global() {
+        return GLOBAL;
+    }
 }

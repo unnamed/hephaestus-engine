@@ -91,6 +91,6 @@ public interface BaseBoneView extends NamedEntity {
      * @param position The relative target position
      * @param rotation The target rotation
      */
-    void update(Vector3Float position, Quaternion rotation);
+    void update(Vector3Float position, Quaternion rotation, Vector3Float scale);
 
 }

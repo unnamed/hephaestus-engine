@@ -26,11 +26,12 @@ package team.unnamed.hephaestus;
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
+import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.partial.ModelAsset;
+import team.unnamed.hephaestus.asset.ModelAsset;
 
 import java.util.Collection;
 import java.util.Map;
@@ -69,7 +70,8 @@ public class Model implements Examinable {
      *
      * @return The model name
      */
-    public String name() {
+    @Subst("model")
+    public @NotNull String name() {
         return name;
     }
 

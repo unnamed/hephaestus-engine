@@ -34,7 +34,6 @@ import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
 public class MinestomModelEngine implements ModelEngine<Player, MinestomLocation>  {
 
-
     public ModelEntity createView(EntityType entityType, Model model, Instance world, Pos position, float scale) {
         ModelEntity modelEntity = new ModelEntity(entityType, model, scale);
         modelEntity.setInstance(world, position);

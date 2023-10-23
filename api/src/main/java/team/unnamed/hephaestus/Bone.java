@@ -48,19 +48,22 @@ public class Bone implements Examinable {
     private final Map<String, Bone> children;
 
     private final int customModelData;
+    private final float scale;
 
     public Bone(
             String name,
             Vector3Float position,
             Vector3Float rotation,
             Map<String, Bone> children,
-            int customModelData
+            int customModelData,
+            float scale
     ) {
         this.name = name;
         this.position = position;
         this.rotation = rotation;
         this.children = children;
         this.customModelData = customModelData;
+        this.scale = scale;
     }
 
     /**
@@ -127,6 +130,23 @@ public class Bone implements Examinable {
      */
     public Map<String, Bone> childrenMap() {
         return children;
+    }
+
+    /**
+     * Returns this bone initial scale, which is just
+     * a compensation to make big models show with
+     * their correct size, since resource-packs are
+     * limited.
+     *
+     * <p>If the model already fits, scale is one.</p>
+     *
+     * <p>The returned scale is always one, or greater.</p>
+     *
+     * @return The bone initial scale
+     * @since 1.0.0
+     */
+    public float scale() {
+        return scale;
     }
 
     @Override

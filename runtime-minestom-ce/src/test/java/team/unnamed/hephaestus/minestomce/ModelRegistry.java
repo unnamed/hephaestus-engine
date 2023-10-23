@@ -27,6 +27,8 @@ import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.ResourcePack;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelDataCursor;
+import team.unnamed.hephaestus.playermodel.PlayerModelWriter;
+import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
@@ -43,10 +45,11 @@ public final class ModelRegistry {
     private final Map<String, Model> models = new HashMap<>();
     private final Map<String, ModelEntity> views = new HashMap<>();
 
-    private final ModelDataCursor modelDataCursor = new ModelDataCursor(0);
+    private final ModelReader reader = BBModelReader.blockbench();
 
     public void write(ResourcePack resourcePack) {
         ModelWriter.resource().write(resourcePack, models.values());
+        PlayerModelWriter.resource().write(resourcePack);
     }
 
     public void model(Model model) {
@@ -56,10 +59,14 @@ public final class ModelRegistry {
     public void loadModelFromResource(String name) {
         try (InputStream input = ModelRegistry.class.getClassLoader().getResourceAsStream(name)) {
             Objects.requireNonNull(input, "Model not found: " + name);
-            model(BBModelReader.blockbench(modelDataCursor).read(input));
+            model(reader.read(input));
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to load model " + name, e);
         }
+    }
+
+    public ModelReader reader() {
+        return reader;
     }
 
     public @Nullable Model model(String name) {
@@ -87,7 +94,16 @@ public final class ModelRegistry {
     }
 
     public static String generateViewId() {
-        return Long.toHexString(System.nanoTime());
+        // generate a hexadecimal string from the current time in milliseconds
+        final String hexMillis = Long.toHexString(System.currentTimeMillis());
+        final char[] chars = hexMillis.toCharArray();
+        // reverse the array
+        for (int i = 0; i < chars.length / 2; i++) {
+            char tmp = chars[i];
+            chars[i] = chars[chars.length - 1 - i];
+            chars[chars.length - 1 - i] = tmp;
+        }
+        return new String(chars);
     }
 
 }

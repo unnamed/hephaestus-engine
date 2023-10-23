@@ -38,7 +38,7 @@ public interface Playhead<T> {
         } else if (len == 1) {
             // when a timeline has only one keyframe, no matter its time,
             // the playhead will always return that keyframe's value
-            return new SingletonPlayhead<>(timeline.keyFrames().get(0).value());
+            return new SingletonPlayhead<>(timeline.keyFrames().first().value());
         } else {
             return new PlayheadImpl<>(timeline);
         }

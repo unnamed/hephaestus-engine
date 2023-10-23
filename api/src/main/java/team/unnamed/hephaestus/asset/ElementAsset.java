@@ -21,83 +21,63 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.partial;
+package team.unnamed.hephaestus.asset;
+
 
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
+import team.unnamed.creative.base.CubeFace;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.creative.model.ElementFace;
+import team.unnamed.creative.model.ElementRotation;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class BoneAsset implements Examinable {
+public class ElementAsset implements Examinable {
 
-    private final String name;
-    private final Vector3Float pivot;
-    private final int customModelData;
-    private final Vector3Float offset;
-    private final List<ElementAsset> cubes;
-    private final boolean small;
-    private final Map<String, BoneAsset> children;
+    private final Vector3Float from;
+    private final Vector3Float to;
+    private final ElementRotation rotation;
+    private final Map<CubeFace, ElementFace> faces;
 
-    public BoneAsset(
-            String name,
-            Vector3Float pivot,
-            int customModelData,
-            Vector3Float offset,
-            List<ElementAsset> cubes,
-            boolean small,
-            Map<String, BoneAsset> children
+    public ElementAsset(
+            Vector3Float from,
+            Vector3Float to,
+            ElementRotation rotation,
+            Map<CubeFace, ElementFace> faces
     ) {
-        this.name = name;
-        this.pivot = pivot;
-        this.customModelData = customModelData;
-        this.offset = offset;
-        this.cubes = cubes;
-        this.small = small;
-        this.children = children;
+        this.from = from;
+        this.to = to;
+        this.rotation = rotation;
+        this.faces = faces;
     }
 
-    public String name() {
-        return name;
+    public Vector3Float from() {
+        return from;
     }
 
-    public Vector3Float pivot() {
-        return pivot;
+    public Vector3Float to() {
+        return to;
     }
 
-    public int customModelData() {
-        return customModelData;
+    public ElementRotation rotation() {
+        return rotation;
     }
 
-    public Vector3Float offset() {
-        return offset;
-    }
-
-    public List<ElementAsset> cubes() {
-        return cubes;
-    }
-
-    public boolean small() {
-        return small;
-    }
-
-    public Collection<BoneAsset> children() {
-        return children.values();
+    public Map<CubeFace, ElementFace> faces() {
+        return faces;
     }
 
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
-                ExaminableProperty.of("name", name),
-                ExaminableProperty.of("pivot", pivot),
-                ExaminableProperty.of("customModelData", customModelData),
-                ExaminableProperty.of("cubes", cubes),
-                ExaminableProperty.of("children", children)
+                ExaminableProperty.of("from", from),
+                ExaminableProperty.of("to", to),
+                ExaminableProperty.of("rotation", rotation),
+                ExaminableProperty.of("faces", faces)
         );
     }
 

@@ -119,4 +119,19 @@ class InterpolationTest {
         assertVectorEquals(new Vector3Float(4F, 4F, 4F), interpolation.interpolate(1), 0.001); // to
     }
 
+    @Test
+    void test_step_interpolation() {
+        Interpolation<Vector3Float> interpolation = Interpolator.stepVector3Float().interpolation(
+                new Vector3Float(0, 0, 0),
+                new Vector3Float(10, 10, 10)
+        );
+
+        assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0), 0.001);
+        assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0.1), 0.001);
+        assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0.25), 0.001);
+        assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0.5), 0.001);
+        assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0.75), 0.001);
+        assertVectorEquals(new Vector3Float(10, 10, 10), interpolation.interpolate(1), 0.001);
+    }
+
 }

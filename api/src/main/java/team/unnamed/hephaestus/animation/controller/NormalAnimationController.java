@@ -23,14 +23,19 @@
  */
 package team.unnamed.hephaestus.animation.controller;
 
+import net.kyori.adventure.sound.Sound;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.animation.timeline.BoneFrame;
-import team.unnamed.hephaestus.animation.timeline.BoneTimeline;
-import team.unnamed.hephaestus.animation.timeline.BoneTimelinePlayhead;
+import team.unnamed.hephaestus.animation.timeline.bone.BoneFrame;
+import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
+import team.unnamed.hephaestus.animation.timeline.bone.BoneTimelinePlayhead;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
+import team.unnamed.hephaestus.animation.timeline.effect.EffectsFrame;
+import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimeline;
+import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimelinePlayhead;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseBoneView;
@@ -49,6 +54,7 @@ class NormalAnimationController implements AnimationController {
     private final BaseModelView<?> view;
 
     private final Map<String, BoneTimelinePlayhead> iterators = new HashMap<>();
+    private @NotNull EffectsTimelinePlayhead effectsIterator = new EffectsTimelinePlayhead(EffectsTimeline.empty().build());
 
     private final Map<String, BoneFrame> lastFrames = new HashMap<>();
 
@@ -76,7 +82,8 @@ class NormalAnimationController implements AnimationController {
         final Animation.Builder transitionAnimationBuilder = Animation.animation()
                 .name("$$hephaestus_transition_animation")
                 .length(transitionTicks)
-                .loopMode(Animation.LoopMode.HOLD);
+                .loopMode(Animation.LoopMode.HOLD)
+                .effectsTimeline(EffectsTimeline.empty().build());
 
         for (Map.Entry<String, BoneFrame> entry : lastFrames.entrySet()) {
             String boneName = entry.getKey();
@@ -122,12 +129,11 @@ class NormalAnimationController implements AnimationController {
     private void tickBone(
             Bone bone,
             Quaternion parentRotation,
-            Vector3Float parentPosition
+            Vector3Float parentPosition,
+            Vector3Float parentScale
     ) {
-        BaseBoneView boneView = view.bone(bone.name());
-        assert boneView != null;
-
         BoneFrame boneFrame = nextFrame(bone.name());
+        Vector3Float frameScale = boneFrame.scale();
         Vector3Float framePosition = boneFrame.position();
         Vector3Float frameRotation = boneFrame.rotation();
 
@@ -135,21 +141,27 @@ class NormalAnimationController implements AnimationController {
         Vector3Float defaultRotation = bone.rotation();
 
         Vector3Float localPosition = defaultPosition.add(framePosition);
-        Vector3Float localRotation = defaultRotation.add(frameRotation);
+        Vector3Float localRotation = defaultRotation.subtract(frameRotation);
+
+        Vector3Float globalScale = parentScale.multiply(frameScale);
 
         Quaternion globalRotation = parentRotation.multiply(Quaternion.fromEulerDegrees(localRotation));
         Vector3Float globalPosition = Vectors.rotateDegrees(
-                localPosition,
-                parentRotation.toEulerDegrees()
+                localPosition.multiply(globalScale),
+                parentRotation.toEulerDegrees().multiply(-1, 1, 1)
         ).add(parentPosition);
 
-        boneView.update(globalPosition, globalRotation);
+        BaseBoneView boneView = view.bone(bone.name());
+        if (boneView != null) {
+            boneView.update(globalPosition, globalRotation, globalScale);
+        }
 
         for (Bone child : bone.children()) {
             tickBone(
                     child,
                     globalRotation,
-                    globalPosition
+                    globalPosition,
+                    globalScale
             );
         }
     }
@@ -161,14 +173,30 @@ class NormalAnimationController implements AnimationController {
     }
 
     @Override
-    public synchronized void tick() {
-        Quaternion bodyRotation = Quaternion.IDENTITY;
+    public synchronized void tick(Quaternion initialRotation, Vector3Float initialPosition) {
         for (Bone bone : view.model().bones()) {
             tickBone(
                     bone,
-                    bodyRotation,
-                    Vector3Float.ZERO
+                    initialRotation,
+                    initialPosition,
+                    Vector3Float.ONE
             );
+        }
+
+        if (currentAnimation == null) {
+            return;
+        }
+
+        EffectsFrame effectsFrame = effectsIterator.next();
+        if (effectsIterator.tick() + 1 >= currentAnimation.length()) {
+            return;
+        }
+
+        Sound[] sounds = effectsFrame.sounds();
+
+        for (Sound sound : sounds) {
+            System.out.println("play ");
+            view.playSound(sound);
         }
     }
 
@@ -181,7 +209,9 @@ class NormalAnimationController implements AnimationController {
     private void createIterators(Animation animation) {
         iterators.clear();
         lastFrames.clear();
+
         animation.timelines().forEach((name, list) -> iterators.put(name, list.createPlayhead()));
+        effectsIterator = animation.effectsTimeline().createPlayhead();
     }
 
     private BoneFrame nextFrame(String boneName) {

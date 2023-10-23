@@ -78,8 +78,18 @@ final class PlayheadImpl<T> implements Playhead<T> {
             after = keyFrameIterator.hasNext() ? keyFrameIterator.next() : null;
         }
 
-        interpolation = previous.interpolatorOr(timeline.defaultInterpolator())
-                .interpolation(null, previous.value(), next.value(), after == null ? null : after.value());
+        interpolation = computeInterpolator().interpolation(null, previous.value(), next.value(), after == null ? null : after.value());
+    }
+
+    private Interpolator<T> computeInterpolator() {
+        Interpolator<T> interpolator;
+        if (next == null) {
+            interpolator = Interpolator.always(previous.value());
+        } else {
+            interpolator = previous.interpolatorOr(timeline.defaultInterpolator())
+                    .combineRight(next.interpolatorOr(timeline.defaultInterpolator()));
+        }
+        return interpolator;
     }
 
     @Override
@@ -113,7 +123,7 @@ final class PlayheadImpl<T> implements Playhead<T> {
                 after = null;
             }
 
-            interpolation = previous.interpolatorOr(timeline.defaultInterpolator())
+            interpolation = computeInterpolator()
                     .interpolation(
                             before == null ? null : before.value(),
                             previous.value(),

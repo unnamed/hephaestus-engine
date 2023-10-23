@@ -23,7 +23,6 @@
  */
 package team.unnamed.hephaestus.util;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Vector3Float;
@@ -34,56 +33,25 @@ public class QuaternionTest {
 
     @Test
     @DisplayName("Test Euler Angle to Quaternion conversion")
-    public void test_quaternion_from_euler() {
-        assertQuaternionFromEuler(0, 0, 0, 1.0, Vector3Float.ZERO);
-        assertQuaternionFromEuler(0.0, 0.7071067966408575, 0.0, 0.7071067657322372, new Vector3Float(0.0F, 90.0F, 0.0F));
-        assertQuaternionFromEuler(-0.2705980631261674, 0.6532814937590546, 0.27059805129795017, 0.6532814652032131, new Vector3Float(0.0F, 90.0F, 45.0F));
-        assertQuaternionFromEuler(0.3535533983204287, 0.3535533983204287, -0.14644661713388138, 0.8535533828661185, new Vector3Float(45.0F, 45.0F, 0.0F));
-        assertQuaternionFromEuler(0.7071067657322365, -3.0908620960936135E-8, -0.7071067966408568, -3.090861960987738E-8, new Vector3Float(180.0F, 90.0F, 0.0F));
-        assertQuaternionFromEuler(-0.41449777958570483, 0.17681186457523382, 0.8888933387630448, 0.0824486965733013, new Vector3Float(22.5F, 50.0F, 180.0F));
-        assertQuaternionFromEuler(1.5180805997096662E-8, -0.1736481726667787, -8.609463161462606E-8, -0.9848077538938659, new Vector3Float(0.0F, 20.0F, 360.0F));
-        assertQuaternionFromEuler(-0.0017435019962324843, 0.0872458164291457, 0.06911100618850595, 0.9937850856900667, new Vector3Float(0.5F, 10.0F, 8.0F));
+    public void test_quaternion_euler_angle_conversion() {
+        assertQuaternionEqualsEuler(0.0000000, 0.0000000, 0.0000000, 1.0000000, Vector3Float.ZERO);
+        assertQuaternionEqualsEuler(0.0000000, 0.7071060, 0.0000000, 0.7071060, new Vector3Float(0.0F, 90.0F, 0.0F));
+        assertQuaternionEqualsEuler(-0.270598, 0.6532810, 0.2705980, 0.6532810, new Vector3Float(0.0F, 90.0F, 45.0F));
+        assertQuaternionEqualsEuler(-0.353553, 0.3535530, 0.1464460, 0.8535530, new Vector3Float(45.0F, 45.0F, 0.0F));
+        assertQuaternionEqualsEuler(-0.707106, 0.0000000, 0.7071060, 0.0000000, new Vector3Float(180.0F, 90.0F, 0.0F));
+        assertQuaternionEqualsEuler(-0.414497, -0.176811, 0.8888930, -0.082448, new Vector3Float(22.5F, 50.0F, 180.0F));
+        assertQuaternionEqualsEuler(0.0000000, -0.173648, 0.0000000, -0.984807, new Vector3Float(0.0F, 20.0F, 360.0F));
+        assertQuaternionEqualsEuler(-0.010415, 0.0866390, 0.0698690, 0.9937320, new Vector3Float(0.5F, 10.0F, 8.0F));
     }
 
-    private static void assertQuaternionFromEuler(double x, double y, double z, double w, Vector3Float euler) {
+    private static void assertQuaternionEqualsEuler(double x, double y, double z, double w, Vector3Float euler) {
         Quaternion expected = new Quaternion(x, y, z, w);
         Quaternion quaternion = Quaternion.fromEulerDegrees(euler);
-        Assertions.assertTrue(
-                expected.equals(quaternion, THRESHOLD),
-                "Unexpected quaternion values for EulerAngle: " + euler
-        );
-    }
+        StructureAssertEquals.assertQuaternionEquals(expected, quaternion, THRESHOLD);
 
-    @Test
-    @DisplayName("Test Quaternion to Euler Angle conversion")
-    public void test_quaternion_to_euler() {
-        assertQuaternionToEuler(0, 0, 0, 1.0, Vector3Float.ZERO);
-        assertQuaternionToEuler(0.0, 0.7071067966408575, 0.0, 0.7071067657322372, new Vector3Float(0.0F, 90.0F, 0.0F));
-        assertQuaternionToEuler(-0.2705980631261674, 0.6532814937590546, 0.27059805129795017, 0.6532814652032131, new Vector3Float(0.0F, 90.0F, 45.0F));
-        assertQuaternionToEuler(0.3535533983204287, 0.3535533983204287, -0.14644661713388138, 0.8535533828661185, new Vector3Float(45.0F, 45.0F, 0.0F));
-        assertQuaternionToEuler(0.7071067657322365, -3.0908620960936135E-8, -0.7071067966408568, -3.090861960987738E-8, new Vector3Float(180.0F, 90.0F, 0.0F));
-        assertQuaternionToEuler(-0.41449777958570483, 0.17681186457523382, 0.8888933387630448, 0.0824486965733013, new Vector3Float(22.5F, 50.0F, 180.0F));
-        assertQuaternionToEuler(1.5180805997096662E-8, -0.1736481726667787, -8.609463161462606E-8, -0.9848077538938659, new Vector3Float(0.0F, 20.0F, 360.0F));
-        assertQuaternionToEuler(-0.0017435019962324843, 0.0872458164291457, 0.06911100618850595, 0.9937850856900667, new Vector3Float(0.5F, 10.0F, 8.0F));
-    }
-
-    private static void assertQuaternionToEuler(double x, double y, double z, double w, Vector3Float expected) {
-        // convert quaternion to euler
-        Quaternion original = new Quaternion(x, y, z, w);
-        Vector3Float got = original.toEulerDegrees(); // <--- the tested function
-
-        // convert euler to quaternion (so we forget about equivalent Euler Angles)
-        Quaternion quaternion = Quaternion.fromEulerDegrees(got); // <---- from the tested function
-        Quaternion expectation = Quaternion.fromEulerDegrees(expected); // <---- expectation
-
-        Assertions.assertTrue(
-                expectation.isEquivalentTo(quaternion, THRESHOLD),
-                "Quaternion (" + x + ", " + y + ", " + z + ", " + w + ")\n"
-                + "   converted to Euler (" + got.x() + ", " + got.y() + ", " + got.z() + ")\n"
-                + "   and re-converted to " + quaternion + "\nis not equivalent to expected Euler"
-                + " (" + expected.x() + ", " + expected.y() + ", " + expected.z() + "),\n    which is"
-                + " also equivalent to " + expectation
-        );
+        // convert quaternion to euler and test too
+        Quaternion reconverted = Quaternion.fromEulerDegrees(quaternion.toEulerDegrees());
+        StructureAssertEquals.assertQuaternionEquivalent(expected, reconverted, THRESHOLD);
     }
 
 }

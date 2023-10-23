@@ -24,6 +24,7 @@
 package team.unnamed.hephaestus.reader.blockbench;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelDataCursor;
 import team.unnamed.hephaestus.reader.ModelReader;
@@ -37,31 +38,34 @@ import team.unnamed.hephaestus.reader.ModelReader;
  */
 @ApiStatus.NonExtendable
 public interface BBModelReader extends ModelReader {
-
-    /**
-     * Creates a new {@link BBModelReader} instance.
-     *
-     * @return A new model reader
-     * @since 1.0.0
-     */
-    static ModelReader blockbench() {
-        return new BBModelReaderImpl(new ModelDataCursor(1));
-    }
-
     /**
      * Creates a new {@link BBModelReader} instance with
      * the given model data cursor.
      *
-     * <p>Model data cursor keeps track of the used custom
-     * model data so we can use a unique custom model data
-     * value for every model.</p>
+     * <p>The model data cursor is used to generate unique
+     * custom model data values. There should be only one
+     * model data cursor per server resource-pack (commonly
+     * one).</p>
      *
      * @param cursor The custom model data cursor reference
      * @return A new model reader
      * @since 1.0.0
      */
-    static ModelReader blockbench(ModelDataCursor cursor) {
+    static @NotNull ModelReader blockbench(final @NotNull ModelDataCursor cursor) {
         return new BBModelReaderImpl(cursor);
     }
 
+    /**
+     * Creates a new {@link BBModelReader} instance.
+     *
+     * <p>This constructor will create a BBModel reader
+     * that will use the {@link ModelDataCursor#global() global
+     * model data cursor} as the model data cursor.</p>
+     *
+     * @return A new model reader
+     * @since 1.0.0
+     */
+    static @NotNull ModelReader blockbench() {
+        return blockbench(ModelDataCursor.global());
+    }
 }

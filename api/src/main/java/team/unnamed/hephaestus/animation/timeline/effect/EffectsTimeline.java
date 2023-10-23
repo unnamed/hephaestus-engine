@@ -21,69 +21,50 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.animation.timeline.effect;
 
+import net.kyori.adventure.sound.Sound;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.creative.base.Vector3Float;
+
+import java.util.Collections;
+import java.util.Map;
 
 /**
  *
  * @since 1.0.0
  */
-public interface BoneTimeline {
+public interface EffectsTimeline {
 
-    /**
-     * @return A new dynamic timeline instance
-     * @since 1.0.0
-     */
-    static @NotNull Builder boneTimeline() {
-        return new BoneTimelineImpl.BuilderImpl();
+    static @NotNull EffectsTimeline.Builder effectsTimeline() {
+        return new EffectsTimelineImpl.BuilderImpl();
     }
 
-    @NotNull Timeline<Vector3Float> positions();
-
-    @NotNull Timeline<Vector3Float> rotations();
-
-    @NotNull Timeline<Vector3Float> scales();
-
-    default @NotNull BoneTimelinePlayhead createPlayhead() {
-        return new BoneTimelinePlayhead(this);
+    static @NotNull EffectsTimeline.Builder empty() {
+        return effectsTimeline()
+                .sounds(Collections.emptyMap());
     }
+
+    default @NotNull EffectsTimelinePlayhead createPlayhead() {
+        return new EffectsTimelinePlayhead(this);
+    }
+
+    @NotNull Map<Integer, Sound[]> sounds();
 
     interface Builder {
 
         /**
-         * Set the positions timeline
+         * Set the sounds timeline
          *
-         * @param positions The positions timeline
+         * @param sounds The sounds timeline
          * @return This builder
          * @since 1.0.0
          */
         @Contract("_ -> this")
-        @NotNull Builder positions(final @NotNull Timeline<Vector3Float> positions);
+        @NotNull Builder sounds(final @NotNull Map<Integer, Sound[]> sounds);
 
-        /**
-         * Set the rotations timeline
-         *
-         * @param rotations The rotations timeline
-         * @return This builder
-         * @since 1.0.0
-         */
-        @Contract("_ -> this")
-        @NotNull Builder rotations(final @NotNull Timeline<Vector3Float> rotations);
-
-        /**
-         * Set the scales timeline
-         *
-         * @param scales The scales timeline
-         * @return This builder
-         * @since 1.0.0
-         */
-        @Contract("_ -> this")
-        @NotNull Builder scales(final @NotNull Timeline<Vector3Float> scales);
-
-        @NotNull BoneTimeline build();
+        @NotNull EffectsTimeline build();
 
     }
+
 }

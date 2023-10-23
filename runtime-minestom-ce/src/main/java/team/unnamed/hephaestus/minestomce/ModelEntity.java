@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.minestomce;
 
+import net.kyori.adventure.sound.Sound;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
@@ -46,16 +47,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 
 public class ModelEntity extends EntityCreature implements BaseModelView<Player> {
 
-    private final Model model;
-    private final float scale;
+    protected final Model model;
+    protected final float scale;
 
-    private final Entity modelHolder;
-    private final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
-    private final AnimationController animationController;
+    protected final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
+    protected final AnimationController animationController;
 
     public ModelEntity(EntityType type, Model model, float scale) {
         super(type);
@@ -63,33 +64,12 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         this.scale = scale;
         this.animationController = AnimationController.nonDelayed(this);
 
-        this.modelHolder = new Entity(EntityType.ARMOR_STAND) {
-            @Override
-            public void updateNewViewer(@NotNull Player player) {
-                super.updateNewViewer(player);
-
-                List<Integer> entities =  bones().stream()
-                        .map(Entity::getEntityId)
-                        .toList();
-
-                player.sendPacket(new SetPassengersPacket(
-                        this.getEntityId(),
-                        entities
-                ));
-            }
-        };
-
         // model entity is not auto-viewable by default
-        super.setAutoViewable(false); // "super" so it doesn't call our override
-        modelHolder.setAutoViewable(false);
+        setAutoViewable(false);
         initialize();
     }
 
     private void initialize() {
-        modelHolder.setSilent(true);
-        modelHolder.setInvisible(false);
-        modelHolder.setNoGravity(true);
-
         Vector2Float boundingBox = model.boundingBox();
         setBoundingBox(boundingBox.x(), boundingBox.y(), boundingBox.x());
         setInvisible(true);
@@ -100,7 +80,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         }
     }
 
-    private void createBone(Bone bone, Vector3Float parentPosition, Quaternion parentRotation) {
+    protected void createBone(Bone bone, Vector3Float parentPosition, Quaternion parentRotation) {
         Vector3Float position = bone.position().add(parentPosition);
         Quaternion rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
         BoneEntity boneEntity = new BoneEntity(this, bone, position, rotation, scale);
@@ -114,6 +94,13 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     @Override
     public Collection<Player> viewers() {
         return super.viewers;
+    }
+
+    @Override
+    public void playSound(Sound sound) {
+        for (Player viewer : viewers()) {
+            viewer.playSound(sound, position);
+        }
     }
 
     @Override
@@ -161,10 +148,18 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     @Override
     public void setAutoViewable(boolean autoViewable) {
         super.setAutoViewable(autoViewable);
-        this.modelHolder.setAutoViewable(autoViewable);
 
         for (GenericBoneEntity boneEntity : bones.values()) {
             boneEntity.setAutoViewable(autoViewable);
+        }
+    }
+
+    @Override
+    public void updateViewableRule(@Nullable Predicate<Player> predicate) {
+        super.updateViewableRule(predicate);
+
+        for (GenericBoneEntity boneEntity : bones.values()) {
+            boneEntity.updateViewableRule(predicate);
         }
     }
 
@@ -186,5 +181,14 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
                         bone.teleport(position);
                     }
                 });
+    }
+
+    @Override
+    public void setView(float yaw, float pitch) {
+        super.setView(yaw, pitch);
+
+        for (GenericBoneEntity bone : bones()) {
+            bone.setView(yaw, pitch);
+        }
     }
 }

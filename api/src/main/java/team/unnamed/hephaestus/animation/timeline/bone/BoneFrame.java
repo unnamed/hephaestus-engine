@@ -21,64 +21,73 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.partial;
-
+package team.unnamed.hephaestus.animation.timeline.bone;
 
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.creative.base.CubeFace;
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.creative.model.ElementFace;
-import team.unnamed.creative.model.ElementRotation;
 
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
-public class ElementAsset implements Examinable {
+public final class BoneFrame implements Examinable {
 
-    private final Vector3Float from;
-    private final Vector3Float to;
-    private final ElementRotation rotation;
-    private final Map<CubeFace, ElementFace> faces;
+    public static final BoneFrame INITIAL = new BoneFrame(
+            Vector3Float.ZERO,
+            Vector3Float.ZERO,
+            Vector3Float.ONE
+    );
 
-    public ElementAsset(
-            Vector3Float from,
-            Vector3Float to,
-            ElementRotation rotation,
-            Map<CubeFace, ElementFace> faces
+    private final Vector3Float position;
+    private final Vector3Float rotation;
+    private final Vector3Float scale;
+
+    public BoneFrame(
+            Vector3Float position,
+            Vector3Float rotation,
+            Vector3Float scale
     ) {
-        this.from = from;
-        this.to = to;
+        this.position = position;
         this.rotation = rotation;
-        this.faces = faces;
+        this.scale = scale;
     }
 
-    public Vector3Float from() {
-        return from;
+    public Vector3Float position() {
+        return position;
     }
 
-    public Vector3Float to() {
-        return to;
-    }
-
-    public ElementRotation rotation() {
+    public Vector3Float rotation() {
         return rotation;
     }
 
-    public Map<CubeFace, ElementFace> faces() {
-        return faces;
+    public Vector3Float scale() {
+        return scale;
     }
 
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
-                ExaminableProperty.of("from", from),
-                ExaminableProperty.of("to", to),
+                ExaminableProperty.of("position", position),
                 ExaminableProperty.of("rotation", rotation),
-                ExaminableProperty.of("faces", faces)
+                ExaminableProperty.of("scale", scale)
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoneFrame boneFrame = (BoneFrame) o;
+        return position.equals(boneFrame.position)
+                && rotation.equals(boneFrame.rotation)
+                && scale.equals(boneFrame.scale);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(position, rotation, scale);
     }
 
     @Override

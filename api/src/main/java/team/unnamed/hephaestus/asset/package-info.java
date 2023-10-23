@@ -27,4 +27,4 @@
  * Java Edition resource-pack elements) to be finally sent to the Minecraft
  * players
  */
-package team.unnamed.hephaestus.partial;
+package team.unnamed.hephaestus.asset;

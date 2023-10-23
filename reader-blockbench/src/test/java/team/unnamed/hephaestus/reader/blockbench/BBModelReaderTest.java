@@ -28,13 +28,13 @@ import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.CubeFace;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.base.Vector4Float;
-import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.model.ElementFace;
 import team.unnamed.creative.model.ElementRotation;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.partial.BoneAsset;
-import team.unnamed.hephaestus.partial.ElementAsset;
-import team.unnamed.hephaestus.partial.ModelAsset;
+import team.unnamed.hephaestus.asset.BoneAsset;
+import team.unnamed.hephaestus.asset.ElementAsset;
+import team.unnamed.hephaestus.asset.ModelAsset;
+import team.unnamed.hephaestus.asset.TextureAsset;
 import team.unnamed.hephaestus.reader.ModelReader;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class BBModelReaderTest {
 
     @Test
-    @DisplayName("Test that a small model is correctly read as a single small bone")
+    @DisplayName("Test that a blockbench small cube is correctly read")
     public void test_small() throws IOException {
 
         ModelReader reader = BBModelReader.blockbench();
@@ -62,30 +62,27 @@ public class BBModelReaderTest {
             assertNotNull(asset);
             assertEquals(1, asset.bones().size());
 
-            Map<String, Writable> textures = asset.textures();
+            Map<String, TextureAsset> textures = asset.textures();
             assertEquals(1, textures.size());
-            assertNotNull(textures.get("cube_default.png"));
-
-            Map<Integer, String> textureMapping = asset.textureMapping();
-            assertEquals(1, textureMapping.size());
-            assertEquals("cube_default.png", textureMapping.get(0));
+            TextureAsset texture = textures.get("0"); // "0" is the texture identifier
+            assertNotNull(texture);
+            assertEquals("cube_default.png", texture.name());
 
             BoneAsset root = asset.boneMap().get("root");
             assertNotNull(root);
             assertEquals("root", root.name());
-            assertEquals(Vector3Float.ZERO, root.pivot());
             assertEquals(1, root.cubes().size());
 
             ElementAsset element = root.cubes().get(0);
             assertNotNull(element);
             System.out.println(element.from());
             System.out.println(element.to());
-            assertEquals(new Vector3Float(3.2F, 8.0F, 3.2F), element.from());
-            assertEquals(new Vector3Float(12.8F, 17.6F, 12.8F), element.to());
+            assertEquals(new Vector3Float(0F, 8F, 0F), element.from());
+            assertEquals(new Vector3Float(16F, 24F, 16F), element.to());
 
             ElementRotation rotation = element.rotation();
             System.out.println(rotation.origin());
-            assertEquals(new Vector3Float(8.0F, 8.0F, 8.0F), rotation.origin());
+            assertEquals(new Vector3Float(8F, 8F, 8F), rotation.origin());
             assertEquals(0F, rotation.angle());
 
             Map<CubeFace, ElementFace> faces = element.faces();

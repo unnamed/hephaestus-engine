@@ -28,6 +28,8 @@ import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.util.Quaternion;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Represents an interpolation function,
  * which interpolates between two values of
@@ -93,6 +95,16 @@ public interface Interpolator<T> {
         return interpolation(from, to);
     }
 
+    default @NotNull Interpolator<T> combineRight(final @NotNull Interpolator<T> right) {
+        requireNonNull(right, "right");
+        return this;
+    }
+
+    default @NotNull Interpolator<T> combineLeft(final @NotNull Interpolator<T> left) {
+        requireNonNull(left, "left");
+        return left.combineRight(this);
+    }
+
     /**
      * Returns an interpolator for lineally interpolating
      * {@link Vector3Float 3d vectors}.
@@ -149,6 +161,10 @@ public interface Interpolator<T> {
      */
     static @NotNull Interpolator<Vector3Float> catmullRomSplineVector3Float() {
         return CatmullRomInterpolator.INSTANCE;
+    }
+
+    static <T> @NotNull Interpolator<T> staticInterpolator(T empty) {
+        return new StaticInterpolator<>(empty);
     }
 
     /**

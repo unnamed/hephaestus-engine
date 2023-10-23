@@ -38,6 +38,17 @@ final class LinearVectorInterpolator implements Interpolator<Vector3Float> {
         return new LinearVectorInterpolation(from, to);
     }
 
+    @Override
+    public @NotNull Interpolator<Vector3Float> combineRight(final @NotNull Interpolator<Vector3Float> right) {
+        if (right instanceof LinearVectorInterpolator || right instanceof StepVectorInterpolator) {
+            // only keep linear vector interpolation if the right
+            // interpolator is also linear, or step
+            return this;
+        } else {
+            return right;
+        }
+    }
+
     static final class LinearVectorInterpolation implements Interpolation<Vector3Float> {
 
         private final Vector3Float from;

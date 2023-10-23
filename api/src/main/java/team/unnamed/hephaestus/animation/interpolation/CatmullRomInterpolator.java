@@ -27,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 
+import static java.util.Objects.requireNonNull;
+
 final class CatmullRomInterpolator implements Interpolator<Vector3Float> {
 
     static final Interpolator<Vector3Float> INSTANCE = new CatmullRomInterpolator();
@@ -42,6 +44,15 @@ final class CatmullRomInterpolator implements Interpolator<Vector3Float> {
     @Override
     public @NotNull Interpolation<Vector3Float> interpolation(final @Nullable Vector3Float before, final @NotNull Vector3Float from, final @NotNull Vector3Float to, final @Nullable Vector3Float after) {
         return new CatmullRomInterpolation(before, from, to, after);
+    }
+
+    @Override
+    public @NotNull Interpolator<Vector3Float> combineRight(final @NotNull Interpolator<Vector3Float> right) {
+        requireNonNull(right, "right");
+        // no matter what "right" interpolator is, combining a catmull-rom
+        // interpolator and any other interpolator, results in a catmull-rom
+        // interpolation
+        return this;
     }
 
     // based on Blockbench and Three.js implementations

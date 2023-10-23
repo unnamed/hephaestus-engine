@@ -21,13 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.partial;
+package team.unnamed.hephaestus.asset;
 
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.creative.base.Writable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -36,19 +35,16 @@ import java.util.stream.Stream;
 public class ModelAsset implements Examinable {
 
     private final String name;
-    private final Map<String, Writable> textures;
-    private final Map<Integer, String> textureMapping;
+    private final Map<String, TextureAsset> textures;
     private final Map<String, BoneAsset> bones;
 
     public ModelAsset(
             String name,
-            Map<String, Writable> textures,
-            Map<Integer, String> textureMapping,
+            Map<String, TextureAsset> textures,
             Map<String, BoneAsset> bones
     ) {
         this.name = name;
         this.textures = textures;
-        this.textureMapping = textureMapping;
         this.bones = bones;
     }
 
@@ -56,12 +52,8 @@ public class ModelAsset implements Examinable {
         return name;
     }
 
-    public Map<String, Writable> textures() {
+    public Map<String, TextureAsset> textures() {
         return textures;
-    }
-
-    public Map<Integer, String> textureMapping() {
-        return textureMapping;
     }
 
     public Collection<BoneAsset> bones() {
@@ -77,7 +69,6 @@ public class ModelAsset implements Examinable {
         return Stream.of(
                 ExaminableProperty.of("name", name),
                 ExaminableProperty.of("textures", textures),
-                ExaminableProperty.of("textureMapping", textureMapping),
                 ExaminableProperty.of("bones", bones)
         );
     }

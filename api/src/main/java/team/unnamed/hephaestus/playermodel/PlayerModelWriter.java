@@ -21,37 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.animation.timeline;
+package team.unnamed.hephaestus.playermodel;
 
-import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
+import team.unnamed.creative.ResourcePack;
 
-public class BoneTimelinePlayhead {
+@FunctionalInterface
+public interface PlayerModelWriter<T> {
 
-    private final Playhead<Vector3Float> positions;
-    private final Playhead<Vector3Float> rotations;
-    private final Playhead<Vector3Float> scales;
-    private final BoneTimeline boneTimeline;
-    private int tick = -1;
+    void write(T target);
 
-    public BoneTimelinePlayhead(BoneTimeline boneTimeline) {
-        this.boneTimeline = boneTimeline;
-        this.positions = boneTimeline.positions().createPlayhead();
-        this.rotations = boneTimeline.rotations().createPlayhead();
-        this.scales = boneTimeline.scales().createPlayhead();
-    }
-
-    public int tick() {
-        return tick;
-    }
-
-    public BoneFrame next() {
-        tick++;
-        return new BoneFrame(
-                positions.next(),
-                rotations.next(),
-                scales.next()
-        );
+    static PlayerModelWriter<ResourcePack> resource() {
+        return new ResourcePlayerModelWriter();
     }
 
 }

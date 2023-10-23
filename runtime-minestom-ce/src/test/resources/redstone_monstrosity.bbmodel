@@ -2713,7 +2713,7 @@
             "path": "C:\\Users\\diegu\\Desktop\\redstone_monstrosity.png",
             "name": "redstone_monstrosity.png",
             "folder": "entity/redstone_monsters",
-            "namespace": "Dungeons Replicas RP 1.0.61 By ilosemypotato",
+            "namespace": "dungeonreplicas",
             "id": "0",
             "particle": false,
             "render_mode": "normal",
