@@ -24,12 +24,10 @@
 package team.unnamed.hephaestus.reader.blockbench;
 
 import team.unnamed.creative.base.Vector2Float;
-import team.unnamed.creative.base.Writable;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.ModelDataCursor;
-import team.unnamed.hephaestus.partial.BoneAsset;
+import team.unnamed.hephaestus.asset.BoneAsset;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,8 +39,6 @@ class BBModelData {
 
     ModelDataCursor modelDataCursor;
     final Map<String, Bone> bones = new LinkedHashMap<>();
-    final Map<String, Writable> textures = new HashMap<>();
-    final Map<Integer, String> textureMapping = new HashMap<>();
     final Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
 
     int textureWidth;

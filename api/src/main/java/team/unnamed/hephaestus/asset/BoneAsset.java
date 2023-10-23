@@ -21,64 +21,80 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.partial;
+package team.unnamed.hephaestus.asset;
 
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.creative.base.Writable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class ModelAsset implements Examinable {
+public class BoneAsset implements Examinable {
 
     private final String name;
-    private final Map<String, Writable> textures;
-    private final Map<Integer, String> textureMapping;
-    private final Map<String, BoneAsset> bones;
+    private final int customModelData;
+    private final List<ElementAsset> cubes;
+    private final Map<String, BoneAsset> children;
+    private final float scale;
 
-    public ModelAsset(
+    public BoneAsset(
             String name,
-            Map<String, Writable> textures,
-            Map<Integer, String> textureMapping,
-            Map<String, BoneAsset> bones
+            int customModelData,
+            List<ElementAsset> cubes,
+            Map<String, BoneAsset> children,
+            float scale
     ) {
         this.name = name;
-        this.textures = textures;
-        this.textureMapping = textureMapping;
-        this.bones = bones;
+        this.customModelData = customModelData;
+        this.cubes = cubes;
+        this.children = children;
+        this.scale = scale;
     }
 
     public String name() {
         return name;
     }
 
-    public Map<String, Writable> textures() {
-        return textures;
+    public int customModelData() {
+        return customModelData;
     }
 
-    public Map<Integer, String> textureMapping() {
-        return textureMapping;
+    public List<ElementAsset> cubes() {
+        return cubes;
     }
 
-    public Collection<BoneAsset> bones() {
-        return bones.values();
+    public Collection<BoneAsset> children() {
+        return children.values();
     }
 
-    public Map<String, BoneAsset> boneMap() {
-        return bones;
+    /**
+     * Returns the bone's model scale to be
+     * written in the resource-pack.
+     *
+     * <p>If this scale is 4, it is probable that
+     * we should use {@link team.unnamed.hephaestus.Bone#scale()}
+     * too to compensate the remaining scale.</p>
+     *
+     * <p>The returned value is always 4, or less.</p>
+     *
+     * @return The bone's model scale
+     * @since 1.0.0
+     */
+    public float scale() {
+        return scale;
     }
 
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
                 ExaminableProperty.of("name", name),
-                ExaminableProperty.of("textures", textures),
-                ExaminableProperty.of("textureMapping", textureMapping),
-                ExaminableProperty.of("bones", bones)
+                ExaminableProperty.of("customModelData", customModelData),
+                ExaminableProperty.of("cubes", cubes),
+                ExaminableProperty.of("children", children)
         );
     }
 

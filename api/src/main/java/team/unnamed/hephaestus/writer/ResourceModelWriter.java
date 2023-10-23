@@ -25,11 +25,11 @@ package team.unnamed.hephaestus.writer;
 
 import net.kyori.adventure.key.Key;
 import org.intellij.lang.annotations.Subst;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.ResourcePack;
 import team.unnamed.creative.atlas.Atlas;
 import team.unnamed.creative.atlas.AtlasSource;
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.model.Element;
 import team.unnamed.creative.model.ItemOverride;
 import team.unnamed.creative.model.ItemPredicate;
@@ -37,10 +37,12 @@ import team.unnamed.creative.model.ItemTransform;
 import team.unnamed.creative.model.ModelTexture;
 import team.unnamed.creative.model.ModelTextures;
 import team.unnamed.creative.texture.Texture;
+import team.unnamed.hephaestus.Hephaestus;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.partial.ElementAsset;
-import team.unnamed.hephaestus.partial.ModelAsset;
-import team.unnamed.hephaestus.partial.BoneAsset;
+import team.unnamed.hephaestus.asset.ElementAsset;
+import team.unnamed.hephaestus.asset.ModelAsset;
+import team.unnamed.hephaestus.asset.BoneAsset;
+import team.unnamed.hephaestus.asset.TextureAsset;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,7 +51,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link ModelWriter} that writes
@@ -61,41 +62,16 @@ import java.util.stream.Collectors;
 final class ResourceModelWriter implements ModelWriter<ResourcePack> {
 
     private static final Key LEATHER_HORSE_ARMOR_KEY = Key.key("item/leather_horse_armor");
-    private static final String DEFAULT_NAMESPACE = "hephaestus";
 
-    @Subst(DEFAULT_NAMESPACE) private final String namespace;
+    @Subst(Hephaestus.NAMESPACE)
+    private final String namespace;
 
-    ResourceModelWriter(@Subst(DEFAULT_NAMESPACE) String namespace) {
+    ResourceModelWriter(@Subst(Hephaestus.NAMESPACE) String namespace) {
         this.namespace = namespace;
-
-        // validate namespace
-        Key.key(namespace, "dummy");
     }
 
     ResourceModelWriter() {
-        this(DEFAULT_NAMESPACE);
-    }
-
-    private void writeBones(
-            ResourcePack resourcePack,
-            ModelAsset model,
-            Collection<ItemOverride> overrides,
-            Collection<BoneAsset> assets
-    ) {
-        for (BoneAsset bone : assets) {
-            @Subst("model/bone") String path = model.name() + '/' + bone.name();
-            Key key = Key.key(namespace, path);
-
-            overrides.add(ItemOverride.of(
-                    key,
-                    ItemPredicate.customModelData(bone.customModelData())
-            ));
-
-            resourcePack.model(toCreative(key, model, bone));
-
-            // write children
-            writeBones(resourcePack, model, overrides, bone.children());
-        }
+        this(Hephaestus.NAMESPACE);
     }
 
     /**
@@ -111,20 +87,17 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
             ModelAsset asset = model.asset();
 
             if (asset == null) {
-                throw new IllegalArgumentException("Model '"
-                        + model.name() + "' does not have a model asset," +
-                        " resource pack data already discarded?");
+                throw new IllegalArgumentException("Model '" + model.name() + "' does not" +
+                        " have a model asset, resource pack data already discarded?");
             }
 
-            // write textures from this model
-            for (Map.Entry<String, Writable> texture : asset.textures().entrySet()) {
-                @Subst("model/texture") String path = model.name() + '/' + texture.getKey();
-
-                // write the texture
-                resourcePack.texture(Texture.builder()
-                        .key(Key.key(namespace, path))
-                        .data(texture.getValue())
-                        .build()
+            for (final TextureAsset texture : asset.textures().values()) {
+                // write the texture, using "<modelName>/" as prefix
+                resourcePack.texture(
+                        Texture.builder()
+                                .key(Key.key(namespace, model.name() + '/' + texture.name()))
+                                .data(texture.data())
+                                .build()
                 );
             }
 
@@ -158,6 +131,27 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
         );
     }
 
+    private void writeBones(
+            ResourcePack resourcePack,
+            ModelAsset model,
+            Collection<ItemOverride> overrides,
+            Collection<BoneAsset> assets
+    ) {
+        for (BoneAsset bone : assets) {
+
+            team.unnamed.creative.model.Model creativeModel = toCreative(model, bone);
+            overrides.add(ItemOverride.of(
+                    creativeModel.key(),
+                    ItemPredicate.customModelData(bone.customModelData())
+            ));
+
+            resourcePack.model(creativeModel);
+
+            // write children
+            writeBones(resourcePack, model, overrides, bone.children());
+        }
+    }
+
     /**
      * Converts a {@link BoneAsset} (a representation of a model
      * bone) to a resource-pack ready {@link team.unnamed.creative.model.Model}
@@ -166,21 +160,22 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
      * @param model The model holding the given bone
      * @param bone The bone to be converted
      */
-    private team.unnamed.creative.model.Model toCreative(
-            Key key,
-            ModelAsset model,
-            BoneAsset bone
-    ) {
+    private team.unnamed.creative.model.Model toCreative(ModelAsset model, BoneAsset bone) {
+
+        @Subst("model/bone") String path = model.name() + '/' + bone.name();
+        Key key = Key.key(namespace, path);
+
         Map<ItemTransform.Type, ItemTransform> displays = new HashMap<>();
         displays.put(ItemTransform.Type.THIRDPERSON_LEFTHAND, ItemTransform.builder()
                 .scale(new Vector3Float(bone.scale(), bone.scale(), bone.scale()))
                 .build()
         );
         Map<String, ModelTexture> textureMappings = new HashMap<>();
-        model.textureMapping().forEach((id, texturePath) -> {
-            @Subst("model/texture") String path = model.name() + '/' + withoutExtension(texturePath);
-            textureMappings.put(id.toString(), ModelTexture.ofKey(Key.key(namespace, path)));
-        });
+        for (final TextureAsset texture : model.textures().values()) {
+            textureMappings.put(texture.id(), ModelTexture.ofKey(
+                    Key.key(namespace, withoutExtension(model.name() + '/' + texture.name()))
+            ));
+        }
 
         final List<Element> elements = new ArrayList<>(bone.cubes().size());
         for (final ElementAsset elementAsset : bone.cubes()) {
@@ -204,7 +199,7 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
                 .build();
     }
 
-    private static String withoutExtension(final String file) {
+    private static @Subst("path/to/file") @NotNull String withoutExtension(final @NotNull String file) {
         int dotIndex = file.lastIndexOf('.');
         return (dotIndex == -1) ? file : file.substring(0, dotIndex);
     }

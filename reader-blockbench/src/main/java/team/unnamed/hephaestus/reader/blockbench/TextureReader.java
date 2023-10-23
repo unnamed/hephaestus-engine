@@ -23,46 +23,59 @@
  */
 package team.unnamed.hephaestus.reader.blockbench;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.kyori.adventure.key.InvalidKeyException;
+import org.intellij.lang.annotations.Subst;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Writable;
+import team.unnamed.hephaestus.asset.TextureAsset;
 import team.unnamed.hephaestus.reader.ModelFormatException;
 
-import java.io.IOException;
 import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 final class TextureReader {
 
     private static final String BASE_64_PREFIX = "data:image/png;base64,";
 
+    private TextureReader() {
+    }
+
     /**
      * Reads the textures from the given {@code json} object
      * and puts the data into the given {@code textures} and
      * their mappings to the given {@code textureMappings}
      */
-    static void readTextures(
-            JsonObject json,
-            BBModelData modelData
-    ) {
-        JsonArray texturesJson = json.get("textures").getAsJsonArray();
+    static @NotNull Map<String, TextureAsset> readTextures(final @NotNull JsonObject json, final @NotNull BBModelData modelData) {
+        final Map<String, TextureAsset> textures = new LinkedHashMap<>();
+        for (final JsonElement textureNode : json.get("textures").getAsJsonArray()) {
+            final JsonObject textureObjectNode = textureNode.getAsJsonObject();
 
-        for (int index = 0; index < texturesJson.size(); index++) {
+            final String id = textureObjectNode.get("id").getAsString();
+            @Subst("texture.png")
+            final String name = textureObjectNode.get("name").getAsString();
+            final String source = textureObjectNode.get("source").getAsString();
 
-            JsonObject textureJson = texturesJson.get(index).getAsJsonObject();
-            String name = textureJson.get("name").getAsString();
-            String source = textureJson.get("source").getAsString();
-
-            if (!(source.startsWith(BASE_64_PREFIX))) {
-                throw new ModelFormatException("Model doesn't contains a valid texture source. Not Base64");
+            if (!source.startsWith(BASE_64_PREFIX)) {
+                throw new ModelFormatException("Texture '" + name + "' of '" + modelData.name + "' doesn't" +
+                        " contain a valid texture source. Must start with a Base64 prefix");
             }
 
-            String base64Source = source.substring(BASE_64_PREFIX.length());
+            final Writable textureData = Writable.bytes(Base64.getDecoder().decode(source.substring(BASE_64_PREFIX.length())));
+            final TextureAsset texture;
 
-            // map to index
-            modelData.textureMapping.put(index, name);
-            modelData.textures.put(name, Writable.bytes(Base64.getDecoder().decode(base64Source)));
+            try {
+                texture = TextureAsset.textureAsset(id, name, textureData);
+            } catch (final InvalidKeyException e) {
+                throw new ModelFormatException("Texture '" + name + "' of '" + modelData.name + "' has" +
+                        " an invalid name.", e);
+            }
+
+            textures.put(id, texture);
         }
+        return textures;
     }
 
 }

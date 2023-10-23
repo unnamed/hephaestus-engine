@@ -21,63 +21,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.partial;
-
+package team.unnamed.hephaestus.asset;
 
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.creative.base.CubeFace;
-import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.creative.model.ElementFace;
-import team.unnamed.creative.model.ElementRotation;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class ElementAsset implements Examinable {
+public class ModelAsset implements Examinable {
 
-    private final Vector3Float from;
-    private final Vector3Float to;
-    private final ElementRotation rotation;
-    private final Map<CubeFace, ElementFace> faces;
+    private final String name;
+    private final Map<String, TextureAsset> textures;
+    private final Map<String, BoneAsset> bones;
 
-    public ElementAsset(
-            Vector3Float from,
-            Vector3Float to,
-            ElementRotation rotation,
-            Map<CubeFace, ElementFace> faces
+    public ModelAsset(
+            String name,
+            Map<String, TextureAsset> textures,
+            Map<String, BoneAsset> bones
     ) {
-        this.from = from;
-        this.to = to;
-        this.rotation = rotation;
-        this.faces = faces;
+        this.name = name;
+        this.textures = textures;
+        this.bones = bones;
     }
 
-    public Vector3Float from() {
-        return from;
+    public String name() {
+        return name;
     }
 
-    public Vector3Float to() {
-        return to;
+    public Map<String, TextureAsset> textures() {
+        return textures;
     }
 
-    public ElementRotation rotation() {
-        return rotation;
+    public Collection<BoneAsset> bones() {
+        return bones.values();
     }
 
-    public Map<CubeFace, ElementFace> faces() {
-        return faces;
+    public Map<String, BoneAsset> boneMap() {
+        return bones;
     }
 
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
-                ExaminableProperty.of("from", from),
-                ExaminableProperty.of("to", to),
-                ExaminableProperty.of("rotation", rotation),
-                ExaminableProperty.of("faces", faces)
+                ExaminableProperty.of("name", name),
+                ExaminableProperty.of("textures", textures),
+                ExaminableProperty.of("bones", bones)
         );
     }
 

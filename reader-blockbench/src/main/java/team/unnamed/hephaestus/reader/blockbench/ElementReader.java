@@ -34,8 +34,8 @@ import team.unnamed.creative.base.Vector4Float;
 import team.unnamed.creative.model.ElementFace;
 import team.unnamed.creative.model.ElementRotation;
 import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.partial.BoneAsset;
-import team.unnamed.hephaestus.partial.ElementAsset;
+import team.unnamed.hephaestus.asset.BoneAsset;
+import team.unnamed.hephaestus.asset.ElementAsset;
 import team.unnamed.hephaestus.process.ElementScale;
 import team.unnamed.hephaestus.reader.ModelFormatException;
 

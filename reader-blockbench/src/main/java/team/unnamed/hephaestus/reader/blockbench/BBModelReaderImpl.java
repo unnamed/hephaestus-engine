@@ -28,10 +28,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import org.jetbrains.annotations.NotNull;
+import team.unnamed.creative.texture.Texture;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelDataCursor;
 import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.partial.ModelAsset;
+import team.unnamed.hephaestus.asset.ModelAsset;
+import team.unnamed.hephaestus.asset.TextureAsset;
 import team.unnamed.hephaestus.reader.ModelFormatException;
 
 import java.io.InputStream;
@@ -80,7 +82,7 @@ final class BBModelReaderImpl implements BBModelReader {
         modelData.textureWidth = resolution.get("width").getAsInt();
         modelData.textureHeight = resolution.get("height").getAsInt();
 
-        TextureReader.readTextures(json, modelData);
+        final Map<String, TextureAsset> textures = TextureReader.readTextures(json, modelData);
         ElementReader.readElements(json, modelData);
         final Map<String, Animation> animations = AnimationReader.readAnimations(json, modelData);
 
@@ -90,8 +92,7 @@ final class BBModelReaderImpl implements BBModelReader {
                 modelData.boundingBox,
                 new ModelAsset(
                         modelName,
-                        modelData.textures,
-                        modelData.textureMapping,
+                        textures,
                         modelData.boneAssets
                 ),
                 animations

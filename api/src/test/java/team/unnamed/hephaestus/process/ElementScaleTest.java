@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Axis3D;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.creative.model.ElementRotation;
-import team.unnamed.hephaestus.partial.ElementAsset;
+import team.unnamed.hephaestus.asset.ElementAsset;
 
 import java.util.Collections;
 

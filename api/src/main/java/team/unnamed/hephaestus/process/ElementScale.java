@@ -25,7 +25,7 @@ package team.unnamed.hephaestus.process;
 
 import org.jetbrains.annotations.ApiStatus;
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.partial.ElementAsset;
+import team.unnamed.hephaestus.asset.ElementAsset;
 
 import java.util.Arrays;
 import java.util.List;

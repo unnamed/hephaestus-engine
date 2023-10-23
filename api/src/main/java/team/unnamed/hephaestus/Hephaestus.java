@@ -23,42 +23,35 @@
  */
 package team.unnamed.hephaestus;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
- * Object holding a {@code cursor} for using unique
- * custom model data for all bones
+ * hephaestus-engine!
+ *
+ * <p>This class holds some constants specific to the
+ * hephaestus-engine library such as the hephaestus-engine
+ * namespace.</p>
+ *
+ * <p>This class can be used to ensure the presence of the
+ * library in the runtime classpath.</p>
+ *
+ * @since 1.0.0
  */
-public final class ModelDataCursor {
-
-    private static final ModelDataCursor GLOBAL = new ModelDataCursor(1);
-
-    // Represents the next custom model
-    // data to be returned by next()
-    private int cursor;
-
-    public ModelDataCursor(int cursor) {
-        this.cursor = cursor;
-    }
+public final class Hephaestus {
 
     /**
-     * Returns the next custom model data
-     * without modifying it
+     * The hephaestus-engine namespace.
+     *
+     * <p>This namespace should be used by default if the
+     * developer (user of this library) doesn't specify
+     * one.</p>
+     *
+     * @since 1.0.0
      */
-    public int getNext() {
-        return cursor;
+    public static final String NAMESPACE = "hephaestus";
+
+    // maybe hold a version?
+
+    private Hephaestus() {
+        throw new UnsupportedOperationException("This class cannot be instantiated");
     }
 
-    /**
-     * Returns the next custom model data
-     * and adds one to it for the next custom
-     * model data
-     */
-    public int next() {
-        return cursor++;
-    }
-
-    public static @NotNull ModelDataCursor global() {
-        return GLOBAL;
-    }
 }

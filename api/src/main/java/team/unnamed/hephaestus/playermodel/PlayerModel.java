@@ -27,7 +27,7 @@ import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.partial.ModelAsset;
+import team.unnamed.hephaestus.asset.ModelAsset;
 
 import java.util.Map;
 
