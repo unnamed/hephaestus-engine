@@ -163,10 +163,6 @@ public interface Interpolator<T> {
         return CatmullRomInterpolator.INSTANCE;
     }
 
-    static <T> @NotNull Interpolator<T> staticInterpolator(T empty) {
-        return new StaticInterpolator<>(empty);
-    }
-
     /**
      * Returns an interpolator that will create interpolations that always
      * return the provided {@code interpolated} value and will not perform
@@ -178,22 +174,7 @@ public interface Interpolator<T> {
      * @since 1.0.0
      */
     static <T> @NotNull Interpolator<T> always(final @NotNull T interpolated) {
-        return (from, to) -> new Interpolation<>() {
-            @Override
-            public @NotNull T from() {
-                return from;
-            }
-
-            @Override
-            public @NotNull T to() {
-                return to;
-            }
-
-            @Override
-            public @NotNull T interpolate(final double progress) {
-                return interpolated;
-            }
-        };
+        return (from, to) -> (Interpolation<T>) progress -> interpolated;
     }
 
 }

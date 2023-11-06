@@ -76,16 +76,6 @@ final class CatmullRomInterpolator implements Interpolator<Vector3Float> {
         }
 
         @Override
-        public @NotNull Vector3Float from() {
-            return from;
-        }
-
-        @Override
-        public @NotNull Vector3Float to() {
-            return to;
-        }
-
-        @Override
         public @NotNull Vector3Float interpolate(final double progress) {
             int len = 2;
             if (before != null) len++;
@@ -138,7 +128,6 @@ final class CatmullRomInterpolator implements Interpolator<Vector3Float> {
     static final class BinaryCatmullRomInterpolation implements Interpolation<Vector3Float> {
 
         private final Vector3Float from;
-        private final Vector3Float to;
 
         private final double ax, bx, cx;
         private final double ay, by, cy;
@@ -149,7 +138,6 @@ final class CatmullRomInterpolator implements Interpolator<Vector3Float> {
                 final @NotNull Vector3Float to
         ) {
             this.from = from;
-            this.to = to;
 
             // calculate coefficients for X
             ax = from.x() - to.x();
@@ -165,16 +153,6 @@ final class CatmullRomInterpolator implements Interpolator<Vector3Float> {
             az = from.z() - to.z();
             bz = -1.5D * az;
             cz = -0.5D * az;
-        }
-
-        @Override
-        public @NotNull Vector3Float from() {
-            return from;
-        }
-
-        @Override
-        public @NotNull Vector3Float to() {
-            return to;
         }
 
         @Override

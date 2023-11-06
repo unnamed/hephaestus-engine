@@ -32,24 +32,8 @@ import org.jetbrains.annotations.NotNull;
  * @param <T> The interpolated value type
  * @since 1.0.0
  */
+@FunctionalInterface
 public interface Interpolation<T> {
-
-    /**
-     * Returns the start value for the interpolator
-     *
-     * @return The start value
-     * @since 1.0.0
-     */
-    @NotNull T from();
-
-    /**
-     * Returns the end value for the interpolator
-     *
-     * @return The end value
-     * @since 1.0.0
-     */
-    @NotNull T to();
-
     /**
      * Interpolates between the given values
      * using the given progress. The progress
@@ -61,5 +45,4 @@ public interface Interpolation<T> {
      * @since 1.0.0
      */
     @NotNull T interpolate(final double progress);
-
 }

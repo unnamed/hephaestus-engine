@@ -43,30 +43,18 @@ final class SphericalEulerAngleInterpolator implements Interpolator<Vector3Float
 
     static final class SphericalEulerAngleInterpolation implements Interpolation<Vector3Float> {
 
-        private final Vector3Float from;
-        private final Vector3Float to;
         private final Interpolation<Quaternion> delegate;
 
         SphericalEulerAngleInterpolation(
                 final @NotNull Vector3Float from,
                 final @NotNull Vector3Float to
         ) {
-            this.from = requireNonNull(from, "from");
-            this.to = requireNonNull(to, "to");
+            requireNonNull(from, "from");
+            requireNonNull(to, "to");
 
             final Quaternion fromQuaternion = Quaternion.fromEulerDegrees(from);
             final Quaternion toQuaternion = Quaternion.fromEulerDegrees(to);
             this.delegate = Interpolator.slerpQuaternion().interpolation(fromQuaternion, toQuaternion);
-        }
-
-        @Override
-        public @NotNull Vector3Float from() {
-            return from;
-        }
-
-        @Override
-        public @NotNull Vector3Float to() {
-            return to;
         }
 
         @Override

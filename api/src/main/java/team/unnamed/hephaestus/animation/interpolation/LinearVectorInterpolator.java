@@ -63,16 +63,6 @@ final class LinearVectorInterpolator implements Interpolator<Vector3Float> {
         }
 
         @Override
-        public @NotNull Vector3Float from() {
-            return from;
-        }
-
-        @Override
-        public @NotNull Vector3Float to() {
-            return to;
-        }
-
-        @Override
         public @NotNull Vector3Float interpolate(final double progress) {
             final double complement = 1 - progress;
             // Vs = V0(1 - s) + Vf * s

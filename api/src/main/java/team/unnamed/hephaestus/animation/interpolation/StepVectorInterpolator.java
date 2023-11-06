@@ -63,16 +63,6 @@ final class StepVectorInterpolator implements Interpolator<Vector3Float> {
         }
 
         @Override
-        public @NotNull Vector3Float from() {
-            return from;
-        }
-
-        @Override
-        public @NotNull Vector3Float to() {
-            return to;
-        }
-
-        @Override
         public @NotNull Vector3Float interpolate(final double progress) {
             return progress < 1 ? from : to;
         }

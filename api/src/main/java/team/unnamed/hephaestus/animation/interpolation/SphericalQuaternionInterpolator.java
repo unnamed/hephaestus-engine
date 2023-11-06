@@ -65,16 +65,6 @@ final class SphericalQuaternionInterpolator implements Interpolator<Quaternion> 
         }
 
         @Override
-        public @NotNull Quaternion from() {
-            return from;
-        }
-
-        @Override
-        public @NotNull Quaternion to() {
-            return to;
-        }
-
-        @Override
         public @NotNull Quaternion interpolate(double progress) {
             final double complement = 1 - progress;
             return new Quaternion(
@@ -104,16 +94,6 @@ final class SphericalQuaternionInterpolator implements Interpolator<Quaternion> 
             this.to = to;
             this.theta = Math.acos(dot);
             this.sinTheta = Math.sin(theta);
-        }
-
-        @Override
-        public @NotNull Quaternion from() {
-            return from;
-        }
-
-        @Override
-        public @NotNull Quaternion to() {
-            return to;
         }
 
         @Override
