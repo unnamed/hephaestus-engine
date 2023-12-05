@@ -89,8 +89,15 @@ final class BezierInterpolator implements KeyFrameInterpolator<Vector3Float> {
 
     @Override
     public @NotNull Interpolation<Vector3Float> interpolation(final @NotNull KeyFrame<Vector3Float> from, final @NotNull KeyFrame<Vector3Float> to) {
-        final KeyFrameBezierAttachment fromBezier = from.attachment(KeyFrameBezierAttachment.class);
-        final KeyFrameBezierAttachment toBezier = to.attachment(KeyFrameBezierAttachment.class);
+        KeyFrameBezierAttachment fromBezier = from.attachment(KeyFrameBezierAttachment.class);
+        KeyFrameBezierAttachment toBezier = to.attachment(KeyFrameBezierAttachment.class);
+
+        if (fromBezier == null) {
+            fromBezier = KeyFrameBezierAttachment.initial();
+        }
+        if (toBezier == null) {
+            toBezier = KeyFrameBezierAttachment.initial();
+        }
 
         final float timeGap = to.time() - from.time();
 

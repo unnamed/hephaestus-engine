@@ -41,6 +41,13 @@ import static java.util.Objects.requireNonNull;
  * @since 1.0.0
  */
 public final class KeyFrameBezierAttachment implements KeyFrameAttachment, Examinable {
+    private static final KeyFrameBezierAttachment INITIAL = new KeyFrameBezierAttachment(
+            new Vector3Float(-0.1F, -0.1F, -0.1F),
+            Vector3Float.ZERO,
+            new Vector3Float(0.1F, 0.1F, 0.1F),
+            Vector3Float.ZERO
+    );
+
     private final Vector3Float leftTime;
     private final Vector3Float leftValue;
     private final Vector3Float rightTime;
@@ -71,6 +78,10 @@ public final class KeyFrameBezierAttachment implements KeyFrameAttachment, Exami
 
     public static @NotNull KeyFrameBezierAttachment of(final @NotNull Vector3Float leftTime, final @NotNull Vector3Float leftValue, final @NotNull Vector3Float rightTime, final @NotNull Vector3Float rightValue) {
         return new KeyFrameBezierAttachment(leftTime, leftValue, rightTime, rightValue);
+    }
+
+    public static @NotNull KeyFrameBezierAttachment initial() {
+        return INITIAL;
     }
 
     @Override
