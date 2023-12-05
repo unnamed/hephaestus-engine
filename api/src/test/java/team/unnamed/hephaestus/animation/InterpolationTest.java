@@ -29,10 +29,8 @@ import team.unnamed.hephaestus.animation.interpolation.Interpolation;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 import team.unnamed.hephaestus.animation.timeline.KeyFrame;
 import team.unnamed.hephaestus.animation.timeline.KeyFrameBezierAttachment;
-import team.unnamed.hephaestus.util.Quaternion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static team.unnamed.hephaestus.util.StructureAssertEquals.assertQuaternionEquals;
 import static team.unnamed.hephaestus.util.StructureAssertEquals.assertVectorEquals;
 
 class InterpolationTest {
@@ -51,34 +49,6 @@ class InterpolationTest {
         assertEquals(new Vector3Float(5F, 5F, 5F), interpolation.interpolate(0.5));
         assertEquals(new Vector3Float(7.5F, 7.5F, 7.5F), interpolation.interpolate(0.75));
         assertEquals(new Vector3Float(10, 10, 10), interpolation.interpolate(1));
-    }
-
-    @Test
-    void test_spherical_quaternion_interpolation() {
-        Interpolation<Quaternion> interpolation = Interpolator.slerpQuaternion().interpolation(
-                new Quaternion(0, 0, 0, 1),        //  0 deg
-                new Quaternion(0, 0.707, 0, 0.707) // 90 deg (Y only)
-        );
-
-        assertQuaternionEquals(new Quaternion(0, 0, 0, 1), interpolation.interpolate(0), 0.001);
-        assertQuaternionEquals(new Quaternion(0, 0.195, 0, 0.981), interpolation.interpolate(0.25), 0.001);
-        assertQuaternionEquals(new Quaternion(0, 0.383, 0, 0.924), interpolation.interpolate(0.5), 0.001);
-        assertQuaternionEquals(new Quaternion(0, 0.556, 0, 0.831), interpolation.interpolate(0.75), 0.001);
-        assertQuaternionEquals(new Quaternion(0, 0.707, 0, 0.707), interpolation.interpolate(1), 0.001);
-    }
-
-    @Test
-    void test_spherical_quaternion_interpolation_in_multiple_axis() {
-        Interpolation<Quaternion> interpolation = Interpolator.slerpQuaternion().interpolation(
-                new Quaternion(0, 0, 0, 1),        //  0
-                new Quaternion(0.5, 0.5, 0.5, 0.5) // [ 90, 90, 0 ]
-        );
-
-        assertQuaternionEquals(new Quaternion(0, 0, 0, 1), interpolation.interpolate(0), 0.001);
-        assertQuaternionEquals(new Quaternion(0.149, 0.149, 0.149, 0.965), interpolation.interpolate(0.25), 0.001);
-        assertQuaternionEquals(new Quaternion(0.289, 0.289, 0.289, 0.866), interpolation.interpolate(0.5), 0.001);
-        assertQuaternionEquals(new Quaternion(0.408, 0.408, 0.408, 0.707), interpolation.interpolate(0.75), 0.001);
-        assertQuaternionEquals(new Quaternion(0.5, 0.5, 0.5, 0.5), interpolation.interpolate(1), 0.001);
     }
 
     @Test
@@ -154,14 +124,14 @@ class InterpolationTest {
                 new Vector3Float(12.543104F,0.205364F,0.257731F)
         ));
 
-        final Interpolation<KeyFrame<Vector3Float>> interpolation = Interpolator.bezierVector3Float(200).interpolation(fromKeyFrame, toKeyFrame);
+        final Interpolation<Vector3Float> interpolation = Interpolator.bezierVector3Float(200).interpolation(fromKeyFrame, toKeyFrame);
 
-        assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0).value(), 0.01);
-        assertVectorEquals(new Vector3Float(6.23F, 0.77F, 0.87F), interpolation.interpolate(0.25).value(), 0.01);
-        assertVectorEquals(new Vector3Float(6.26F, 2.36F, 1.83F), interpolation.interpolate(0.4167).value(), 0.01);
-        assertVectorEquals(new Vector3Float(5.89F, 3.86F, 2.53F), interpolation.interpolate(0.5).value(), 0.01);
-        assertVectorEquals(new Vector3Float(5.17F, 8.95F, 7.97F), interpolation.interpolate(0.75).value(), 0.01);
-        assertVectorEquals(new Vector3Float(7.06F, 9.89F, 9.87F), interpolation.interpolate(0.9167F).value(), 0.01);
-        assertVectorEquals(new Vector3Float(10F, 10F, 10F), interpolation.interpolate(1).value(), 0.01);
+        assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0), 0.01);
+        assertVectorEquals(new Vector3Float(6.23F, 0.77F, 0.87F), interpolation.interpolate(0.25), 0.01);
+        assertVectorEquals(new Vector3Float(6.26F, 2.36F, 1.83F), interpolation.interpolate(0.4167), 0.01);
+        assertVectorEquals(new Vector3Float(5.89F, 3.86F, 2.53F), interpolation.interpolate(0.5), 0.01);
+        assertVectorEquals(new Vector3Float(5.17F, 8.95F, 7.97F), interpolation.interpolate(0.75), 0.01);
+        assertVectorEquals(new Vector3Float(7.06F, 9.89F, 9.87F), interpolation.interpolate(0.9167F), 0.01);
+        assertVectorEquals(new Vector3Float(10F, 10F, 10F), interpolation.interpolate(1), 0.01);
     }
 }

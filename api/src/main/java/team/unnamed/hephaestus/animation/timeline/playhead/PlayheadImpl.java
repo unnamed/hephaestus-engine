@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolation;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.interpolation.KeyFrameInterpolator;
 import team.unnamed.hephaestus.animation.timeline.KeyFrame;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
 
@@ -47,7 +48,7 @@ final class PlayheadImpl<T> implements Playhead<T> {
     // the current interpolation between the previous
     // and the next keyframes, it is null if the next
     // keyframe is null
-    private Interpolation<KeyFrame<T>> interpolation;
+    private Interpolation<T> interpolation;
 
     // the current tick
     private int tick = 0;
@@ -67,7 +68,7 @@ final class PlayheadImpl<T> implements Playhead<T> {
             // as the first keyframe
             // |-|         |           |
             // (X)        first       second
-            previous = new KeyFrame<>(0, firstKeyFrame.value(), Interpolator.wrapInKeyFrame(Interpolator.always(firstKeyFrame.value())));
+            previous = new KeyFrame<>(0, firstKeyFrame.value(), Interpolator.always(firstKeyFrame.value()));
             next = firstKeyFrame;
             after = secondKeyFrame;
         } else {
@@ -81,10 +82,10 @@ final class PlayheadImpl<T> implements Playhead<T> {
         interpolation = computeInterpolator().interpolation(null, previous, next, after);
     }
 
-    private Interpolator<KeyFrame<T>> computeInterpolator() {
-        Interpolator<KeyFrame<T>> interpolator;
+    private KeyFrameInterpolator<T> computeInterpolator() {
+        KeyFrameInterpolator<T> interpolator;
         if (next == null) {
-            interpolator = Interpolator.always(previous);
+            interpolator = Interpolator.always(previous.value());
         } else {
             interpolator = previous.interpolatorOr(timeline.defaultInterpolator())
                     .combineRight(next.interpolatorOr(timeline.defaultInterpolator()));
@@ -129,7 +130,7 @@ final class PlayheadImpl<T> implements Playhead<T> {
         // interpolate the previous and next keyframes
         double progress = ((double) (tick - previous.time())) / ((double) (next.time() - previous.time()));
         tick++;
-        return interpolation.interpolate(progress).value();
+        return interpolation.interpolate(progress);
     }
 
 }

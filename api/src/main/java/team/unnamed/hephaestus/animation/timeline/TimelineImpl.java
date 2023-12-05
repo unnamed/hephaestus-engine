@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.animation.timeline;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.interpolation.KeyFrameInterpolator;
 import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 
 import java.util.SortedSet;
@@ -36,10 +37,10 @@ import static java.util.Objects.requireNonNull;
 final class TimelineImpl<T> implements Timeline<T> {
 
     private final T initialValue;
-    private final Interpolator<KeyFrame<T>> defaultInterpolator;
+    private final KeyFrameInterpolator<T> defaultInterpolator;
     private final SortedSet<KeyFrame<T>> keyFrames;
 
-    TimelineImpl(T initialValue, Interpolator<KeyFrame<T>> defaultInterpolator, SortedSet<KeyFrame<T>> keyFrames) {
+    TimelineImpl(T initialValue, KeyFrameInterpolator<T> defaultInterpolator, SortedSet<KeyFrame<T>> keyFrames) {
         this.initialValue = requireNonNull(initialValue, "initial");
         this.defaultInterpolator = requireNonNull(defaultInterpolator, "defaultInterpolator");
         this.keyFrames = requireNonNull(keyFrames, "keyFrames");
@@ -51,7 +52,7 @@ final class TimelineImpl<T> implements Timeline<T> {
     }
 
     @Override
-    public @NotNull Interpolator<KeyFrame<T>> defaultInterpolator() {
+    public @NotNull KeyFrameInterpolator<T> defaultInterpolator() {
         return defaultInterpolator;
     }
 
@@ -77,7 +78,7 @@ final class TimelineImpl<T> implements Timeline<T> {
     static final class BuilderImpl<T> implements Builder<T> {
 
         private T initialValue;
-        private Interpolator<KeyFrame<T>> interpolator;
+        private KeyFrameInterpolator<T> interpolator;
         private final SortedSet<KeyFrame<T>> keyFrames = new TreeSet<>();
 
         @Override
@@ -87,7 +88,7 @@ final class TimelineImpl<T> implements Timeline<T> {
         }
 
         @Override
-        public Builder<T> defaultInterpolator(Interpolator<KeyFrame<T>> interpolator) {
+        public Builder<T> defaultInterpolator(KeyFrameInterpolator<T> interpolator) {
             this.interpolator = requireNonNull(interpolator, "interpolator");
             return this;
         }

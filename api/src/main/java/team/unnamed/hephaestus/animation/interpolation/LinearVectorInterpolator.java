@@ -39,7 +39,7 @@ final class LinearVectorInterpolator implements Interpolator<Vector3Float> {
     }
 
     @Override
-    public @NotNull Interpolator<Vector3Float> combineRight(final @NotNull Interpolator<Vector3Float> right) {
+    public @NotNull KeyFrameInterpolator<Vector3Float> combineRight(final @NotNull KeyFrameInterpolator<Vector3Float> right) {
         if (right instanceof LinearVectorInterpolator || right instanceof StepVectorInterpolator) {
             // only keep linear vector interpolation if the right
             // interpolator is also linear, or step

@@ -41,7 +41,7 @@ final class StepVectorInterpolator implements Interpolator<Vector3Float> {
     }
 
     @Override
-    public @NotNull Interpolator<Vector3Float> combineRight(final @NotNull Interpolator<Vector3Float> right) {
+    public @NotNull KeyFrameInterpolator<Vector3Float> combineRight(final @NotNull KeyFrameInterpolator<Vector3Float> right) {
         requireNonNull(right, "right");
         // no matter what "right" interpolator is, combining a step
         // interpolator and any other interpolator, results in a step

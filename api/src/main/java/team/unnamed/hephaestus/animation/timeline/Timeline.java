@@ -28,9 +28,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.interpolation.KeyFrameInterpolator;
 import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 
-import java.util.List;
 import java.util.SortedSet;
 
 /**
@@ -50,7 +50,7 @@ public interface Timeline<T> extends Examinable {
 
     @NotNull T initial();
 
-    @NotNull Interpolator<KeyFrame<T>> defaultInterpolator();
+    @NotNull KeyFrameInterpolator<T> defaultInterpolator();
 
     @NotNull @Unmodifiable SortedSet<KeyFrame<T>> keyFrames();
 
@@ -61,7 +61,7 @@ public interface Timeline<T> extends Examinable {
 
         Builder<T> initial(T value);
 
-        Builder<T> defaultInterpolator(Interpolator<KeyFrame<T>> interpolator);
+        Builder<T> defaultInterpolator(KeyFrameInterpolator<T> interpolator);
 
         Builder<T> keyFrame(KeyFrame<T> keyFrame);
 
@@ -71,7 +71,7 @@ public interface Timeline<T> extends Examinable {
         }
 
         @Contract("_, _, _ -> this")
-        default @NotNull Builder<T> keyFrame(final int time, final @NotNull T value, final @NotNull Interpolator<KeyFrame<T>> interpolator) {
+        default @NotNull Builder<T> keyFrame(final int time, final @NotNull T value, final @NotNull KeyFrameInterpolator<T> interpolator) {
             return keyFrame(new KeyFrame<>(time, value, interpolator));
         }
 

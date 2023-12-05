@@ -31,6 +31,7 @@ import net.kyori.adventure.sound.Sound;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.interpolation.KeyFrameInterpolator;
 import team.unnamed.hephaestus.animation.timeline.KeyFrame;
 import team.unnamed.hephaestus.animation.timeline.KeyFrameBezierAttachment;
 import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
@@ -45,7 +46,7 @@ import java.util.Map;
 
 final class AnimationReader {
     private static final int BEZIER_CURVE_DIVISIONS = Integer.getInteger("hephaestus.bezier_divisions", 200);
-    private static final Interpolator<KeyFrame<Vector3Float>> BEZIER_INTERPOLATOR = Interpolator.bezierVector3Float(BEZIER_CURVE_DIVISIONS);
+    private static final KeyFrameInterpolator<Vector3Float> BEZIER_INTERPOLATOR = Interpolator.bezierVector3Float(BEZIER_CURVE_DIVISIONS);
     private static final int TICKS_PER_SECOND = Integer.getInteger("hephaestus.tps", 20);
 
     /**
@@ -127,13 +128,13 @@ final class AnimationReader {
                 } else if (type.equals("bone")) {
                     Timeline.Builder<Vector3Float> positionsTimeline = Timeline.<Vector3Float>timeline()
                             .initial(Vector3Float.ZERO)
-                            .defaultInterpolator(Interpolator.wrapInKeyFrame(Interpolator.lerpVector3Float()));
+                            .defaultInterpolator(Interpolator.lerpVector3Float());
                     Timeline.Builder<Vector3Float> rotationsTimeline = Timeline.<Vector3Float>timeline()
                             .initial(Vector3Float.ZERO)
-                            .defaultInterpolator(Interpolator.wrapInKeyFrame(Interpolator.lerpVector3Float()));
+                            .defaultInterpolator(Interpolator.lerpVector3Float());
                     Timeline.Builder<Vector3Float> scalesTimeline = Timeline.<Vector3Float>timeline()
                             .initial(Vector3Float.ONE)
-                            .defaultInterpolator(Interpolator.wrapInKeyFrame(Interpolator.lerpVector3Float()));
+                            .defaultInterpolator(Interpolator.lerpVector3Float());
 
                     for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
                         JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
@@ -156,20 +157,20 @@ final class AnimationReader {
                         String interpolation = keyframeJson.has("interpolation")
                                 ? keyframeJson.get("interpolation").getAsString()
                                 : "linear";
-                        Interpolator<KeyFrame<Vector3Float>> interpolator;
+                        KeyFrameInterpolator<Vector3Float> interpolator;
                         switch (interpolation.toLowerCase()) {
                             case "bezier":
                                 interpolator = BEZIER_INTERPOLATOR;
                                 break;
                             case "linear":
-                                interpolator = Interpolator.wrapInKeyFrame(Interpolator.lerpVector3Float());
+                                interpolator = Interpolator.lerpVector3Float();
                                 break;
                             case "catmullrom":
                             case "smooth": // <-- smooth is the displayed name of catmullrom, it is the same
-                                interpolator = Interpolator.wrapInKeyFrame(Interpolator.catmullRomSplineVector3Float());
+                                interpolator = Interpolator.catmullRomSplineVector3Float();
                                 break;
                             case "step":
-                                interpolator = Interpolator.wrapInKeyFrame(Interpolator.stepVector3Float());
+                                interpolator = Interpolator.stepVector3Float();
                                 break;
                             default:
                                 throw new IllegalArgumentException("Unsupported interpolation type: '" + interpolation + "'");

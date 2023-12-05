@@ -30,7 +30,9 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.timeline.KeyFrame;
 import team.unnamed.hephaestus.animation.timeline.KeyFrameBezierAttachment;
 
-final class BezierInterpolator implements Interpolator<KeyFrame<Vector3Float>> {
+import static java.util.Objects.requireNonNull;
+
+final class BezierInterpolator implements KeyFrameInterpolator<Vector3Float> {
     private static final Axis3D[] AXES = Axis3D.values();
 
     private final int divisions;
@@ -86,7 +88,7 @@ final class BezierInterpolator implements Interpolator<KeyFrame<Vector3Float>> {
     }
 
     @Override
-    public @NotNull Interpolation<KeyFrame<Vector3Float>> interpolation(final @NotNull KeyFrame<Vector3Float> from, final @NotNull KeyFrame<Vector3Float> to) {
+    public @NotNull Interpolation<Vector3Float> interpolation(final @NotNull KeyFrame<Vector3Float> from, final @NotNull KeyFrame<Vector3Float> to) {
         final KeyFrameBezierAttachment fromBezier = from.attachment(KeyFrameBezierAttachment.class);
         final KeyFrameBezierAttachment toBezier = to.attachment(KeyFrameBezierAttachment.class);
 
@@ -131,11 +133,19 @@ final class BezierInterpolator implements Interpolator<KeyFrame<Vector3Float>> {
             float y = findClosestAndLerp(points, time, Axis3D.Y);
             float z = findClosestAndLerp(points, time, Axis3D.Z);
 
-            return new KeyFrame<>(
-                    (int) time,
-                    new Vector3Float(x, y, z),
-                    null
-            );
+            return new Vector3Float(x, y, z);
         };
+    }
+
+    @Override
+    public @NotNull KeyFrameInterpolator<Vector3Float> combineRight(final @NotNull KeyFrameInterpolator<Vector3Float> right) {
+        requireNonNull(right, "right");
+        // Bézier + (any except smooth) = Bézier
+        // Bézier + Smooth = Smooth
+        if (right instanceof CatmullRomInterpolator) {
+            return right;
+        } else {
+            return this;
+        }
     }
 }

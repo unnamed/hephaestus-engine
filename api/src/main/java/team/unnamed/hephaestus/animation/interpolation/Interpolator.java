@@ -27,9 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.timeline.KeyFrame;
-import team.unnamed.hephaestus.util.Quaternion;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Represents an interpolation function,
@@ -58,8 +55,7 @@ import static java.util.Objects.requireNonNull;
  * @param <T> The interpolated value type
  * @since 1.0.0
  */
-public interface Interpolator<T> {
-
+public interface Interpolator<T> extends KeyFrameInterpolator<T> {
     /**
      * Creates an interpolation between the given
      * values, using the function of this implementation.
@@ -70,6 +66,11 @@ public interface Interpolator<T> {
      * @since 1.0.0
      */
     @NotNull Interpolation<T> interpolation(final @NotNull T from, final @NotNull T to);
+
+    @Override
+    default @NotNull Interpolation<T> interpolation(final @NotNull KeyFrame<T> from, final @NotNull KeyFrame<T> to) {
+        return interpolation(from.value(), to.value());
+    }
 
     /**
      * Creates an interpolation between the given
@@ -96,14 +97,10 @@ public interface Interpolator<T> {
         return interpolation(from, to);
     }
 
-    default @NotNull Interpolator<T> combineRight(final @NotNull Interpolator<T> right) {
-        requireNonNull(right, "right");
-        return this;
-    }
-
-    default @NotNull Interpolator<T> combineLeft(final @NotNull Interpolator<T> left) {
-        requireNonNull(left, "left");
-        return left.combineRight(this);
+    @Override
+    @NotNull
+    default Interpolation<T> interpolation(final @Nullable KeyFrame<T> before, final @NotNull KeyFrame<T> from, final @NotNull KeyFrame<T> to, final @Nullable KeyFrame<T> after) {
+        return interpolation(before == null ? null : before.value(), from.value(), to.value(), after == null ? null : after.value());
     }
 
     /**
@@ -115,29 +112,6 @@ public interface Interpolator<T> {
      */
     static @NotNull Interpolator<Vector3Float> lerpVector3Float() {
         return LinearVectorInterpolator.INSTANCE;
-    }
-
-    /**
-     * Returns an interpolator for spherically interpolating
-     * {@link Quaternion quaternions}.
-     *
-     * @return The interpolator
-     * @since 1.0.0
-     */
-    static @NotNull Interpolator<Quaternion> slerpQuaternion() {
-        return SphericalQuaternionInterpolator.INSTANCE;
-    }
-
-    /**
-     * Returns an interpolator for spherically interpolating
-     * euler angles (specified as a {@link Vector3Float 3d vector}),
-     * in degrees.
-     *
-     * @return The interpolator
-     * @since 1.0.0
-     */
-    static @NotNull Interpolator<Vector3Float> slerpDegreeEulerAngle() {
-        return SphericalEulerAngleInterpolator.INSTANCE;
     }
 
     /**
@@ -177,37 +151,8 @@ public interface Interpolator<T> {
      * @return The interpolator
      * @since 1.0.0
      */
-    static @NotNull Interpolator<KeyFrame<Vector3Float>> bezierVector3Float(final int divisions) {
+    static @NotNull KeyFrameInterpolator<Vector3Float> bezierVector3Float(final int divisions) {
         return new BezierInterpolator(divisions);
-    }
-
-    static <T> @NotNull Interpolator<KeyFrame<T>> wrapInKeyFrame(final @NotNull Interpolator<T> interpolator) {
-        return new Interpolator<>() {
-            @Override
-            public @NotNull Interpolation<KeyFrame<T>> interpolation(final @NotNull KeyFrame<T> from, final @NotNull KeyFrame<T> to) {
-                final Interpolation<T> interpolation = interpolator.interpolation(from.value(), to.value());
-                return progress -> new KeyFrame<>(
-                        (int) (from.time() + (to.time() - from.time()) * progress),
-                        interpolation.interpolate(progress),
-                        null
-                );
-            }
-
-            @Override
-            public @NotNull Interpolation<KeyFrame<T>> interpolation(final @Nullable KeyFrame<T> before, final @NotNull KeyFrame<T> from, final @NotNull KeyFrame<T> to, final @Nullable KeyFrame<T> after) {
-                final Interpolation<T> interpolation = interpolator.interpolation(
-                        before == null ? null : before.value(),
-                        from.value(),
-                        to.value(),
-                        after == null ? null : after.value()
-                );
-                return progress -> new KeyFrame<>(
-                        (int) (from.time() + (to.time() - from.time()) * progress),
-                        interpolation.interpolate(progress),
-                        null
-                );
-            }
-        };
     }
 
     /**
@@ -223,5 +168,4 @@ public interface Interpolator<T> {
     static <T> @NotNull Interpolator<T> always(final @NotNull T interpolated) {
         return (from, to) -> (Interpolation<T>) progress -> interpolated;
     }
-
 }

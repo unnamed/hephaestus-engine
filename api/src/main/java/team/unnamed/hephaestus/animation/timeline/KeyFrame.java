@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.animation.timeline;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.interpolation.KeyFrameInterpolator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,10 +37,10 @@ public final class KeyFrame<T> implements Comparable<KeyFrame<T>> {
 
     private final int time;
     private final T value;
-    private final Interpolator<KeyFrame<T>> interpolator;
+    private final KeyFrameInterpolator<T> interpolator;
     private final Map<Class<? extends KeyFrameAttachment>, KeyFrameAttachment> attachments = new HashMap<>();
 
-    public KeyFrame(int time, T value, @Nullable Interpolator<KeyFrame<T>> interpolator) {
+    public KeyFrame(int time, T value, @Nullable KeyFrameInterpolator<T> interpolator) {
         this.time = time;
         this.value = value;
         this.interpolator = interpolator;
@@ -53,11 +54,11 @@ public final class KeyFrame<T> implements Comparable<KeyFrame<T>> {
         return value;
     }
 
-    public @Nullable Interpolator<KeyFrame<T>> interpolator() {
+    public @Nullable KeyFrameInterpolator<T> interpolator() {
         return interpolator;
     }
 
-    public Interpolator<KeyFrame<T>> interpolatorOr(Interpolator<KeyFrame<T>> fallback) {
+    public KeyFrameInterpolator<T> interpolatorOr(KeyFrameInterpolator<T> fallback) {
         return interpolator == null ? fallback : interpolator;
     }
 
