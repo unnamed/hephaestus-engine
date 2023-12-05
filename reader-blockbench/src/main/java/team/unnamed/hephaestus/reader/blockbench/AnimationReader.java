@@ -31,11 +31,12 @@ import net.kyori.adventure.sound.Sound;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.timeline.KeyFrame;
+import team.unnamed.hephaestus.animation.timeline.KeyFrameBezierAttachment;
 import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
 import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimeline;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,7 +44,8 @@ import java.util.Locale;
 import java.util.Map;
 
 final class AnimationReader {
-
+    private static final int BEZIER_CURVE_DIVISIONS = Integer.getInteger("hephaestus.bezier_divisions", 200);
+    private static final Interpolator<KeyFrame<Vector3Float>> BEZIER_INTERPOLATOR = Interpolator.bezierVector3Float(BEZIER_CURVE_DIVISIONS);
     private static final int TICKS_PER_SECOND = Integer.getInteger("hephaestus.tps", 20);
 
     /**
@@ -125,13 +127,13 @@ final class AnimationReader {
                 } else if (type.equals("bone")) {
                     Timeline.Builder<Vector3Float> positionsTimeline = Timeline.<Vector3Float>timeline()
                             .initial(Vector3Float.ZERO)
-                            .defaultInterpolator(Interpolator.lerpVector3Float());
+                            .defaultInterpolator(Interpolator.wrapInKeyFrame(Interpolator.lerpVector3Float()));
                     Timeline.Builder<Vector3Float> rotationsTimeline = Timeline.<Vector3Float>timeline()
                             .initial(Vector3Float.ZERO)
-                            .defaultInterpolator(Interpolator.lerpVector3Float());
+                            .defaultInterpolator(Interpolator.wrapInKeyFrame(Interpolator.lerpVector3Float()));
                     Timeline.Builder<Vector3Float> scalesTimeline = Timeline.<Vector3Float>timeline()
                             .initial(Vector3Float.ONE)
-                            .defaultInterpolator(Interpolator.lerpVector3Float());
+                            .defaultInterpolator(Interpolator.wrapInKeyFrame(Interpolator.lerpVector3Float()));
 
                     for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
                         JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
@@ -154,32 +156,45 @@ final class AnimationReader {
                         String interpolation = keyframeJson.has("interpolation")
                                 ? keyframeJson.get("interpolation").getAsString()
                                 : "linear";
-                        Interpolator<Vector3Float> interpolator;
+                        Interpolator<KeyFrame<Vector3Float>> interpolator;
                         switch (interpolation.toLowerCase()) {
-                            case "bezier": // <-- parse bezier as linear
+                            case "bezier":
+                                interpolator = BEZIER_INTERPOLATOR;
+                                break;
                             case "linear":
-                                interpolator = Interpolator.lerpVector3Float();
+                                interpolator = Interpolator.wrapInKeyFrame(Interpolator.lerpVector3Float());
                                 break;
                             case "catmullrom":
                             case "smooth": // <-- smooth is the displayed name of catmullrom, it is the same
-                                interpolator = Interpolator.catmullRomSplineVector3Float();
+                                interpolator = Interpolator.wrapInKeyFrame(Interpolator.catmullRomSplineVector3Float());
                                 break;
                             case "step":
-                                interpolator = Interpolator.stepVector3Float();
+                                interpolator = Interpolator.wrapInKeyFrame(Interpolator.stepVector3Float());
                                 break;
                             default:
                                 throw new IllegalArgumentException("Unsupported interpolation type: '" + interpolation + "'");
                         }
 
+                        final KeyFrame<Vector3Float> keyFrame = new KeyFrame<>(time, value, interpolator);
+
+                        // load bézier attachments
+                        if (keyframeJson.has("bezier_left_time")) {
+                            final Vector3Float leftTime = GsonUtil.getVector3FloatFromJson(keyframeJson.get("bezier_left_time"));
+                            final Vector3Float leftValue = GsonUtil.getVector3FloatFromJson(keyframeJson.get("bezier_left_value"));
+                            final Vector3Float rightTime = GsonUtil.getVector3FloatFromJson(keyframeJson.get("bezier_right_time"));
+                            final Vector3Float rightValue = GsonUtil.getVector3FloatFromJson(keyframeJson.get("bezier_right_value"));
+                            keyFrame.attachment(KeyFrameBezierAttachment.class, KeyFrameBezierAttachment.of(leftTime, leftValue, rightTime, rightValue));
+                        }
+
                         switch (channel.toLowerCase(Locale.ROOT)) {
                             case "position":
-                                positionsTimeline.keyFrame(time, value, interpolator);
+                                positionsTimeline.keyFrame(keyFrame);
                                 break;
                             case "rotation":
-                                rotationsTimeline.keyFrame(time, value, interpolator);
+                                rotationsTimeline.keyFrame(keyFrame);
                                 break;
                             case "scale":
-                                scalesTimeline.keyFrame(time, value, interpolator);
+                                scalesTimeline.keyFrame(keyFrame);
                                 break;
                         }
                     }

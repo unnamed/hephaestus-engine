@@ -47,7 +47,7 @@ final class PlayheadImpl<T> implements Playhead<T> {
     // the current interpolation between the previous
     // and the next keyframes, it is null if the next
     // keyframe is null
-    private Interpolation<T> interpolation;
+    private Interpolation<KeyFrame<T>> interpolation;
 
     // the current tick
     private int tick = 0;
@@ -67,7 +67,7 @@ final class PlayheadImpl<T> implements Playhead<T> {
             // as the first keyframe
             // |-|         |           |
             // (X)        first       second
-            previous = new KeyFrame<>(0, firstKeyFrame.value(), Interpolator.always(firstKeyFrame.value()));
+            previous = new KeyFrame<>(0, firstKeyFrame.value(), Interpolator.wrapInKeyFrame(Interpolator.always(firstKeyFrame.value())));
             next = firstKeyFrame;
             after = secondKeyFrame;
         } else {
@@ -78,13 +78,13 @@ final class PlayheadImpl<T> implements Playhead<T> {
             after = keyFrameIterator.hasNext() ? keyFrameIterator.next() : null;
         }
 
-        interpolation = computeInterpolator().interpolation(null, previous.value(), next.value(), after == null ? null : after.value());
+        interpolation = computeInterpolator().interpolation(null, previous, next, after);
     }
 
-    private Interpolator<T> computeInterpolator() {
-        Interpolator<T> interpolator;
+    private Interpolator<KeyFrame<T>> computeInterpolator() {
+        Interpolator<KeyFrame<T>> interpolator;
         if (next == null) {
-            interpolator = Interpolator.always(previous.value());
+            interpolator = Interpolator.always(previous);
         } else {
             interpolator = previous.interpolatorOr(timeline.defaultInterpolator())
                     .combineRight(next.interpolatorOr(timeline.defaultInterpolator()));
@@ -123,19 +123,13 @@ final class PlayheadImpl<T> implements Playhead<T> {
                 after = null;
             }
 
-            interpolation = computeInterpolator()
-                    .interpolation(
-                            before == null ? null : before.value(),
-                            previous.value(),
-                            next.value(),
-                            after == null ? null : after.value()
-                    );
+            interpolation = computeInterpolator().interpolation(before, previous, next, after);
         }
 
         // interpolate the previous and next keyframes
         double progress = ((double) (tick - previous.time())) / ((double) (next.time() - previous.time()));
         tick++;
-        return interpolation.interpolate(progress);
+        return interpolation.interpolate(progress).value();
     }
 
 }

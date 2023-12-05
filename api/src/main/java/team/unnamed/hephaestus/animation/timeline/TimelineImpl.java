@@ -36,10 +36,10 @@ import static java.util.Objects.requireNonNull;
 final class TimelineImpl<T> implements Timeline<T> {
 
     private final T initialValue;
-    private final Interpolator<T> defaultInterpolator;
+    private final Interpolator<KeyFrame<T>> defaultInterpolator;
     private final SortedSet<KeyFrame<T>> keyFrames;
 
-    TimelineImpl(T initialValue, Interpolator<T> defaultInterpolator, SortedSet<KeyFrame<T>> keyFrames) {
+    TimelineImpl(T initialValue, Interpolator<KeyFrame<T>> defaultInterpolator, SortedSet<KeyFrame<T>> keyFrames) {
         this.initialValue = requireNonNull(initialValue, "initial");
         this.defaultInterpolator = requireNonNull(defaultInterpolator, "defaultInterpolator");
         this.keyFrames = requireNonNull(keyFrames, "keyFrames");
@@ -51,7 +51,7 @@ final class TimelineImpl<T> implements Timeline<T> {
     }
 
     @Override
-    public @NotNull Interpolator<T> defaultInterpolator() {
+    public @NotNull Interpolator<KeyFrame<T>> defaultInterpolator() {
         return defaultInterpolator;
     }
 
@@ -77,7 +77,7 @@ final class TimelineImpl<T> implements Timeline<T> {
     static final class BuilderImpl<T> implements Builder<T> {
 
         private T initialValue;
-        private Interpolator<T> interpolator;
+        private Interpolator<KeyFrame<T>> interpolator;
         private final SortedSet<KeyFrame<T>> keyFrames = new TreeSet<>();
 
         @Override
@@ -87,7 +87,7 @@ final class TimelineImpl<T> implements Timeline<T> {
         }
 
         @Override
-        public Builder<T> defaultInterpolator(Interpolator<T> interpolator) {
+        public Builder<T> defaultInterpolator(Interpolator<KeyFrame<T>> interpolator) {
             this.interpolator = requireNonNull(interpolator, "interpolator");
             return this;
         }

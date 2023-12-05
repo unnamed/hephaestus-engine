@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.interpolation.Interpolation;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.timeline.KeyFrame;
+import team.unnamed.hephaestus.animation.timeline.KeyFrameBezierAttachment;
 import team.unnamed.hephaestus.util.Quaternion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -134,4 +136,30 @@ class InterpolationTest {
         assertVectorEquals(new Vector3Float(10, 10, 10), interpolation.interpolate(1), 0.001);
     }
 
+    @Test
+    void test_bezier_interpolation() {
+        final KeyFrame<Vector3Float> fromKeyFrame = new KeyFrame<>(0, new Vector3Float(0, 0, 0), null);
+        fromKeyFrame.attachment(KeyFrameBezierAttachment.class, KeyFrameBezierAttachment.of(
+                new Vector3Float(-0.2566666F,-0.703333F,-1.623333F),
+                new Vector3Float(-14.909398191235454F, -0.6892359600908713F, -2.595727799247298F),
+                new Vector3Float(0.2566666666666667F, 0.7033333333333334F, 1.6233333333333333F),
+                new Vector3Float(14.909398191235454F, 0.6892359600908713F, 2.595727799247298F)
+        ));
+
+        final KeyFrame<Vector3Float> toKeyFrame = new KeyFrame<>(1, new Vector3Float(10, 10, 10), null);
+        toKeyFrame.attachment(KeyFrameBezierAttachment.class, KeyFrameBezierAttachment.of(
+                new Vector3Float(-0.2533333333333333F,-0.5566666666666666F,-0.4866666666666668F),
+                new Vector3Float(-12.543104192600394F,-0.20536444997940118F,-0.2577319781876972F),
+                new Vector3Float(0.2533333F,0.556666F,0.486666F),
+                new Vector3Float(12.543104F,0.205364F,0.257731F)
+        ));
+
+        final Interpolation<KeyFrame<Vector3Float>> interpolation = Interpolator.bezierVector3Float(200).interpolation(fromKeyFrame, toKeyFrame);
+
+        assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0).value(), 0.01);
+        assertVectorEquals(new Vector3Float(6.23F, 0.77F, 0.87F), interpolation.interpolate(0.25).value(), 0.01);
+        assertVectorEquals(new Vector3Float(5.89F, 3.86F, 2.53F), interpolation.interpolate(0.5).value(), 0.01);
+        assertVectorEquals(new Vector3Float(5.17F, 8.95F, 7.97F), interpolation.interpolate(0.75).value(), 0.01);
+        assertVectorEquals(new Vector3Float(10F, 10F, 10F), interpolation.interpolate(1).value(), 0.01);
+    }
 }

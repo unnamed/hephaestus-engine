@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.animation.interpolation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.animation.timeline.KeyFrame;
 import team.unnamed.hephaestus.util.Quaternion;
 
 import static java.util.Objects.requireNonNull;
@@ -161,6 +162,52 @@ public interface Interpolator<T> {
      */
     static @NotNull Interpolator<Vector3Float> catmullRomSplineVector3Float() {
         return CatmullRomInterpolator.INSTANCE;
+    }
+
+    /**
+     * Returns a Bezier interpolator for {@link Vector3Float 3d vectors},
+     * which interpolates between the given points using Bézier curves.
+     *
+     * <p>Input key frames may specify the Bezier curve handles by having a
+     * {@link team.unnamed.hephaestus.animation.timeline.KeyFrameBezierAttachment} attachment</p>
+     *
+     * @param divisions The amount of divisions to use for the Bézier curve,
+     *                  the higher the value, the more accurate the interpolation
+     *                  will be, but it will also be more expensive to compute.
+     * @return The interpolator
+     * @since 1.0.0
+     */
+    static @NotNull Interpolator<KeyFrame<Vector3Float>> bezierVector3Float(final int divisions) {
+        return new BezierInterpolator(divisions);
+    }
+
+    static <T> @NotNull Interpolator<KeyFrame<T>> wrapInKeyFrame(final @NotNull Interpolator<T> interpolator) {
+        return new Interpolator<>() {
+            @Override
+            public @NotNull Interpolation<KeyFrame<T>> interpolation(final @NotNull KeyFrame<T> from, final @NotNull KeyFrame<T> to) {
+                final Interpolation<T> interpolation = interpolator.interpolation(from.value(), to.value());
+                return progress -> new KeyFrame<>(
+                        (int) (from.time() + (to.time() - from.time()) * progress),
+                        interpolation.interpolate(progress),
+                        null
+                );
+            }
+
+            @Override
+            public @NotNull Interpolation<KeyFrame<T>> interpolation(final @Nullable KeyFrame<T> before, final @NotNull KeyFrame<T> from, final @NotNull KeyFrame<T> to, final @Nullable KeyFrame<T> after) {
+                final Interpolation<T> interpolation = interpolator.interpolation(
+                        before == null ? null : before.value(),
+                        from.value(),
+                        to.value(),
+                        after == null ? null : after.value()
+                );
+                return progress -> new KeyFrame<>(
+                        (int) (from.time() + (to.time() - from.time()) * progress),
+                        interpolation.interpolate(progress),
+                        null
+                );
+            }
+        };
     }
 
     /**

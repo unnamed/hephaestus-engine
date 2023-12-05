@@ -50,7 +50,7 @@ public interface Timeline<T> extends Examinable {
 
     @NotNull T initial();
 
-    @NotNull Interpolator<T> defaultInterpolator();
+    @NotNull Interpolator<KeyFrame<T>> defaultInterpolator();
 
     @NotNull @Unmodifiable SortedSet<KeyFrame<T>> keyFrames();
 
@@ -61,7 +61,7 @@ public interface Timeline<T> extends Examinable {
 
         Builder<T> initial(T value);
 
-        Builder<T> defaultInterpolator(Interpolator<T> interpolator);
+        Builder<T> defaultInterpolator(Interpolator<KeyFrame<T>> interpolator);
 
         Builder<T> keyFrame(KeyFrame<T> keyFrame);
 
@@ -71,7 +71,7 @@ public interface Timeline<T> extends Examinable {
         }
 
         @Contract("_, _, _ -> this")
-        default @NotNull Builder<T> keyFrame(final int time, final @NotNull T value, final @NotNull Interpolator<T> interpolator) {
+        default @NotNull Builder<T> keyFrame(final int time, final @NotNull T value, final @NotNull Interpolator<KeyFrame<T>> interpolator) {
             return keyFrame(new KeyFrame<>(time, value, interpolator));
         }
 

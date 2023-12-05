@@ -27,13 +27,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Objects.requireNonNull;
+
 public final class KeyFrame<T> implements Comparable<KeyFrame<T>> {
 
     private final int time;
     private final T value;
-    private final Interpolator<T> interpolator;
+    private final Interpolator<KeyFrame<T>> interpolator;
+    private final Map<Class<? extends KeyFrameAttachment>, KeyFrameAttachment> attachments = new HashMap<>();
 
-    public KeyFrame(int time, T value, @Nullable Interpolator<T> interpolator) {
+    public KeyFrame(int time, T value, @Nullable Interpolator<KeyFrame<T>> interpolator) {
         this.time = time;
         this.value = value;
         this.interpolator = interpolator;
@@ -47,12 +53,41 @@ public final class KeyFrame<T> implements Comparable<KeyFrame<T>> {
         return value;
     }
 
-    public @Nullable Interpolator<T> interpolator() {
+    public @Nullable Interpolator<KeyFrame<T>> interpolator() {
         return interpolator;
     }
 
-    public Interpolator<T> interpolatorOr(Interpolator<T> fallback) {
+    public Interpolator<KeyFrame<T>> interpolatorOr(Interpolator<KeyFrame<T>> fallback) {
         return interpolator == null ? fallback : interpolator;
+    }
+
+    /**
+     * Adds an attachment to this keyframe.
+     *
+     * @param type The attachment type
+     * @param attachment The attachment
+     * @param <TAttachment> The attachment type
+     * @since 1.0.0
+     */
+    public <TAttachment extends KeyFrameAttachment> void attachment(final @NotNull Class<TAttachment> type, final @NotNull TAttachment attachment) {
+        requireNonNull(type, "type");
+        requireNonNull(attachment, "attachment");
+        attachments.put(type, attachment);
+    }
+
+    /**
+     * Gets the attachment of the given type, or null if
+     * there is no attachment of that type.
+     *
+     * @param type The attachment type
+     * @return The attachment of the given type, or null if
+     * there is no attachment of that type.
+     * @param <TAttachment> The attachment type
+     * @since 1.0.0
+     */
+    public <TAttachment extends KeyFrameAttachment> @Nullable TAttachment attachment(final @NotNull Class<TAttachment> type) {
+        requireNonNull(type, "type");
+        return type.cast(attachments.get(type));
     }
 
     @Override
