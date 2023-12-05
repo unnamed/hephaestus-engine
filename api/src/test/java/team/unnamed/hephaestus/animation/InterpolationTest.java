@@ -158,8 +158,10 @@ class InterpolationTest {
 
         assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0).value(), 0.01);
         assertVectorEquals(new Vector3Float(6.23F, 0.77F, 0.87F), interpolation.interpolate(0.25).value(), 0.01);
+        assertVectorEquals(new Vector3Float(6.26F, 2.36F, 1.83F), interpolation.interpolate(0.4167).value(), 0.01);
         assertVectorEquals(new Vector3Float(5.89F, 3.86F, 2.53F), interpolation.interpolate(0.5).value(), 0.01);
         assertVectorEquals(new Vector3Float(5.17F, 8.95F, 7.97F), interpolation.interpolate(0.75).value(), 0.01);
+        assertVectorEquals(new Vector3Float(7.06F, 9.89F, 9.87F), interpolation.interpolate(0.9167F).value(), 0.01);
         assertVectorEquals(new Vector3Float(10F, 10F, 10F), interpolation.interpolate(1).value(), 0.01);
     }
 }
