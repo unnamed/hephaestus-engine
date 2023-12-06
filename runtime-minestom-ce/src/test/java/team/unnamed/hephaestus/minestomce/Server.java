@@ -34,16 +34,12 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.block.Block;
 import team.unnamed.creative.BuiltResourcePack;
-import team.unnamed.creative.ResourcePack;
-import team.unnamed.creative.base.Writable;
-import team.unnamed.creative.metadata.Metadata;
 import team.unnamed.creative.server.ResourcePackRequestHandler;
 import team.unnamed.creative.server.ResourcePackServer;
 import team.unnamed.hephaestus.minestomce.playermodel.PlayerModelEntity;
 import team.unnamed.hephaestus.minestomce.skin.MinetoolsSkinProvider;
 import team.unnamed.hephaestus.minestomce.skin.SkinProvider;
-import team.unnamed.hephaestus.playermodel.PlayerModel;
-import team.unnamed.hephaestus.playermodel.Skin;
+import team.unnamed.hephaestus.player.PlayerModel;
 
 public class Server {
 

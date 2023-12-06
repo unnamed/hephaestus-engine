@@ -1,6 +1,6 @@
 package team.unnamed.hephaestus.minestomce.skin;
 
-import team.unnamed.hephaestus.playermodel.Skin;
+import team.unnamed.hephaestus.player.Skin;
 
 public interface SkinProvider {
 

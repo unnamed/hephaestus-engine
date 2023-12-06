@@ -32,8 +32,8 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.minestomce.BoneEntity;
 import team.unnamed.hephaestus.minestomce.GenericBoneEntity;
 import team.unnamed.hephaestus.minestomce.ModelEntity;
-import team.unnamed.hephaestus.playermodel.PlayerBoneType;
-import team.unnamed.hephaestus.playermodel.PlayerModel;
+import team.unnamed.hephaestus.player.PlayerBoneType;
+import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.util.Quaternion;
 
 import java.util.concurrent.CompletableFuture;
@@ -62,7 +62,7 @@ public class PlayerModelEntity extends ModelEntity {
         PlayerBoneType boneType = PlayerBoneType.matchFor(model().skin(), bone.name());
         GenericBoneEntity boneEntity;
 
-        if (boneType != PlayerBoneType.UNKNOWN) {
+        if (boneType != null) {
             boneEntity = new PlayerBoneEntity(this, bone, position, rotation, scale);
         } else {
             boneEntity = new BoneEntity(this, bone, position, rotation, scale);

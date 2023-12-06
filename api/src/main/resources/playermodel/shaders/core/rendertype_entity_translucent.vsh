@@ -10,26 +10,27 @@ in ivec2 UV1;
 in ivec2 UV2;
 in vec3 Normal;
 
-uniform sampler2D Sampler0;
 uniform sampler2D Sampler1;
 uniform sampler2D Sampler2;
 
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
 uniform mat3 IViewRotMat;
+uniform int FogShape;
 
 uniform vec3 Light0_Direction;
 uniform vec3 Light1_Direction;
-
-uniform int FogShape;
 
 out float vertexDistance;
 out vec4 vertexColor;
 out vec4 lightMapColor;
 out vec4 overlayColor;
 out vec2 texCoord0;
-out vec2 texCoord1;
 out vec4 normal;
+
+// hephaestus-engine start
+uniform sampler2D Sampler0;
+out vec2 texCoord1;
 out float part;
 
 #define SPACING 1024.0
@@ -68,13 +69,19 @@ const vec2[] origins = vec2[](
     vec2(16.0, 48.0), // left leg
     vec2(0.0,  48.0)
 );
+// hephaestus-engine end
 
 void main() {
-    vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, normalize(Normal), Color);
+    // gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0); // hephaestus-engine
+
+    // vertexDistance = fog_distance(ModelViewMat, IViewRotMat * Position, FogShape); // hephaestus-engine
+    vertexColor = minecraft_mix_light(Light0_Direction, Light1_Direction, normalize(Normal), Color); // hephaestus-engine - normalize(Normal)
     lightMapColor = texelFetch(Sampler2, UV2 / 16, 0);
     overlayColor = texelFetch(Sampler1, UV1, 0);
+    // texCoord0 = UV0; // hephaestus-engine
     normal = ProjMat * ModelViewMat * vec4(Normal, 0.0);
 
+    // hephaestus-engine start
     ivec2 dim = textureSize(Sampler0, 0);
 
     if (ProjMat[2][3] == 0.0 || dim.x != 64 || dim.y != 64) { // short circuit if cannot be player
@@ -83,8 +90,7 @@ void main() {
         texCoord1 = vec2(0.0);
         vertexDistance = fog_distance(ModelViewMat, IViewRotMat * Position, FogShape);
         gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
-    }
-    else {
+    } else {
         vec3 wpos = IViewRotMat * Position;
         vec2 UVout = UV0;
         vec2 UVout2 = vec2(0.0);
@@ -94,8 +100,7 @@ void main() {
 
         if (partId == 0) { // higher precision position if no translation is needed
             gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
-        }
-        else {
+        } else {
             vec4 samp1 = texture(Sampler0, vec2(54.0 / 64.0, 20.0 / 64.0));
             vec4 samp2 = texture(Sampler0, vec2(55.0 / 64.0, 20.0 / 64.0));
             bool slim = samp1.a == 0.0 || (((samp1.r + samp1.g + samp1.b) == 0.0) && ((samp2.r + samp2.g + samp2.b) == 0.0) && samp1.a == 1.0 && samp2.a == 1.0);
@@ -112,8 +117,7 @@ void main() {
 
             if (slim && (partId == 1 || partId == 2)) {
                 subuvIndex += 6;
-            }
-            else if (partId == 3) {
+            } else if (partId == 3) {
                 subuvIndex += 12;
             }
 
@@ -123,28 +127,21 @@ void main() {
             if (faceId == 1) {
                 if (vertexId == 0) {
                     offset += subuv.zw;
-                }
-                else if (vertexId == 1) {
+                } else if (vertexId == 1) {
                     offset += subuv.xw;
-                }
-                else if (vertexId == 2) {
+                } else if (vertexId == 2) {
                     offset += subuv.xy;
-                }
-                else {
+                } else {
                     offset += subuv.zy;
                 }
-            }
-            else {
+            } else {
                 if (vertexId == 0) {
                     offset += subuv.zy;
-                }
-                else if (vertexId == 1) {
+                } else if (vertexId == 1) {
                     offset += subuv.xy;
-                }
-                else if (vertexId == 2) {
+                } else if (vertexId == 2) {
                     offset += subuv.xw;
-                }
-                else {
+                } else {
                     offset += subuv.zw;
                 }
             }
@@ -159,4 +156,5 @@ void main() {
         texCoord0 = UVout;
         texCoord1 = UVout2;
     }
+    // hephaestus-engine end
 }

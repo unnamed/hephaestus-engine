@@ -21,44 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.playermodel;
+package team.unnamed.hephaestus.player;
 
-import team.unnamed.creative.base.Vector2Float;
-import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.animation.Animation;
-import team.unnamed.hephaestus.asset.ModelAsset;
+import team.unnamed.creative.ResourcePack;
 
-import java.util.Map;
+@FunctionalInterface
+public interface PlayerModelWriter<T> {
 
-public class PlayerModel extends Model {
+    void write(T target);
 
-    private final Skin skin;
-
-    public PlayerModel(
-            String name,
-            Map<String, Bone> bones,
-            Vector2Float boundingBox,
-            ModelAsset asset,
-            Map<String, Animation> animations,
-            Skin skin
-    ) {
-        super(name, bones, boundingBox, asset, animations);
-        this.skin = skin;
+    static PlayerModelWriter<ResourcePack> resource() {
+        return new ResourcePlayerModelWriter();
     }
 
-    public Skin skin() {
-        return skin;
-    }
-
-    public static PlayerModel fromModel(Skin skin, Model model) {
-        return new PlayerModel(
-                model.name(),
-                model.boneMap(),
-                model.boundingBox(),
-                model.asset(),
-                model.animations(),
-                skin
-        );
-    }
 }

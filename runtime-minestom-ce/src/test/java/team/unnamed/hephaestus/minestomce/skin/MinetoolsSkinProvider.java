@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.playermodel.Skin;
+import team.unnamed.hephaestus.player.Skin;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -66,7 +66,7 @@ public class MinetoolsSkinProvider implements SkinProvider {
                         String signature = property.get("signature").getAsString();
                         String value = property.get("value").getAsString();
 
-                        return new Skin(signature, value, type);
+                        return Skin.skin(signature, value, type);
                     }
                 }
 

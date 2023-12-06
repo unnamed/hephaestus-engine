@@ -34,9 +34,9 @@ import net.minestom.server.item.metadata.PlayerHeadMeta;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.minestomce.BoneEntity;
-import team.unnamed.hephaestus.playermodel.PlayerBoneType;
-import team.unnamed.hephaestus.playermodel.PlayerModel;
-import team.unnamed.hephaestus.playermodel.Skin;
+import team.unnamed.hephaestus.player.PlayerBoneType;
+import team.unnamed.hephaestus.player.PlayerModel;
+import team.unnamed.hephaestus.player.Skin;
 import team.unnamed.hephaestus.util.Quaternion;
 
 import java.util.UUID;
