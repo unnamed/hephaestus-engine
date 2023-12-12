@@ -48,8 +48,7 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
-class NormalAnimationController implements AnimationController {
-
+class AnimationControllerImpl implements AnimationController {
     private final Deque<Animation> queue = new LinkedList<>();
     private final BaseModelView<?> view;
 
@@ -58,15 +57,14 @@ class NormalAnimationController implements AnimationController {
 
     private final Map<String, BoneFrame> lastFrames = new HashMap<>();
 
-    // Reference to the animation currently being played
     private @Nullable Animation currentAnimation;
 
-    NormalAnimationController(BaseModelView<?> view) {
-        this.view = view;
+    AnimationControllerImpl(final @NotNull BaseModelView<?> view) {
+        this.view = requireNonNull(view, "view");
     }
 
     @Override
-    public synchronized void queue(Animation animation, int transitionTicks) {
+    public synchronized void queue(final @NotNull Animation animation, final int transitionTicks) {
         requireNonNull(animation, "animation");
 
         if (transitionTicks <= 0) {
@@ -173,7 +171,7 @@ class NormalAnimationController implements AnimationController {
     }
 
     @Override
-    public synchronized void tick(Quaternion initialRotation, Vector3Float initialPosition) {
+    public synchronized void tick(@NotNull Quaternion initialRotation, @NotNull Vector3Float initialPosition) {
         for (Bone bone : view.model().bones()) {
             tickBone(
                     bone,
@@ -260,5 +258,4 @@ class NormalAnimationController implements AnimationController {
     private BoneFrame fallback(String boneName) {
         return lastFrames.getOrDefault(boneName, BoneFrame.INITIAL);
     }
-
 }

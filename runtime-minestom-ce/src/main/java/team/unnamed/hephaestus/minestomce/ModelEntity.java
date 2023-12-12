@@ -26,12 +26,10 @@ package team.unnamed.hephaestus.minestomce;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
-import net.minestom.server.network.packet.server.play.SetPassengersPacket;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector2Float;
@@ -43,7 +41,6 @@ import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.animation.controller.AnimationController;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,7 +59,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         super(type);
         this.model = model;
         this.scale = scale;
-        this.animationController = AnimationController.nonDelayed(this);
+        this.animationController = AnimationController.create(this);
 
         // model entity is not auto-viewable by default
         setAutoViewable(false);
