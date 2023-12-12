@@ -26,7 +26,7 @@ package team.unnamed.hephaestus.animation;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.interpolation.Interpolation;
-import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.interpolation.Interpolators;
 import team.unnamed.hephaestus.animation.timeline.KeyFrame;
 import team.unnamed.hephaestus.animation.timeline.KeyFrameBezierAttachment;
 
@@ -37,7 +37,7 @@ class InterpolationTest {
 
     @Test
     void test_linear_vector_interpolation() {
-        Interpolation<Vector3Float> interpolation = Interpolator.lerpVector3Float()
+        Interpolation<Vector3Float> interpolation = Interpolators.lerpVector3Float()
                 .interpolation(
                         new Vector3Float(0, 0, 0),
                         new Vector3Float(10, 10, 10)
@@ -53,7 +53,7 @@ class InterpolationTest {
 
     @Test
     void test_binary_catmullrom_interpolation() {
-        Interpolation<Vector3Float> interpolation = Interpolator.catmullRomSplineVector3Float().interpolation(
+        Interpolation<Vector3Float> interpolation = Interpolators.catmullRomSplineVector3Float().interpolation(
                 new Vector3Float(0, 0, 0),
                 new Vector3Float(20, 20, 20)
         );
@@ -68,7 +68,7 @@ class InterpolationTest {
 
     @Test
     void test_ternary_catmullrom_interpolation() {
-        Interpolation<Vector3Float> interpolation = Interpolator.catmullRomSplineVector3Float().interpolation(
+        Interpolation<Vector3Float> interpolation = Interpolators.catmullRomSplineVector3Float().interpolation(
                 null,
                 new Vector3Float(4.5F, 4.5F, 4.5F),
                 new Vector3Float(4F, 4F, 4F),
@@ -93,7 +93,7 @@ class InterpolationTest {
 
     @Test
     void test_step_interpolation() {
-        Interpolation<Vector3Float> interpolation = Interpolator.stepVector3Float().interpolation(
+        Interpolation<Vector3Float> interpolation = Interpolators.stepVector3Float().interpolation(
                 new Vector3Float(0, 0, 0),
                 new Vector3Float(10, 10, 10)
         );
@@ -124,7 +124,7 @@ class InterpolationTest {
                 new Vector3Float(12.543104F,0.205364F,0.257731F)
         ));
 
-        final Interpolation<Vector3Float> interpolation = Interpolator.bezierVector3Float(200).interpolation(fromKeyFrame, toKeyFrame);
+        final Interpolation<Vector3Float> interpolation = Interpolators.bezierVector3Float(200).interpolation(fromKeyFrame, toKeyFrame);
 
         assertVectorEquals(new Vector3Float(0, 0, 0), interpolation.interpolate(0), 0.01);
         assertVectorEquals(new Vector3Float(6.23F, 0.77F, 0.87F), interpolation.interpolate(0.25), 0.01);

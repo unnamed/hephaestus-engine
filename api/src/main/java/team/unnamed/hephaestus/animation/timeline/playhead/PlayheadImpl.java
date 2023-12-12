@@ -26,7 +26,7 @@ package team.unnamed.hephaestus.animation.timeline.playhead;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.animation.interpolation.Interpolation;
-import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.interpolation.Interpolators;
 import team.unnamed.hephaestus.animation.interpolation.KeyFrameInterpolator;
 import team.unnamed.hephaestus.animation.timeline.KeyFrame;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
@@ -68,7 +68,7 @@ final class PlayheadImpl<T> implements Playhead<T> {
             // as the first keyframe
             // |-|         |           |
             // (X)        first       second
-            previous = new KeyFrame<>(0, firstKeyFrame.value(), Interpolator.always(firstKeyFrame.value()));
+            previous = new KeyFrame<>(0, firstKeyFrame.value(), Interpolators.always(firstKeyFrame.value()));
             next = firstKeyFrame;
             after = secondKeyFrame;
         } else {
@@ -85,7 +85,7 @@ final class PlayheadImpl<T> implements Playhead<T> {
     private KeyFrameInterpolator<T> computeInterpolator() {
         KeyFrameInterpolator<T> interpolator;
         if (next == null) {
-            interpolator = Interpolator.always(previous.value());
+            interpolator = Interpolators.always(previous.value());
         } else {
             interpolator = previous.interpolatorOr(timeline.defaultInterpolator())
                     .combineRight(next.interpolatorOr(timeline.defaultInterpolator()));

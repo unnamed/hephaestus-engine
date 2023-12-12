@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.animation;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.interpolation.Interpolator;
+import team.unnamed.hephaestus.animation.interpolation.Interpolators;
 import team.unnamed.hephaestus.animation.timeline.playhead.Playhead;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
 
@@ -43,7 +44,7 @@ class TimelineTest {
     ) {
         Timeline.Builder<Vector3Float> builder = Timeline.<Vector3Float>timeline()
                 .initial(new Vector3Float(0, 0, 0))
-                .defaultInterpolator(Interpolator.lerpVector3Float());
+                .defaultInterpolator(Interpolators.lerpVector3Float());
         configurer.accept(builder);
         Timeline<Vector3Float> timeline = builder.build();
         Playhead<Vector3Float> it = timeline.createPlayhead();
@@ -172,7 +173,7 @@ class TimelineTest {
     void test_catmullrom_interpolated_timeline() {
         testTimeline(
                 timeline -> {
-                    timeline.defaultInterpolator(Interpolator.catmullRomSplineVector3Float());
+                    timeline.defaultInterpolator(Interpolators.catmullRomSplineVector3Float());
                     timeline.keyFrame(0, new Vector3Float(0, 0, 0));
                     timeline.keyFrame(4, new Vector3Float(-4, -4, -4));
                     timeline.keyFrame(8, new Vector3Float(4, 4, 4));
@@ -204,8 +205,8 @@ class TimelineTest {
         testTimeline(
                 timeline -> {
                     // linear + smooth = smooth
-                    timeline.keyFrame(0, new Vector3Float(0, 0, 0), Interpolator.lerpVector3Float());
-                    timeline.keyFrame(4, new Vector3Float(20, 20, 20), Interpolator.catmullRomSplineVector3Float());
+                    timeline.keyFrame(0, new Vector3Float(0, 0, 0), Interpolators.lerpVector3Float());
+                    timeline.keyFrame(4, new Vector3Float(20, 20, 20), Interpolators.catmullRomSplineVector3Float());
                 },
                 new Vector3Float(0, 0, 0),
                 new Vector3Float(4.063F, 4.063F, 4.063F),
@@ -218,16 +219,16 @@ class TimelineTest {
     @Test
     public void test_combine_step_and_any() {
         List<Interpolator<Vector3Float>> interpolators = Arrays.asList(
-                Interpolator.stepVector3Float(),
-                Interpolator.lerpVector3Float(),
-                Interpolator.catmullRomSplineVector3Float(),
-                Interpolator.always(new Vector3Float(84, 84, 84))
+                Interpolators.stepVector3Float(),
+                Interpolators.lerpVector3Float(),
+                Interpolators.catmullRomSplineVector3Float(),
+                Interpolators.always(new Vector3Float(84, 84, 84))
         );
         for (Interpolator<Vector3Float> interpolator : interpolators) {
             testTimeline(
                     timeline -> {
                         // step + any = step
-                        timeline.keyFrame(0, new Vector3Float(0, 0, 0), Interpolator.stepVector3Float());
+                        timeline.keyFrame(0, new Vector3Float(0, 0, 0), Interpolators.stepVector3Float());
                         timeline.keyFrame(4, new Vector3Float(20, 20, 20), interpolator);
                     },
                     new Vector3Float(0, 0, 0),
@@ -242,16 +243,16 @@ class TimelineTest {
     @Test
     public void test_combine_smooth_and_any() {
         List<Interpolator<Vector3Float>> interpolators = Arrays.asList(
-                Interpolator.stepVector3Float(),
-                Interpolator.lerpVector3Float(),
-                Interpolator.catmullRomSplineVector3Float(),
-                Interpolator.always(new Vector3Float(84, 84, 84))
+                Interpolators.stepVector3Float(),
+                Interpolators.lerpVector3Float(),
+                Interpolators.catmullRomSplineVector3Float(),
+                Interpolators.always(new Vector3Float(84, 84, 84))
         );
         for (Interpolator<Vector3Float> interpolator : interpolators) {
             testTimeline(
                     timeline -> {
                         // smooth + any = smooth
-                        timeline.keyFrame(0, new Vector3Float(0, 0, 0), Interpolator.catmullRomSplineVector3Float());
+                        timeline.keyFrame(0, new Vector3Float(0, 0, 0), Interpolators.catmullRomSplineVector3Float());
                         timeline.keyFrame(4, new Vector3Float(20, 20, 20), interpolator);
                     },
                     new Vector3Float(0, 0, 0),
