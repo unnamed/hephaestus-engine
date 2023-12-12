@@ -29,7 +29,6 @@ import team.unnamed.creative.base.Vector3Float;
 import static java.util.Objects.requireNonNull;
 
 final class StepVectorInterpolator implements Interpolator<Vector3Float> {
-
     static final Interpolator<Vector3Float> INSTANCE = new StepVectorInterpolator();
 
     private StepVectorInterpolator() {
@@ -50,7 +49,6 @@ final class StepVectorInterpolator implements Interpolator<Vector3Float> {
     }
 
     static final class StepVectorInterpolation implements Interpolation<Vector3Float> {
-
         private final Vector3Float from;
         private final Vector3Float to;
 
@@ -67,5 +65,4 @@ final class StepVectorInterpolator implements Interpolator<Vector3Float> {
             return progress < 1 ? from : to;
         }
     }
-
 }

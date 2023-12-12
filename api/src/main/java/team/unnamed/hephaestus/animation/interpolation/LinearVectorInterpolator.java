@@ -27,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 
 final class LinearVectorInterpolator implements Interpolator<Vector3Float> {
-
     static final Interpolator<Vector3Float> INSTANCE = new LinearVectorInterpolator();
 
     private LinearVectorInterpolator() {
@@ -50,7 +49,6 @@ final class LinearVectorInterpolator implements Interpolator<Vector3Float> {
     }
 
     static final class LinearVectorInterpolation implements Interpolation<Vector3Float> {
-
         private final Vector3Float from;
         private final Vector3Float to;
 
@@ -72,7 +70,5 @@ final class LinearVectorInterpolator implements Interpolator<Vector3Float> {
                     (float) (from.z() * complement + to.z() * progress)
             );
         }
-
     }
-
 }

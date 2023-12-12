@@ -41,52 +41,6 @@ final class BezierInterpolator implements KeyFrameInterpolator<Vector3Float> {
         this.divisions = divisions;
     }
 
-    private static float findClosestAndLerp(final Vector2Float[][] points, final float time, final Axis3D axis) {
-        float closestDistance = Float.MAX_VALUE;
-
-        float closest = Float.MAX_VALUE;
-        float closestTime = Float.MAX_VALUE;
-
-        for (final Vector2Float[] byAxis : points) {
-            Vector2Float vector = byAxis[axis.ordinal()];
-            final float t = vector.x(); // time for this point
-            final float value = vector.y(); // value for this point
-
-            final float distance = Math.abs(time - t);
-            if (distance < closestDistance) {
-                closest = value;
-                closestTime = t;
-                closestDistance = distance;
-            }
-        }
-
-        // find second closest
-        closestDistance = Float.MAX_VALUE;
-        float secondClosest = Float.MAX_VALUE;
-        float secondClosestTime = Float.MAX_VALUE;
-
-        for (final Vector2Float[] byAxis : points) {
-            Vector2Float vector = byAxis[axis.ordinal()];
-            final float t = vector.x(); // time for this point
-            final float value = vector.y(); // value for this point
-
-            final float distance = Math.abs(time - t);
-            if (distance < closestDistance && t != closestTime) {
-                secondClosest = value;
-                secondClosestTime = t;
-                closestDistance = distance;
-            }
-        }
-
-        // linear lerp between these closest points (lerp method doesn't exist)
-        final float t = clamp((time - closestTime) / (secondClosestTime - closestTime), 0, 1);
-        return closest + (secondClosest - closest) * t;
-    }
-
-    private static float clamp(final float value, final float min, final float max) {
-        return Math.max(min, Math.min(max, value));
-    }
-
     @Override
     public @NotNull Interpolation<Vector3Float> interpolation(final @NotNull KeyFrame<Vector3Float> from, final @NotNull KeyFrame<Vector3Float> to) {
         KeyFrameBezierAttachment fromBezier = from.attachment(KeyFrameBezierAttachment.class);
@@ -102,7 +56,6 @@ final class BezierInterpolator implements KeyFrameInterpolator<Vector3Float> {
         final float timeGap = to.time() - from.time();
 
         // points[division][axis]
-        // 600 vectors ????
         final Vector2Float[][] points = new Vector2Float[divisions][AXES.length];
 
         for (final Axis3D axis : AXES) {
@@ -154,5 +107,51 @@ final class BezierInterpolator implements KeyFrameInterpolator<Vector3Float> {
         } else {
             return this;
         }
+    }
+
+    private static float clamp(final float value, final float min, final float max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    private static float findClosestAndLerp(final Vector2Float[][] points, final float time, final Axis3D axis) {
+        float closestDistance = Float.MAX_VALUE;
+
+        float closest = Float.MAX_VALUE;
+        float closestTime = Float.MAX_VALUE;
+
+        for (final Vector2Float[] byAxis : points) {
+            Vector2Float vector = byAxis[axis.ordinal()];
+            final float t = vector.x(); // time for this point
+            final float value = vector.y(); // value for this point
+
+            final float distance = Math.abs(time - t);
+            if (distance < closestDistance) {
+                closest = value;
+                closestTime = t;
+                closestDistance = distance;
+            }
+        }
+
+        // find second closest
+        closestDistance = Float.MAX_VALUE;
+        float secondClosest = Float.MAX_VALUE;
+        float secondClosestTime = Float.MAX_VALUE;
+
+        for (final Vector2Float[] byAxis : points) {
+            Vector2Float vector = byAxis[axis.ordinal()];
+            final float t = vector.x(); // time for this point
+            final float value = vector.y(); // value for this point
+
+            final float distance = Math.abs(time - t);
+            if (distance < closestDistance && t != closestTime) {
+                secondClosest = value;
+                secondClosestTime = t;
+                closestDistance = distance;
+            }
+        }
+
+        // linear lerp between these closest points (lerp method doesn't exist)
+        final float t = clamp((time - closestTime) / (secondClosestTime - closestTime), 0, 1);
+        return closest + (secondClosest - closest) * t;
     }
 }

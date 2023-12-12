@@ -30,7 +30,6 @@ import team.unnamed.creative.base.Vector3Float;
 import static java.util.Objects.requireNonNull;
 
 final class CatmullRomInterpolator implements Interpolator<Vector3Float> {
-
     static final Interpolator<Vector3Float> INSTANCE = new CatmullRomInterpolator();
 
     private CatmullRomInterpolator() {
