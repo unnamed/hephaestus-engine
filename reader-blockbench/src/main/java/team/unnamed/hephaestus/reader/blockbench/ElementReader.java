@@ -30,9 +30,9 @@ import team.unnamed.creative.base.Axis3D;
 import team.unnamed.creative.base.CubeFace;
 import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.creative.base.Vector4Float;
 import team.unnamed.creative.model.ElementFace;
 import team.unnamed.creative.model.ElementRotation;
+import team.unnamed.creative.texture.TextureUV;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.asset.BoneAsset;
 import team.unnamed.hephaestus.asset.ElementAsset;
@@ -47,6 +47,7 @@ import java.util.Locale;
 import java.util.Map;
 
 final class ElementReader {
+    private static final TextureUV ZERO_UV = TextureUV.uv(0F, 0F, 0F, 0F);
 
     /**
      * Locally reads cubes from the "elements" property from
@@ -109,7 +110,7 @@ final class ElementReader {
                         : faceJson.get("texture").getAsInt();
 
                 JsonArray uvJson = faceJson.get("uv").getAsJsonArray();
-                Vector4Float uv = new Vector4Float(
+                final TextureUV uv = TextureUV.uv(
                         uvJson.get(0).getAsFloat() / modelData.textureWidth,
                         uvJson.get(1).getAsFloat() / modelData.textureHeight,
                         uvJson.get(2).getAsFloat() / modelData.textureWidth,
@@ -118,8 +119,8 @@ final class ElementReader {
 
                 int faceRotation = faceJson.has("rotation") ? faceJson.get("rotation").getAsInt() : ElementFace.DEFAULT_ROTATION;
 
-                if (!uv.equals(Vector4Float.ZERO)) {
-                    faces.put(face, ElementFace.builder()
+                if (!uv.equals(ZERO_UV)) {
+                    faces.put(face, ElementFace.face()
                             .uv(uv)
                             .rotation(faceRotation)
                             .texture("#" + textureId)
