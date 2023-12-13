@@ -137,18 +137,14 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     }
 
     @Override
-    public void tick(long time) {
-        super.tick(time);
-        this.tickAnimations();
+    public void tickAnimations() {
+        animationController.tick(position.yaw(), position.pitch());
     }
 
     @Override
-    public void setAutoViewable(boolean autoViewable) {
-        super.setAutoViewable(autoViewable);
-
-        for (GenericBoneEntity boneEntity : bones.values()) {
-            boneEntity.setAutoViewable(autoViewable);
-        }
+    public void tick(long time) {
+        super.tick(time);
+        this.tickAnimations();
     }
 
     @Override
@@ -165,7 +161,8 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         return super.setInstance(instance, spawnPosition)
                 .thenAccept(ignored -> {
                     for (GenericBoneEntity bone : bones()) {
-                        bone.setInstance(instance, spawnPosition);
+                        bone.setInstance(instance, spawnPosition).join();
+                        addPassenger(bone);
                     }
                 });
     }
@@ -175,17 +172,9 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         return super.teleport(position)
                 .thenRun(() -> {
                     for (GenericBoneEntity bone : bones()) {
-                        bone.teleport(position);
+                        bone.teleport(position).join();
+                        addPassenger(bone);
                     }
                 });
-    }
-
-    @Override
-    public void setView(float yaw, float pitch) {
-        super.setView(yaw, pitch);
-
-        for (GenericBoneEntity bone : bones()) {
-            bone.setView(yaw, pitch);
-        }
     }
 }
