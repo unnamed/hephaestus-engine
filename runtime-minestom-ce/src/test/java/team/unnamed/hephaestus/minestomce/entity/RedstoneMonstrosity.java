@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.minestomce.entity;
 
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.ai.goal.FollowTargetGoal;
@@ -40,6 +41,7 @@ public class RedstoneMonstrosity extends ModelEntity {
     private final Animation idleAnimation;
     private final Animation walkAnimation;
     private Animation currentAnimation;
+    private Pos latestPosition;
 
     public RedstoneMonstrosity(final @NotNull Model model) {
         super(EntityType.PIG, model, 1F);
@@ -60,21 +62,27 @@ public class RedstoneMonstrosity extends ModelEntity {
     }
 
     @Override
+    public void tickAnimations() {
+        // tick without pitch
+        animationController.tick(position.yaw(), 0F);
+    }
+
+    @Override
     public void tick(long time) {
         super.tick(time);
 
-        if (previousPosition.samePoint(position)) {
+        if (latestPosition == null || latestPosition.samePoint(position)) {
             if (idleAnimation != currentAnimation) {
-                System.out.println("now idle");
                 animationController().queue(idleAnimation, 0);
                 currentAnimation = idleAnimation;
             }
         } else {
             if (walkAnimation != currentAnimation) {
-                System.out.println("now walking");
                 animationController().queue(walkAnimation, 0);
                 currentAnimation = walkAnimation;
             }
         }
+
+        latestPosition = position;
     }
 }
