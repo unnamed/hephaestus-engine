@@ -30,6 +30,7 @@ import team.unnamed.creative.model.ItemOverride;
 import team.unnamed.creative.model.ItemPredicate;
 import team.unnamed.creative.model.ItemTransform;
 import team.unnamed.creative.model.Model;
+import team.unnamed.creative.model.ModelTextures;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,6 +59,7 @@ public final class ResourcePlayerModelWriter implements PlayerModelWriter<Resour
                                 boneType.scale()
                         ));
                     }})
+                    .textures(ModelTextures.builder().build()) // todo:
                     .build();
 
             resourcePack.model(model);
@@ -70,6 +72,7 @@ public final class ResourcePlayerModelWriter implements PlayerModelWriter<Resour
                 .key(PLAYER_HEAD_KEY)
                 .parent(TEMPLATE_SKULL_KEY)
                 .overrides(overrides)
+                .textures(ModelTextures.builder().build()) // todo:
                 .build());
 
         // copy our shaders
