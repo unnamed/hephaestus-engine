@@ -23,7 +23,10 @@
  */
 package team.unnamed.hephaestus.minestomce;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import team.unnamed.creative.ResourcePack;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.player.PlayerModelWriter;
@@ -34,12 +37,22 @@ import team.unnamed.hephaestus.writer.ModelWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 public final class ModelRegistry {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelRegistry.class);
 
     private final Map<String, Model> models = new HashMap<>();
     private final Map<String, ModelEntity> views = new HashMap<>();
@@ -57,10 +70,46 @@ public final class ModelRegistry {
 
     public void loadModelFromResource(String name) {
         try (InputStream input = ModelRegistry.class.getClassLoader().getResourceAsStream(name)) {
-            Objects.requireNonNull(input, "Model not found: " + name);
+            requireNonNull(input, "Model not found: " + name);
             model(reader.read(input));
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to load model " + name, e);
+        }
+    }
+
+    public void loadModelsFromResourcesFolder(final @NotNull String folderPath) {
+        final URI uri;
+        try {
+            uri = getClass().getClassLoader().getResource(folderPath).toURI();
+        } catch (final URISyntaxException ignored) {
+            return; // should never happen, but make the compiler happy
+        }
+
+        try {
+            Path path;
+            try {
+                path = Paths.get(uri);
+            } catch (final FileSystemNotFoundException ignored) {
+                path = FileSystems.newFileSystem(uri, new HashMap<>())
+                        .getPath('/' + folderPath);
+            }
+
+            try (final Stream<Path> contentStream = Files.list(path)) {
+                contentStream.forEach(filePath -> {
+                    if (Files.isRegularFile(filePath)) {
+                        try (final InputStream input = ModelRegistry.class.getClassLoader().getResourceAsStream(folderPath + '/' + filePath.getFileName())) {
+                            requireNonNull(input, "input for " + folderPath + "/" + filePath.getFileName());
+                            final Model model = reader.read(input);
+                            model(model);
+                            LOGGER.info("Loaded '" + model.name() + "' model");
+                        } catch (final IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    }
+                });
+            }
+        } catch (final IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 

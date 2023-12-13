@@ -30,31 +30,41 @@ import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
+import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.block.Block;
 import team.unnamed.creative.BuiltResourcePack;
 import team.unnamed.creative.server.ResourcePackRequestHandler;
 import team.unnamed.creative.server.ResourcePackServer;
+import team.unnamed.hephaestus.minestomce.entity.RedstoneMonstrosity;
 import team.unnamed.hephaestus.minestomce.playermodel.PlayerModelEntity;
 import team.unnamed.hephaestus.minestomce.skin.MinetoolsSkinProvider;
 import team.unnamed.hephaestus.minestomce.skin.SkinProvider;
 import team.unnamed.hephaestus.player.PlayerModel;
+
+import java.io.InputStream;
+import java.util.logging.LogManager;
 
 public class Server {
 
     private final static SkinProvider SKIN_PROVIDER = new MinetoolsSkinProvider();
 
     public static void main(String[] args) throws Exception {
-        MinecraftServer server = MinecraftServer.init();
-        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        // configure logger
+        try (final InputStream stream = Server.class.getResourceAsStream("/logging.properties")) {
+            LogManager.getLogManager().readConfiguration(stream);
+        }
+
+        final MinecraftServer server = MinecraftServer.init();
+        final InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
 
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
         instance.setChunkSupplier(LightingChunk::new);
 
-        GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
+        final GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
         eventHandler.addListener(PlayerLoginEvent.class, event -> {
-            Player player = event.getPlayer();
+            final Player player = event.getPlayer();
             player.setGameMode(GameMode.CREATIVE);
             event.setSpawningInstance(instance);
             player.setRespawnPoint(new Pos(0, 42, 0));
@@ -63,36 +73,51 @@ public class Server {
         // Register model interaction listener
         ModelClickListener.register(eventHandler);
 
-        ModelRegistry registry = new ModelRegistry();
-        registry.loadModelFromResource("redstone_monstrosity.bbmodel");
-        registry.loadModelFromResource("dragon.bbmodel");
-        registry.loadModelFromResource("geometry.bbmodel");
-        registry.loadModelFromResource("player_anims.bbmodel");
+        // Create our ModelRegistry
+        final ModelRegistry registry = new ModelRegistry();
+        registry.loadModelsFromResourcesFolder("models");
+
+        eventHandler.addListener(PlayerSpawnEvent.class, event -> {
+            final var player = event.getPlayer();
+
+            // add a custom model entity (RedstoneMonstrosity)
+            // which has AI
+            final RedstoneMonstrosity redstoneMonstrosity = new RedstoneMonstrosity(
+                    registry.model("redstone_monstrosity")
+            );
+            redstoneMonstrosity.setInstance(instance, new Pos(10, 43, 0));
+            MinestomModelEngine.minestom().tracker().startGlobalTracking(redstoneMonstrosity);
+            registry.view("redstone_monstrosity_" + player.getName(), redstoneMonstrosity);
+        });
 
         BuiltResourcePack resourcePack = ResourcePackFactory.create(registry);
         MinecraftServer.getCommandManager().register(new HephaestusCommand(registry, resourcePack));
 
-        ModelEntity testView = MinestomModelEngine.minestom().createViewAndTrack(
-                registry.model("player_anims"),
-                instance,
-                new Pos(0, 43, 0),
-                1f
-        );
+        {
+            // add a test model entity with 'player_anims' model
+            final ModelEntity testView = MinestomModelEngine.minestom().createViewAndTrack(
+                    registry.model("player_anims"),
+                    instance,
+                    new Pos(0, 43, 0),
+                    1f
+            );
+            registry.view("test", testView);
+        }
 
-        PlayerModelEntity playerModel = new PlayerModelEntity(
-                EntityType.ARMOR_STAND,
-                PlayerModel.fromModel(
-                        SKIN_PROVIDER.fetchSkin("biconsumer"),
-                        registry.model("player_anims")
-                ),
-                1f
-        );
-
-        playerModel.setInstance(instance, new Pos(5, 43, 0));
-        MinestomModelEngine.minestom().tracker().startGlobalTracking(playerModel);
-
-        registry.view("test", testView);
-        registry.view("playertest", playerModel);
+        {
+            // add a custom model entity (PlayerModelEntity)
+            final PlayerModelEntity playerModel = new PlayerModelEntity(
+                    EntityType.ARMOR_STAND,
+                    PlayerModel.fromModel(
+                            SKIN_PROVIDER.fetchSkin("biconsumer"),
+                            registry.model("player_anims")
+                    ),
+                    1f
+            );
+            playerModel.setInstance(instance, new Pos(5, 43, 0));
+            MinestomModelEngine.minestom().tracker().startGlobalTracking(playerModel);
+            registry.view("playertest", playerModel);
+        }
 
         // create resource pack server, start and schedule stop
         ResourcePackServer resourcePackServer = ResourcePackServer.builder()
