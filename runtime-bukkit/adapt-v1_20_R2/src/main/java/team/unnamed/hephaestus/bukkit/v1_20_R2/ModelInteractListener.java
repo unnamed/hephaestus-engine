@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_18_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
 import io.papermc.paper.event.player.PlayerArmSwingEvent;
 import net.minecraft.server.level.ServerPlayer;

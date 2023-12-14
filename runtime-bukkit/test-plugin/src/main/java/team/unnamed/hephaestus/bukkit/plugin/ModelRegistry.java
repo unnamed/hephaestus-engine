@@ -21,16 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_18_R2;
+package team.unnamed.hephaestus.bukkit.plugin;
 
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
 
-public interface EntityFactory {
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-    EntityFactory DEFAULT = (level, model) -> new MinecraftModelEntity(EntityType.SLIME, level, model);
+public class ModelRegistry {
 
-    MinecraftModelEntity create(ServerLevel level, Model model);
+    private final Map<String, Model> models = new HashMap<>();
+
+    public void registerModel(Model model) {
+        models.put(model.name(), model);
+    }
+
+    public @Nullable Model model(String name) {
+        return models.get(name);
+    }
+
+    public Collection<String> modelNames() {
+        return models.keySet();
+    }
+
+    public Collection<Model> models() {
+        return models.values();
+    }
 
 }

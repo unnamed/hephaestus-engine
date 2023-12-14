@@ -21,14 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_18_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
 import com.mojang.datafixers.util.Pair;
 import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.Rotations;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundAddMobPacket;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.world.entity.EntityType;
@@ -37,7 +38,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import team.unnamed.creative.base.Vector3Float;
@@ -60,7 +61,7 @@ final class BoneEntity
     public boolean dirtyColor;
 
     BoneEntity(MinecraftModelEntity view, Bone bone) {
-        super(EntityType.ARMOR_STAND, view.level);
+        super(EntityType.ARMOR_STAND, view.level());
         this.view = view;
         this.bone = bone;
         this.initialize();
@@ -85,9 +86,9 @@ final class BoneEntity
         setItemSlot(EquipmentSlot.HEAD, nmsItem, true);
     }
 
-    void show(Consumer<Packet<?>> packetConsumer) {
-        packetConsumer.accept(new ClientboundAddMobPacket(this));
-        packetConsumer.accept(new ClientboundSetEntityDataPacket(super.getId(), super.getEntityData(), true));
+    void show(Consumer<Packet<ClientGamePacketListener>> packetConsumer) {
+        packetConsumer.accept(new ClientboundAddEntityPacket(this));
+        packetConsumer.accept(new ClientboundSetEntityDataPacket(super.getId(), super.getEntityData().packDirty()));
         packetConsumer.accept(new ClientboundSetEquipmentPacket(super.getId(), List.of(new Pair<>(
                 EquipmentSlot.HEAD,
                 super.getItemBySlot(EquipmentSlot.HEAD)
@@ -142,12 +143,9 @@ final class BoneEntity
     @Override
     public void position(Vector3Float position) {
         Vec3 root = view.position();
-        float offset = bone.small()
-                ? Minecraft.ARMOR_STAND_SMALL_VERTICAL_OFFSET
-                : Minecraft.ARMOR_STAND_DEFAULT_VERTICAL_OFFSET;
         super.setPos(
                 root.x + position.x(),
-                root.y + position.y() - offset,
+                root.y + position.y(),
                 root.z + position.z()
         );
     }

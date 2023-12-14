@@ -21,11 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_18_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -39,7 +40,7 @@ import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.animation.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationController;
 import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Collections;
@@ -61,8 +62,8 @@ public class MinecraftModelEntity extends Mob {
         super(type, world);
         this.model = model;
         this.bones = instantiateBones();
-        this.bukkitEntity = new CraftModelEntity(super.level.getCraftServer(), this);
-        this.animationController = AnimationController.create(bukkitEntity);
+        this.bukkitEntity = new CraftModelEntity(super.level().getCraftServer(), this);
+        this.animationController = AnimationController.nonDelayed(bukkitEntity);
 
         Vector2Float bb = model.boundingBox();
         this.modelDimensions = EntityDimensions.scalable(bb.x(), bb.y());
@@ -82,7 +83,7 @@ public class MinecraftModelEntity extends Mob {
     @Override
     public void tick() {
         super.tick();
-        this.animationController.tick(Math.toRadians(yRot));
+        this.animationController.tick();
     }
 
     private ImmutableMap<String, BoneEntity> instantiateBones() {
@@ -149,7 +150,7 @@ public class MinecraftModelEntity extends Mob {
     ) {
         // location computing
         var position = bone.position().add(parentPosition);
-        var rotatedPosition = Vectors.rotateAroundY(position, yawRadians);
+        var rotatedPosition = Vectors.rotateAroundYRadians(position, yawRadians);
 
         var entity = bones.get(bone.name());
         Objects.requireNonNull(entity, "Unknown bone");
@@ -192,8 +193,7 @@ public class MinecraftModelEntity extends Mob {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
-        // noinspection ConstantConditions
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return null;
     }
 

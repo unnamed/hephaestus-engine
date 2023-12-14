@@ -1,0 +1,7 @@
+main: team.unnamed.hephaestus.bukkit.plugin.HephaestusTestPlugin
+name: HephaestusTestPlugin
+version: 1.0.0
+depend: [creative-central]
+commands:
+    hephaestus:
+        description: Main command for hephaestus-engine test plugin

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_18_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import net.minecraft.server.level.ChunkMap;
@@ -32,19 +32,18 @@ import net.minecraft.world.level.entity.LevelCallback;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.Plugin;
 import org.spigotmc.AsyncCatcher;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
-import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static java.util.Objects.requireNonNull;
 
-public final class BukkitModelEngine_v1_18_R2 implements BukkitModelEngine {
+final class BukkitModelEngine_v1_20_R2Impl implements BukkitModelEngine_v1_20_R2 {
 
     private static final Access.FieldReflect<ServerEntity> SERVER_ENTITY_FIELD
             = Access.findFieldByType(ChunkMap.TrackedEntity.class, ServerEntity.class);
@@ -54,18 +53,15 @@ public final class BukkitModelEngine_v1_18_R2 implements BukkitModelEngine {
 
     private final EntityFactory entityFactory;
 
-    private BukkitModelEngine_v1_18_R2(Plugin plugin, EntityFactory entityFactory) {
+    BukkitModelEngine_v1_20_R2Impl(Plugin plugin, EntityFactory entityFactory) {
         requireNonNull(plugin, "plugin");
-        this.entityFactory = requireNonNull(entityFactory, "entityFactory");
+        requireNonNull(entityFactory, "entityFactory")
+        this.entityFactory = entityFactory;
         Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin), plugin);
     }
 
     @Override
-    public ModelEntity spawn(
-            Model model,
-            Location location,
-            CreatureSpawnEvent.SpawnReason reason
-    ) {
+    public ModelEntity createViewAndTrack(Model model, Location location, CreatureSpawnEvent.SpawnReason reason) {
         ServerLevel level = ((CraftWorld) location.getWorld()).getHandle();
 
         // inject our level entity handler to the level
@@ -81,14 +77,6 @@ public final class BukkitModelEngine_v1_18_R2 implements BukkitModelEngine {
         level.addFreshEntity(entity, reason);
 
         return entity.getBukkitEntity();
-    }
-
-    public static BukkitModelEngine create(Plugin plugin, EntityFactory entityFactory) {
-        return new BukkitModelEngine_v1_18_R2(plugin, entityFactory);
-    }
-
-    public static BukkitModelEngine create(Plugin plugin) {
-        return create(plugin, EntityFactory.DEFAULT);
     }
 
     @ParametersAreNonnullByDefault
@@ -127,6 +115,11 @@ public final class BukkitModelEngine_v1_18_R2 implements BukkitModelEngine {
         }
 
         @Override
+        public void onSectionChange(Entity entity) {
+            delegate.onSectionChange(entity);
+        }
+
+        @Override
         public void onCreated(Entity entity) {
             delegate.onCreated(entity);
         }
@@ -148,7 +141,7 @@ public final class BukkitModelEngine_v1_18_R2 implements BukkitModelEngine {
 
         @SuppressWarnings("unchecked")
         public static void injectAt(ServerLevel level) {
-            var entityManager = level.entityManager;
+            var entityLookup = level.getEntityLookup();
             var currentCallbacks = (LevelCallback<Entity>) CALLBACKS_FIELD.get(entityManager);
 
             if (!(currentCallbacks instanceof InjectedLevelCallback)) {
