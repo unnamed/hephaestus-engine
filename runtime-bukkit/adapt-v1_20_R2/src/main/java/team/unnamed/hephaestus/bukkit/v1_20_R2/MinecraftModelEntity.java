@@ -25,29 +25,24 @@ package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.MethodsReturnNonnullByDefault;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import team.unnamed.creative.base.Vector2Float;
-import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.controller.AnimationController;
-import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Collections;
-import java.util.Objects;
 
 @MethodsReturnNonnullByDefault
-public class MinecraftModelEntity extends Mob {
+public class MinecraftModelEntity extends PathfinderMob {
 
     private static final Access.FieldReflect<EntityDimensions> DIMENSIONS_FIELD = Access.findFieldByType(Entity.class, EntityDimensions.class);
 
@@ -58,12 +53,12 @@ public class MinecraftModelEntity extends Mob {
     private final CraftModelEntity bukkitEntity;
     private final EntityDimensions modelDimensions;
 
-    public MinecraftModelEntity(EntityType<? extends Mob> type, Level world, Model model) {
+    public MinecraftModelEntity(EntityType<? extends PathfinderMob> type, Level world, Model model) {
         super(type, world);
         this.model = model;
         this.bones = instantiateBones();
         this.bukkitEntity = new CraftModelEntity(super.level().getCraftServer(), this);
-        this.animationController = AnimationController.nonDelayed(bukkitEntity);
+        this.animationController = AnimationController.create(bukkitEntity);
 
         Vector2Float bb = model.boundingBox();
         this.modelDimensions = EntityDimensions.scalable(bb.x(), bb.y());
@@ -83,30 +78,38 @@ public class MinecraftModelEntity extends Mob {
     @Override
     public void tick() {
         super.tick();
-        this.animationController.tick();
+        bukkitEntity.tickAnimations();
     }
 
     private ImmutableMap<String, BoneEntity> instantiateBones() {
         // create the bone entities
         ImmutableMap.Builder<String, BoneEntity> bones = ImmutableMap.builder();
         for (Bone bone : model.bones()) {
-            instantiateBone(bone, Vector3Float.ZERO, bones);
+            instantiateBone(bone, bones);
         }
         return bones.build();
     }
 
     private void instantiateBone(
             Bone bone,
-            Vector3Float parentPosition,
             ImmutableMap.Builder<String, BoneEntity> into
     ) {
-        var position = bone.position().add(parentPosition);
         var entity = new BoneEntity(this, bone);
-        entity.position(position);
+        entity.setPos(this.position());
         into.put(bone.name(), entity);
 
         for (var child : bone.children()) {
-            instantiateBone(child, position, into);
+            instantiateBone(child, into);
+        }
+    }
+
+    @Override
+    public void setPos(double x, double y, double z) {
+        super.setPos(x, y, z);
+        if (bones != null) {
+            for (final var bone : bones.values()) {
+                bone.setPos(x, y, z);
+            }
         }
     }
 
@@ -120,45 +123,6 @@ public class MinecraftModelEntity extends Mob {
 
     public AnimationController animationController() {
         return animationController;
-    }
-
-    @Override
-    public void setPos(double x, double y, double z) {
-        super.setPos(x, y, z);
-
-        if (model != null) { // model is null when setPos is called by the Entity constructor
-            for (Bone bone : model.bones()) {
-                teleportBoneAndChildren(0, bone, Vector3Float.ZERO);
-            }
-        }
-    }
-
-    @Override
-    public void setYRot(float yaw) {
-        if (model != null) {
-            double radians = Math.toRadians(yaw);
-            for (var bone : model.bones()) {
-                teleportBoneAndChildren(radians, bone, Vector3Float.ZERO);
-            }
-        }
-    }
-
-    private void teleportBoneAndChildren(
-            double yawRadians,
-            Bone bone,
-            Vector3Float parentPosition
-    ) {
-        // location computing
-        var position = bone.position().add(parentPosition);
-        var rotatedPosition = Vectors.rotateAroundYRadians(position, yawRadians);
-
-        var entity = bones.get(bone.name());
-        Objects.requireNonNull(entity, "Unknown bone");
-        entity.position(rotatedPosition);
-
-        for (var child : bone.children()) {
-            teleportBoneAndChildren(yawRadians, child, position);
-        }
     }
 
     @Override
@@ -190,11 +154,6 @@ public class MinecraftModelEntity extends Mob {
     @Override
     public HumanoidArm getMainArm() {
         return HumanoidArm.RIGHT;
-    }
-
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return null;
     }
 
     @Override
