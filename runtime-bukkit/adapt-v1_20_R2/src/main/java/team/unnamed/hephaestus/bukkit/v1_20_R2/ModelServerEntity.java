@@ -23,20 +23,16 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
-import com.mojang.datafixers.util.Pair;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.*;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -55,8 +51,8 @@ final class ModelServerEntity extends ServerEntity {
         super(
                 level,
                 entity,
-                0, // updateInterval, unused because we overwrote methods
-                false, // trackDelta, unused because we overwrote methods
+                entity.getType().updateInterval(),
+                entity.getType().trackDeltas(),
                 broadcast,
                 trackedPlayers
         );
@@ -66,69 +62,19 @@ final class ModelServerEntity extends ServerEntity {
 
     @Override
     public void sendChanges() {
+        super.sendChanges();
+
         for (var bone : entity.bones().values()) {
-
             // check metadata changes
-            // (rotation, ...)
+            // (item, transformation, ...)
             sendDirtyEntityData(bone);
-
-            // check color changes (equipment)
-            if (bone.dirtyColor) {
-                ItemStack helmet = bone.getItemBySlot(EquipmentSlot.HEAD);
-                this.broadcast.accept(new ClientboundSetEquipmentPacket(
-                        bone.getId(),
-                        List.of(
-                                Pair.of(EquipmentSlot.HEAD, helmet)
-                        )
-                ));
-                bone.dirtyColor = false;
-            }
-
-            // check position changes
-            Vec3 position = bone.position();
-            long lastPx = bone.lastPx;
-            long lastPy = bone.lastPy;
-            long lastPz = bone.lastPz;
-
-            double lastX = packetToEntity(lastPx);
-            double lastY = packetToEntity(lastPy);
-            double lastZ = packetToEntity(lastPz);
-
-            double dx = position.x - lastX;
-            double dy = position.y - lastY;
-            double dz = position.z - lastZ;
-
-            if (dx != 0 || dy != 0 || dz != 0) {
-                long pdx = entityToPacket(dx);
-                long pdy = entityToPacket(dy);
-                long pdz = entityToPacket(dz);
-
-                bone.lastPx = entityToPacket(position.x);
-                bone.lastPy = entityToPacket(position.y);
-                bone.lastPz = entityToPacket(position.z);
-
-                boolean big = pdx < Short.MIN_VALUE || pdx > Short.MAX_VALUE
-                        || pdy < Short.MIN_VALUE || pdy > Short.MAX_VALUE
-                        || pdz < Short.MIN_VALUE || pdz > Short.MAX_VALUE;
-
-                if (big) {
-                    broadcast.accept(new ClientboundTeleportEntityPacket(bone));
-                } else {
-                    broadcast.accept(new ClientboundMoveEntityPacket.Pos(
-                            bone.getId(),
-                            (short) pdx,
-                            (short) pdy,
-                            (short) pdz,
-                            entity.onGround()
-                    ));
-                }
-            }
         }
     }
 
     @Override
     public void removePairing(ServerPlayer player) {
-        this.entity.stopSeenByPlayer(player);
+        super.removePairing(player);
+
         var bones = entity.bones().values();
         int[] ids = new int[bones.size()];
         int i = 0;
@@ -140,19 +86,36 @@ final class ModelServerEntity extends ServerEntity {
 
     @Override
     public void sendPairingData(ServerPlayer player, Consumer<Packet<ClientGamePacketListener>> packetConsumer) {
+        super.sendPairingData(player, packetConsumer);
+
         if (this.entity.isRemoved()) {
             return;
         }
 
-        for (var bone : entity.bones().values()) {
+        final var bones = entity.bones().values();
+        final var passengers = new int[bones.size()];
+        int i = 0;
+        for (var bone : bones) {
             bone.show(packetConsumer);
+            passengers[i++] = bone.getId();
         }
+        packetConsumer.accept(new ClientboundSetPassengersPacket(new FriendlyByteBuf(null) {
+            @Override
+            public int readVarInt() {
+                return entity.getId();
+            }
+
+            @Override
+            public int @NotNull [] readVarIntArray() {
+                return passengers;
+            }
+        }));
     }
 
     private void sendDirtyEntityData(BoneEntity bone) {
-        SynchedEntityData data = bone.getEntityData();
-        if (data.isDirty()) {
-            this.broadcast.accept(new ClientboundSetEntityDataPacket(bone.getId(), data.packDirty()));
+        final var dirtyData = bone.getEntityData().packDirty();
+        if (dirtyData != null) {
+            this.broadcast.accept(new ClientboundSetEntityDataPacket(bone.getId(), dirtyData));
         }
     }
 
