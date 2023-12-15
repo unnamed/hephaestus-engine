@@ -23,9 +23,14 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
+import net.kyori.adventure.sound.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_20_R2.entity.CraftMob;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.controller.AnimationController;
@@ -33,6 +38,7 @@ import team.unnamed.hephaestus.bukkit.ModelEntity;
 import team.unnamed.hephaestus.view.BaseBoneView;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * The implementation of the Bukkit-based {@link ModelEntity}
@@ -58,6 +64,32 @@ public class CraftModelEntity
     }
 
     @Override
+    public void playSound(final @NotNull Sound sound) {
+        super.playSound(sound);
+    }
+
+    @Override
+    public Collection<Player> viewers() {
+        final var viewers = new HashSet<Player>();
+        for (final var connection : getHandle().tracker.seenBy) {
+            viewers.add(connection.getPlayer().getBukkitEntity());
+        }
+        return viewers;
+    }
+
+    @Override
+    public boolean addViewer(Player player) {
+        getHandle().tracker.updatePlayer(((CraftPlayer) player).getHandle());
+        return true;
+    }
+
+    @Override
+    public boolean removeViewer(Player player) {
+        getHandle().tracker.removePlayer(((CraftPlayer) player).getHandle());
+        return true;
+    }
+
+    @Override
     public Collection<? extends BaseBoneView> bones() {
         return getHandle().bones().values();
     }
@@ -74,11 +106,14 @@ public class CraftModelEntity
 
     @Override
     public void tickAnimations() {
+        getHandle().animationController().tick(
+                getHandle().getYHeadRot(),
+                0
+        );
     }
 
     @Override
     public String toString() {
         return "CraftModelEntity { model='" + model().name() + "' }";
     }
-
 }
