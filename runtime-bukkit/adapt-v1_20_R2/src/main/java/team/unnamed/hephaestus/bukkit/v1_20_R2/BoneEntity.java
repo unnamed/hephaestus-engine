@@ -53,9 +53,6 @@ final class BoneEntity
 
     private final MinecraftModelEntity view;
     private final Bone bone;
-
-    // synchronization data
-    public long lastPx, lastPy, lastPz;
     public boolean dirtyColor;
 
     BoneEntity(MinecraftModelEntity view, Bone bone) {
@@ -75,6 +72,7 @@ final class BoneEntity
         final var meta = (LeatherArmorMeta) item.getItemMeta();
         meta.setColor(Color.WHITE);
         meta.setCustomModelData(bone.customModelData());
+        item.setItemMeta(meta);
         setItemStack(CraftItemStack.asNMSCopy(item));
 
         update(Vector3Float.ZERO, Quaternion.IDENTITY, Vector3Float.ONE);
@@ -104,7 +102,10 @@ final class BoneEntity
 
     void show(Consumer<Packet<ClientGamePacketListener>> packetConsumer) {
         packetConsumer.accept(new ClientboundAddEntityPacket(this));
-        packetConsumer.accept(new ClientboundSetEntityDataPacket(super.getId(), super.getEntityData().packDirty()));
+        final var data = super.getEntityData().getNonDefaultValues();
+        if (data != null) {
+            packetConsumer.accept(new ClientboundSetEntityDataPacket(super.getId(), data));
+        }
     }
 
     @Override
