@@ -29,7 +29,7 @@ import team.unnamed.hephaestus.Model;
 
 public interface EntityFactory {
 
-    EntityFactory DEFAULT = (level, model) -> new MinecraftModelEntity(EntityType.SLIME, level, model);
+    EntityFactory DEFAULT = (level, model) -> new MinecraftModelEntity(EntityType.PIG, level, model);
 
     MinecraftModelEntity create(ServerLevel level, Model model);
 
