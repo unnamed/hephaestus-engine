@@ -24,20 +24,22 @@
 package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
+import io.papermc.paper.chunk.system.entity.EntityLookup;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.entity.LevelCallback;
-import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.Plugin;
 import org.spigotmc.AsyncCatcher;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
+import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
@@ -49,13 +51,13 @@ final class BukkitModelEngine_v1_20_R2Impl implements BukkitModelEngine_v1_20_R2
             = Access.findFieldByType(ChunkMap.TrackedEntity.class, ServerEntity.class);
 
     private static final Access.FieldReflect<LevelCallback<?>> CALLBACKS_FIELD
-            = Access.findFieldByType(PersistentEntitySectionManager.class, LevelCallback.class);
+            = Access.findFieldByType(EntityLookup.class, LevelCallback.class);
 
     private final EntityFactory entityFactory;
 
     BukkitModelEngine_v1_20_R2Impl(Plugin plugin, EntityFactory entityFactory) {
         requireNonNull(plugin, "plugin");
-        requireNonNull(entityFactory, "entityFactory")
+        requireNonNull(entityFactory, "entityFactory");
         this.entityFactory = entityFactory;
         Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin), plugin);
     }
@@ -79,6 +81,16 @@ final class BukkitModelEngine_v1_20_R2Impl implements BukkitModelEngine_v1_20_R2
         return entity.getBukkitEntity();
     }
 
+    @Override
+    public ModelEntity createView(Model model, Location location) {
+        return null;
+    }
+
+    @Override
+    public ModelViewTracker<Player> tracker() {
+        return BukkitModelViewTracker.INSTANCE;
+    }
+
     @ParametersAreNonnullByDefault
     private record InjectedLevelCallback(
             LevelCallback<Entity> delegate,
@@ -90,6 +102,7 @@ final class BukkitModelEngine_v1_20_R2Impl implements BukkitModelEngine_v1_20_R2
             if (entity instanceof MinecraftModelEntity modelEntity) {
                 AsyncCatcher.catchOp("entity register");
 
+                System.out.println("tracking start for entity " + entity);
                 entity.valid = true;
                 ChunkMap chunkMap = level.chunkSource.chunkMap;
                 ChunkMap.TrackedEntity trackedEntity = chunkMap.new TrackedEntity(entity, 40, 40, false);
@@ -142,10 +155,10 @@ final class BukkitModelEngine_v1_20_R2Impl implements BukkitModelEngine_v1_20_R2
         @SuppressWarnings("unchecked")
         public static void injectAt(ServerLevel level) {
             var entityLookup = level.getEntityLookup();
-            var currentCallbacks = (LevelCallback<Entity>) CALLBACKS_FIELD.get(entityManager);
+            var currentCallbacks = (LevelCallback<Entity>) CALLBACKS_FIELD.get(entityLookup);
 
             if (!(currentCallbacks instanceof InjectedLevelCallback)) {
-                CALLBACKS_FIELD.set(entityManager, new InjectedLevelCallback(currentCallbacks, level));
+                CALLBACKS_FIELD.set(entityLookup, new InjectedLevelCallback(currentCallbacks, level));
             }
         }
 
