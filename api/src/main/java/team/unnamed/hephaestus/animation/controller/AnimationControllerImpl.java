@@ -40,7 +40,9 @@ import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseBoneView;
 import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.molang.MolangEngine;
 
+import javax.script.ScriptException;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -52,6 +54,7 @@ class AnimationControllerImpl implements AnimationController {
     private final Deque<Animation> queue = new LinkedList<>();
     private final BaseModelView<?> view;
 
+    private final MolangEngine<BaseModelView<?>> scriptEngine;
     private final Map<String, BoneTimelinePlayhead> iterators = new HashMap<>();
     private @NotNull EffectsTimelinePlayhead effectsIterator = new EffectsTimelinePlayhead(EffectsTimeline.empty().build());
 
@@ -61,6 +64,7 @@ class AnimationControllerImpl implements AnimationController {
 
     AnimationControllerImpl(final @NotNull BaseModelView<?> view) {
         this.view = requireNonNull(view, "view");
+        this.scriptEngine = MolangEngine.create(view);
     }
 
     @Override
@@ -196,6 +200,20 @@ class AnimationControllerImpl implements AnimationController {
             System.out.println("play ");
             view.playSound(sound);
         }
+
+        final var instruction = effectsFrame.instruction();
+        if (instruction != null) {
+            try {
+                scriptEngine.eval(instruction);
+            } catch (final ScriptException e) {
+                throw new RuntimeException("Failed to execute instruction: " + instruction, e);
+            }
+        }
+    }
+
+    @Override
+    public @NotNull MolangEngine<BaseModelView<?>> scriptEngine() {
+        return scriptEngine;
     }
 
     private void nextAnimation() {

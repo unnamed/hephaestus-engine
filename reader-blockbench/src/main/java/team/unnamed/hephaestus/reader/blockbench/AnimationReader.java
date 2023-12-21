@@ -96,6 +96,7 @@ final class AnimationReader {
 
                 if (type.equals("effect")) {
                     Map<Integer, Sound[]> soundsTimeline = new HashMap<>();
+                    Map<Integer, String> instructionsTimeline = new HashMap<>();
 
                     for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
                         JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
@@ -121,10 +122,18 @@ final class AnimationReader {
 
                                 soundsTimeline.put(time, sounds);
                                 break;
+                            case "timeline":
+                                String instruction = dataPoints.get(0)
+                                        .getAsJsonObject()
+                                        .get("script")
+                                        .getAsString();
+                                instructionsTimeline.put(time, instruction);
+                                break;
                         }
                     }
 
                     effectsTimeline.sounds(soundsTimeline);
+                    effectsTimeline.instructions(instructionsTimeline);
                 } else if (type.equals("bone")) {
                     Timeline.Builder<Vector3Float> positionsTimeline = Timeline.<Vector3Float>timeline()
                             .initial(Vector3Float.ZERO)

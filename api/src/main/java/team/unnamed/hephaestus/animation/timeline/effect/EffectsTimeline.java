@@ -51,6 +51,8 @@ public interface EffectsTimeline {
 
     @NotNull Map<Integer, Sound[]> sounds();
 
+    @NotNull Map<Integer, String> instructions();
+
     interface Builder {
 
         /**
@@ -62,6 +64,16 @@ public interface EffectsTimeline {
          */
         @Contract("_ -> this")
         @NotNull Builder sounds(final @NotNull Map<Integer, Sound[]> sounds);
+
+        /**
+         * Set the instructions timeline
+         *
+         * @param instructions The instructions timeline
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder instructions(final @NotNull Map<Integer, String> instructions);
 
         @NotNull EffectsTimeline build();
 

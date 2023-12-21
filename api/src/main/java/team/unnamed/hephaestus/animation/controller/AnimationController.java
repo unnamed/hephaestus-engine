@@ -28,6 +28,7 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.molang.MolangEngine;
 
 /**
  * Represents the object responsible to animate
@@ -112,6 +113,14 @@ public interface AnimationController {
         final Quaternion initialRotation = Quaternion.fromEulerDegrees(new Vector3Float(pitch, 360 - yaw, 0));
         tick(initialRotation, initialPosition);
     }
+
+    /**
+     * Returns the script engine for this animation controller.
+     *
+     * @return The script engine
+     * @since 1.0.0
+     */
+    @NotNull MolangEngine<BaseModelView<?>> scriptEngine();
 
     /**
      * Creates a new {@link AnimationController} for the given

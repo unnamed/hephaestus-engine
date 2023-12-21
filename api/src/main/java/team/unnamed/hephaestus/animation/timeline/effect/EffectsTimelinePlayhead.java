@@ -41,7 +41,8 @@ public class EffectsTimelinePlayhead {
     public EffectsFrame next() {
         tick++;
         return new EffectsFrame(
-                timeline.sounds().getOrDefault(tick, new Sound[0])
+                timeline.sounds().getOrDefault(tick, new Sound[0]),
+                timeline.instructions().get(tick)
         );
     }
 }

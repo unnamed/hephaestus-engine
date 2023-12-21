@@ -33,14 +33,21 @@ import static java.util.Objects.requireNonNull;
 final class EffectsTimelineImpl implements EffectsTimeline {
 
     private final Map<Integer, Sound[]> sounds;
+    private final Map<Integer, String> instructions;
 
-    EffectsTimelineImpl(Map<Integer, Sound[]> sounds) {
+    EffectsTimelineImpl(Map<Integer, Sound[]> sounds, Map<Integer, String> instructions) {
         this.sounds = requireNonNull(sounds, "sounds");
+        this.instructions = requireNonNull(instructions, "instructions");
     }
 
     @Override
     public @NotNull Map<Integer, Sound[]> sounds() {
         return sounds;
+    }
+
+    @Override
+    public @NotNull Map<Integer, String> instructions() {
+        return instructions;
     }
 
     @Override
@@ -51,8 +58,8 @@ final class EffectsTimelineImpl implements EffectsTimeline {
     }
 
     static final class BuilderImpl implements Builder {
-
         private Map<Integer, Sound[]> sounds;
+        private Map<Integer, String> instructions;
 
         BuilderImpl() {
         }
@@ -64,8 +71,14 @@ final class EffectsTimelineImpl implements EffectsTimeline {
         }
 
         @Override
+        public @NotNull Builder instructions(@NotNull Map<Integer, String> instructions) {
+            this.instructions = requireNonNull(instructions, "instructions");
+            return this;
+        }
+
+        @Override
         public @NotNull EffectsTimeline build() {
-            return new EffectsTimelineImpl(sounds);
+            return new EffectsTimelineImpl(sounds, instructions);
         }
     }
 }

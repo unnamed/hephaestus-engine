@@ -28,30 +28,40 @@ import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class EffectsFrame implements Examinable {
 
     public static EffectsFrame INITIAL = new EffectsFrame(
-            new Sound[0]
+            new Sound[0],
+            null
     );
 
     private final Sound[] sounds;
+    private final String instruction;
 
-    public EffectsFrame(Sound[] sounds) {
+    public EffectsFrame(Sound[] sounds, @Nullable String instruction) {
         this.sounds = sounds;
+        this.instruction = instruction;
     }
 
     public Sound[] sounds() {
         return sounds;
     }
 
+    public String instruction() {
+        return instruction;
+    }
+
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
-                ExaminableProperty.of("sounds", sounds)
+                ExaminableProperty.of("sounds", sounds),
+                ExaminableProperty.of("instruction", instruction)
         );
     }
 
@@ -60,12 +70,15 @@ public class EffectsFrame implements Examinable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EffectsFrame that = (EffectsFrame) o;
-        return Arrays.equals(sounds, that.sounds);
+        return Arrays.equals(sounds, that.sounds)
+                && Objects.equals(instruction, that.instruction);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(sounds);
+        int result = Arrays.hashCode(sounds);
+        result = 31 * result + (instruction != null ? instruction.hashCode() : 0);
+        return result;
     }
 
     @Override
