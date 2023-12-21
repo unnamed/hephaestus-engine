@@ -40,27 +40,6 @@ import java.util.Map;
  */
 public interface Animation extends Examinable {
     /**
-     * Creates a new animation with the given
-     * name, length, loop mode and bone timelines
-     *
-     * @param name The animation name
-     * @param length The animation length, in ticks
-     * @param loopMode The animation loop mode
-     * @param timelines The animation bone timelines
-     * @return The created animation
-     * @since 1.0.0
-     */
-    static @NotNull Animation animation(
-            final @NotNull String name,
-            final int length,
-            final @NotNull LoopMode loopMode,
-            final @NotNull Map<String, BoneTimeline> timelines,
-            final @NotNull EffectsTimeline effectsTimeline
-    ) {
-        return new AnimationImpl(name, length, loopMode, timelines, effectsTimeline);
-    }
-
-    /**
      * Creates a new animation builder
      *
      * @return The created animation builder
@@ -97,6 +76,20 @@ public interface Animation extends Examinable {
      * @since 1.0.0
      */
     @NotNull LoopMode loopMode();
+
+    /**
+     * Returns the animation priority, which is
+     * used for animation blending and transition.
+     *
+     * <p>Note that more priority means that the
+     * animation will be more important than others,
+     * so it will be blended first and it will be
+     * harder to override</p>
+     *
+     * @return The priority for this animation
+     * @since 1.0.0
+     */
+    int priority();
 
     /**
      * Returns the animation bone timelines,
@@ -156,7 +149,6 @@ public interface Animation extends Examinable {
      * @since 1.0.0
      */
     interface Builder {
-
         /**
          * Sets the animation name
          *
@@ -186,6 +178,22 @@ public interface Animation extends Examinable {
          */
         @Contract("_ -> this")
         @NotNull Builder loopMode(final @NotNull LoopMode loopMode);
+
+        /**
+         * Sets the animation priority. The default
+         * priority is 0.
+         *
+         * <p>Note that more priority means that the
+         * animation will be more important than others,
+         * so it will be blended first and it will be
+         * harder to override</p>
+         *
+         * @param priority The animation priority
+         * @return This builder
+         * @since 1.0.0
+         */
+        @Contract("_ -> this")
+        @NotNull Builder priority(final int priority);
 
         /**
          * Sets the animation bone timelines
@@ -224,6 +232,5 @@ public interface Animation extends Examinable {
          */
         @Contract("-> new")
         @NotNull Animation build();
-
     }
 }

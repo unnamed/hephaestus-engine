@@ -41,6 +41,7 @@ final class AnimationImpl implements Animation {
     private final String name;
     private final int length;
     private final LoopMode loopMode;
+    private final int priority;
     private final Map<String, BoneTimeline> timelines;
     private final EffectsTimeline effectsTimeline;
 
@@ -48,12 +49,14 @@ final class AnimationImpl implements Animation {
             final @NotNull String name,
             final int length,
             final @NotNull LoopMode loopMode,
+            final int priority,
             final @NotNull Map<String, BoneTimeline> timelines,
             final @NotNull EffectsTimeline effectsTimeline
     ) {
         this.name = requireNonNull(name, "name");
         this.length = length;
         this.loopMode = requireNonNull(loopMode, "loopMode");
+        this.priority = priority;
         this.timelines = requireNonNull(timelines, "timelines");
         this.effectsTimeline = requireNonNull(effectsTimeline, "effectsTimeline");;
     }
@@ -74,6 +77,11 @@ final class AnimationImpl implements Animation {
     }
 
     @Override
+    public int priority() {
+        return priority;
+    }
+
+    @Override
     public @NotNull Map<String, BoneTimeline> timelines() {
         return timelines;
     }
@@ -89,6 +97,7 @@ final class AnimationImpl implements Animation {
                 ExaminableProperty.of("name", name),
                 ExaminableProperty.of("length", length),
                 ExaminableProperty.of("loopMode", loopMode),
+                ExaminableProperty.of("priority", priority),
                 ExaminableProperty.of("timelines", timelines)
         );
     }
@@ -119,6 +128,7 @@ final class AnimationImpl implements Animation {
         private String name;
         private int length;
         private LoopMode loopMode;
+        private int priority;
         private Map<String, BoneTimeline> timelines;
         private EffectsTimeline effectsTimeline;
 
@@ -137,6 +147,12 @@ final class AnimationImpl implements Animation {
         @Override
         public @NotNull Builder loopMode(final @NotNull LoopMode loopMode) {
             this.loopMode = requireNonNull(loopMode, "loopMode");
+            return this;
+        }
+
+        @Override
+        public @NotNull Builder priority(final int priority) {
+            this.priority = priority;
             return this;
         }
 
@@ -165,7 +181,7 @@ final class AnimationImpl implements Animation {
 
         @Override
         public @NotNull Animation build() {
-            return new AnimationImpl(name, length, loopMode, timelines, effectsTimeline);
+            return new AnimationImpl(name, length, loopMode, priority, timelines, effectsTimeline);
         }
     }
 }
