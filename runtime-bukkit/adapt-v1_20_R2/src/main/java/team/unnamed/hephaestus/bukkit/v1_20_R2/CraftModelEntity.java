@@ -24,16 +24,14 @@
 package team.unnamed.hephaestus.bukkit.v1_20_R2;
 
 import net.kyori.adventure.sound.Sound;
-import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_20_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_20_R2.entity.CraftMob;
 import org.bukkit.craftbukkit.v1_20_R2.entity.CraftPlayer;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.animation.controller.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
 import team.unnamed.hephaestus.view.BaseBoneView;
 
@@ -100,7 +98,7 @@ public class CraftModelEntity
     }
 
     @Override
-    public AnimationController animationController() {
+    public AnimationPlayer animationController() {
         return getHandle().animationController();
     }
 

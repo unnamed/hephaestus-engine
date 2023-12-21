@@ -51,7 +51,7 @@ public class PlayerModelEntity extends ModelEntity {
 
     @Override
     public void tickAnimations() {
-        animationController.tick(position.yaw(), position.pitch());
+        animationPlayer.tick(position.yaw(), position.pitch());
     }
 
     @Override

@@ -37,7 +37,7 @@ import net.minecraft.world.level.Level;
 import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.animation.controller.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
 
 import java.util.Collections;
 
@@ -48,7 +48,7 @@ public class MinecraftModelEntity extends PathfinderMob {
 
     private final Model model;
     private final ImmutableMap<String, BoneEntity> bones;
-    private final AnimationController animationController;
+    private final AnimationPlayer animationPlayer;
 
     private final CraftModelEntity bukkitEntity;
     private final EntityDimensions modelDimensions;
@@ -58,7 +58,7 @@ public class MinecraftModelEntity extends PathfinderMob {
         this.model = model;
         this.bones = instantiateBones();
         this.bukkitEntity = new CraftModelEntity(super.level().getCraftServer(), this);
-        this.animationController = AnimationController.create(bukkitEntity);
+        this.animationPlayer = AnimationPlayer.create(bukkitEntity);
 
         Vector2Float bb = model.boundingBox();
         this.modelDimensions = EntityDimensions.scalable(bb.x(), bb.y());
@@ -121,8 +121,8 @@ public class MinecraftModelEntity extends PathfinderMob {
         return bones;
     }
 
-    public AnimationController animationController() {
-        return animationController;
+    public AnimationPlayer animationController() {
+        return animationPlayer;
     }
 
     @Override

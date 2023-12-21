@@ -42,7 +42,8 @@ public interface EffectsTimeline {
 
     static @NotNull EffectsTimeline.Builder empty() {
         return effectsTimeline()
-                .sounds(Collections.emptyMap());
+                .sounds(Collections.emptyMap())
+                .instructions(Collections.emptyMap());
     }
 
     default @NotNull EffectsTimelinePlayhead createPlayhead() {

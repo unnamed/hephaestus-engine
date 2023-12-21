@@ -57,14 +57,14 @@ public class RedstoneMonstrosity extends ModelEntity {
         idleAnimation = model.animations().get("idle");
         walkAnimation = model.animations().get("walk");
 
-        animationController().queue(idleAnimation);
+        animationController().add(idleAnimation);
         currentAnimation = idleAnimation;
     }
 
     @Override
     public void tickAnimations() {
         // tick without pitch
-        animationController.tick(position.yaw(), 0F);
+        animationPlayer.tick(position.yaw(), 0F);
     }
 
     @Override
@@ -73,12 +73,12 @@ public class RedstoneMonstrosity extends ModelEntity {
 
         if (latestPosition == null || latestPosition.samePoint(position)) {
             if (idleAnimation != currentAnimation) {
-                animationController().queue(idleAnimation, 0);
+                animationController().add(idleAnimation, 10);
                 currentAnimation = idleAnimation;
             }
         } else {
             if (walkAnimation != currentAnimation) {
-                animationController().queue(walkAnimation, 0);
+                animationController().add(walkAnimation, 10);
                 currentAnimation = walkAnimation;
             }
         }

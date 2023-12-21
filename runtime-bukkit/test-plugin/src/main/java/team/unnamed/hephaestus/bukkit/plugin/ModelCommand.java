@@ -85,7 +85,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                             .build()
             );
         } else {
-            entity.animationController().queue(animation);
+            entity.animationController().add(animation);
         }
     }
 

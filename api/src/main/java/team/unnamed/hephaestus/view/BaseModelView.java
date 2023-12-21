@@ -26,7 +26,7 @@ package team.unnamed.hephaestus.view;
 import net.kyori.adventure.sound.Sound;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.animation.controller.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
 import team.unnamed.hephaestus.animation.Animation;
 
 import java.util.Collection;
@@ -118,7 +118,7 @@ public interface BaseModelView<TViewer> {
      *
      * @return The animation controller
      */
-    AnimationController animationController();
+    AnimationPlayer animationController();
 
     /**
      * Finds and plays the animation with the
@@ -132,7 +132,7 @@ public interface BaseModelView<TViewer> {
     default void playAnimation(String name, int transitionTicks) {
         Animation animation = model().animations().get(name);
         Objects.requireNonNull(animation, "Animation " + name);
-        animationController().queue(animation, transitionTicks);
+        animationController().add(animation, transitionTicks);
     }
 
     /**

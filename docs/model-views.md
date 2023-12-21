@@ -54,6 +54,6 @@ Example:
 public void animate(BaseModelView<?> view) {
     // walkAnimation is a ModelAnimation instance that can
     // be obtained from Model#animations()
-    view.animationController().queue(walkAnimation);
+    view.animationPlayer().queue(walkAnimation);
 }
 ```

@@ -26,7 +26,7 @@ package team.unnamed.hephaestus.view;
 import net.kyori.adventure.sound.Sound;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.animation.controller.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -36,17 +36,17 @@ import java.util.Set;
 public class MockModelView implements BaseModelView<Object> {
 
     private final Model model;
-    private final AnimationController animationController;
+    private final AnimationPlayer animationPlayer;
     private final Map<String, BaseBoneView> bones;
     private final Set<Object> viewers = new HashSet<>();
 
     public MockModelView(
             Model model,
-            AnimationController animationController,
+            AnimationPlayer animationPlayer,
             Map<String, BaseBoneView> bones
     ) {
         this.model = model;
-        this.animationController = animationController;
+        this.animationPlayer = animationPlayer;
         this.bones = bones;
     }
 
@@ -85,13 +85,13 @@ public class MockModelView implements BaseModelView<Object> {
     }
 
     @Override
-    public AnimationController animationController() {
-        return animationController;
+    public AnimationPlayer animationController() {
+        return animationPlayer;
     }
 
     @Override
     public void tickAnimations() {
-        animationController.tick();
+        animationPlayer.tick();
     }
 
 }

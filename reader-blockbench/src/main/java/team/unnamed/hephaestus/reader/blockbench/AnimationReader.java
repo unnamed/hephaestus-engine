@@ -238,7 +238,7 @@ final class AnimationReader {
             return 0;
         }
         final var blendWeightNode = animationJson.get("blend_weight");
-        if (!blendWeightNode.isJsonPrimitive()) {
+        if (!blendWeightNode.isJsonPrimitive() || blendWeightNode.getAsString().isEmpty()) {
             // todo: warn?
             return 0;
         }

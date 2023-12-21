@@ -87,7 +87,7 @@ public class Server {
             );
             redstoneMonstrosity.setInstance(instance, new Pos(10, 43, 0));
             MinestomModelEngine.minestom().tracker().startGlobalTracking(redstoneMonstrosity);
-            registry.view("redstone_monstrosity_" + player.getName(), redstoneMonstrosity);
+            registry.view("redstone_monstrosity_" + player.getUsername(), redstoneMonstrosity);
         });
 
         BuiltResourcePack resourcePack = ResourcePackFactory.create(registry);

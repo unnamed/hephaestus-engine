@@ -31,42 +31,59 @@ import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.molang.MolangEngine;
 
 /**
- * Represents the object responsible to animate
- * a single model or group of models
+ * The animation player. Responsible for playing
+ * a single animation or a group of animations for
+ * a single model or group of models.
  *
  * @since 1.0.0
  */
-public interface AnimationController {
+public interface AnimationPlayer {
     /**
-     * Queues the given {@link Animation} so that
-     * it will be played in the next ticks
+     * Adds the given {@link Animation animation} to the
+     * currently playing animations so that it will be
+     * played in the next ticks.
      *
      * @param animation The queued animation
      * @param transitionTicks The animation transition ticks
      * @since 1.0.0
      */
-    void queue(final @NotNull Animation animation, final int transitionTicks);
+    void add(final @NotNull Animation animation, final int transitionTicks);
 
     /**
-     * Queues the given {@link Animation} so that
-     * it will be played in the next ticks, similar
-     * to calling {@link AnimationController#queue}
-     * using zero transition ticks
+     * Adds the given {@link Animation animation} to the
+     * currently playing animations so that it will be
+     * played in the next ticks.
      *
      * @param animation The queued animation
      * @since 1.0.0
      */
-    default void queue(final @NotNull Animation animation) {
-        queue(animation, 0);
+    default void add(final @NotNull Animation animation) {
+        add(animation, 0);
     }
 
     /**
-     * Clears the animation queue and stops current
-     * animation.
+     * Removes the given {@link Animation animation} from
+     * the currently playing animations.
+     *
+     * @param animation The animation to remove
+     * @since 1.0.0
+     */
+    void remove(final @NotNull Animation animation);
+
+    /**
+     * Returns the current playing animations.
+     *
+     * @return The current playing animations
+     * @since 1.0.0
+     */
+    @NotNull Iterable<Animation> animations();
+
+    /**
+     * Removes all the currently playing animations.
      *
      * @since 1.0.0
      */
-    void clearQueue();
+    void clear();
 
     /**
      * Passes to the next animation frame using
@@ -123,14 +140,14 @@ public interface AnimationController {
     @NotNull MolangEngine<BaseModelView<?>> scriptEngine();
 
     /**
-     * Creates a new {@link AnimationController} for the given
+     * Creates a new {@link AnimationPlayer} for the given
      * {@link BaseModelView model view}.
      *
      * @param view the model view to use
      * @return The created animation controller
      * @since 1.0.0
      */
-    static @NotNull AnimationController create(final @NotNull BaseModelView<?> view) {
-        return new AnimationControllerImpl(view);
+    static @NotNull AnimationPlayer create(final @NotNull BaseModelView<?> view) {
+        return new AnimationPlayerImpl(view);
     }
 }

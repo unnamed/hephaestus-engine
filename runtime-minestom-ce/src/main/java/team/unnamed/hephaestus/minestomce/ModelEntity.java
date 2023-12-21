@@ -38,7 +38,7 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.BaseModelView;
-import team.unnamed.hephaestus.animation.controller.AnimationController;
+import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
 
 import java.util.Collection;
 import java.util.Map;
@@ -53,13 +53,13 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     protected final float scale;
 
     protected final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
-    protected final AnimationController animationController;
+    protected final AnimationPlayer animationPlayer;
 
     public ModelEntity(EntityType type, Model model, float scale) {
         super(type);
         this.model = model;
         this.scale = scale;
-        this.animationController = AnimationController.create(this);
+        this.animationPlayer = AnimationPlayer.create(this);
 
         // model entity is not auto-viewable by default
         setAutoViewable(false);
@@ -132,13 +132,13 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     }
 
     @Override
-    public AnimationController animationController() {
-        return animationController;
+    public AnimationPlayer animationController() {
+        return animationPlayer;
     }
 
     @Override
     public void tickAnimations() {
-        animationController.tick(position.yaw(), position.pitch());
+        animationPlayer.tick(position.yaw(), position.pitch());
     }
 
     @Override
