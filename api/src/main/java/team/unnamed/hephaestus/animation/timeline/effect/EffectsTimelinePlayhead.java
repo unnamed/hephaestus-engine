@@ -23,7 +23,7 @@
  */
 package team.unnamed.hephaestus.animation.timeline.effect;
 
-import net.kyori.adventure.sound.Sound;
+import java.util.Collections;
 
 public class EffectsTimelinePlayhead {
 
@@ -41,8 +41,8 @@ public class EffectsTimelinePlayhead {
     public EffectsFrame next() {
         tick++;
         return new EffectsFrame(
-                timeline.sounds().getOrDefault(tick, new Sound[0]),
-                timeline.instructions().get(tick)
+                timeline.sounds().getOrDefault(tick, Collections.emptyList()),
+                timeline.instructions().getOrDefault(tick, Collections.emptyList())
         );
     }
 }

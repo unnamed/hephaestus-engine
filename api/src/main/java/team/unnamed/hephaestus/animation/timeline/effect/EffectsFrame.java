@@ -29,60 +29,58 @@ import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
+
 public class EffectsFrame implements Examinable {
+    public static EffectsFrame INITIAL = new EffectsFrame(Collections.emptyList(), Collections.emptyList());
 
-    public static EffectsFrame INITIAL = new EffectsFrame(
-            new Sound[0],
-            null
-    );
+    private final List<Sound> sounds;
+    private final List<String> instructions;
 
-    private final Sound[] sounds;
-    private final String instruction;
-
-    public EffectsFrame(Sound[] sounds, @Nullable String instruction) {
-        this.sounds = sounds;
-        this.instruction = instruction;
+    public EffectsFrame(final @NotNull List<Sound> sounds, final @NotNull List<String> instructions) {
+        this.sounds = requireNonNull(sounds, "sounds");
+        this.instructions = requireNonNull(instructions, "instructions");
     }
 
-    public Sound[] sounds() {
+    public @NotNull @Unmodifiable List<Sound> sounds() {
         return sounds;
     }
 
-    public String instruction() {
-        return instruction;
+    public @NotNull @Unmodifiable List<String> instructions() {
+        return instructions;
     }
 
     @Override
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
                 ExaminableProperty.of("sounds", sounds),
-                ExaminableProperty.of("instruction", instruction)
+                ExaminableProperty.of("instructions", instructions)
         );
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final @Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EffectsFrame that = (EffectsFrame) o;
-        return Arrays.equals(sounds, that.sounds)
-                && Objects.equals(instruction, that.instruction);
+        final EffectsFrame that = (EffectsFrame) o;
+        return sounds.equals(that.sounds) && instructions.equals(that.instructions);
     }
 
     @Override
     public int hashCode() {
-        int result = Arrays.hashCode(sounds);
-        result = 31 * result + (instruction != null ? instruction.hashCode() : 0);
+        int result = sounds.hashCode();
+        result = 31 * result + instructions.hashCode();
         return result;
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return examine(StringExaminer.simpleEscaping());
     }
 }

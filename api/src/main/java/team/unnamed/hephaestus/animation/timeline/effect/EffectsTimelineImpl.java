@@ -26,27 +26,28 @@ package team.unnamed.hephaestus.animation.timeline.effect;
 import net.kyori.adventure.sound.Sound;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
 final class EffectsTimelineImpl implements EffectsTimeline {
 
-    private final Map<Integer, Sound[]> sounds;
-    private final Map<Integer, String> instructions;
+    private final Map<Integer, List<Sound>> sounds;
+    private final Map<Integer, List<String>> instructions;
 
-    EffectsTimelineImpl(Map<Integer, Sound[]> sounds, Map<Integer, String> instructions) {
+    EffectsTimelineImpl(Map<Integer, List<Sound>> sounds, Map<Integer, List<String>> instructions) {
         this.sounds = requireNonNull(sounds, "sounds");
         this.instructions = requireNonNull(instructions, "instructions");
     }
 
     @Override
-    public @NotNull Map<Integer, Sound[]> sounds() {
+    public @NotNull Map<Integer, List<Sound>> sounds() {
         return sounds;
     }
 
     @Override
-    public @NotNull Map<Integer, String> instructions() {
+    public @NotNull Map<Integer, List<String>> instructions() {
         return instructions;
     }
 
@@ -58,20 +59,20 @@ final class EffectsTimelineImpl implements EffectsTimeline {
     }
 
     static final class BuilderImpl implements Builder {
-        private Map<Integer, Sound[]> sounds;
-        private Map<Integer, String> instructions;
+        private Map<Integer, List<Sound>> sounds;
+        private Map<Integer, List<String>> instructions;
 
         BuilderImpl() {
         }
 
         @Override
-        public @NotNull Builder sounds(@NotNull Map<Integer, Sound[]> sounds) {
+        public @NotNull Builder sounds(@NotNull Map<Integer, List<Sound>> sounds) {
             this.sounds = requireNonNull(sounds, "sounds");
             return this;
         }
 
         @Override
-        public @NotNull Builder instructions(@NotNull Map<Integer, String> instructions) {
+        public @NotNull Builder instructions(@NotNull Map<Integer, List<String>> instructions) {
             this.instructions = requireNonNull(instructions, "instructions");
             return this;
         }

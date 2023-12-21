@@ -39,9 +39,11 @@ import team.unnamed.hephaestus.animation.timeline.bone.BoneTimeline;
 import team.unnamed.hephaestus.animation.timeline.Timeline;
 import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimeline;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -98,8 +100,8 @@ final class AnimationReader {
                 String type = animatorJson.get("type").getAsString();
 
                 if (type.equals("effect")) {
-                    Map<Integer, Sound[]> soundsTimeline = new HashMap<>();
-                    Map<Integer, String> instructionsTimeline = new HashMap<>();
+                    Map<Integer, List<Sound>> soundsTimeline = new HashMap<>();
+                    Map<Integer, List<String>> instructionsTimeline = new HashMap<>();
 
                     for (JsonElement keyFrameElement : animatorJson.get("keyframes").getAsJsonArray()) {
                         JsonObject keyframeJson = keyFrameElement.getAsJsonObject();
@@ -109,28 +111,29 @@ final class AnimationReader {
 
                         switch (channel) {
                             case "sound":
-                                Sound[] sounds = new Sound[dataPoints.size()];
+                                List<Sound> sounds = new ArrayList<>();
 
-                                for (int i = 0; i < sounds.length; i++) {
-                                    JsonObject dataPoint = dataPoints.get(i).getAsJsonObject();
+                                for (JsonElement dataPointElement : dataPoints) {
+                                    JsonObject dataPoint = dataPointElement.getAsJsonObject();
                                     String soundName = dataPoint.get("effect").getAsString();
 
-                                    sounds[i] = Sound.sound(
+                                    sounds.add(Sound.sound(
                                             Key.key("hephaestus", soundName),
                                             Sound.Source.AMBIENT,
                                             1,
                                             1
-                                    );
+                                    ));
                                 }
 
                                 soundsTimeline.put(time, sounds);
                                 break;
                             case "timeline":
-                                String instruction = dataPoints.get(0)
-                                        .getAsJsonObject()
-                                        .get("script")
-                                        .getAsString();
-                                instructionsTimeline.put(time, instruction);
+                                List<String> instructions = new ArrayList<>();
+                                for (final var dataPointNode : dataPoints) {
+                                    final var dataPoint = dataPointNode.getAsJsonObject();
+                                    instructions.add(dataPoint.get("script").getAsString());
+                                }
+                                instructionsTimeline.put(time, instructions);
                                 break;
                         }
                     }

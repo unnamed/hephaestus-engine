@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,9 +51,9 @@ public interface EffectsTimeline {
         return new EffectsTimelinePlayhead(this);
     }
 
-    @NotNull Map<Integer, Sound[]> sounds();
+    @NotNull Map<Integer, List<Sound>> sounds();
 
-    @NotNull Map<Integer, String> instructions();
+    @NotNull Map<Integer, List<String>> instructions();
 
     interface Builder {
 
@@ -64,7 +65,7 @@ public interface EffectsTimeline {
          * @since 1.0.0
          */
         @Contract("_ -> this")
-        @NotNull Builder sounds(final @NotNull Map<Integer, Sound[]> sounds);
+        @NotNull Builder sounds(final @NotNull Map<Integer, List<Sound>> sounds);
 
         /**
          * Set the instructions timeline
@@ -74,7 +75,7 @@ public interface EffectsTimeline {
          * @since 1.0.0
          */
         @Contract("_ -> this")
-        @NotNull Builder instructions(final @NotNull Map<Integer, String> instructions);
+        @NotNull Builder instructions(final @NotNull Map<Integer, List<String>> instructions);
 
         @NotNull EffectsTimeline build();
 
