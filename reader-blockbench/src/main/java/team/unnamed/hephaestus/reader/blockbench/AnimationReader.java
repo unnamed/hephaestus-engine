@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.reader.blockbench;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import team.unnamed.creative.base.Vector3Float;
@@ -69,17 +70,19 @@ final class AnimationReader {
 
             String name = animationJson.get("name").getAsString();
             Animation.LoopMode loopMode = getLoopMode(animationJson);
+            final int priority = getPriority(animationJson);
             int length = Math.round(GsonUtil.parseLenientFloat(animationJson.get("length")) * TICKS_PER_SECOND);
 
             if (GsonUtil.isNullOrAbsent(animationJson, "animators")) {
                 // empty animation, no keyframes of any kind
-                animations.put(name, Animation.animation(
-                        name,
-                        length,
-                        loopMode,
-                        Collections.emptyMap(),
-                        EffectsTimeline.empty().build()
-                ));
+                animations.put(name, Animation.animation()
+                        .name(name)
+                        .length(length)
+                        .loopMode(loopMode)
+                        .priority(priority)
+                        .timelines(Collections.emptyMap())
+                        .effectsTimeline(EffectsTimeline.empty().build())
+                        .build());
                 continue;
             }
 
@@ -218,15 +221,29 @@ final class AnimationReader {
                 }
             }
 
-            animations.put(name, Animation.animation(
-                    name,
-                    length,
-                    loopMode,
-                    animators,
-                    effectsTimeline.build()
-            ));
+            animations.put(name, Animation.animation()
+                    .name(name)
+                    .length(length)
+                    .loopMode(loopMode)
+                    .priority(priority)
+                    .timelines(animators)
+                    .effectsTimeline(effectsTimeline.build())
+                    .build());
         }
         return animations;
+    }
+
+    private static int getPriority(final JsonObject animationJson) {
+        if (!animationJson.has("blend_weight")) {
+            return 0;
+        }
+        final var blendWeightNode = animationJson.get("blend_weight");
+        if (!blendWeightNode.isJsonPrimitive()) {
+            // todo: warn?
+            return 0;
+        }
+        // todo: it seems like Blockbench blend_weight is a Molang script
+        return blendWeightNode.getAsInt();
     }
 
     private static Animation.LoopMode getLoopMode(JsonObject animationJson) {
