@@ -2,7 +2,7 @@
 creative = "1.4.0"
 adventure = "4.9.3"
 annotations = "23.0.0"
-molang = "2.1.0-SNAPSHOT"
+mocha = "3.0.0-SNAPSHOT"
 
 # reader-blockbench
 gson = "2.8.0"
@@ -17,7 +17,7 @@ creative-api = { group = "team.unnamed", name = "creative-api", version.ref =  "
 creative-server = { group = "team.unnamed", name = "creative-server", version.ref = "creative" }
 creative-serializer-minecraft = { group = "team.unnamed", name = "creative-serializer-minecraft", version.ref = "creative" }
 
-molang = { group = "team.unnamed", name = "molang", version.ref = "molang" }
+mocha = { group = "team.unnamed", name = "mocha", version.ref = "mocha" }
 
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }

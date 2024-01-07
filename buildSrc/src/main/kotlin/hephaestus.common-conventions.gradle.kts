@@ -5,6 +5,7 @@ plugins {
 repositories {
     mavenLocal()
     maven("https://repo.unnamed.team/repository/unnamed-public/")
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
     mavenCentral()
 }
 

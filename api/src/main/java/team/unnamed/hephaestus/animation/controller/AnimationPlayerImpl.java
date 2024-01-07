@@ -36,9 +36,8 @@ import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.BaseBoneView;
 import team.unnamed.hephaestus.view.BaseModelView;
-import team.unnamed.molang.MolangEngine;
+import team.unnamed.mocha.MochaEngine;
 
-import javax.script.ScriptException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -50,13 +49,13 @@ import static java.util.Objects.requireNonNull;
 class AnimationPlayerImpl implements AnimationPlayer {
     private final PriorityLinkedList<AnimationQueue> animations = new PriorityLinkedList<>();
     private final BaseModelView<?> view;
-    private final MolangEngine<BaseModelView<?>> scriptEngine;
+    private final MochaEngine<BaseModelView<?>> scriptEngine;
 
     private final Map<String, BoneFrame> lastFrames = new HashMap<>();
 
     AnimationPlayerImpl(final @NotNull BaseModelView<?> view) {
         this.view = requireNonNull(view, "view");
-        this.scriptEngine = MolangEngine.create(view);
+        this.scriptEngine = MochaEngine.createStandard(view);
     }
 
     @Override
@@ -126,11 +125,7 @@ class AnimationPlayerImpl implements AnimationPlayer {
                 view.playSound(sound);
             }
             for (String instruction : instructions) {
-                try {
-                    scriptEngine.eval(instruction);
-                } catch (final ScriptException e) {
-                    throw new RuntimeException("Failed to execute instruction: " + instruction, e);
-                }
+                scriptEngine.eval(instruction);
             }
         }
     }
@@ -171,7 +166,7 @@ class AnimationPlayerImpl implements AnimationPlayer {
     }
 
     @Override
-    public @NotNull MolangEngine<BaseModelView<?>> scriptEngine() {
+    public @NotNull MochaEngine<BaseModelView<?>> scriptEngine() {
         return scriptEngine;
     }
 

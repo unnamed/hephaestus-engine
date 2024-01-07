@@ -28,7 +28,7 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.BaseModelView;
-import team.unnamed.molang.MolangEngine;
+import team.unnamed.mocha.MochaEngine;
 
 /**
  * The animation player. Responsible for playing
@@ -137,7 +137,7 @@ public interface AnimationPlayer {
      * @return The script engine
      * @since 1.0.0
      */
-    @NotNull MolangEngine<BaseModelView<?>> scriptEngine();
+    @NotNull MochaEngine<BaseModelView<?>> scriptEngine();
 
     /**
      * Creates a new {@link AnimationPlayer} for the given
