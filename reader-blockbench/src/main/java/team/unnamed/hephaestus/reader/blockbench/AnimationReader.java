@@ -47,7 +47,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-final class AnimationReader {
+public final class AnimationReader {
+    
     private static final int BEZIER_CURVE_DIVISIONS = Integer.getInteger("hephaestus.bezier_divisions", 200);
     private static final KeyFrameInterpolator<Vector3Float> BEZIER_INTERPOLATOR = Interpolators.bezierVector3Float(BEZIER_CURVE_DIVISIONS);
     private static final int TICKS_PER_SECOND = Integer.getInteger("hephaestus.tps", 20);
@@ -57,7 +58,7 @@ final class AnimationReader {
      * object and puts them into the specified {@code animations}
      * map
      */
-    static Map<String, Animation> readAnimations(JsonObject json, BBModelData modelData) {
+    public static Map<String, Animation> readAnimations(JsonObject json) {
 
         Map<String, Animation> animations = new LinkedHashMap<>();
 

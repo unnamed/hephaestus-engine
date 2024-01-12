@@ -84,7 +84,7 @@ final class BBModelReaderImpl implements BBModelReader {
 
         final Map<String, TextureAsset> textures = TextureReader.readTextures(json, modelData);
         ElementReader.readElements(json, modelData);
-        final Map<String, Animation> animations = AnimationReader.readAnimations(json, modelData);
+        final Map<String, Animation> animations = AnimationReader.readAnimations(json);
 
         return new Model(
                 modelName,
