@@ -267,7 +267,7 @@ final class ElementReader {
                 resourcePackScale
         );
 
-        siblings.put(name, new Bone(name, position, rotation, children, asset.customModelData(), inGameScale));
+        siblings.put(name, new Bone(name, position, rotation, children, asset.customModelData(), inGameScale, asset.cubes().isEmpty()));
         siblingAssets.put(name, asset);
     }
 

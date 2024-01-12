@@ -50,13 +50,16 @@ public class Bone implements Examinable {
     private final int customModelData;
     private final float scale;
 
+    private final boolean parentOnly;
+
     public Bone(
             String name,
             Vector3Float position,
             Vector3Float rotation,
             Map<String, Bone> children,
             int customModelData,
-            float scale
+            float scale,
+            boolean parentOnly
     ) {
         this.name = name;
         this.position = position;
@@ -64,6 +67,7 @@ public class Bone implements Examinable {
         this.children = children;
         this.customModelData = customModelData;
         this.scale = scale;
+        this.parentOnly = parentOnly;
     }
 
     /**
@@ -147,6 +151,10 @@ public class Bone implements Examinable {
      */
     public float scale() {
         return scale;
+    }
+
+    public boolean isParentOnly() {
+        return parentOnly;
     }
 
     @Override
