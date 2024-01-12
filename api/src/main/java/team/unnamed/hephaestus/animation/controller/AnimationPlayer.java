@@ -30,6 +30,8 @@ import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.mocha.MochaEngine;
 
+import java.util.Collection;
+
 /**
  * The animation player. Responsible for playing
  * a single animation or a group of animations for
@@ -76,7 +78,7 @@ public interface AnimationPlayer {
      * @return The current playing animations
      * @since 1.0.0
      */
-    @NotNull Iterable<Animation> animations();
+    @NotNull Collection<Animation> animations();
 
     /**
      * Removes all the currently playing animations.

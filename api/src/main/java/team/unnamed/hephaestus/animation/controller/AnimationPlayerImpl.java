@@ -38,6 +38,7 @@ import team.unnamed.hephaestus.view.BaseBoneView;
 import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.mocha.MochaEngine;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -88,7 +89,7 @@ class AnimationPlayerImpl implements AnimationPlayer {
     }
 
     @Override
-    public @NotNull Iterable<Animation> animations() {
+    public @NotNull Collection<Animation> animations() {
         //return animations;
         return Collections.emptySet();
     }
