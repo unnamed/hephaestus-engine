@@ -46,7 +46,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
-
 public class ModelEntity extends EntityCreature implements BaseModelView<Player> {
 
     protected final Model model;
@@ -54,6 +53,8 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
 
     protected final Map<String, GenericBoneEntity> bones = new ConcurrentHashMap<>();
     protected final AnimationPlayer animationPlayer;
+
+    private int lastVehicle = -1;
 
     public ModelEntity(EntityType type, Model model, float scale) {
         super(type);
@@ -64,6 +65,24 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
         // model entity is not auto-viewable by default
         setAutoViewable(false);
         initialize();
+    }
+
+    @Override
+    public void setAutoViewable(boolean autoViewable) {
+        super.setAutoViewable(autoViewable);
+
+        for (GenericBoneEntity bone : bones()) {
+            bone.setAutoViewable(autoViewable);
+        }
+    }
+
+    @Override
+    public void setInvisible(boolean invisible) {
+        super.setInvisible(invisible);
+
+        for (GenericBoneEntity bone : bones()) {
+            bone.setInvisible(invisible);
+        }
     }
 
     private void initialize() {
@@ -80,8 +99,13 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     protected void createBone(Bone bone, Vector3Float parentPosition, Quaternion parentRotation) {
         Vector3Float position = bone.position().add(parentPosition);
         Quaternion rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
+
         BoneEntity boneEntity = new BoneEntity(this, bone, position, rotation, scale);
         bones.put(bone.name(), boneEntity);
+
+        if (bone.isParentOnly()) {
+            boneEntity.setInvisible(true);
+        }
 
         for (Bone child : bone.children()) {
             createBone(child, position, rotation);
@@ -145,6 +169,14 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     public void tick(long time) {
         super.tick(time);
         this.tickAnimations();
+
+        if (vehicle != null && vehicle.getEntityId() != lastVehicle) {
+            for (GenericBoneEntity bone : bones()) {
+                vehicle.addPassenger(bone);
+            }
+
+            lastVehicle = vehicle.getEntityId();
+        }
     }
 
     @Override
@@ -176,5 +208,13 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
                         addPassenger(bone);
                     }
                 });
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
+        for (GenericBoneEntity bone : bones()) {
+            bone.remove();
+        }
     }
 }

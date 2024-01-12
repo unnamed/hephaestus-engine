@@ -63,12 +63,26 @@ public class BoneEntity extends GenericBoneEntity {
         initialize(initialPosition, initialRotation);
     }
 
+    @Override
+    public void setInvisible(boolean invisible) {
+        super.setInvisible(invisible);
+
+        ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
+        if (bone.isParentOnly() || invisible) {
+            meta.setItemStack(ItemStack.AIR);
+        } else {
+            meta.setItemStack(BASE_HELMET.withMeta(itemMeta ->
+                    itemMeta.customModelData(bone.customModelData())));
+        }
+    }
+
     protected void initialize(Vector3Float initialPosition, Quaternion initialRotation) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
         meta.setDisplayContext(ItemDisplayMeta.DisplayContext.THIRD_PERSON_LEFT_HAND);
         meta.setInterpolationDuration(3);
         meta.setViewRange(1000);
         meta.setHasNoGravity(true);
+        meta.setSilent(true);
 
         meta.setItemStack(BASE_HELMET.withMeta(itemMeta ->
                 itemMeta.customModelData(bone.customModelData())));

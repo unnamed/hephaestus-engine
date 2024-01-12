@@ -73,6 +73,7 @@ public class PlayerBoneEntity extends BoneEntity {
         meta.setInterpolationDuration(3);
         meta.setViewRange(0.6f);
         meta.setHasNoGravity(true);
+        meta.setSilent(true);
 
         meta.setItemStack(BASE_HEAD.withMeta(PlayerHeadMeta.class, itemMeta -> {
             itemMeta.playerSkin(new PlayerSkin(skin.value(), skin.signature()));
@@ -106,5 +107,20 @@ public class PlayerBoneEntity extends BoneEntity {
     @Override
     public void colorize(Color color) {
         //empty method
+    }
+
+    @Override
+    public void setInvisible(boolean invisible) {
+        super.setInvisible(invisible);
+
+        ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
+        if (bone.isParentOnly() || invisible) {
+            meta.setItemStack(ItemStack.AIR);
+        } else {
+            meta.setItemStack(BASE_HEAD.withMeta(PlayerHeadMeta.class, itemMeta -> {
+                itemMeta.playerSkin(new PlayerSkin(skin.value(), skin.signature()));
+                itemMeta.customModelData(boneType.modelData());
+            }));
+        }
     }
 }

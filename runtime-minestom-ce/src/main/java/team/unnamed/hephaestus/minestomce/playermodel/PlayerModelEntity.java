@@ -59,8 +59,8 @@ public class PlayerModelEntity extends ModelEntity {
         Vector3Float position = bone.position().add(parentPosition);
         Quaternion rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
 
-        PlayerBoneType boneType = PlayerBoneType.matchFor(model().skin(), bone.name());
         GenericBoneEntity boneEntity;
+        PlayerBoneType boneType = PlayerBoneType.matchFor(model().skin(), bone.name());
 
         if (boneType != null) {
             boneEntity = new PlayerBoneEntity(this, bone, position, rotation, scale);
@@ -70,6 +70,10 @@ public class PlayerModelEntity extends ModelEntity {
 
         bones.put(bone.name(), boneEntity);
 
+        if (bone.isParentOnly()) {
+            boneEntity.setInvisible(true);
+        }
+
         for (Bone child : bone.children()) {
             createBone(child, position, rotation);
         }
@@ -77,20 +81,20 @@ public class PlayerModelEntity extends ModelEntity {
 
     @Override
     public CompletableFuture<Void> setInstance(@NotNull Instance instance, @NotNull Pos spawnPosition) {
-
-        return super.setInstance(instance, spawnPosition)
-                .thenAccept(ignored -> {
-                    for (GenericBoneEntity bone : bones()) {
-                        bone.setInstance(instance, position.withView(0, 0));
-                    }
-                });
+        return super.setInstance(instance, spawnPosition).thenAccept((ignored) -> {
+            for (GenericBoneEntity bone : bones()) {
+                bone.setInstance(instance, position.withView(0, 0)).join();
+                addPassenger(bone);
+            }
+        });
     }
 
     @Override
     public @NotNull CompletableFuture<Void> teleport(@NotNull Pos position) {
-        return super.teleport(position).thenAccept(ignored -> {
+        return super.teleport(position).thenRun(() -> {
             for (GenericBoneEntity bone : bones()) {
-                bone.teleport(position.withView(0, 0));
+                bone.teleport(position.withView(0, 0)).join();
+                addPassenger(bone);
             }
         });
     }
