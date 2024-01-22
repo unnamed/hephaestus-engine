@@ -72,13 +72,19 @@ final class ElementReader {
             Vector3Float to = GsonUtil.getVector3FloatFromJson(cubeJson.get("to"));
             Vector3Float from = GsonUtil.getVector3FloatFromJson(cubeJson.get("from"));
 
+            if (cubeJson.has("inflate")) {
+                final float inflate = cubeJson.get("inflate").getAsFloat();
+                from = from.subtract(inflate, inflate, inflate);
+                to = to.add(inflate, inflate, inflate);
+            }
+
             Vector3Float rotation = GsonUtil.isNullOrAbsent(cubeJson, "rotation")
                     ? Vector3Float.ZERO
                     : GsonUtil.getVector3FloatFromJson(cubeJson.get("rotation"));
 
             float x = rotation.x();
             float y = rotation.y();
-            float z = rotation.z();
+            float z = rotation.z();git status
 
             // determine axis and check that it is rotated to a single direction
             Axis3D axis;
