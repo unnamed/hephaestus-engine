@@ -84,7 +84,7 @@ final class ElementReader {
 
             float x = rotation.x();
             float y = rotation.y();
-            float z = rotation.z();git status
+            float z = rotation.z();
 
             // determine axis and check that it is rotated to a single direction
             Axis3D axis;
