@@ -30,7 +30,7 @@ import team.unnamed.creative.central.CreativeCentralProvider;
 import team.unnamed.creative.central.event.pack.ResourcePackGenerateEvent;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
-import team.unnamed.hephaestus.bukkit.v1_20_R2.BukkitModelEngine_v1_20_R2;
+import team.unnamed.hephaestus.bukkit.v1_20_R3.BukkitModelEngine_v1_20_R2;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.writer.ModelWriter;
 

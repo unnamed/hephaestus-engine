@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import io.papermc.paper.chunk.system.entity.EntityLookup;
@@ -32,7 +32,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.entity.LevelCallback;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.Plugin;
@@ -45,7 +45,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 
 import static java.util.Objects.requireNonNull;
 
-final class BukkitModelEngine_v1_20_R2Impl implements BukkitModelEngine_v1_20_R2 {
+final class BukkitModelEngine_v1_20_R3Impl implements BukkitModelEngine_v1_20_R3 {
 
     private static final Access.FieldReflect<ServerEntity> SERVER_ENTITY_FIELD
             = Access.findFieldByType(ChunkMap.TrackedEntity.class, ServerEntity.class);
@@ -55,7 +55,7 @@ final class BukkitModelEngine_v1_20_R2Impl implements BukkitModelEngine_v1_20_R2
 
     private final EntityFactory entityFactory;
 
-    BukkitModelEngine_v1_20_R2Impl(Plugin plugin, EntityFactory entityFactory) {
+    BukkitModelEngine_v1_20_R3Impl(Plugin plugin, EntityFactory entityFactory) {
         requireNonNull(plugin, "plugin");
         requireNonNull(entityFactory, "entityFactory");
         this.entityFactory = entityFactory;

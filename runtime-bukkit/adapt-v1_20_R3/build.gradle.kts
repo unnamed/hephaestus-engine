@@ -1,7 +1,7 @@
 plugins {
     id("hephaestus.runtime-bukkit-conventions")
     id("hephaestus.publishing-conventions")
-    id("io.papermc.paperweight.userdev") version "1.5.5"
+    id("io.papermc.paperweight.userdev") version "1.5.11"
 }
 
 repositories {
@@ -15,7 +15,7 @@ tasks {
 }
 
 dependencies {
-    paperDevBundle("1.20.2-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
 
     implementation(project(":hephaestus-runtime-bukkit-api"))
     implementation("net.kyori:adventure-platform-bukkit:4.0.1")

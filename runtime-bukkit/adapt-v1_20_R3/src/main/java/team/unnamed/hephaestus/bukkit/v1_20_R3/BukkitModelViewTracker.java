@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.view.BaseModelView;

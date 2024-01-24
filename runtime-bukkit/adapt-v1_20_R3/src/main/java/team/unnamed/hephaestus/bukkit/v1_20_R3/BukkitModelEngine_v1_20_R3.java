@@ -21,17 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R2;
+package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 
 @ApiStatus.NonExtendable
-public interface BukkitModelEngine_v1_20_R2 extends BukkitModelEngine {
+public interface BukkitModelEngine_v1_20_R3 extends BukkitModelEngine {
 
     static BukkitModelEngine create(Plugin plugin, EntityFactory entityFactory) {
-        return new BukkitModelEngine_v1_20_R2Impl(plugin, entityFactory);
+        return new BukkitModelEngine_v1_20_R3Impl(plugin, entityFactory);
     }
 
     static BukkitModelEngine create(Plugin plugin) {
