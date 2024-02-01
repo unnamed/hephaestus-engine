@@ -24,6 +24,7 @@
 package team.unnamed.hephaestus.player;
 
 import team.unnamed.creative.ResourcePack;
+import team.unnamed.creative.base.Writable;
 
 @FunctionalInterface
 public interface PlayerModelWriter<T> {
@@ -32,6 +33,10 @@ public interface PlayerModelWriter<T> {
 
     static PlayerModelWriter<ResourcePack> resource() {
         return new ResourcePlayerModelWriter();
+    }
+
+    static PlayerModelWriter<ResourcePack> resource(PlayerBoneType[] playerBoneTypes, Writable vshFile, Writable fshFile) {
+        return new ResourcePlayerModelWriter(playerBoneTypes, vshFile, fshFile);
     }
 
 }

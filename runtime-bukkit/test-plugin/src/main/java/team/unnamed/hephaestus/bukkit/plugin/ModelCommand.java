@@ -156,7 +156,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                             new BukkitRunnable() {
                                 @Override
                                 public void run() {
-                                    spawn(player, PlayerModel.fromModel(skin, registry.model("player_anims")));
+                                    spawn(player, PlayerModel.fromModel(skin, registry.model("jeqo"), DetailedPlayerBoneType.values()));
                                 }
                             }.runTaskLater(plugin, 0L);
                         }

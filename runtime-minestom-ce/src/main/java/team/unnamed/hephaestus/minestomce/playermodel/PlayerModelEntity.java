@@ -33,6 +33,7 @@ import team.unnamed.hephaestus.minestomce.BoneEntity;
 import team.unnamed.hephaestus.minestomce.GenericBoneEntity;
 import team.unnamed.hephaestus.minestomce.ModelEntity;
 import team.unnamed.hephaestus.player.PlayerBoneType;
+import team.unnamed.hephaestus.player.SimplePlayerBoneType;
 import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.util.Quaternion;
 
@@ -60,7 +61,7 @@ public class PlayerModelEntity extends ModelEntity {
         Quaternion rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
 
         GenericBoneEntity boneEntity;
-        PlayerBoneType boneType = PlayerBoneType.matchFor(model().skin(), bone.name());
+        PlayerBoneType boneType = PlayerBoneType.matchFor(model().playerBoneTypes(), model().skin(), bone.name());
 
         if (boneType != null) {
             boneEntity = new PlayerBoneEntity(this, bone, position, rotation, scale);

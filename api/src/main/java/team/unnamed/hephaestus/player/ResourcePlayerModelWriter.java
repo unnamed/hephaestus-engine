@@ -42,13 +42,30 @@ public final class ResourcePlayerModelWriter implements PlayerModelWriter<Resour
 
     private final static ClassLoader CLASS_LOADER = ResourcePlayerModelWriter.class.getClassLoader();
 
+    private final PlayerBoneType[] playerBoneTypes;
+    private final Writable vshFile, fshFile;
+
+    public ResourcePlayerModelWriter() {
+        this(
+                SimplePlayerBoneType.values(),
+                Writable.resource(CLASS_LOADER, "playermodel/shaders/core/rendertype_entity_translucent.vsh"),
+                Writable.resource(CLASS_LOADER, "playermodel/shaders/core/rendertype_entity_translucent.fsh")
+        );
+    }
+
+    public ResourcePlayerModelWriter(PlayerBoneType[] playerBoneTypes, Writable vshFile, Writable fshFile) {
+        this.playerBoneTypes = playerBoneTypes;
+        this.vshFile = vshFile;
+        this.fshFile = fshFile;
+    }
+
     @Override
     public void write(ResourcePack resourcePack) {
         final List<ItemOverride> overrides = new ArrayList<>();
 
         // write overrides
-        for (final PlayerBoneType boneType : PlayerBoneType.values()) {
-            final Key key = Key.key("custom/entities/player/" + boneType.name().toLowerCase());
+        for (final PlayerBoneType boneType : playerBoneTypes) {
+            final Key key = Key.key("custom/entities/player/" + boneType.boneName().toLowerCase());
             final Model model = Model.model()
                     .key(key)
                     .parent(Model.BUILT_IN_ENTITY)
@@ -76,7 +93,7 @@ public final class ResourcePlayerModelWriter implements PlayerModelWriter<Resour
                 .build());
 
         // copy our shaders
-        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.fsh", Writable.resource(CLASS_LOADER, "playermodel/shaders/core/rendertype_entity_translucent.fsh"));
-        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.vsh", Writable.resource(CLASS_LOADER, "playermodel/shaders/core/rendertype_entity_translucent.vsh"));
+        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.fsh", fshFile);
+        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.vsh", vshFile);
     }
 }

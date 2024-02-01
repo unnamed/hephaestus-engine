@@ -30,6 +30,7 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity;
 import team.unnamed.hephaestus.bukkit.v1_20_R3.MinecraftModelEntity;
 import team.unnamed.hephaestus.player.PlayerBoneType;
+import team.unnamed.hephaestus.player.SimplePlayerBoneType;
 import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.util.Quaternion;
 
@@ -55,8 +56,8 @@ public class PlayerModelEntity extends MinecraftModelEntity {
             ImmutableMap.Builder<String, BoneEntity> into
     ) {
         var position = bone.position().add(parentPosition);
-        PlayerBoneType playerBoneType = PlayerBoneType.HEAD.matchFor(model().skin(), bone.name());
-        var entity = playerBoneType == null
+        PlayerBoneType simplePlayerBoneType = PlayerBoneType.matchFor(model().playerBoneTypes(), model().skin(), bone.name());
+        var entity = simplePlayerBoneType == null
                 ? new BoneEntity(this, bone, position, Quaternion.IDENTITY.multiply(Quaternion.fromEulerDegrees(bone.rotation())), scale)
                 : new PlayerBoneEntity(this, bone, position, Quaternion.IDENTITY.multiply(Quaternion.fromEulerDegrees(bone.rotation())), scale);
 

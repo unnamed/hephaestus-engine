@@ -26,11 +26,13 @@ package team.unnamed.hephaestus.bukkit.plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.ResourcePack;
+import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.central.CreativeCentralProvider;
 import team.unnamed.creative.central.event.pack.ResourcePackGenerateEvent;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 import team.unnamed.hephaestus.bukkit.v1_20_R3.BukkitModelEngine_v1_20_R3;
+import team.unnamed.hephaestus.player.PlayerModelWriter;
 import team.unnamed.hephaestus.player.ResourcePlayerModelWriter;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.writer.ModelWriter;
@@ -49,7 +51,7 @@ public final class HephaestusTestPlugin extends JavaPlugin {
         registry.registerModel(loadModel("dragon.bbmodel"));
         registry.registerModel(loadModel("geometry.bbmodel"));
         registry.registerModel(loadModel("redstone_monstrosity.bbmodel"));
-        registry.registerModel(loadModel("player_anims.bbmodel"));
+        registry.registerModel(loadModel("player/detailed/animations.bbmodel"));
 
         // listen to resource pack generation
         CreativeCentralProvider.get().eventBus().listen(this, ResourcePackGenerateEvent.class, event -> {
@@ -58,7 +60,11 @@ public final class HephaestusTestPlugin extends JavaPlugin {
             // write models to the resource pack
             ModelWriter.resource("hephaestus_test_plugin_namespace")
                     .write(resourcePack, registry.models());
-            new ResourcePlayerModelWriter().write(resourcePack);
+            PlayerModelWriter.resource(
+                    DetailedPlayerBoneType.values(),
+                    Writable.resource(getClassLoader(), "models/player/detailed/rendertype_entity_translucent.vsh"),
+                    Writable.resource(getClassLoader(), "models/player/detailed/rendertype_entity_translucent.fsh")
+            ).write(resourcePack);
         });
 
         // register our command

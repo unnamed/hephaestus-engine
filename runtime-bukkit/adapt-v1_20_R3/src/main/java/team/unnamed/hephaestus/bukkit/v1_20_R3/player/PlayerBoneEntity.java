@@ -56,8 +56,9 @@ final class PlayerBoneEntity
 
     @Override
     protected void initialize(Vector3Float initialPosition, Quaternion initialRotation) {
-        Skin skin = ((PlayerModel) view.model()).skin();
-        this.boneType = PlayerBoneType.matchFor(skin, bone.name());
+        PlayerModel model = (PlayerModel) view.model();
+        Skin skin = model.skin();
+        this.boneType = PlayerBoneType.matchFor(model.playerBoneTypes(), skin, bone.name());
 
         setItemTransform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND);
         setTransformationInterpolationDuration(3);
