@@ -23,7 +23,7 @@
  */
 package team.unnamed.hephaestus.bukkit;
 
-import org.bukkit.entity.Mob;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.view.BaseModelView;
@@ -35,6 +35,6 @@ import team.unnamed.hephaestus.view.BaseModelView;
  * @since 1.0.0
  */
 public interface ModelEntity
-        extends Mob, BaseModelView<Player> {
+        extends Entity, BaseModelView<Player> {
 
 }

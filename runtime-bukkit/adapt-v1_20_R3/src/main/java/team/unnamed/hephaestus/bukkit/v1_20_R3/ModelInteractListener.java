@@ -48,6 +48,7 @@ import team.unnamed.hephaestus.bukkit.ModelEntity;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+// TODO: Replace with Interaction Entity interactions
 final class ModelInteractListener implements Listener {
 
     private static final String TAG_IS_DROP = "hephaestus:is_drop";
@@ -77,7 +78,7 @@ final class ModelInteractListener implements Listener {
         }
 
         checkInteraction(player, modelEntity ->
-                ((CraftPlayer) player).getHandle().attack(((CraftModelEntity) modelEntity).getHandle()));
+                ((CraftPlayer) player).getHandle().attack(((team.unnamed.hephaestus.bukkit.v1_20_R3.CraftModelEntity) modelEntity).getHandle()));
     }
 
     // handle the horrible interact event
@@ -92,6 +93,7 @@ final class ModelInteractListener implements Listener {
                     Bukkit.getPluginManager().callEvent(new PlayerInteractEntityEvent(player, modelEntity, hand)));
         }
     }
+
 
     private boolean checkInteraction(Player bukkitPlayer, Consumer<ModelEntity> callback) {
         ServerPlayer player = ((CraftPlayer) bukkitPlayer).getHandle();
@@ -120,7 +122,7 @@ final class ModelInteractListener implements Listener {
             Vec3 loc = result.getLocation();
             double distance = eyePosition.distanceToSqr(loc);
 
-            if (distance <= 9.0D && distance < rangeSqr && entity instanceof MinecraftModelEntity modelEntity) {
+            if (distance <= 9.0D && distance < rangeSqr && entity instanceof team.unnamed.hephaestus.bukkit.v1_20_R3.MinecraftModelEntity modelEntity) {
                 callback.accept(modelEntity.getBukkitEntity());
                 return true;
             }

@@ -30,15 +30,19 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.entity.LevelCallback;
+import net.minecraft.world.level.gameevent.DynamicGameEventListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R3.util.WeakCollection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.Plugin;
 import org.spigotmc.AsyncCatcher;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
+import team.unnamed.hephaestus.bukkit.v1_20_R3.player.PlayerModelEntity;
+import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -53,42 +57,52 @@ final class BukkitModelEngine_v1_20_R3Impl implements BukkitModelEngine_v1_20_R3
     private static final Access.FieldReflect<LevelCallback<?>> CALLBACKS_FIELD
             = Access.findFieldByType(EntityLookup.class, LevelCallback.class);
 
-    private final EntityFactory entityFactory;
-
-    BukkitModelEngine_v1_20_R3Impl(Plugin plugin, EntityFactory entityFactory) {
+    BukkitModelEngine_v1_20_R3Impl(Plugin plugin) {
         requireNonNull(plugin, "plugin");
-        requireNonNull(entityFactory, "entityFactory");
-        this.entityFactory = entityFactory;
         Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin), plugin);
+    }
+
+    public ModelEntity createView(Model model, Location location, float scale) {
+        ModelEntity modelEntity;
+        if (model instanceof PlayerModel playerModel) {
+            modelEntity = new PlayerModelEntity(playerModel, location, scale).getBukkitEntity();
+        } else {
+            modelEntity = new MinecraftModelEntity(model, location, scale).getBukkitEntity();
+        }
+        modelEntity.teleport(location);
+        return modelEntity;
     }
 
     @Override
     public ModelEntity createViewAndTrack(Model model, Location location, CreatureSpawnEvent.SpawnReason reason) {
-        ServerLevel level = ((CraftWorld) location.getWorld()).getHandle();
-
-        // inject our level entity handler to the level
-        InjectedLevelCallback.injectAt(level);
-
-        // create and the model entity
-        var entity = entityFactory.create(level, model);
-        entity.setPos(location.getX(), location.getY(), location.getZ());
-        entity.setHealth(entity.getMaxHealth());
-
-        // add our entity to the world (will internally call
-        // our injected level callback)
-        level.addFreshEntity(entity, reason);
-
-        return entity.getBukkitEntity();
+        return createViewAndTrack(model, location);
     }
 
     @Override
+    public ModelEntity createViewAndTrack(Model model, Location location) {
+        return createViewAndTrack(model, location, 1);
+    }
+
     public ModelEntity createView(Model model, Location location) {
-        return null;
+        return createView(model, location, 1);
+    }
+
+    private final WeakCollection<ServerLevel> usedWorlds = new WeakCollection<>();
+
+    public ModelEntity createViewAndTrack(Model model, Location location, float scale) {
+        ServerLevel level = ((CraftWorld) location.getWorld()).getHandle();
+        if (!usedWorlds.contains(level)) {
+            InjectedLevelCallback.injectAt(level);
+            usedWorlds.add(level);
+        }
+        ModelEntity view = createView(model, location, scale);
+        level.getEntityLookup().addNewEntity(((CraftModelEntity) view).getHandle());
+        return view;
     }
 
     @Override
     public ModelViewTracker<Player> tracker() {
-        return BukkitModelViewTracker.INSTANCE;
+        throw new UnsupportedOperationException();
     }
 
     @ParametersAreNonnullByDefault
@@ -102,13 +116,15 @@ final class BukkitModelEngine_v1_20_R3Impl implements BukkitModelEngine_v1_20_R3
             if (entity instanceof MinecraftModelEntity modelEntity) {
                 AsyncCatcher.catchOp("entity register");
 
-                System.out.println("tracking start for entity " + entity);
                 entity.valid = true;
                 ChunkMap chunkMap = level.chunkSource.chunkMap;
                 ChunkMap.TrackedEntity trackedEntity = chunkMap.new TrackedEntity(entity, 40, 40, false);
                 SERVER_ENTITY_FIELD.set(trackedEntity, new ModelServerEntity(level, modelEntity, trackedEntity::broadcast, trackedEntity.seenBy));
                 chunkMap.entityMap.put(entity.getId(), trackedEntity);
 
+                entity.updateDynamicGameEventListener(DynamicGameEventListener::add);
+                entity.inWorld = true;
+                entity.valid = true;
                 if (entity.getOriginVector() == null) {
                     entity.setOrigin(entity.getBukkitEntity().getLocation());
                 }
@@ -116,7 +132,7 @@ final class BukkitModelEngine_v1_20_R3Impl implements BukkitModelEngine_v1_20_R3
                     entity.setOrigin(entity.getOriginVector().toLocation(level.getWorld()));
                 }
 
-                new EntityAddToWorldEvent(entity.getBukkitEntity()).callEvent();
+                new EntityAddToWorldEvent(entity.getBukkitEntity(), entity.getBukkitEntity().getWorld()).callEvent();
             } else {
                 delegate.onTrackingStart(entity);
             }

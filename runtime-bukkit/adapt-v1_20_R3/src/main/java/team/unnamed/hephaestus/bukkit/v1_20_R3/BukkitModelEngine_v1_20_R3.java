@@ -30,12 +30,7 @@ import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 @ApiStatus.NonExtendable
 public interface BukkitModelEngine_v1_20_R3 extends BukkitModelEngine {
 
-    static BukkitModelEngine create(Plugin plugin, EntityFactory entityFactory) {
-        return new BukkitModelEngine_v1_20_R3Impl(plugin, entityFactory);
-    }
-
     static BukkitModelEngine create(Plugin plugin) {
-        return create(plugin, EntityFactory.DEFAULT);
+        return new BukkitModelEngine_v1_20_R3Impl(plugin);
     }
-
 }

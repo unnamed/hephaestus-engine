@@ -30,7 +30,8 @@ import team.unnamed.creative.central.CreativeCentralProvider;
 import team.unnamed.creative.central.event.pack.ResourcePackGenerateEvent;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
-import team.unnamed.hephaestus.bukkit.v1_20_R3.BukkitModelEngine_v1_20_R2;
+import team.unnamed.hephaestus.bukkit.v1_20_R3.BukkitModelEngine_v1_20_R3;
+import team.unnamed.hephaestus.player.ResourcePlayerModelWriter;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
@@ -42,13 +43,13 @@ public final class HephaestusTestPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        final BukkitModelEngine engine = BukkitModelEngine_v1_20_R2.create(this);
-
+        final BukkitModelEngine engine = BukkitModelEngine_v1_20_R3.create(this);
         // load models from resources
         final ModelRegistry registry = new ModelRegistry();
         registry.registerModel(loadModel("dragon.bbmodel"));
         registry.registerModel(loadModel("geometry.bbmodel"));
         registry.registerModel(loadModel("redstone_monstrosity.bbmodel"));
+        registry.registerModel(loadModel("player_anims.bbmodel"));
 
         // listen to resource pack generation
         CreativeCentralProvider.get().eventBus().listen(this, ResourcePackGenerateEvent.class, event -> {
@@ -57,11 +58,12 @@ public final class HephaestusTestPlugin extends JavaPlugin {
             // write models to the resource pack
             ModelWriter.resource("hephaestus_test_plugin_namespace")
                     .write(resourcePack, registry.models());
+            new ResourcePlayerModelWriter().write(resourcePack);
         });
 
         // register our command
         Objects.requireNonNull(getCommand("hephaestus"), "'hephaestus' command not registered! altered plugin.yml?")
-                .setExecutor(new ModelCommand(registry, engine));
+                .setExecutor(new ModelCommand(this, registry, engine));
     }
 
     private @NotNull Model loadModel(final @NotNull String fileName) {

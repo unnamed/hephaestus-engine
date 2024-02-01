@@ -25,40 +25,48 @@ package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
 import team.unnamed.creative.base.Vector2Float;
+import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
+import team.unnamed.hephaestus.util.Quaternion;
 
 import java.util.Collections;
+import java.util.Objects;
 
+// TODO: Extend Interaction hitbox from BBModel hitbox
 @MethodsReturnNonnullByDefault
-public class MinecraftModelEntity extends PathfinderMob {
+public class MinecraftModelEntity extends Interaction {
 
     private static final Access.FieldReflect<EntityDimensions> DIMENSIONS_FIELD = Access.findFieldByType(Entity.class, EntityDimensions.class);
 
-    private final Model model;
-    private final ImmutableMap<String, BoneEntity> bones;
-    private final AnimationPlayer animationPlayer;
+    protected final Model model;
+    private final ImmutableMap<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> bones;
+    protected final AnimationPlayer animationController;
 
-    private final CraftModelEntity bukkitEntity;
+    private final team.unnamed.hephaestus.bukkit.v1_20_R3.CraftModelEntity bukkitEntity;
     private final EntityDimensions modelDimensions;
 
-    public MinecraftModelEntity(EntityType<? extends PathfinderMob> type, Level world, Model model) {
-        super(type, world);
+    protected final float scale;
+
+    public MinecraftModelEntity(Model model, Location initial, float scale) {
+        super(EntityType.INTERACTION, ((CraftWorld) initial.getWorld()).getHandle());
         this.model = model;
+        this.scale = scale;
         this.bones = instantiateBones();
-        this.bukkitEntity = new CraftModelEntity(super.level().getCraftServer(), this);
-        this.animationPlayer = AnimationPlayer.create(bukkitEntity);
+        this.bukkitEntity = new CraftModelEntity(level().getCraftServer(), this);
+        this.animationController = AnimationPlayer.create(bukkitEntity);
 
         Vector2Float bb = model.boundingBox();
         this.modelDimensions = EntityDimensions.scalable(bb.x(), bb.y());
@@ -67,7 +75,10 @@ public class MinecraftModelEntity extends PathfinderMob {
         DIMENSIONS_FIELD.set(this, modelDimensions);
 
         // update bounding box
-        setPos(0.0D, 0.0D, 0.0D);
+        setPos(initial.getX(), initial.getY(), initial.getZ());
+        setYRot(initial.getYaw());
+        setXRot(initial.getPitch());
+        teleportTo(initial.getX(), initial.getY(), initial.getZ());
     }
 
     @Override
@@ -78,38 +89,33 @@ public class MinecraftModelEntity extends PathfinderMob {
     @Override
     public void tick() {
         super.tick();
-        bukkitEntity.tickAnimations();
+        animationTick();
     }
 
-    private ImmutableMap<String, BoneEntity> instantiateBones() {
+    protected void animationTick() {
+        this.animationController.tick();
+    }
+
+    private ImmutableMap<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> instantiateBones() {
         // create the bone entities
-        ImmutableMap.Builder<String, BoneEntity> bones = ImmutableMap.builder();
+        ImmutableMap.Builder<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> bones = ImmutableMap.builder();
         for (Bone bone : model.bones()) {
-            instantiateBone(bone, bones);
+            instantiateBone(bone, Vector3Float.ZERO, bones);
         }
         return bones.build();
     }
 
-    private void instantiateBone(
+    protected void instantiateBone(
             Bone bone,
-            ImmutableMap.Builder<String, BoneEntity> into
+            Vector3Float parentPosition,
+            ImmutableMap.Builder<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> into
     ) {
-        var entity = new BoneEntity(this, bone);
-        entity.setPos(this.position());
+        var position = bone.position().add(parentPosition);
+        var entity = new team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity(this, bone, position, Quaternion.IDENTITY.multiply(Quaternion.fromEulerDegrees(bone.rotation())), scale);
         into.put(bone.name(), entity);
 
         for (var child : bone.children()) {
-            instantiateBone(child, into);
-        }
-    }
-
-    @Override
-    public void setPos(double x, double y, double z) {
-        super.setPos(x, y, z);
-        if (bones != null) {
-            for (final var bone : bones.values()) {
-                bone.setPos(x, y, z);
-            }
+            instantiateBone(child, position, into);
         }
     }
 
@@ -117,12 +123,24 @@ public class MinecraftModelEntity extends PathfinderMob {
         return model;
     }
 
-    public ImmutableMap<String, BoneEntity> bones() {
+    public ImmutableMap<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> bones() {
         return bones;
     }
 
     public AnimationPlayer animationController() {
-        return animationPlayer;
+        return animationController;
+    }
+
+    @Override
+    public void setPos(double x, double y, double z) {
+        super.setPos(x, y, z);
+        if (model != null) { // model is null when setPos is called by the Entity constructor
+            for (Bone bone : model.bones()) {
+                var entity = bones.get(bone.name());
+                Objects.requireNonNull(entity, "Unknown bone");
+                entity.setPos(x, y, z);
+            }
+        }
     }
 
     @Override
@@ -133,8 +151,6 @@ public class MinecraftModelEntity extends PathfinderMob {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        // no metadata for this entity, it will not
-        // be directly spawned anyways
     }
 
     @Override
@@ -142,18 +158,10 @@ public class MinecraftModelEntity extends PathfinderMob {
         return Collections::emptyIterator;
     }
 
-    @Override
-    public ItemStack getItemBySlot(EquipmentSlot slot) {
-        return ItemStack.EMPTY;
-    }
 
     @Override
-    public void setItemSlot(EquipmentSlot slot, ItemStack stack) {
-    }
-
-    @Override
-    public HumanoidArm getMainArm() {
-        return HumanoidArm.RIGHT;
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return null;
     }
 
     @Override

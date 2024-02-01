@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     // server api
-    compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 
     // resource-pack plugin api
     compileOnly("team.unnamed:creative-central-api:0.10.0-SNAPSHOT")
@@ -14,7 +14,7 @@ dependencies {
     implementation(project(":hephaestus-api"))
     implementation(project(":hephaestus-reader-blockbench"))
     implementation(project(":hephaestus-runtime-bukkit-api"))
-    implementation(project(":hephaestus-runtime-bukkit-adapt-v1_20_R2", configuration = "reobf"))
+    implementation(project(":hephaestus-runtime-bukkit-adapt-v1_20_R3", configuration = "reobf"))
 }
 
 tasks {
