@@ -39,15 +39,5 @@ public interface PlayerBoneType {
 
     Vector3Float translation();
 
-    boolean isSlim();
-
-
-    static @Nullable PlayerBoneType matchFor(PlayerBoneType[] values, Skin skin, String boneName) {
-        for (PlayerBoneType type : values) {
-            if (type.boneName().equals(boneName) && (skin.type() == Skin.Type.SLIM) == type.isSlim()) {
-                return type;
-            }
-        }
-        return null;
-    }
+    boolean slim();
 }

@@ -51,7 +51,7 @@ import team.unnamed.hephaestus.util.Quaternion;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class BoneEntity
+class BoneEntity
         extends Display.ItemDisplay
         implements BoneView {
 
@@ -61,6 +61,11 @@ public class BoneEntity
 
     private final float modelScale;
     protected List<SynchedEntityData.DataValue<?>> initialData;
+
+    private Vector3Float lastPosition;
+    private Quaternion lastRotation;
+    private Vector3Float lastScale;
+
 
     public BoneEntity(MinecraftModelEntity view, Bone bone,
                       Vector3Float initialPosition,
@@ -115,11 +120,6 @@ public class BoneEntity
     public Bone bone() {
         return bone;
     }
-
-    Vector3Float lastPosition;
-    Quaternion lastRotation;
-    Vector3Float lastScale;
-
     @Override
     public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
         if (tickCount % 3 != 0) return;

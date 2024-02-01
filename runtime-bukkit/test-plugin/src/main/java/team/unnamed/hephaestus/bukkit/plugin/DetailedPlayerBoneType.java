@@ -94,28 +94,7 @@ public enum DetailedPlayerBoneType implements PlayerBoneType {
     }
 
     @Override
-    public boolean isSlim() {
+    public boolean slim() {
         return slim;
-    }
-
-    public static @Nullable DetailedPlayerBoneType matchFor(Skin skin, String boneName) {
-
-        for (DetailedPlayerBoneType type : VALUES) {
-            if (type.boneName.equals(boneName)) {
-                if (skin.type() == Type.SLIM) {
-                    return switch (type) {
-                        case RIGHT_ARM -> RIGHT_ARM_SLIM;
-                        case LEFT_ARM -> LEFT_ARM_SLIM;
-                        case RIGHT_FOREARM -> RIGHT_FOREARM_SLIM;
-                        case LEFT_FOREARM -> LEFT_FOREARM_SLIM;
-                        default -> type;
-                    };
-                }
-
-                return type;
-            }
-        }
-
-        return null;
     }
 }

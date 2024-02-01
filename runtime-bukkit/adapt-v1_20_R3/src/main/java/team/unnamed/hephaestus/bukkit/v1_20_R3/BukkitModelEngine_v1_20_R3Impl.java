@@ -41,8 +41,6 @@ import org.bukkit.plugin.Plugin;
 import org.spigotmc.AsyncCatcher;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
-import team.unnamed.hephaestus.bukkit.v1_20_R3.player.PlayerModelEntity;
-import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -57,18 +55,18 @@ final class BukkitModelEngine_v1_20_R3Impl implements BukkitModelEngine_v1_20_R3
     private static final Access.FieldReflect<LevelCallback<?>> CALLBACKS_FIELD
             = Access.findFieldByType(EntityLookup.class, LevelCallback.class);
 
-    BukkitModelEngine_v1_20_R3Impl(Plugin plugin) {
+    private final EntityFactory entityFactory;
+
+    private final WeakCollection<ServerLevel> usedWorlds = new WeakCollection<>();
+
+    BukkitModelEngine_v1_20_R3Impl(Plugin plugin, EntityFactory entityFactory) {
         requireNonNull(plugin, "plugin");
+        this.entityFactory = entityFactory;
         Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin), plugin);
     }
 
     public ModelEntity createView(Model model, Location location, float scale) {
-        ModelEntity modelEntity;
-        if (model instanceof PlayerModel playerModel) {
-            modelEntity = new PlayerModelEntity(playerModel, location, scale).getBukkitEntity();
-        } else {
-            modelEntity = new MinecraftModelEntity(model, location, scale).getBukkitEntity();
-        }
+        ModelEntity modelEntity = entityFactory.create(((CraftWorld) location.getWorld()).getHandle(), model, scale).getBukkitEntity();
         modelEntity.teleport(location);
         return modelEntity;
     }
@@ -86,8 +84,6 @@ final class BukkitModelEngine_v1_20_R3Impl implements BukkitModelEngine_v1_20_R3
     public ModelEntity createView(Model model, Location location) {
         return createView(model, location, 1);
     }
-
-    private final WeakCollection<ServerLevel> usedWorlds = new WeakCollection<>();
 
     public ModelEntity createViewAndTrack(Model model, Location location, float scale) {
         ServerLevel level = ((CraftWorld) location.getWorld()).getHandle();

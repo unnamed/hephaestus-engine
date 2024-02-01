@@ -67,7 +67,7 @@ public class PlayerBoneEntity extends BoneEntity {
     protected void initialize(Vector3Float initialPosition, Quaternion initialRotation) {
         PlayerModel model = (PlayerModel) view.model();
         this.skin = model.skin();
-        this.boneType = PlayerBoneType.matchFor(model.playerBoneTypes(), skin, bone.name());
+        this.boneType = model.boneTypeOf(bone.name());
 
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
         meta.setDisplayContext(ItemDisplayMeta.DisplayContext.THIRD_PERSON_LEFT_HAND);

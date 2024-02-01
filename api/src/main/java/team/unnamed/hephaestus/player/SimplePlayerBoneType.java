@@ -137,7 +137,7 @@ public enum SimplePlayerBoneType implements PlayerBoneType {
     }
 
     @Override
-    public boolean isSlim() {
+    public boolean slim() {
         return slim;
     }
 }

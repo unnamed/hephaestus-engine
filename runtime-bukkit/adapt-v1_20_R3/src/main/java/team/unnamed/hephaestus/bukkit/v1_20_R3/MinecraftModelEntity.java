@@ -30,11 +30,10 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Interaction;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
+import net.minecraft.world.level.Level;
 import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
@@ -45,23 +44,22 @@ import team.unnamed.hephaestus.util.Quaternion;
 import java.util.Collections;
 import java.util.Objects;
 
-// TODO: Extend Interaction hitbox from BBModel hitbox
 @MethodsReturnNonnullByDefault
-public class MinecraftModelEntity extends Interaction {
+public class MinecraftModelEntity extends PathfinderMob {
 
     private static final Access.FieldReflect<EntityDimensions> DIMENSIONS_FIELD = Access.findFieldByType(Entity.class, EntityDimensions.class);
 
     protected final Model model;
-    private final ImmutableMap<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> bones;
+    private final ImmutableMap<String, BoneEntity> bones;
     protected final AnimationPlayer animationController;
 
-    private final team.unnamed.hephaestus.bukkit.v1_20_R3.CraftModelEntity bukkitEntity;
+    private final CraftModelEntity bukkitEntity;
     private final EntityDimensions modelDimensions;
 
     protected final float scale;
 
-    public MinecraftModelEntity(Model model, Location initial, float scale) {
-        super(EntityType.INTERACTION, ((CraftWorld) initial.getWorld()).getHandle());
+    public MinecraftModelEntity(EntityType<? extends PathfinderMob> type, Model model, Level level, float scale) {
+        super(type, level);
         this.model = model;
         this.scale = scale;
         this.bones = instantiateBones();
@@ -75,10 +73,7 @@ public class MinecraftModelEntity extends Interaction {
         DIMENSIONS_FIELD.set(this, modelDimensions);
 
         // update bounding box
-        setPos(initial.getX(), initial.getY(), initial.getZ());
-        setYRot(initial.getYaw());
-        setXRot(initial.getPitch());
-        teleportTo(initial.getX(), initial.getY(), initial.getZ());
+        setPos(0, 0, 0);
     }
 
     @Override
@@ -96,9 +91,9 @@ public class MinecraftModelEntity extends Interaction {
         this.animationController.tick();
     }
 
-    private ImmutableMap<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> instantiateBones() {
+    private ImmutableMap<String, BoneEntity> instantiateBones() {
         // create the bone entities
-        ImmutableMap.Builder<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> bones = ImmutableMap.builder();
+        ImmutableMap.Builder<String, BoneEntity> bones = ImmutableMap.builder();
         for (Bone bone : model.bones()) {
             instantiateBone(bone, Vector3Float.ZERO, bones);
         }
@@ -108,10 +103,10 @@ public class MinecraftModelEntity extends Interaction {
     protected void instantiateBone(
             Bone bone,
             Vector3Float parentPosition,
-            ImmutableMap.Builder<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> into
+            ImmutableMap.Builder<String, BoneEntity> into
     ) {
         var position = bone.position().add(parentPosition);
-        var entity = new team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity(this, bone, position, Quaternion.IDENTITY.multiply(Quaternion.fromEulerDegrees(bone.rotation())), scale);
+        var entity = new BoneEntity(this, bone, position, Quaternion.IDENTITY.multiply(Quaternion.fromEulerDegrees(bone.rotation())), scale);
         into.put(bone.name(), entity);
 
         for (var child : bone.children()) {
@@ -123,7 +118,7 @@ public class MinecraftModelEntity extends Interaction {
         return model;
     }
 
-    public ImmutableMap<String, team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity> bones() {
+    public ImmutableMap<String, BoneEntity> bones() {
         return bones;
     }
 

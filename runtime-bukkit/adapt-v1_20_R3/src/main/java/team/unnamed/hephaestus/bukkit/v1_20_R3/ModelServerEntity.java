@@ -30,17 +30,14 @@ import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
 import net.minecraft.network.protocol.game.VecDeltaCodec;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -60,8 +57,8 @@ final class ModelServerEntity extends ServerEntity {
         super(
                 level,
                 entity,
-                0, // updateInterval, unused because we overwrote methods
-                false, // trackDelta, unused because we overwrote methods
+                entity.getType().updateInterval(),
+                entity.getType().trackDeltas(),
                 broadcast,
                 trackedPlayers
         );
@@ -71,38 +68,25 @@ final class ModelServerEntity extends ServerEntity {
 
     @Override
     public void sendChanges() {
-        for (var bone : entity.bones().values()) {
+        Vec3 position = new Vec3(entity.position().x, entity.position().y, entity.position().z);
+        Vec3 delta = codec.delta(position);
+        if (delta.lengthSqr() >= 7.62939453125E-6D) {
+            for (var bone : entity.bones().values()) {
+                // check metadata changes
+                // (rotation, ...)
+                sendDirtyEntityData(bone);
 
-            // check metadata changes
-            // (rotation, ...)
-            sendDirtyEntityData(bone);
-
-            // check color changes (equipment)
-            if (bone.dirtyColor) {
-                ItemStack item = bone.getItemStack();
-                this.broadcast.accept(new ClientboundSetEntityDataPacket(
-                        bone.getId(),
-                        List.of(new SynchedEntityData.DataValue<>(23, EntityDataSerializers.ITEM_STACK, item))
-                ));
-                bone.dirtyColor = false;
-            }
-            // check position changes
-            Vec3 position = bone.position();
-
-            Vec3 delta = codec.delta(position);
-
-            if (delta.lengthSqr() >= 7.62939453125E-6D) {
                 long k = codec.encodeX(position);
                 long l = codec.encodeY(position);
                 long i1 = codec.encodeZ(position);
 
                 if (k < -32768L || k > 32767L || l < -32768L || l > 32767L || i1 < -32768L || i1 > 32767L) {
-                    new ClientboundTeleportEntityPacket(bone);
+                    broadcast.accept(new ClientboundTeleportEntityPacket(bone));
                 } else {
-                    new ClientboundMoveEntityPacket.Pos(this.entity.getId(), (short) ((int) k), (short) ((int) l), (short) ((int) i1), bone.onGround());
+                    broadcast.accept(new ClientboundMoveEntityPacket.Pos(bone.getId(), (short) ((int) k), (short) ((int) l), (short) ((int) i1), bone.onGround()));
                 }
-                codec.setBase(bone.position());
             }
+            codec.setBase(position);
         }
     }
 
@@ -123,14 +107,13 @@ final class ModelServerEntity extends ServerEntity {
         if (this.entity.isRemoved()) {
             return;
         }
-        //super.sendPairingData(player, packetConsumer);
 
         for (var bone : entity.bones().values()) {
             bone.show(packetConsumer);
         }
     }
 
-    private void sendDirtyEntityData(team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity bone) {
+    private void sendDirtyEntityData(BoneEntity bone) {
         SynchedEntityData data = bone.getEntityData();
         if (data.isDirty()) {
             this.broadcast.accept(new ClientboundSetEntityDataPacket(bone.getId(), data.packDirty()));

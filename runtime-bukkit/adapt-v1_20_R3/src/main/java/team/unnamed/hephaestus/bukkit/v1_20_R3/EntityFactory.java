@@ -23,17 +23,17 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.ApiStatus;
-import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityType;
+import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.player.PlayerModel;
 
-@ApiStatus.NonExtendable
-public interface BukkitModelEngine_v1_20_R3 extends BukkitModelEngine {
-    static BukkitModelEngine create(Plugin plugin, EntityFactory entityFactory) {
-        return new BukkitModelEngine_v1_20_R3Impl(plugin, entityFactory);
-    }
+public interface EntityFactory {
 
-    static BukkitModelEngine create(Plugin plugin) {
-        return create(plugin, EntityFactory.DEFAULT);
-    }
+    EntityFactory DEFAULT = (level, model, scale) -> model instanceof PlayerModel playerModel
+            ? new PlayerModelEntity(EntityType.PIG, playerModel, level, scale)
+            : new MinecraftModelEntity(EntityType.PIG, model, level, scale);
+
+    MinecraftModelEntity create(ServerLevel level, Model model, float scale);
+
 }

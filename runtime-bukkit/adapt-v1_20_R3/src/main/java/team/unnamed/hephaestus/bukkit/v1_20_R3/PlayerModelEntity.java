@@ -21,22 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R3.player;
+package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity;
-import team.unnamed.hephaestus.bukkit.v1_20_R3.MinecraftModelEntity;
+import team.unnamed.hephaestus.bukkit.BoneView;
 import team.unnamed.hephaestus.player.PlayerBoneType;
-import team.unnamed.hephaestus.player.SimplePlayerBoneType;
 import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.util.Quaternion;
 
 public class PlayerModelEntity extends MinecraftModelEntity {
-    public PlayerModelEntity(PlayerModel model, Location initial, float scale) {
-        super(model, initial, scale);
+    public PlayerModelEntity(EntityType<? extends PathfinderMob> type, PlayerModel model, Level level, float scale) {
+        super(type, model, level, scale);
     }
 
 
@@ -56,7 +57,7 @@ public class PlayerModelEntity extends MinecraftModelEntity {
             ImmutableMap.Builder<String, BoneEntity> into
     ) {
         var position = bone.position().add(parentPosition);
-        PlayerBoneType simplePlayerBoneType = PlayerBoneType.matchFor(model().playerBoneTypes(), model().skin(), bone.name());
+        PlayerBoneType simplePlayerBoneType = model().boneTypeOf(bone.name());
         var entity = simplePlayerBoneType == null
                 ? new BoneEntity(this, bone, position, Quaternion.IDENTITY.multiply(Quaternion.fromEulerDegrees(bone.rotation())), scale)
                 : new PlayerBoneEntity(this, bone, position, Quaternion.IDENTITY.multiply(Quaternion.fromEulerDegrees(bone.rotation())), scale);

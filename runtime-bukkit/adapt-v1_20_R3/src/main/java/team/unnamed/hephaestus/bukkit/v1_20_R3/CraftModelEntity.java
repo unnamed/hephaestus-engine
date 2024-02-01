@@ -25,7 +25,7 @@ package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftInteraction;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftMob;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ import java.util.Collection;
  * {@link MinecraftModelEntity} class
  */
 public class CraftModelEntity
-        extends CraftInteraction
+        extends CraftMob
         implements ModelEntity {
 
     public CraftModelEntity(CraftServer server, MinecraftModelEntity entity) {

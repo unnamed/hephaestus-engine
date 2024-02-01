@@ -80,7 +80,6 @@ public class MojangSkinProvider {
                         .get("value").getAsString();
                 boolean slim = false;
                 try {
-                    System.out.println(new String(Base64.getDecoder().decode(value.getBytes())));
                     slim = parser.parse(new String(Base64.getDecoder().decode(value.getBytes())))
                             .getAsJsonObject()
                             .get("textures").getAsJsonObject()

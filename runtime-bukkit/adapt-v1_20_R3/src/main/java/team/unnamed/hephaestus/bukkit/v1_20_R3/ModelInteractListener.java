@@ -48,7 +48,6 @@ import team.unnamed.hephaestus.bukkit.ModelEntity;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-// TODO: Replace with Interaction Entity interactions
 final class ModelInteractListener implements Listener {
 
     private static final String TAG_IS_DROP = "hephaestus:is_drop";
@@ -122,7 +121,7 @@ final class ModelInteractListener implements Listener {
             Vec3 loc = result.getLocation();
             double distance = eyePosition.distanceToSqr(loc);
 
-            if (distance <= 9.0D && distance < rangeSqr && entity instanceof team.unnamed.hephaestus.bukkit.v1_20_R3.MinecraftModelEntity modelEntity) {
+            if (distance <= 9.0D && distance < rangeSqr && entity instanceof MinecraftModelEntity modelEntity) {
                 callback.accept(modelEntity.getBukkitEntity());
                 return true;
             }

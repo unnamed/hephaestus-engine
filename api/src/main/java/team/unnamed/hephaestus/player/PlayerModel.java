@@ -23,12 +23,14 @@
  */
 package team.unnamed.hephaestus.player;
 
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector2Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.asset.ModelAsset;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class PlayerModel extends Model {
@@ -56,6 +58,15 @@ public class PlayerModel extends Model {
 
     public Skin skin() {
         return skin;
+    }
+
+
+    public @Nullable PlayerBoneType boneTypeOf(String boneName) {
+        return Arrays.stream(playerBoneTypes)
+                .filter(type -> type.boneName().equals(boneName)
+                        && (skin.type() == Skin.Type.SLIM) == type.slim())
+                .findAny()
+                .orElse(null);
     }
 
     public static PlayerModel fromModel(Skin skin, Model model, PlayerBoneType[] playerBoneTypes) {

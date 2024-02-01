@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R3.player;
+package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
@@ -34,8 +34,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.joml.Vector3f;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.bukkit.v1_20_R3.BoneEntity;
-import team.unnamed.hephaestus.bukkit.v1_20_R3.MinecraftModelEntity;
 import team.unnamed.hephaestus.player.PlayerBoneType;
 import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.player.Skin;
@@ -58,7 +56,7 @@ final class PlayerBoneEntity
     protected void initialize(Vector3Float initialPosition, Quaternion initialRotation) {
         PlayerModel model = (PlayerModel) view.model();
         Skin skin = model.skin();
-        this.boneType = PlayerBoneType.matchFor(model.playerBoneTypes(), skin, bone.name());
+        this.boneType = model.boneTypeOf(bone.name());
 
         setItemTransform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND);
         setTransformationInterpolationDuration(3);
