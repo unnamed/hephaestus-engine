@@ -26,7 +26,6 @@ package team.unnamed.hephaestus.bukkit.v1_20_R3;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftMob;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +35,6 @@ import team.unnamed.hephaestus.bukkit.ModelEntity;
 import team.unnamed.hephaestus.view.BaseBoneView;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * The implementation of the Bukkit-based {@link ModelEntity}
@@ -62,29 +60,33 @@ public class CraftModelEntity
     }
 
     @Override
-    public void playSound(final @NotNull Sound sound) {
-        super.playSound(sound);
-    }
-
-    @Override
     public Collection<Player> viewers() {
-        final var viewers = new HashSet<Player>();
-        for (final var connection : getHandle().tracker.seenBy) {
-            viewers.add(connection.getPlayer().getBukkitEntity());
-        }
-        return viewers;
+        return getTrackedPlayers();
     }
 
     @Override
     public boolean addViewer(Player player) {
-        getHandle().tracker.updatePlayer(((CraftPlayer) player).getHandle());
-        return true;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean removeViewer(Player player) {
-        getHandle().tracker.removePlayer(((CraftPlayer) player).getHandle());
-        return true;
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void colorize(int r, int g, int b) {
+        ModelEntity.super.colorize(r, g, b);
+    }
+
+    @Override
+    public void colorize(int rgb) {
+        ModelEntity.super.colorize(rgb);
+    }
+
+    @Override
+    public void colorizeDefault() {
+        ModelEntity.super.colorizeDefault();
     }
 
     @Override
@@ -103,11 +105,8 @@ public class CraftModelEntity
     }
 
     @Override
-    public void tickAnimations() {
-        getHandle().animationController().tick(
-                getHandle().getYHeadRot(),
-                0
-        );
+    public void playSound(@NotNull Sound sound) {
+        super.playSound(sound);
     }
 
     @Override

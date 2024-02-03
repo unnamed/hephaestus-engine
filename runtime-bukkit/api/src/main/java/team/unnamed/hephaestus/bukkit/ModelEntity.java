@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.bukkit;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import team.unnamed.hephaestus.Model;

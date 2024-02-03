@@ -33,11 +33,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.StringUtil;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 import team.unnamed.hephaestus.bukkit.ModelEntity;
+import team.unnamed.hephaestus.player.PlayerModel;
+import team.unnamed.hephaestus.player.Skin;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -51,10 +55,13 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
 
     private final ModelRegistry registry;
     private final BukkitModelEngine engine;
+    private final Plugin plugin;
+    private final MojangSkinProvider skinProvider = new MojangSkinProvider();
 
-    public ModelCommand(ModelRegistry registry, BukkitModelEngine engine) {
+    public ModelCommand(Plugin plugin, ModelRegistry registry, BukkitModelEngine engine) {
         this.registry = registry;
         this.engine = engine;
+        this.plugin = plugin;
     }
 
     private void spawn(Player source, Model model) {
@@ -128,6 +135,38 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                 }
 
                 spawn(player, model);
+            }
+            case "spawnplayer" -> {
+                if (args.length != 2) {
+                    sender.sendMessage(Component.text("/" + label + " spawnplayer <skin>", NamedTextColor.RED));
+                    return true;
+                }
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Skin skin = skinProvider.fetchSkin(args[1]);
+                            if (skin == null) {
+                                sender.sendMessage(
+                                        Component.text()
+                                                .append(Component.text("Skin not found: "))
+                                                .append(Component.text(args[1], NamedTextColor.DARK_RED))
+                                                .color(NamedTextColor.RED)
+                                                .build()
+                                );
+                            } else {
+                                new BukkitRunnable() {
+                                    @Override
+                                    public void run() {
+                                        spawn(player, PlayerModel.fromModel(skin, registry.model("jeqo"), DetailedPlayerBoneType.values()));
+                                    }
+                                }.runTaskLater(plugin, 0L);
+                            }
+                        } catch (Exception e) {
+                            sender.sendMessage(Component.text("Failed to load skin... Try again!", NamedTextColor.RED));
+                        }
+                    }
+                }.runTaskLaterAsynchronously(plugin, 0L);
             }
             case "view" -> {
                 if (args.length < 2) {
@@ -209,7 +248,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
 
         if (args.length == 1) {
             // complete the subcommand
-            StringUtil.copyPartialMatches(subcommand, List.of("spawn", "view"), suggestions);
+            StringUtil.copyPartialMatches(subcommand, List.of("spawn", "spawnplayer", "view"), suggestions);
             return suggestions;
         }
 

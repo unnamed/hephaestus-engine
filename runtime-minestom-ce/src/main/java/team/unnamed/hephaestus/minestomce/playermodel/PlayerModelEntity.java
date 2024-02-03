@@ -60,7 +60,7 @@ public class PlayerModelEntity extends ModelEntity {
         Quaternion rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
 
         GenericBoneEntity boneEntity;
-        PlayerBoneType boneType = PlayerBoneType.matchFor(model().skin(), bone.name());
+        PlayerBoneType boneType = model().boneTypeOf(bone.name());
 
         if (boneType != null) {
             boneEntity = new PlayerBoneEntity(this, bone, position, rotation, scale);

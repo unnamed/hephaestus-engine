@@ -26,11 +26,14 @@ package team.unnamed.hephaestus.bukkit.v1_20_R3;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.player.PlayerModel;
 
 public interface EntityFactory {
 
-    EntityFactory DEFAULT = (level, model) -> new MinecraftModelEntity(EntityType.PIG, level, model);
+    EntityFactory DEFAULT = (level, model, scale) -> model instanceof PlayerModel playerModel
+            ? new PlayerModelEntity(EntityType.PIG, playerModel, level, scale)
+            : new MinecraftModelEntity(EntityType.PIG, model, level, scale);
 
-    MinecraftModelEntity create(ServerLevel level, Model model);
+    MinecraftModelEntity create(ServerLevel level, Model model, float scale);
 
 }

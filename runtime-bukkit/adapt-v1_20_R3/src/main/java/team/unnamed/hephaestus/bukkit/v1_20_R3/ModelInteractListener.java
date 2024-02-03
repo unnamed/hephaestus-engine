@@ -77,7 +77,7 @@ final class ModelInteractListener implements Listener {
         }
 
         checkInteraction(player, modelEntity ->
-                ((CraftPlayer) player).getHandle().attack(((CraftModelEntity) modelEntity).getHandle()));
+                ((CraftPlayer) player).getHandle().attack(((team.unnamed.hephaestus.bukkit.v1_20_R3.CraftModelEntity) modelEntity).getHandle()));
     }
 
     // handle the horrible interact event
@@ -92,6 +92,7 @@ final class ModelInteractListener implements Listener {
                     Bukkit.getPluginManager().callEvent(new PlayerInteractEntityEvent(player, modelEntity, hand)));
         }
     }
+
 
     private boolean checkInteraction(Player bukkitPlayer, Consumer<ModelEntity> callback) {
         ServerPlayer player = ((CraftPlayer) bukkitPlayer).getHandle();

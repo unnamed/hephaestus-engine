@@ -42,6 +42,7 @@ import team.unnamed.hephaestus.minestomce.playermodel.PlayerModelEntity;
 import team.unnamed.hephaestus.minestomce.skin.MinetoolsSkinProvider;
 import team.unnamed.hephaestus.minestomce.skin.SkinProvider;
 import team.unnamed.hephaestus.player.PlayerModel;
+import team.unnamed.hephaestus.player.SimplePlayerBoneType;
 
 import java.io.InputStream;
 import java.util.logging.LogManager;
@@ -110,7 +111,8 @@ public class Server {
                     EntityType.ARMOR_STAND,
                     PlayerModel.fromModel(
                             SKIN_PROVIDER.fetchSkin("biconsumer"),
-                            registry.model("player_anims")
+                            registry.model("player_anims"),
+                            SimplePlayerBoneType.values()
                     ),
                     1f
             );
