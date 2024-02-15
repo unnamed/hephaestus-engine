@@ -14,14 +14,19 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 }
 
-tasks {
-    test {
-        useJUnitPlatform()
+java {
+    withSourcesJar()
+    withJavadocJar()
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+tasks {
+    javadoc {
+        isFailOnError = true
+    }
+    test {
+        useJUnitPlatform()
     }
 }
