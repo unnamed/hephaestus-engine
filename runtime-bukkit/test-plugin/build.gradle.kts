@@ -1,6 +1,7 @@
 plugins {
     id("hephaestus.runtime-bukkit-conventions")
     id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("xyz.jpenilla.run-paper") version "2.2.3"
 }
 
 dependencies {
@@ -18,6 +19,13 @@ dependencies {
 }
 
 tasks {
+    runServer {
+        downloadPlugins {
+            modrinth("central", "1.3.0") // creative-central
+        }
+
+        minecraftVersion("1.20.4")
+    }
     shadowJar {
         dependencies {
             exclude(dependency("team.unnamed:creative-api"))
