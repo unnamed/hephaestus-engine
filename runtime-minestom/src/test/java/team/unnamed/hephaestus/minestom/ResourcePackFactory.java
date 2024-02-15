@@ -31,9 +31,11 @@ import team.unnamed.creative.serialize.minecraft.MinecraftResourcePackWriter;
 public final class ResourcePackFactory {
 
     public static BuiltResourcePack create(ModelRegistry registry) {
-        ResourcePack resourcePack = ResourcePack.create();
+        ResourcePack resourcePack = ResourcePack.resourcePack();
+
         // keep this up to date! https://minecraft.wiki/w/Pack_format#Resource_Pack
-        resourcePack.packMeta(18, "Hephaestus generated resource pack");
+        // 1.20.4 -> 22
+        resourcePack.packMeta(22, "Hephaestus generated resource pack");
         resourcePack.icon(Writable.resource(Server.class.getClassLoader(), "hephaestus.png"));
         registry.write(resourcePack);
 

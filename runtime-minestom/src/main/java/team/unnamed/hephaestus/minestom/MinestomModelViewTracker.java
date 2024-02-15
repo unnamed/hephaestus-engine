@@ -36,7 +36,6 @@ final class MinestomModelViewTracker implements ModelViewTracker<Player> {
     }
 
     @Override
-    @SuppressWarnings("UnstableApiUsage") // TODO: Remove when stable
     public boolean startTracking(BaseModelView<Player> view, ModelViewTrackingRule<Player> trackingRule) {
         ModelEntity entity = ensureModelEntity(view);
         entity.updateViewableRule(player -> trackingRule.shouldView(view, player));

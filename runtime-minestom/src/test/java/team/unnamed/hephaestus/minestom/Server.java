@@ -34,8 +34,8 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.block.Block;
 import team.unnamed.creative.BuiltResourcePack;
-import team.unnamed.creative.server.ResourcePackRequestHandler;
 import team.unnamed.creative.server.ResourcePackServer;
+import team.unnamed.creative.server.handler.ResourcePackRequestHandler;
 import team.unnamed.hephaestus.minestom.entity.RedstoneMonstrosity;
 import team.unnamed.hephaestus.minestom.playermodel.PlayerModelEntity;
 import team.unnamed.hephaestus.minestom.skin.MinetoolsSkinProvider;
@@ -121,9 +121,9 @@ public class Server {
         }
 
         // create resource pack server, start and schedule stop
-        ResourcePackServer resourcePackServer = ResourcePackServer.builder()
+        ResourcePackServer resourcePackServer = ResourcePackServer.server()
                 .address("127.0.0.1", 7270)
-                .handler(ResourcePackRequestHandler.of(resourcePack))
+                .handler(ResourcePackRequestHandler.fixed(resourcePack))
                 .build();
 
         resourcePackServer.start();
