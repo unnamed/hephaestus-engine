@@ -9,7 +9,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 
     // resource-pack plugin api
-    compileOnly("team.unnamed:creative-central-api:0.10.0-SNAPSHOT")
+    compileOnly("team.unnamed:creative-central-api:1.3.0")
 
     // hephaestus-engine dependencies
     implementation(project(":hephaestus-api"))
