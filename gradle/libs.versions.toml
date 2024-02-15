@@ -8,8 +8,7 @@ mocha = "3.0.0-SNAPSHOT"
 gson = "2.8.0"
 
 # runtime-minestom
-minestom = "aebf72de90"
-minestomce = "a99fdee831"
+minestom = "7320437640"
 
 
 [libraries]
@@ -26,5 +25,4 @@ annotations = { group = "org.jetbrains", name = "annotations", version.ref = "an
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 # runtime-minestom
-minestom = { group = "com.github.Minestom", name = "Minestom", version.ref = "minestom" }
-minestomce = { group = "dev.hollowcube", name = "minestom-ce", version.ref = "minestomce" }
+minestom = { group = "net.minestom", name = "minestom-snapshots", version.ref = "minestom" }
