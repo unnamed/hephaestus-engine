@@ -21,12 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit;
+package team.unnamed.hephaestus.bukkit.track;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import team.unnamed.hephaestus.bukkit.ModelView;
 import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;

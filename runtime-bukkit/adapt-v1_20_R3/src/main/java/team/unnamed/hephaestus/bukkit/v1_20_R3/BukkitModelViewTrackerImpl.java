@@ -33,7 +33,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.bukkit.BukkitModelViewTracker;
+import team.unnamed.hephaestus.bukkit.track.BukkitModelViewTracker;
 import team.unnamed.hephaestus.bukkit.ModelView;
 import team.unnamed.hephaestus.view.BaseModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;

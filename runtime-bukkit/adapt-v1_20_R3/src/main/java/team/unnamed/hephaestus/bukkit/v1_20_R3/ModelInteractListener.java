@@ -37,26 +37,66 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.EntitiesLoadEvent;
+import org.bukkit.event.world.EntitiesUnloadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.Minecraft;
+import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 import team.unnamed.hephaestus.bukkit.ModelView;
+import team.unnamed.hephaestus.bukkit.track.ModelViewPersistenceHandler;
 
-import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+
+import static java.util.Objects.requireNonNull;
 
 final class ModelInteractListener implements Listener {
 
     private static final String TAG_IS_DROP = "hephaestus:is_drop";
 
     private final Plugin plugin;
+    private final BukkitModelEngine engine;
+    private final ModelViewPersistenceHandler persistenceHandler;
 
-    public ModelInteractListener(Plugin plugin) {
+    public ModelInteractListener(Plugin plugin, final @NotNull BukkitModelEngine engine, final @NotNull ModelViewPersistenceHandler persistenceHandler) {
         this.plugin = plugin;
+        this.engine = requireNonNull(engine, "engine");
+        this.persistenceHandler = requireNonNull(persistenceHandler, "persistenceHandler");
     }
 
     // TODO: Spectating model entities, leashing, hooking, etc
+
+    @EventHandler
+    public void onEntitiesLoad(final @NotNull EntitiesLoadEvent event) {
+        for (final var entity : event.getEntities()) {
+            persistenceHandler.determineModel(entity).whenComplete((model, err) -> {
+                if (err != null) {
+                    plugin.getLogger().log(Level.WARNING, "Unhandled exception while determining model for entity " + entity, err);
+                } else if (model != null) {
+                    if (!entity.isValid()) {
+                        plugin.getLogger().warning("Entity " + entity + " is not valid, skipping model view creation");
+                        return;
+                    }
+                    // This entity has a model!
+                    final var view = engine.createView(model, entity.getLocation());
+                    engine.tracker().startGlobalTrackingOn(view, entity);
+                }
+            });
+        }
+    }
+
+    @EventHandler
+    public void onEntitiesUnload(final @NotNull EntitiesUnloadEvent event) {
+        for (final var entity : event.getEntities()) {
+            final var view = engine.tracker().getViewOnBase(entity);
+            if (view != null) {
+                persistenceHandler.saveModel(entity, view);
+            }
+        }
+    }
 
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
@@ -84,7 +124,7 @@ final class ModelInteractListener implements Listener {
         Action action = event.getAction();
         if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
             EquipmentSlot hand = event.getHand();
-            Objects.requireNonNull(hand, "hand"); // should never be null, since action is never PHYSICAL
+            requireNonNull(hand, "hand"); // should never be null, since action is never PHYSICAL
             // checkInteraction(player, modelEntity -> Bukkit.getPluginManager().callEvent(new PlayerInteractEntityEvent(player, modelEntity, hand)));
         }
     }

@@ -25,11 +25,13 @@ package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
+import team.unnamed.hephaestus.bukkit.track.ModelViewPersistenceHandler;
 
 @ApiStatus.NonExtendable
 public interface BukkitModelEngine_v1_20_R3 extends BukkitModelEngine {
-    static BukkitModelEngine create(Plugin plugin) {
-        return new BukkitModelEngine_v1_20_R3Impl(plugin);
+    static BukkitModelEngine create(Plugin plugin, final @NotNull ModelViewPersistenceHandler persistenceHandler) {
+        return new BukkitModelEngine_v1_20_R3Impl(plugin, persistenceHandler);
     }
 }

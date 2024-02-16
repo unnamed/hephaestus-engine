@@ -21,43 +21,46 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R3;
+package team.unnamed.hephaestus.bukkit.track;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.bukkit.track.BukkitModelViewTracker;
 import team.unnamed.hephaestus.bukkit.ModelView;
-import team.unnamed.hephaestus.bukkit.track.ModelViewPersistenceHandler;
 
-import static java.util.Objects.requireNonNull;
+import java.util.concurrent.CompletableFuture;
 
-final class BukkitModelEngine_v1_20_R3Impl implements BukkitModelEngine_v1_20_R3 {
-    private final Plugin plugin;
+/**
+ * Responsible for managing the persistence of model views
+ * that are being tracked by a {@link BukkitModelViewTracker}.
+ *
+ * @since 1.0.0
+ */
+public interface ModelViewPersistenceHandler {
+    /**
+     * Determines the model of the given {@code entity}, if
+     * the entity doesn't have a model, this method should
+     * return null.
+     *
+     * <p>Note that the engine doesn't have any previous
+     * information about the provided entity, so calls to
+     * methods like {@link BukkitModelViewTracker#getViewOnBase(Entity)}
+     * will not work.</p>
+     *
+     * @param entity The entity to get the model from
+     * @return The model of the entity, or null if the entity
+     * doesn't have a model
+     * @since 1.0.0
+     */
+    @NotNull CompletableFuture<Model> determineModel(final @NotNull Entity entity);
 
-    BukkitModelEngine_v1_20_R3Impl(final @NotNull Plugin plugin, final @NotNull ModelViewPersistenceHandler persistenceHandler) {
-        this.plugin = requireNonNull(plugin, "plugin");
+    void saveModel(final @NotNull Entity entity, final @NotNull ModelView view);
 
-        Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin, this, persistenceHandler), plugin);
+    default void onSyntheticModelViewBaseCreation(final @NotNull Entity entity, final @NotNull ModelView view) {
     }
 
-    @Override
-    public @NotNull BukkitModelViewTracker tracker() {
-        return BukkitModelViewTrackerImpl.INSTANCE;
-    }
+    default void onDisableHandleSyntheticModelViewBase(final @NotNull Entity entity, final @NotNull ModelView view) {
 
-    @Override
-    public @NotNull ModelView createViewAndTrack(Model model, Location location, CreatureSpawnEvent.SpawnReason reason) {
-        final var view = createView(model, location);
-        tracker().startGlobalTracking(view);
-        return view;
-    }
-
-    @Override
-    public @NotNull ModelView createView(Model model, Location location) {
-        return new ModelViewImpl(plugin, model, location, 1.0f);
     }
 }

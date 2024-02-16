@@ -29,7 +29,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelEngine;
-import team.unnamed.hephaestus.view.track.ModelViewTracker;
+import team.unnamed.hephaestus.bukkit.track.BukkitModelViewTracker;
 
 /**
  * The hephaestus model engine abstraction for

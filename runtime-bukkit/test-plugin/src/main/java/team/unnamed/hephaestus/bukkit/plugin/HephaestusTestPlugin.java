@@ -31,6 +31,7 @@ import team.unnamed.creative.central.CreativeCentralProvider;
 import team.unnamed.creative.central.event.pack.ResourcePackGenerateEvent;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
+import team.unnamed.hephaestus.bukkit.plugin.track.ModelViewPersistenceHandlerImpl;
 import team.unnamed.hephaestus.bukkit.v1_20_R3.BukkitModelEngine_v1_20_R3;
 import team.unnamed.hephaestus.player.PlayerModelWriter;
 import team.unnamed.hephaestus.player.ResourcePlayerModelWriter;
@@ -45,9 +46,10 @@ public final class HephaestusTestPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        final BukkitModelEngine engine = BukkitModelEngine_v1_20_R3.create(this);
         // load models from resources
         final ModelRegistry registry = new ModelRegistry();
+        final BukkitModelEngine engine = BukkitModelEngine_v1_20_R3.create(this, new ModelViewPersistenceHandlerImpl(registry));
+
         registry.registerModel(loadModel("dragon.bbmodel"));
         registry.registerModel(loadModel("geometry.bbmodel"));
         registry.registerModel(loadModel("redstone_monstrosity.bbmodel"));
