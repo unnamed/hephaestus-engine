@@ -31,6 +31,7 @@ import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Quaternion;
@@ -90,7 +91,7 @@ public class BoneEntity extends GenericBoneEntity {
     }
 
     @Override
-    public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
+    public void update(final @NotNull Vector3Float position, final @NotNull Quaternion rotation, final @NotNull Vector3Float scale) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
         meta.setNotifyAboutChanges(false);
         meta.setTransformationInterpolationStartDelta(0);

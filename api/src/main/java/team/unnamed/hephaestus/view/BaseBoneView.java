@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.view;
 
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Quaternion;
@@ -84,13 +85,17 @@ public interface BaseBoneView {
         colorize(DEFAULT_COLOR);
     }
 
-
     /**
-     * Sets the relative position and the rotation of
-     * this bone
-     * @param position The relative target position
-     * @param rotation The target rotation
+     * Sets the absolute position, rotation and scale
+     * of this bone.
+     *
+     * <p>Note that updates are not necessarily made
+     * immediately</p>
+     *
+     * @param position The absolute position
+     * @param rotation The absolute rotation
+     * @param scale The absolute scale
+     * @since 1.0.0
      */
-    void update(Vector3Float position, Quaternion rotation, Vector3Float scale);
-
+    void update(final @NotNull Vector3Float position, final @NotNull Quaternion rotation, final @NotNull Vector3Float scale);
 }

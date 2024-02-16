@@ -24,6 +24,7 @@
 package team.unnamed.hephaestus.view;
 
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Quaternion;
@@ -59,7 +60,7 @@ public class MockBoneView implements BaseBoneView {
     }
 
     @Override
-    public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
+    public void update(final @NotNull Vector3Float position, final @NotNull Quaternion rotation, final @NotNull Vector3Float scale) {
         this.position = position;
         this.rotation = rotation.toEulerDegrees();
     }
@@ -75,25 +76,4 @@ public class MockBoneView implements BaseBoneView {
     public Vector3Float rotation() {
         return rotation;
     }
-
-    @Override
-    public void customName(Component customName) {
-        this.customName = customName;
-    }
-
-    @Override
-    public Component customName() {
-        return customName;
-    }
-
-    @Override
-    public void customNameVisible(boolean visible) {
-        this.customNameVisible = visible;
-    }
-
-    @Override
-    public boolean customNameVisible() {
-        return customNameVisible;
-    }
-
 }

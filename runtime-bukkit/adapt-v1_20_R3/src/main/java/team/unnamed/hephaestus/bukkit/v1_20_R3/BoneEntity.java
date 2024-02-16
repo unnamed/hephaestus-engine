@@ -131,7 +131,8 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
     }
 
     @Override
-    public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
+    public void update(final @NotNull Vector3Float position, final @NotNull Quaternion rotation, final @NotNull Vector3Float scale) {
+        // Changes are not immediate, packets are sent by the base entity tracker
         setTransformation(new Transformation(
                 modifyTranslation(new Vector3f(position.x(), position.y(), position.z()).mul(modelScale * bone.scale())),
                 null,
