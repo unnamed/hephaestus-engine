@@ -175,12 +175,12 @@ class ModelViewImpl implements ModelView {
 
     @Override
     public void tickAnimations() {
-        if (base instanceof LivingEntity livingBase) {
-            animationPlayer.tick(livingBase.getBodyYaw(), livingBase.getPitch());
-            livingBase.getYaw();
-        }
         if (base != null) {
-            animationPlayer.tick(base.getYaw(), base.getPitch());
+            if (base instanceof LivingEntity livingBase) {
+                animationPlayer.tick(livingBase.getBodyYaw(), livingBase.getPitch());
+            } else {
+                animationPlayer.tick(base.getYaw(), base.getPitch());
+            }
         } else {
             animationPlayer.tick();
         }
