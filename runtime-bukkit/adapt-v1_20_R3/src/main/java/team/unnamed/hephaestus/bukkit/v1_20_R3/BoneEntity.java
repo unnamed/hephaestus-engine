@@ -57,10 +57,6 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
     private final float modelScale;
     protected List<SynchedEntityData.DataValue<?>> initialData;
 
-    private Vector3Float lastPosition;
-    private Quaternion lastRotation;
-    private Vector3Float lastScale;
-
     public BoneEntity(ModelViewImpl view, Bone bone, Vector3Float initialPosition, Quaternion initialRotation, float modelScale) {
         //noinspection DataFlowIssue
         super(EntityType.ITEM_DISPLAY, null);
@@ -136,11 +132,6 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
 
     @Override
     public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
-        if (position.equals(this.lastPosition) && rotation.equals(this.lastRotation) && scale.equals(this.lastScale))
-            return;
-        lastPosition = position;
-        lastRotation = rotation;
-        lastScale = scale;
         setTransformation(new Transformation(
                 modifyTranslation(new Vector3f(position.x(), position.y(), position.z()).mul(modelScale * bone.scale())),
                 null,
