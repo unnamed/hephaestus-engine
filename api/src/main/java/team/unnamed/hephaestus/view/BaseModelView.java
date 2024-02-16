@@ -24,6 +24,7 @@
 package team.unnamed.hephaestus.view;
 
 import net.kyori.adventure.sound.Sound;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
@@ -56,7 +57,14 @@ public interface BaseModelView<TViewer> {
 
     boolean removeViewer(TViewer viewer);
 
-    void playSound(Sound sound);
+    /**
+     * Makes this model view emit the specified sound for
+     * all of its viewers.
+     *
+     * @param sound The sound to emit.
+     * @since 1.0.0
+     */
+    void emitSound(final @NotNull Sound sound);
 
     /**
      * Colorizes this view using the specified

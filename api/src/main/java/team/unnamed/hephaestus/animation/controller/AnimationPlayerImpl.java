@@ -123,7 +123,7 @@ class AnimationPlayerImpl implements AnimationPlayer {
             final var instructions = effectsFrame.instructions();
 
             for (Sound sound : sounds) {
-                view.playSound(sound);
+                view.emitSound(sound);
             }
             for (String instruction : instructions) {
                 scriptEngine.eval(instruction);

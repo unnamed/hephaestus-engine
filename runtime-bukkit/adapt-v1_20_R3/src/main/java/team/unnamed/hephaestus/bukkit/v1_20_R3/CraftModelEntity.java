@@ -105,8 +105,14 @@ public class CraftModelEntity
     }
 
     @Override
-    public void playSound(@NotNull Sound sound) {
-        super.playSound(sound);
+    public void emitSound(final @NotNull Sound sound) {
+        final var position = getHandle().position();
+        final var x = position.x;
+        final var y = position.y;
+        final var z = position.z;
+        for (final var viewer : viewers()) {
+            viewer.playSound(sound, x, y, z);
+        }
     }
 
     @Override

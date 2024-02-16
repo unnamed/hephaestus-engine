@@ -118,7 +118,7 @@ public class ModelEntity extends EntityCreature implements BaseModelView<Player>
     }
 
     @Override
-    public void playSound(Sound sound) {
+    public void emitSound(final @NotNull Sound sound) {
         for (Player viewer : viewers()) {
             viewer.playSound(sound, position);
         }

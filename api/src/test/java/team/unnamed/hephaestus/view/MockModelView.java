@@ -24,6 +24,7 @@
 package team.unnamed.hephaestus.view;
 
 import net.kyori.adventure.sound.Sound;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
@@ -71,7 +72,7 @@ public class MockModelView implements BaseModelView<Object> {
     }
 
     @Override
-    public void playSound(Sound sound) {
+    public void emitSound(final @NotNull Sound sound) {
     }
 
     @Override
