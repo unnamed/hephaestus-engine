@@ -24,31 +24,26 @@
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.level.Level;
 import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.bukkit.BoneView;
 import team.unnamed.hephaestus.player.PlayerBoneType;
 import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.util.Quaternion;
 
-public class PlayerModelEntity extends MinecraftModelEntity {
-    public PlayerModelEntity(EntityType<? extends PathfinderMob> type, PlayerModel model, Level level, float scale) {
-        super(type, model, level, scale);
-    }
+final class PlayerModelViewImpl extends ModelViewImpl {
+    private final float scale;
 
-
-    @Override
-    protected void animationTick() {
-        animationController.tick(getYRot(), getXRot());
+    PlayerModelViewImpl(final @NotNull Plugin plugin, final @NotNull PlayerModel model, final @NotNull Location location, final float scale) {
+        super(plugin, model, location, scale);
+        this.scale = scale;
     }
 
     @Override
-    public PlayerModel model() {
-        return (PlayerModel) model;
+    public @NotNull PlayerModel model() {
+        return (PlayerModel) super.model();
     }
 
     protected void instantiateBone(

@@ -26,8 +26,10 @@ package team.unnamed.hephaestus.bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelEngine;
+import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
 /**
  * The hephaestus model engine abstraction for
@@ -37,15 +39,17 @@ import team.unnamed.hephaestus.ModelEngine;
  * @since 1.0.0
  */
 public interface BukkitModelEngine extends ModelEngine<Player, Location> {
+    @Override
+    @NotNull BukkitModelViewTracker tracker();
 
-    ModelEntity createViewAndTrack(Model model, Location location, CreatureSpawnEvent.SpawnReason reason);
+    @NotNull ModelView createViewAndTrack(Model model, Location location, CreatureSpawnEvent.SpawnReason reason);
 
     @Override
-    default ModelEntity createViewAndTrack(Model model, Location location) {
+    default @NotNull ModelView createViewAndTrack(Model model, Location location) {
         return createViewAndTrack(model, location, CreatureSpawnEvent.SpawnReason.CUSTOM);
     }
 
     @Override
-    ModelEntity createView(Model model, Location location);
+    @NotNull ModelView createView(Model model, Location location);
 
 }

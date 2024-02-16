@@ -23,19 +23,27 @@
  */
 package team.unnamed.hephaestus.bukkit;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
-import team.unnamed.hephaestus.Model;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import team.unnamed.hephaestus.view.BaseBoneView;
 import team.unnamed.hephaestus.view.BaseModelView;
 
-/**
- * Represents a concrete {@link Model} instance
- * entity in a world
- *
- * @since 1.0.0
- */
-public interface ModelEntity
-        extends Mob, BaseModelView<Player> {
+import java.util.Collection;
+import java.util.UUID;
 
+public interface ModelView extends BaseModelView<Player> {
+    UUID getUniqueId();
+
+    @Nullable Entity base();
+
+    @NotNull Location location();
+
+    @Override
+    @Nullable BoneView bone(final @NotNull String name);
+
+    @Override
+    Collection<? extends BoneView> bones();
 }

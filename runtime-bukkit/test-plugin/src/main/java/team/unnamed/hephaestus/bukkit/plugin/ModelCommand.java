@@ -39,7 +39,7 @@ import org.bukkit.util.StringUtil;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
-import team.unnamed.hephaestus.bukkit.ModelEntity;
+import team.unnamed.hephaestus.bukkit.ModelView;
 import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.player.Skin;
 
@@ -65,11 +65,11 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
     }
 
     private void spawn(Player source, Model model) {
-        ModelEntity entity = engine.createViewAndTrack(model, source.getLocation());
+        ModelView view = engine.createViewAndTrack(model, source.getLocation());
         source.sendMessage(
                 Component.text()
                         .append(Component.text("Created view with id "))
-                        .append(Component.text(entity.getUniqueId().toString(), NamedTextColor.DARK_GREEN))
+                        .append(Component.text(view.getUniqueId().toString(), NamedTextColor.DARK_GREEN))
                         .append(Component.text(" with model "))
                         .append(Component.text(model.name(), NamedTextColor.DARK_GREEN))
                         .color(NamedTextColor.GREEN)
@@ -77,8 +77,8 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
         );
     }
 
-    private void animate(Player source, ModelEntity entity, String animationName) {
-        Map<String, Animation> animations = entity.model().animations();
+    private void animate(Player source, ModelView view, String animationName) {
+        Map<String, Animation> animations = view.model().animations();
         @Nullable Animation animation = animations.get(animationName);
 
         if (animation == null) {
@@ -92,7 +92,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                             .build()
             );
         } else {
-            entity.animationController().add(animation);
+            view.animationController().add(animation);
         }
     }
 
@@ -136,6 +136,43 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
 
                 spawn(player, model);
             }
+            case "spawnat" -> {
+                if (args.length != 3) {
+                    sender.sendPlainMessage("/" + label + " spawnat <type> <baseEntityId>");
+                    return true;
+                }
+
+                String modelName = args[1];
+                @Nullable Model model = registry.model(modelName);
+
+                if (model == null) {
+                    sender.sendPlainMessage("Model not found: " + modelName);
+                    return true;
+                }
+
+                Entity base = Bukkit.getEntity(UUID.fromString(args[2]));
+
+                if (base == null) {
+                    sender.sendPlainMessage("Base entity not found: " + args[2]);
+                    return true;
+                }
+
+                ModelView view = engine.createView(model, player.getLocation());
+                engine.tracker().startGlobalTrackingOn(view, base);
+
+                // tick the view
+                Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, view::tickAnimations, 0L, 1L);
+
+                player.sendMessage(
+                        Component.text()
+                                .append(Component.text("Created view with id "))
+                                .append(Component.text(view.getUniqueId().toString(), NamedTextColor.DARK_GREEN))
+                                .append(Component.text(" with model "))
+                                .append(Component.text(model.name(), NamedTextColor.DARK_GREEN))
+                                .color(NamedTextColor.GREEN)
+                                .build()
+                );
+            }
             case "spawnplayer" -> {
                 if (args.length != 2) {
                     sender.sendMessage(Component.text("/" + label + " spawnplayer <skin>", NamedTextColor.RED));
@@ -175,9 +212,10 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                 }
 
                 String viewId = args[1];
-                @Nullable ModelEntity entity = getModelEntityById(viewId);
+                final var base = Bukkit.getEntity(UUID.fromString(viewId));
+                @Nullable ModelView view = getModelEntityById(viewId);
 
-                if (entity == null) {
+                if (base == null || view == null) {
                     sender.sendMessage(
                             Component.text()
                                     .append(Component.text("View not found: "))
@@ -195,7 +233,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                             return true;
                         }
 
-                        animate(player, entity, args[3]);
+                        animate(player, view, args[3]);
                     }
                     case "colorize" -> {
                         if (args.length != 4) {
@@ -223,10 +261,10 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                             return true;
                         }
 
-                        entity.colorize(color);
+                        view.colorize(color);
                     }
-                    case "tphere" -> entity.teleport(player);
-                    case "delete" -> entity.remove();
+                    case "tphere" -> base.teleport(player);
+                    case "delete" -> base.remove();
                 }
             }
             default -> sender.sendMessage(Component.text("Unknown subcommand", NamedTextColor.RED));
@@ -266,7 +304,8 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                     List<String> ids = new ArrayList<>();
                     for (World world : Bukkit.getWorlds()) {
                         for (Entity entity : world.getEntities()) {
-                            if (entity instanceof ModelEntity) {
+                            final var view = getModelEntityById(entity.getUniqueId().toString());
+                            if (view != null) {
                                 ids.add(entity.getUniqueId().toString());
                             }
                         }
@@ -284,7 +323,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
 
                 if ("animate".equals(action) && args.length == 4) {
                     // complete animations
-                    ModelEntity entity = getModelEntityById(viewId);
+                    ModelView entity = getModelEntityById(viewId);
                     if (entity != null) {
                         StringUtil.copyPartialMatches(args[3], entity.model().animations().keySet(), suggestions);
                     }
@@ -296,7 +335,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
         return suggestions;
     }
 
-    private @Nullable ModelEntity getModelEntityById(String id) {
+    private @Nullable ModelView getModelEntityById(String id) {
         UUID uuid;
         try {
             uuid = UUID.fromString(id);
@@ -304,10 +343,8 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
             return null;
         }
 
-        Entity entity = Bukkit.getEntity(uuid);
-        return entity instanceof ModelEntity modelEntity
-                ? modelEntity
-                : null;
+        final var base = Bukkit.getEntity(uuid);
+        return base == null ? null : engine.tracker().getViewOnBase(base);
     }
 
 }

@@ -24,9 +24,24 @@
 package team.unnamed.hephaestus.bukkit;
 
 import org.bukkit.Color;
+import org.jetbrains.annotations.ApiStatus;
 import team.unnamed.hephaestus.view.BaseBoneView;
 
+/**
+ * Represents a model bone view for Bukkit-based servers,
+ * this interface represents a server-side only entity.
+ *
+ * @since 1.0.0
+ */
 public interface BoneView extends BaseBoneView {
+    /**
+     * Returns this bone view's entity id.
+     *
+     * @return The entity id
+     * @since 1.0.0
+     */
+    @ApiStatus.Experimental
+    int entityId();
 
     void colorize(Color color);
 

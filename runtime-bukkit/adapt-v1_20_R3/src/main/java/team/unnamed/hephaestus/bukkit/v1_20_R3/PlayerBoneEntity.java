@@ -39,16 +39,10 @@ import team.unnamed.hephaestus.player.PlayerModel;
 import team.unnamed.hephaestus.player.Skin;
 import team.unnamed.hephaestus.util.Quaternion;
 
-final class PlayerBoneEntity
-        extends BoneEntity {
-
+final class PlayerBoneEntity extends BoneEntity {
     private PlayerBoneType boneType;
 
-    public PlayerBoneEntity(MinecraftModelEntity view, Bone bone,
-                            Vector3Float initialPosition,
-                            Quaternion initialRotation,
-                            float modelScale
-    ) {
+    public PlayerBoneEntity(ModelViewImpl view, Bone bone, Vector3Float initialPosition, Quaternion initialRotation, float modelScale) {
         super(view, bone, initialPosition, initialRotation, modelScale);
     }
 

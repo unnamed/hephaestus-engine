@@ -24,8 +24,6 @@
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.mojang.math.Transformation;
-import net.kyori.adventure.platform.bukkit.MinecraftComponentSerializer;
-import net.kyori.adventure.text.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -51,11 +49,8 @@ import team.unnamed.hephaestus.util.Quaternion;
 import java.util.List;
 import java.util.function.Consumer;
 
-class BoneEntity
-        extends Display.ItemDisplay
-        implements BoneView {
-
-    protected final MinecraftModelEntity view;
+class BoneEntity extends Display.ItemDisplay implements BoneView {
+    protected final ModelViewImpl view;
     protected final Bone bone;
     public boolean dirtyColor;
 
@@ -66,13 +61,9 @@ class BoneEntity
     private Quaternion lastRotation;
     private Vector3Float lastScale;
 
-
-    public BoneEntity(MinecraftModelEntity view, Bone bone,
-                      Vector3Float initialPosition,
-                      Quaternion initialRotation,
-                      float modelScale
-    ) {
-        super(EntityType.ITEM_DISPLAY, view.level());
+    public BoneEntity(ModelViewImpl view, Bone bone, Vector3Float initialPosition, Quaternion initialRotation, float modelScale) {
+        //noinspection DataFlowIssue
+        super(EntityType.ITEM_DISPLAY, null);
         this.view = view;
         this.bone = bone;
         this.modelScale = modelScale;
@@ -116,13 +107,35 @@ class BoneEntity
         packetConsumer.accept(t);
     }
 
+    /**
+     * Send the dirty data of this entity to the given packet consumer,
+     * if there's any dirty data to send.
+     *
+     * @param packetConsumer The packet consumer to send the dirty data to
+     * @return Whether there was any dirty data to send
+     */
+    public boolean sendDirtyData(final @NotNull Consumer<? super Packet<?>> packetConsumer) {
+        final var dirtyData = getEntityData().packDirty();
+        if (dirtyData != null) {
+            packetConsumer.accept(new ClientboundSetEntityDataPacket(getId(), dirtyData));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int entityId() {
+        return this.getId();
+    }
+
     @Override
     public Bone bone() {
         return bone;
     }
+
     @Override
     public void update(Vector3Float position, Quaternion rotation, Vector3Float scale) {
-        if (tickCount % 3 != 0) return;
         if (position.equals(this.lastPosition) && rotation.equals(this.lastRotation) && scale.equals(this.lastScale))
             return;
         lastPosition = position;
@@ -172,7 +185,10 @@ class BoneEntity
 
     @Override
     public @NotNull Vec3 position() {
-        return view.position();
+        // Bones are located at the same location as the model,
+        // They are moved via display entities properties
+        final var location = view.location();
+        return new Vec3(location.x(), location.y(), location.z());
     }
 
     @Override

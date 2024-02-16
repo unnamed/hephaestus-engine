@@ -23,19 +23,16 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
-import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
-import net.minecraft.network.protocol.game.VecDeltaCodec;
-import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.Entity;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
@@ -43,57 +40,50 @@ import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
 final class ModelServerEntity extends ServerEntity {
-
-    private final MinecraftModelEntity entity;
+    private final ModelViewImpl view;
+    private final Entity base;
     private final Consumer<Packet<?>> broadcast;
-    private final VecDeltaCodec codec = new VecDeltaCodec();
 
     public ModelServerEntity(
             ServerLevel level,
-            MinecraftModelEntity entity,
+            Entity base,
+            ModelViewImpl view,
             Consumer<Packet<?>> broadcast,
             Set<ServerPlayerConnection> trackedPlayers
     ) {
         super(
                 level,
-                entity,
-                entity.getType().updateInterval(),
-                entity.getType().trackDeltas(),
+                base,
+                base.getType().updateInterval(),
+                base.getType().trackDeltas(),
                 broadcast,
                 trackedPlayers
         );
-        this.entity = entity;
+        this.view = view;
+        this.base = base;
         this.broadcast = broadcast;
     }
 
     @Override
     public void sendChanges() {
-        Vec3 position = new Vec3(entity.position().x, entity.position().y, entity.position().z);
-        Vec3 delta = codec.delta(position);
-        if (delta.lengthSqr() >= 7.62939453125E-6D) {
-            for (var bone : entity.bones().values()) {
-                // check metadata changes
-                // (rotation, ...)
-                sendDirtyEntityData(bone);
+        // Send base entity changes
+        super.sendChanges();
 
-                long k = codec.encodeX(position);
-                long l = codec.encodeY(position);
-                long i1 = codec.encodeZ(position);
-
-                if (k < -32768L || k > 32767L || l < -32768L || l > 32767L || i1 < -32768L || i1 > 32767L) {
-                    broadcast.accept(new ClientboundTeleportEntityPacket(bone));
-                } else {
-                    broadcast.accept(new ClientboundMoveEntityPacket.Pos(bone.getId(), (short) ((int) k), (short) ((int) l), (short) ((int) i1), bone.onGround()));
-                }
-            }
-            codec.setBase(position);
+        // Send bone changes
+        for (var bone : view.bones()) {
+            // check metadata changes
+            // (rotation, position, color, etc...)
+            bone.sendDirtyData(this.broadcast);
         }
     }
 
     @Override
     public void removePairing(ServerPlayer player) {
-        this.entity.stopSeenByPlayer(player);
-        var bones = entity.bones().values();
+        // Remove base entity
+        super.removePairing(player);
+
+        // Remove bones
+        var bones = view.bones();
         int[] ids = new int[bones.size()];
         int i = 0;
         for (var bone : bones) {
@@ -104,20 +94,29 @@ final class ModelServerEntity extends ServerEntity {
 
     @Override
     public void sendPairingData(ServerPlayer player, Consumer<Packet<ClientGamePacketListener>> packetConsumer) {
-        if (this.entity.isRemoved()) {
-            return;
-        }
+        super.sendPairingData(player, packetConsumer);
 
-        for (var bone : entity.bones().values()) {
-            bone.show(packetConsumer);
+        if (!this.base.isRemoved()) {
+            final var bones = view.bones();
+            final var ids = new int[bones.size()];
+            int i = 0;
+            for (final var bone : bones) {
+                ids[i++] = bone.entityId();
+                bone.show(packetConsumer);
+            }
+
+            // add passengers to base entity
+            packetConsumer.accept(new ClientboundSetPassengersPacket(new FriendlyByteBuf(null) {
+                @Override
+                public int readVarInt() {
+                    return base.getId();
+                }
+
+                @Override
+                public int[] readVarIntArray() {
+                    return ids;
+                }
+            }));
         }
     }
-
-    private void sendDirtyEntityData(BoneEntity bone) {
-        SynchedEntityData data = bone.getEntityData();
-        if (data.isDirty()) {
-            this.broadcast.accept(new ClientboundSetEntityDataPacket(bone.getId(), data.packDirty()));
-        }
-    }
-
 }

@@ -30,20 +30,18 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import team.unnamed.hephaestus.Minecraft;
-import team.unnamed.hephaestus.bukkit.ModelEntity;
+import team.unnamed.hephaestus.bukkit.ModelView;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -76,8 +74,7 @@ final class ModelInteractListener implements Listener {
             return;
         }
 
-        checkInteraction(player, modelEntity ->
-                ((CraftPlayer) player).getHandle().attack(((team.unnamed.hephaestus.bukkit.v1_20_R3.CraftModelEntity) modelEntity).getHandle()));
+        // checkInteraction(player, modelEntity -> ((CraftPlayer) player).getHandle().attack(((team.unnamed.hephaestus.bukkit.v1_20_R3.CraftModelEntity) modelEntity).getHandle()));
     }
 
     // handle the horrible interact event
@@ -88,13 +85,12 @@ final class ModelInteractListener implements Listener {
         if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
             EquipmentSlot hand = event.getHand();
             Objects.requireNonNull(hand, "hand"); // should never be null, since action is never PHYSICAL
-            checkInteraction(player, modelEntity ->
-                    Bukkit.getPluginManager().callEvent(new PlayerInteractEntityEvent(player, modelEntity, hand)));
+            // checkInteraction(player, modelEntity -> Bukkit.getPluginManager().callEvent(new PlayerInteractEntityEvent(player, modelEntity, hand)));
         }
     }
 
 
-    private boolean checkInteraction(Player bukkitPlayer, Consumer<ModelEntity> callback) {
+    private boolean checkInteraction(Player bukkitPlayer, Consumer<ModelView> callback) {
         ServerPlayer player = ((CraftPlayer) bukkitPlayer).getHandle();
 
         boolean creative = player.gameMode.getGameModeForPlayer().isCreative();
@@ -121,10 +117,10 @@ final class ModelInteractListener implements Listener {
             Vec3 loc = result.getLocation();
             double distance = eyePosition.distanceToSqr(loc);
 
-            if (distance <= 9.0D && distance < rangeSqr && entity instanceof MinecraftModelEntity modelEntity) {
+            /*if (distance <= 9.0D && distance < rangeSqr && entity instanceof MinecraftModelEntity modelEntity) {
                 callback.accept(modelEntity.getBukkitEntity());
                 return true;
-            }
+            }*/
         }
 
         return false;
