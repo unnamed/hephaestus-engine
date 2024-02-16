@@ -151,26 +151,6 @@ class BoneEntity
     }
 
     @Override
-    public Component customName() {
-        return fromMinecraft(super.getCustomName());
-    }
-
-    @Override
-    public void customName(Component customName) {
-        super.setCustomName(toMinecraft(customName));
-    }
-
-    @Override
-    public void customNameVisible(boolean visible) {
-        super.setCustomNameVisible(visible);
-    }
-
-    @Override
-    public boolean customNameVisible() {
-        return super.isCustomNameVisible();
-    }
-
-    @Override
     public void colorize(Color color) {
         // todo: we could avoid bukkit<->nms item conversions
         var nmsItem = getItemStack();
@@ -204,15 +184,4 @@ class BoneEntity
     public float getXRot() {
         return 0;
     }
-
-    @SuppressWarnings("UnstableApiUsage")
-    private static net.minecraft.network.chat.Component toMinecraft(Component component) {
-        return (net.minecraft.network.chat.Component) MinecraftComponentSerializer.get().serialize(component);
-    }
-
-    @SuppressWarnings("UnstableApiUsage")
-    private static Component fromMinecraft(net.minecraft.network.chat.Component component) {
-        return MinecraftComponentSerializer.get().deserialize(component);
-    }
-
 }

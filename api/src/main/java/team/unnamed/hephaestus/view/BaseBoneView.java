@@ -43,7 +43,7 @@ import team.unnamed.hephaestus.util.Quaternion;
  *
  * @since 1.0.0
  */
-public interface BaseBoneView extends NamedEntity {
+public interface BaseBoneView {
 
     int DEFAULT_COLOR = 0xFFFFFF;
 
