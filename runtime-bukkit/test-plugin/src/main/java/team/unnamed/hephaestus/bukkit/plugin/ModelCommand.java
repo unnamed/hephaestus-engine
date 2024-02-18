@@ -157,8 +157,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
 
-                ModelView view = engine.createView(model, player.getLocation());
-                engine.tracker().startGlobalTrackingOn(view, base);
+                final var view = engine.spawn(model, player);
 
                 // tick the view
                 Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, view::tickAnimations, 0L, 1L);

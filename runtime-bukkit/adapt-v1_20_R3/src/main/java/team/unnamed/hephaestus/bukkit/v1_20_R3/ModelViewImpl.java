@@ -25,7 +25,12 @@ package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.google.common.collect.ImmutableMap;
 import net.kyori.adventure.sound.Sound;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -42,6 +47,7 @@ import team.unnamed.hephaestus.util.Quaternion;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
@@ -62,6 +68,7 @@ class ModelViewImpl implements ModelView {
     // - If 'base' is set, 'baseEntityId' is set and 'viewers' is unused
     // - If 'base' is null, 'baseEntityId' is set and 'viewers' is used
     private Entity base = null;
+    private int baseEntityId = -1;
 
     protected ModelViewImpl(final @NotNull Plugin plugin, final @NotNull Model model, final @NotNull Location location, final float scale) {
         this.plugin = requireNonNull(plugin, "plugin");
@@ -72,8 +79,56 @@ class ModelViewImpl implements ModelView {
         this.bones = instantiateBones();
     }
 
+    public void show(final @NotNull Consumer<? super Packet<?>> packetConsumer) {
+        final var ids = new int[bones.size()];
+        int i = 0;
+        for (final var bone : bones.values()) {
+            ids[i++] = bone.entityId();
+            bone.show(packetConsumer);
+        }
+
+        // add passengers to base entity
+        //noinspection DataFlowIssue
+        packetConsumer.accept(new ClientboundSetPassengersPacket(new FriendlyByteBuf(null) {
+            @Override
+            public int readVarInt() {
+                return baseEntityId;
+            }
+
+            @Override
+            public int @NotNull [] readVarIntArray() {
+                return ids;
+            }
+        }));
+    }
+
+    public void sendChanges(final @NotNull Consumer<? super Packet<?>> packetConsumer) {
+        // Send bone changes
+        for (var bone : bones.values()) {
+            // check metadata changes
+            // (rotation, position, color, etc...)
+            bone.sendDirtyData(packetConsumer);
+        }
+    }
+
+    public void remove(final @NotNull Consumer<? super Packet<?>> packetConsumer) {
+        // Remove bones
+        int[] ids = new int[bones.size()];
+        int i = 0;
+        for (var bone : bones.values()) {
+            ids[i++] = bone.getId();
+        }
+        packetConsumer.accept(new ClientboundRemoveEntitiesPacket(ids));
+    }
+
     protected void base(final @Nullable Entity base) {
         this.base = base;
+        this.baseEntityId = base == null ? -1 : base.getEntityId();
+    }
+
+    @Override
+    public void baseEntityId(final int baseEntityId) {
+        this.baseEntityId = baseEntityId;
     }
 
     private ImmutableMap<String, BoneEntity> instantiateBones() {
@@ -129,9 +184,10 @@ class ModelViewImpl implements ModelView {
         requireNonNull(player, "player");
         if (base != null) {
             player.showEntity(plugin, base);
-        } else {
-            viewers.add(player);
-            // todo: send packets
+        } else if (viewers.add(player)) {
+            final var connection = ((CraftPlayer) player).getHandle().connection;
+            show(connection::send);
+            return true;
         }
         return false;
     }
@@ -141,8 +197,10 @@ class ModelViewImpl implements ModelView {
         requireNonNull(player, "player");
         if (base != null) {
             player.hideEntity(plugin, base);
-        } else {
-            viewers.remove(player);
+        } else if (viewers.remove(player)) {
+            final var connection = ((CraftPlayer) player).getHandle().connection;
+            remove(connection::send);
+            return true;
         }
         return false;
     }
@@ -177,7 +235,7 @@ class ModelViewImpl implements ModelView {
     public void tickAnimations() {
         if (base != null) {
             if (base instanceof LivingEntity livingBase) {
-                animationPlayer.tick(livingBase.getBodyYaw(), livingBase.getPitch());
+                animationPlayer.tick(livingBase.getYaw(), -livingBase.getPitch());
             } else {
                 animationPlayer.tick(base.getYaw(), base.getPitch());
             }

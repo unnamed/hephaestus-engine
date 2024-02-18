@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.view.BaseBoneView;
@@ -35,6 +36,14 @@ import java.util.Collection;
 import java.util.UUID;
 
 public interface ModelView extends BaseModelView<Player> {
+    /**
+     * Sets the base entity id.
+     *
+     * @param baseEntityId The base entity id
+     */
+    @ApiStatus.Internal
+    void baseEntityId(final int baseEntityId);
+
     UUID getUniqueId();
 
     @Nullable Entity base();

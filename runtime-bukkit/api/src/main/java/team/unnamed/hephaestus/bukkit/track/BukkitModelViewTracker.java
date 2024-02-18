@@ -73,6 +73,28 @@ public interface BukkitModelViewTracker extends ModelViewTracker<Player> {
      */
     @Nullable ModelView getViewOnBase(final @NotNull Entity base);
 
+
+    /**
+     * Starts tracking the given {@code view}, this means to
+     * handle the viewers of this view, adding and removing
+     * players that get in/out of the view's view range
+     *
+     * <p>The {@link ModelViewTrackingRule} trackingRule parameter
+     * determines whether a new viewer candidate should be added
+     * as a viewer</p>
+     *
+     * <p>Note that this method will use the given {@code base} entity
+     * as the "wrapped" entity, or replaced entity.</p>
+     *
+     * @param view The view to track
+     * @param base The base entity
+     * @param trackingRule The tracking rule, filters viewers
+     * @return True if the view is now being tracked, false if
+     * it was already being tracked
+     * @since 1.0.0
+     */
+    boolean startTrackingOn(final @NotNull BaseModelView<Player> view, final @NotNull Entity base, final @NotNull ModelViewTrackingRule<Player> trackingRule);
+
     /**
      * Starts tracking the given {@code view}, this means to
      * handle the viewers of this view, adding and removing

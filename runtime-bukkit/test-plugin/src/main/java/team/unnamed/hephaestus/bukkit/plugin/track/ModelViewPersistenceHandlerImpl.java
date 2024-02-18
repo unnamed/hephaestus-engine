@@ -63,7 +63,6 @@ public final class ModelViewPersistenceHandlerImpl implements ModelViewPersisten
             return CompletableFuture.completedFuture(null);
         }
 
-        System.out.println("Found out model: " + model.name() + " for entity with UUID: " + entity.getUniqueId() + "!");
         return CompletableFuture.completedFuture(model);
     }
 
@@ -72,6 +71,5 @@ public final class ModelViewPersistenceHandlerImpl implements ModelViewPersisten
         final var model = view.model();
         final var data = entity.getPersistentDataContainer();
         data.set(MODEL_KEY, PersistentDataType.STRING, model.name());
-        System.out.println("Saved model: " + model.name() + " for entity with UUID: " + entity.getUniqueId() + "!");
     }
 }

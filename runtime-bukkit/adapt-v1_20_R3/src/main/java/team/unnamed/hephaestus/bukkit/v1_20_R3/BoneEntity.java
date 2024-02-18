@@ -24,8 +24,8 @@
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.mojang.math.Transformation;
+import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -57,6 +57,10 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
     private final float modelScale;
     protected List<SynchedEntityData.DataValue<?>> initialData;
 
+    private Vector3Float lastPosition;
+    private Quaternion lastRotation;
+    private Vector3Float lastScale;
+
     public BoneEntity(ModelViewImpl view, Bone bone, Vector3Float initialPosition, Quaternion initialRotation, float modelScale) {
         //noinspection DataFlowIssue
         super(EntityType.ITEM_DISPLAY, null);
@@ -87,7 +91,7 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
         initialData = super.getEntityData().packDirty();
     }
 
-    protected void show(Consumer<Packet<ClientGamePacketListener>> packetConsumer) {
+    protected void show(Consumer<? super Packet<? extends PacketListener>> packetConsumer) {
         packetConsumer.accept(new ClientboundAddEntityPacket(getId(), getUUID(),
                 position().x,
                 position().y,
@@ -132,6 +136,16 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
 
     @Override
     public void update(final @NotNull Vector3Float position, final @NotNull Quaternion rotation, final @NotNull Vector3Float scale) {
+        if (position.equals(lastPosition) && rotation.equals(lastRotation) && scale.equals(lastScale)) {
+            // Don't update if everything is the same (avoids marking the data as dirty)
+            // todo: we can separate this!
+            return;
+        }
+
+        lastPosition = position;
+        lastRotation = rotation;
+        lastScale = scale;
+
         // Changes are not immediate, packets are sent by the base entity tracker
         setTransformation(new Transformation(
                 modifyTranslation(new Vector3f(position.x(), position.y(), position.z()).mul(modelScale * bone.scale())),

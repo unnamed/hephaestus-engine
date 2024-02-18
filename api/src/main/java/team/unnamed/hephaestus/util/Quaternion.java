@@ -279,16 +279,17 @@ public final class Quaternion implements Examinable {
      * <p>The rotation is calculated in <b>XYZ order</b>, using a
      * <b>Y-Up right-handed</b> coordinate system.</p>
      *
-     * @param euler The euler angle to represent
+     * @param x The rotation around the X axis
+     * @param y The rotation around the Y axis
+     * @param z The rotation around the Z axis
      * @return The quaternion representing the euler angle
      * @since 1.0.0
      */
-    @Contract("_ -> new")
-    public static @NotNull Quaternion fromEulerRadians(final @NotNull Vector3Float euler) {
+    public static @NotNull Quaternion fromEulerRadians(final double x, final double y, final double z) {
         // common values
-        final double halfX = euler.x() * 0.5D;
-        final double halfY = euler.y() * 0.5D;
-        final double halfZ = euler.z() * 0.5D;
+        final double halfX = x * 0.5D;
+        final double halfY = y * 0.5D;
+        final double halfZ = z * 0.5D;
 
         // compute cos
         final double cosX = Math.cos(halfX);
@@ -317,6 +318,23 @@ public final class Quaternion implements Examinable {
     /**
      * Creates a new {@link Quaternion} instance equivalent to the
      * given euler angle (rotation in X, Y, Z), which should be
+     * specified in radians.
+     *
+     * <p>The rotation is calculated in <b>XYZ order</b>, using a
+     * <b>Y-Up right-handed</b> coordinate system.</p>
+     *
+     * @param euler The euler angle to represent
+     * @return The quaternion representing the euler angle
+     * @since 1.0.0
+     */
+    @Contract("_ -> new")
+    public static @NotNull Quaternion fromEulerRadians(final @NotNull Vector3Float euler) {
+        return fromEulerRadians(euler.x(), euler.y(), euler.z());
+    }
+
+    /**
+     * Creates a new {@link Quaternion} instance equivalent to the
+     * given euler angle (rotation in X, Y, Z), which should be
      * specified in degrees
      *
      * @param euler The euler angle to represent
@@ -324,7 +342,7 @@ public final class Quaternion implements Examinable {
      * @since 1.0.0
      */
     public static Quaternion fromEulerDegrees(Vector3Float euler) {
-        return fromEulerRadians(Vectors.toRadians(euler));
+        return fromEulerRadians(Math.toRadians(euler.x()), Math.toRadians(euler.y()), Math.toRadians(euler.z()));
     }
 
     @Override

@@ -34,7 +34,6 @@ import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 import team.unnamed.hephaestus.bukkit.plugin.track.ModelViewPersistenceHandlerImpl;
 import team.unnamed.hephaestus.bukkit.v1_20_R3.BukkitModelEngine_v1_20_R3;
 import team.unnamed.hephaestus.player.PlayerModelWriter;
-import team.unnamed.hephaestus.player.ResourcePlayerModelWriter;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
@@ -43,12 +42,13 @@ import java.util.Objects;
 
 @SuppressWarnings("unused") // used via reflection by the server
 public final class HephaestusTestPlugin extends JavaPlugin {
+    private BukkitModelEngine engine;
 
     @Override
     public void onEnable() {
         // load models from resources
         final ModelRegistry registry = new ModelRegistry();
-        final BukkitModelEngine engine = BukkitModelEngine_v1_20_R3.create(this, new ModelViewPersistenceHandlerImpl(registry));
+        engine = BukkitModelEngine_v1_20_R3.create(this, new ModelViewPersistenceHandlerImpl(registry));
 
         registry.registerModel(loadModel("dragon.bbmodel"));
         registry.registerModel(loadModel("geometry.bbmodel"));
@@ -72,6 +72,13 @@ public final class HephaestusTestPlugin extends JavaPlugin {
         // register our command
         Objects.requireNonNull(getCommand("hephaestus"), "'hephaestus' command not registered! altered plugin.yml?")
                 .setExecutor(new ModelCommand(this, registry, engine));
+    }
+
+    @Override
+    public void onDisable() {
+        if (engine != null) {
+            engine.close();
+        }
     }
 
     private @NotNull Model loadModel(final @NotNull String fileName) {

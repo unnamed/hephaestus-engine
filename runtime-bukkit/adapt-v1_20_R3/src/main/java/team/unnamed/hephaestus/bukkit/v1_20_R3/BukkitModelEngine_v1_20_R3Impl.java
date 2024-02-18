@@ -29,6 +29,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.bukkit.ModelPersistenceListener;
 import team.unnamed.hephaestus.bukkit.track.BukkitModelViewTracker;
 import team.unnamed.hephaestus.bukkit.ModelView;
 import team.unnamed.hephaestus.bukkit.track.ModelViewPersistenceHandler;
@@ -37,16 +38,26 @@ import static java.util.Objects.requireNonNull;
 
 final class BukkitModelEngine_v1_20_R3Impl implements BukkitModelEngine_v1_20_R3 {
     private final Plugin plugin;
+    private final ModelViewPersistenceHandler persistenceHandler;
+    private final ModelPersistenceListener persistenceListener;
 
     BukkitModelEngine_v1_20_R3Impl(final @NotNull Plugin plugin, final @NotNull ModelViewPersistenceHandler persistenceHandler) {
         this.plugin = requireNonNull(plugin, "plugin");
+        this.persistenceHandler = requireNonNull(persistenceHandler, "persistenceHandler");
 
-        Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin, this, persistenceHandler), plugin);
+        Bukkit.getPluginManager().registerEvents(new ModelInteractListener(plugin), plugin);
+        this.persistenceListener = new ModelPersistenceListener(plugin, this, persistenceHandler);
+        Bukkit.getPluginManager().registerEvents(persistenceListener, plugin);;
     }
 
     @Override
     public @NotNull BukkitModelViewTracker tracker() {
         return BukkitModelViewTrackerImpl.INSTANCE;
+    }
+
+    @Override
+    public @NotNull ModelViewPersistenceHandler persistence() {
+        return persistenceHandler;
     }
 
     @Override
@@ -59,5 +70,10 @@ final class BukkitModelEngine_v1_20_R3Impl implements BukkitModelEngine_v1_20_R3
     @Override
     public @NotNull ModelView createView(Model model, Location location) {
         return new ModelViewImpl(plugin, model, location, 1.0f);
+    }
+
+    @Override
+    public void close() {
+        persistenceListener.onPluginDisable();
     }
 }

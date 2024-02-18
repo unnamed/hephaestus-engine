@@ -24,12 +24,17 @@
 package team.unnamed.hephaestus.bukkit;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelEngine;
 import team.unnamed.hephaestus.bukkit.track.BukkitModelViewTracker;
+import team.unnamed.hephaestus.bukkit.track.ModelViewPersistenceHandler;
+import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
+
+import java.util.function.Predicate;
 
 /**
  * The hephaestus model engine abstraction for
@@ -42,6 +47,8 @@ public interface BukkitModelEngine extends ModelEngine<Player, Location> {
     @Override
     @NotNull BukkitModelViewTracker tracker();
 
+    @NotNull ModelViewPersistenceHandler persistence();
+
     @NotNull ModelView createViewAndTrack(Model model, Location location, CreatureSpawnEvent.SpawnReason reason);
 
     @Override
@@ -52,4 +59,23 @@ public interface BukkitModelEngine extends ModelEngine<Player, Location> {
     @Override
     @NotNull ModelView createView(Model model, Location location);
 
+    //#region --- Helper methods ---
+    default @NotNull ModelView spawn(final @NotNull Model model, final @NotNull Entity base) {
+        final var view = createView(model, base.getLocation());
+        tracker().startGlobalTrackingOn(view, base);
+        return view;
+    }
+
+    default @NotNull ModelView spawn(final @NotNull Model model, final @NotNull Entity base, final @NotNull ModelViewTrackingRule<Player> trackingRule) {
+        final var view = createView(model, base.getLocation());
+        tracker().startTrackingOn(view, base, trackingRule);
+        return view;
+    }
+
+    default @NotNull ModelView spawn(final @NotNull Model model, final @NotNull Entity base, final @NotNull Predicate<Player> trackingRule) {
+        return spawn(model, base, (_view, player) -> trackingRule.test(player));
+    }
+    //#endregion
+
+    void close();
 }

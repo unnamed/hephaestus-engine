@@ -23,16 +23,15 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
-import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.entity.Entity;
+import org.bukkit.entity.Player;
+import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Set;
@@ -42,26 +41,23 @@ import java.util.function.Consumer;
 final class ModelServerEntity extends ServerEntity {
     private final ModelViewImpl view;
     private final Entity base;
-    private final Consumer<Packet<?>> broadcast;
+    private final Consumer<Packet<?>> broadcastChanges;
+    private final ModelViewTrackingRule<Player> trackingRule;
 
     public ModelServerEntity(
             ServerLevel level,
             Entity base,
             ModelViewImpl view,
             Consumer<Packet<?>> broadcast,
+            Consumer<Packet<?>> broadcastChanges,
+            ModelViewTrackingRule<Player> trackingRule,
             Set<ServerPlayerConnection> trackedPlayers
     ) {
-        super(
-                level,
-                base,
-                base.getType().updateInterval(),
-                base.getType().trackDeltas(),
-                broadcast,
-                trackedPlayers
-        );
+        super(level, base, base.getType().updateInterval(), base.getType().trackDeltas(), broadcast, trackedPlayers);
         this.view = view;
         this.base = base;
-        this.broadcast = broadcast;
+        this.broadcastChanges = broadcastChanges;
+        this.trackingRule = trackingRule;
     }
 
     @Override
@@ -69,12 +65,8 @@ final class ModelServerEntity extends ServerEntity {
         // Send base entity changes
         super.sendChanges();
 
-        // Send bone changes
-        for (var bone : view.bones()) {
-            // check metadata changes
-            // (rotation, position, color, etc...)
-            bone.sendDirtyData(this.broadcast);
-        }
+        // Send model view changes
+        view.sendChanges(this.broadcastChanges);
     }
 
     @Override
@@ -82,41 +74,20 @@ final class ModelServerEntity extends ServerEntity {
         // Remove base entity
         super.removePairing(player);
 
-        // Remove bones
-        var bones = view.bones();
-        int[] ids = new int[bones.size()];
-        int i = 0;
-        for (var bone : bones) {
-            ids[i++] = bone.getId();
+        // Remove model view
+        if (trackingRule.shouldView(view, player.getBukkitEntity())) {
+            view.remove(player.connection::send);
         }
-        player.connection.send(new ClientboundRemoveEntitiesPacket(ids));
     }
 
     @Override
     public void sendPairingData(ServerPlayer player, Consumer<Packet<ClientGamePacketListener>> packetConsumer) {
         super.sendPairingData(player, packetConsumer);
 
-        if (!this.base.isRemoved()) {
-            final var bones = view.bones();
-            final var ids = new int[bones.size()];
-            int i = 0;
-            for (final var bone : bones) {
-                ids[i++] = bone.entityId();
-                bone.show(packetConsumer);
-            }
-
-            // add passengers to base entity
-            packetConsumer.accept(new ClientboundSetPassengersPacket(new FriendlyByteBuf(null) {
-                @Override
-                public int readVarInt() {
-                    return base.getId();
-                }
-
-                @Override
-                public int[] readVarIntArray() {
-                    return ids;
-                }
-            }));
+        // Send model view
+        if (!base.isRemoved() && trackingRule.shouldView(view, player.getBukkitEntity())) {
+            //noinspection unchecked,rawtypes
+            view.show((Consumer) packetConsumer);
         }
     }
 }

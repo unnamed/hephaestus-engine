@@ -38,7 +38,6 @@ public interface BoneView extends BaseBoneView {
      * Returns this bone view's entity id.
      *
      * @return The entity id
-     * @since 1.0.0
      */
     @ApiStatus.Experimental
     int entityId();
