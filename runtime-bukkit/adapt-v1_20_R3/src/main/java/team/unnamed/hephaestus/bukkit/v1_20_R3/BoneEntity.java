@@ -39,11 +39,13 @@ import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.bukkit.BoneView;
+import team.unnamed.hephaestus.modifier.BoneModifier;
 import team.unnamed.hephaestus.util.Quaternion;
 
 import java.util.List;
@@ -52,6 +54,8 @@ import java.util.function.Consumer;
 class BoneEntity extends Display.ItemDisplay implements BoneView {
     protected final ModelViewImpl view;
     protected final Bone bone;
+
+    private BoneModifier modifier = null;
     public boolean dirtyColor;
 
     private final float modelScale;
@@ -135,7 +139,23 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
     }
 
     @Override
-    public void update(final @NotNull Vector3Float position, final @NotNull Quaternion rotation, final @NotNull Vector3Float scale) {
+    public @Nullable BoneModifier modifier() {
+        return modifier;
+    }
+
+    @Override
+    public void modifier(final @Nullable BoneModifier modifier) {
+        this.modifier = modifier;
+    }
+
+    @Override
+    public void update(@NotNull Vector3Float position, @NotNull Quaternion rotation, @NotNull Vector3Float scale) {
+        if (modifier != null) {
+            position = modifier.modifyPosition(position);
+            rotation = modifier.modifyRotation(rotation);
+            scale = modifier.modifyScale(scale);
+        }
+
         if (position.equals(lastPosition) && rotation.equals(lastRotation) && scale.equals(lastScale)) {
             // Don't update if everything is the same (avoids marking the data as dirty)
             // todo: we can separate this!

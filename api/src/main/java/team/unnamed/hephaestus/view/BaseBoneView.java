@@ -24,8 +24,10 @@
 package team.unnamed.hephaestus.view;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.modifier.BoneModifier;
 import team.unnamed.hephaestus.util.Quaternion;
 
 /**
@@ -55,6 +57,19 @@ public interface BaseBoneView {
      * @return The viewed bone
      */
     Bone bone();
+
+    @Nullable BoneModifier modifier();
+
+    void modifier(final @Nullable BoneModifier modifier);
+
+    default void modifying(final @NotNull BoneModifier modifier) {
+        final var previous = modifier();
+        if (previous == null) {
+            modifier(modifier);
+        } else {
+            modifier(previous.andThen(modifier));
+        }
+    }
 
     /**
      * Colorizes this bone view using the specified

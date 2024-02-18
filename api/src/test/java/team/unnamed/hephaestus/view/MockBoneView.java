@@ -25,8 +25,10 @@ package team.unnamed.hephaestus.view;
 
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.modifier.BoneModifier;
 import team.unnamed.hephaestus.util.Quaternion;
 
 import java.awt.*;
@@ -47,6 +49,15 @@ public class MockBoneView implements BaseBoneView {
     @Override
     public Bone bone() {
         return bone;
+    }
+
+    @Override
+    public @Nullable BoneModifier modifier() {
+        return null;
+    }
+
+    @Override
+    public void modifier(@NotNull BoneModifier modifier) {
     }
 
     @Override

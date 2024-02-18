@@ -32,8 +32,10 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.item.metadata.LeatherArmorMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.modifier.BoneModifier;
 import team.unnamed.hephaestus.util.Quaternion;
 
 public class BoneEntity extends GenericBoneEntity {
@@ -47,6 +49,7 @@ public class BoneEntity extends GenericBoneEntity {
 
     protected final ModelEntity view;
     protected final Bone bone;
+    private BoneModifier modifier;
     protected final float modelScale;
 
     public BoneEntity(
@@ -91,7 +94,13 @@ public class BoneEntity extends GenericBoneEntity {
     }
 
     @Override
-    public void update(final @NotNull Vector3Float position, final @NotNull Quaternion rotation, final @NotNull Vector3Float scale) {
+    public void update(@NotNull Vector3Float position, @NotNull Quaternion rotation, @NotNull Vector3Float scale) {
+        if (modifier != null) {
+            position = modifier.modifyPosition(position);
+            rotation = modifier.modifyRotation(rotation);
+            scale = modifier.modifyScale(scale);
+        }
+
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
         meta.setNotifyAboutChanges(false);
         meta.setTransformationInterpolationStartDelta(0);
@@ -118,6 +127,16 @@ public class BoneEntity extends GenericBoneEntity {
     @Override
     public Bone bone() {
         return bone;
+    }
+
+    @Override
+    public @Nullable BoneModifier modifier() {
+        return modifier;
+    }
+
+    @Override
+    public void modifier(final @Nullable BoneModifier modifier) {
+        this.modifier = modifier;
     }
 
     /**
