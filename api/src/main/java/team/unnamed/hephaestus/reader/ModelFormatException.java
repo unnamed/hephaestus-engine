@@ -34,7 +34,6 @@ package team.unnamed.hephaestus.reader;
  * @since 1.0.0
  */
 public final class ModelFormatException extends RuntimeException {
-
     public ModelFormatException(String message) {
         super(message);
     }
@@ -47,12 +46,10 @@ public final class ModelFormatException extends RuntimeException {
         super(cause);
     }
 
-    public ModelFormatException(String message, Throwable cause, boolean enableSuppression,
-                                boolean writableStackTrace) {
+    public ModelFormatException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
     public ModelFormatException() {
     }
-
 }
