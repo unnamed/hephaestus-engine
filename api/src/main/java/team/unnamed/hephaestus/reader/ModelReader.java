@@ -52,10 +52,10 @@ public interface ModelReader {
      * @param input The byte input stream used to read
      *              and parse the {@link Model} instance
      * @return The parsed model
-     * @throws IOException If parsing fails
+     * @throws ModelFormatException If parsing fails
      * @since 1.0.0
      */
-    @NotNull Model read(final @NotNull InputStream input) throws IOException;
+    @NotNull Model read(final @NotNull InputStream input);
 
     /**
      * Reads a model from the given {@code readable}
@@ -63,26 +63,30 @@ public interface ModelReader {
      *
      * @param readable The readable object
      * @return The read model
-     * @throws IOException If read or parsing fails
+     * @throws ModelFormatException If parsing fails
      * @since 1.0.0
      */
-    default Model read(Readable readable) throws IOException {
-        try (InputStream input = readable.open()) {
+    default @NotNull Model read(final @NotNull Readable readable) {
+        try (final var input = readable.open()) {
             return read(input);
+        } catch (final IOException e) {
+            throw new UncheckedIOException("Failed to read model from readable: " + readable, e);
         }
     }
 
     /**
-     * Reads a model from a {@link File}
+     * Reads a model from a {@link File}.
      *
      * @param file The file containing the model data
      * @return The parsed model
-     * @throws IOException If parsing fails
+     * @throws ModelFormatException If parsing fails
      * @since 1.0.0
      */
-    default Model read(File file) throws IOException {
-        try (InputStream input = new FileInputStream(file)) {
+    default @NotNull Model read(final @NotNull File file) {
+        try (final var input = new FileInputStream(file)) {
             return read(input);
+        } catch (final IOException e) {
+            throw new UncheckedIOException("Failed to read model from file: " + file, e);
         }
     }
 
