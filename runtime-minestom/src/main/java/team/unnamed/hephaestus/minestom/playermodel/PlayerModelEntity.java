@@ -45,7 +45,7 @@ public class PlayerModelEntity extends ModelEntity {
     }
 
     @Override
-    public PlayerModel model() {
+    public @NotNull PlayerModel model() {
         return (PlayerModel) super.model();
     }
 

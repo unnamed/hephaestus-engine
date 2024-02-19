@@ -52,7 +52,7 @@ public class MockModelView implements AbstractModelView<Object> {
     }
 
     @Override
-    public Model model() {
+    public @NotNull Model model() {
         return model;
     }
 

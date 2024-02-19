@@ -125,7 +125,7 @@ public class ModelEntity extends EntityCreature implements AbstractModelView<Pla
     }
 
     @Override
-    public Model model() {
+    public @NotNull Model model() {
         return model;
     }
 

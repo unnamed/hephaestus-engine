@@ -45,10 +45,12 @@ import java.util.Objects;
  */
 public interface AbstractModelView<TViewer> {
     /**
-     * Returns the model being viewed
-     * from this view instance
+     * Returns the model linked to this view.
+     *
+     * @return The model
+     * @since 1.0.0
      */
-    Model model();
+    @NotNull Model model();
 
     Collection<TViewer> viewers();
 
