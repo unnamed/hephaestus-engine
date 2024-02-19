@@ -41,6 +41,7 @@ import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -65,9 +66,38 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
             return false;
         }
 
-        trackedViews.remove(base.getUniqueId());
+        final var baseHandle = ((CraftEntity) base).getHandle();
+        final var world = ((CraftWorld) base.getWorld()).getHandle();
+        final var chunkMap = world.getChunkSource().chunkMap;
 
-        // todo: restore base entity's entity tracker
+        var tracker = chunkMap.entityMap.get(base.getEntityId());
+
+        // Remove the view from all players
+        final var previouslySeenBy = new HashSet<>(tracker.seenBy);
+        for (final var seenBy : previouslySeenBy) {
+            tracker.removePlayer(seenBy.getPlayer());
+        }
+
+        // If we replaced the tracker, restore it
+        if (tracker instanceof ModelTrackedEntity replacementTracker) {
+            final var old = replacementTracker.replaced();
+            chunkMap.entityMap.put(base.getEntityId(), old);
+            baseHandle.tracker = old;
+            tracker = old;
+        }
+
+        // If we replaced the server entity, restore it
+        final var serverEntity = tracker.serverEntity;
+        if (serverEntity instanceof ModelServerEntity modelServerEntity) {
+            SERVER_ENTITY_FIELD.set(tracker, modelServerEntity.replaced());
+        }
+
+        // Show the view to all players
+        for (final var seenBy : previouslySeenBy) {
+            tracker.updatePlayer(seenBy.getPlayer());
+        }
+
+        trackedViews.remove(base.getUniqueId());
         return true;
     }
 
@@ -95,15 +125,26 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
 
         final var chunkMap = world.getChunkSource().chunkMap;
         final ChunkMap.TrackedEntity entityTracker;
+        final ServerEntity replacedServerEntity;
 
         // Override base entity's entity tracker that will show our view
         // todo: note that, if a plugin (like Citizens) replaces the entity tracker, this will break
         final Consumer<Packet<?>> broadcastChangesFunction;
 
         if (base instanceof Player) {
+            final var replaced = chunkMap.entityMap.get(base.getEntityId());
+
+            if (replaced == null) {
+                throw new IllegalStateException("The entity tracker for the player is null, this should not happen.");
+            }
+
+            // Take replaced server entity from the old tracker
+            replacedServerEntity = SERVER_ENTITY_FIELD.get(replaced);
+
             // For players, we have to completely replace the entity tracker,
             // since it checks for "self-packet-sending", avoiding it
             entityTracker = new ModelTrackedEntity(
+                    replaced,
                     chunkMap,
                     view,
                     trackingRule,
@@ -119,11 +160,15 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
                 entityTracker.broadcast(packet);
             };
         } else {
+            // This won't replace the entire entity tracker, but we replace the
+            // ServerEntity anyway so keep that
             entityTracker = chunkMap.entityMap.get(base.getEntityId());
+            replacedServerEntity = SERVER_ENTITY_FIELD.get(entityTracker);
             broadcastChangesFunction = entityTracker::broadcast;
         }
 
         SERVER_ENTITY_FIELD.set(entityTracker, new ModelServerEntity(
+                replacedServerEntity,
                 world,
                 baseHandle,
                 view,

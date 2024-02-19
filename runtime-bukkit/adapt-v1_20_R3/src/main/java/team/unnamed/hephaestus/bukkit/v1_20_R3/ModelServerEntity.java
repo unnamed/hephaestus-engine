@@ -31,6 +31,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -39,12 +40,16 @@ import java.util.function.Consumer;
 
 @ParametersAreNonnullByDefault
 final class ModelServerEntity extends ServerEntity {
+    // Keep the old (replaced) ServerEntity to be able to restore it later.
+    private final ServerEntity replaced;
+
     private final ModelViewImpl view;
     private final Entity base;
     private final Consumer<Packet<?>> broadcastChanges;
     private final ModelViewTrackingRule<Player> trackingRule;
 
     public ModelServerEntity(
+            final @NotNull ServerEntity replaced,
             ServerLevel level,
             Entity base,
             ModelViewImpl view,
@@ -54,10 +59,15 @@ final class ModelServerEntity extends ServerEntity {
             Set<ServerPlayerConnection> trackedPlayers
     ) {
         super(level, base, base.getType().updateInterval(), base.getType().trackDeltas(), broadcast, trackedPlayers);
+        this.replaced = replaced;
         this.view = view;
         this.base = base;
         this.broadcastChanges = broadcastChanges;
         this.trackingRule = trackingRule;
+    }
+
+    public @NotNull ServerEntity replaced() {
+        return replaced;
     }
 
     @Override

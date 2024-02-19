@@ -24,6 +24,7 @@
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import net.minecraft.server.level.ChunkMap;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.entity.Player;
@@ -31,16 +32,33 @@ import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
 
 final class ModelTrackedEntity extends ChunkMap.TrackedEntity {
+    // Keep the old TrackedEntity to be able to restore it later
+    private final ChunkMap.TrackedEntity replaced;
+
     private final ModelViewImpl view;
     private final Entity base;
     private final ModelViewTrackingRule<Player> trackingRule;
     private boolean seenBySelf = false;
 
-    public ModelTrackedEntity(final @NotNull ChunkMap chunkMap, final @NotNull ModelViewImpl view, final @NotNull ModelViewTrackingRule<Player> trackingRule, final @NotNull Entity base, final int trackingRange, final int updateInterval, final boolean trackDelta) {
+    public ModelTrackedEntity(
+            final @NotNull ChunkMap.TrackedEntity replaced,
+            final @NotNull ChunkMap chunkMap,
+            final @NotNull ModelViewImpl view,
+            final @NotNull ModelViewTrackingRule<Player> trackingRule,
+            final @NotNull Entity base,
+            final int trackingRange,
+            final int updateInterval,
+            final boolean trackDelta
+    ) {
         chunkMap.super(base, trackingRange, updateInterval, trackDelta);
+        this.replaced = replaced;
         this.view = view;
         this.trackingRule = trackingRule;
         this.base = base;
+    }
+
+    public @NotNull ChunkMap.TrackedEntity replaced() {
+        return replaced;
     }
 
     @Override
