@@ -95,16 +95,19 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
     }
 
     protected void show(Consumer<? super Packet<? extends PacketListener>> packetConsumer) {
-        packetConsumer.accept(new ClientboundAddEntityPacket(getId(), getUUID(),
-                position().x,
-                position().y,
-                position().z,
-                getXRot(),
-                getYRot(),
-                getType(),
-                0,
-                getDeltaMovement(),
-                getYHeadRot()
+        final var viewLocation = view.location();
+        packetConsumer.accept(new ClientboundAddEntityPacket(
+                entityId(),
+                getUUID(),
+                viewLocation.x(), // Location is the same as view
+                viewLocation.y(), // Location is the same as view
+                viewLocation.z(), // Location is the same as view
+                0, // pitch: We use display rotation instead of entity rotation
+                0, // yaw: We use display rotation instead of entity rotation
+                EntityType.ITEM_DISPLAY, // item display
+                0, // entity data: unused
+                Vec3.ZERO, // velocity: unused
+                0 // head yaw: We don't use this
         ));
         ClientboundSetEntityDataPacket t = new ClientboundSetEntityDataPacket(super.getId(), initialData);
         packetConsumer.accept(t);
@@ -189,7 +192,7 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
     }
 
     @Override
-    public void colorize(Color color) {
+    public void colorize(final @NotNull Color color) {
         // todo: we could avoid bukkit<->nms item conversions
         var nmsItem = getItemStack();
 
@@ -205,23 +208,5 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
 
             setItemStack(nmsItem);
         }
-    }
-
-    @Override
-    public @NotNull Vec3 position() {
-        // Bones are located at the same location as the model,
-        // They are moved via display entities properties
-        final var location = view.location();
-        return new Vec3(location.x(), location.y(), location.z());
-    }
-
-    @Override
-    public float getYRot() {
-        return 0;
-    }
-
-    @Override
-    public float getXRot() {
-        return 0;
     }
 }
