@@ -24,6 +24,7 @@
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.mojang.math.Transformation;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -32,12 +33,11 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
@@ -52,6 +52,11 @@ import java.util.List;
 import java.util.function.Consumer;
 
 class BoneEntity extends Display.ItemDisplay implements BoneView {
+    // Bone item NBT: { CustomModelData: int, display: { color: 0xrrggbb } }
+    private static final String DISPLAY_TAG = "display";
+    private static final String CUSTOM_MODEL_DATA_TAG = "CustomModelData";
+    private static final String COLOR_TAG = "color";
+
     protected final ModelViewImpl view;
     protected final Bone bone;
 
@@ -81,16 +86,15 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
 
         update(initialPosition, initialRotation, Vector3Float.ONE);
 
-        var item = new ItemStack(Material.LEATHER_HORSE_ARMOR);
-        var meta = (LeatherArmorMeta) item.getItemMeta();
+        final var itemStack = new ItemStack(CraftMagicNumbers.getItem(Material.LEATHER_HORSE_ARMOR), 1);
+        final var tag = new CompoundTag();
+        final var display = new CompoundTag();
+        display.putInt(COLOR_TAG, Color.WHITE.asRGB());
+        tag.put(DISPLAY_TAG, display);
+        tag.putInt(CUSTOM_MODEL_DATA_TAG, bone.customModelData());
+        itemStack.setTag(tag);
+        setItemStack(itemStack);
 
-        meta.setColor(Color.WHITE);
-        meta.setCustomModelData(bone.customModelData());
-        item.setItemMeta(meta);
-
-        var nmsItem = CraftItemStack.asNMSCopy(item);
-
-        setItemStack(nmsItem);
         initialData = super.getEntityData().packDirty();
     }
 
@@ -109,8 +113,7 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
                 Vec3.ZERO, // velocity: unused
                 0 // head yaw: We don't use this
         ));
-        ClientboundSetEntityDataPacket t = new ClientboundSetEntityDataPacket(super.getId(), initialData);
-        packetConsumer.accept(t);
+        packetConsumer.accept(new ClientboundSetEntityDataPacket(entityId(), initialData));
     }
 
     /**
@@ -193,20 +196,12 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
 
     @Override
     public void colorize(final @NotNull Color color) {
-        // todo: we could avoid bukkit<->nms item conversions
-        var nmsItem = getItemStack();
-
-        var item = CraftItemStack.asBukkitCopy(nmsItem);
-        var meta = (LeatherArmorMeta) item.getItemMeta();
-
-        Color previous = meta.getColor();
-        if (!color.equals(previous)) {
-            meta.setColor(color);
-            item.setItemMeta(meta);
-
-            nmsItem = CraftItemStack.asNMSCopy(item);
-
-            setItemStack(nmsItem);
+        final var item = getItemStack();
+        final var display = item.getOrCreateTag().getCompound(DISPLAY_TAG);
+        final var newColor = color.asRGB();
+        if (!display.contains(COLOR_TAG) || newColor != display.getInt(COLOR_TAG)) {
+            display.putInt(COLOR_TAG, newColor);
+            setItemStack(item); // Makes the entity data dirty so it's sent later
         }
     }
 }
