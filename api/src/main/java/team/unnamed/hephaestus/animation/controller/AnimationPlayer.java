@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.util.Quaternion;
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.mocha.MochaEngine;
 
 import java.util.Collection;
@@ -139,17 +139,17 @@ public interface AnimationPlayer {
      * @return The script engine
      * @since 1.0.0
      */
-    @NotNull MochaEngine<BaseModelView<?>> scriptEngine();
+    @NotNull MochaEngine<AbstractModelView<?>> scriptEngine();
 
     /**
      * Creates a new {@link AnimationPlayer} for the given
-     * {@link BaseModelView model view}.
+     * {@link AbstractModelView model view}.
      *
      * @param view the model view to use
      * @return The created animation controller
      * @since 1.0.0
      */
-    static @NotNull AnimationPlayer create(final @NotNull BaseModelView<?> view) {
+    static @NotNull AnimationPlayer create(final @NotNull AbstractModelView<?> view) {
         return new AnimationPlayerImpl(view);
     }
 }

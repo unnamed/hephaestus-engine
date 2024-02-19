@@ -24,7 +24,7 @@
 package team.unnamed.hephaestus.minestom;
 
 import net.minestom.server.entity.Player;
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
 
@@ -36,7 +36,7 @@ final class MinestomModelViewTracker implements ModelViewTracker<Player> {
     }
 
     @Override
-    public boolean startTracking(BaseModelView<Player> view, ModelViewTrackingRule<Player> trackingRule) {
+    public boolean startTracking(AbstractModelView<Player> view, ModelViewTrackingRule<Player> trackingRule) {
         ModelEntity entity = ensureModelEntity(view);
         entity.updateViewableRule(player -> trackingRule.shouldView(view, player));
 
@@ -50,7 +50,7 @@ final class MinestomModelViewTracker implements ModelViewTracker<Player> {
     }
 
     @Override
-    public boolean stopTracking(BaseModelView<Player> view) {
+    public boolean stopTracking(AbstractModelView<Player> view) {
         ModelEntity entity = ensureModelEntity(view);
         boolean autoViewable = entity.isAutoViewable();
         if (autoViewable) {
@@ -61,7 +61,7 @@ final class MinestomModelViewTracker implements ModelViewTracker<Player> {
         }
     }
 
-    private static ModelEntity ensureModelEntity(BaseModelView<Player> view) {
+    private static ModelEntity ensureModelEntity(AbstractModelView<Player> view) {
         if (view instanceof ModelEntity entity) {
             return entity;
         } else {

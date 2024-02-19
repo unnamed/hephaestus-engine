@@ -23,7 +23,7 @@
  */
 package team.unnamed.hephaestus.view.track;
 
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 
 /**
  * Functional interface that determines whether a viewer candidate
@@ -43,7 +43,7 @@ public interface ModelViewTrackingRule<TViewer> {
      * @param candidate The viewer candidate
      * @return True if the candidate should be added as viewer
      */
-    boolean shouldView(BaseModelView<TViewer> view, TViewer candidate);
+    boolean shouldView(AbstractModelView<TViewer> view, TViewer candidate);
 
     /**
      * A tracking rule that lets <strong>all</strong> the players

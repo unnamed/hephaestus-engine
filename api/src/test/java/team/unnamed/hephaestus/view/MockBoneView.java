@@ -33,10 +33,10 @@ import team.unnamed.hephaestus.util.Quaternion;
 
 import java.awt.*;
 
-public class MockBoneView implements BaseBoneView {
+public class MockBoneView implements AbstractBoneView {
 
     private final Bone bone;
-    private int color = BaseBoneView.DEFAULT_COLOR;
+    private int color = AbstractBoneView.DEFAULT_COLOR;
     private Vector3Float position;
     private Vector3Float rotation;
     private Component customName;

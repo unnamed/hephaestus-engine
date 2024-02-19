@@ -29,7 +29,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Instance;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.ModelEngine;
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
 public class MinestomModelEngine implements ModelEngine<Player, MinestomLocation>  {
@@ -55,7 +55,7 @@ public class MinestomModelEngine implements ModelEngine<Player, MinestomLocation
     }
 
     @Override
-    public BaseModelView<Player> createView(Model model, MinestomLocation location) {
+    public AbstractModelView<Player> createView(Model model, MinestomLocation location) {
         return createView(model, location.instance(), location.position());
     }
 

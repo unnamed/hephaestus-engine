@@ -27,9 +27,9 @@ import net.minestom.server.color.Color;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.hephaestus.view.BaseBoneView;
+import team.unnamed.hephaestus.view.AbstractBoneView;
 
-public abstract class GenericBoneEntity extends Entity implements BaseBoneView {
+public abstract class GenericBoneEntity extends Entity implements AbstractBoneView {
 
     public GenericBoneEntity(@NotNull EntityType entityType) {
         super(entityType);

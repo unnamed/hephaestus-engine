@@ -43,8 +43,7 @@ import java.util.Objects;
  *
  * @since 1.0.0
  */
-public interface BaseModelView<TViewer> {
-
+public interface AbstractModelView<TViewer> {
     /**
      * Returns the model being viewed
      * from this view instance
@@ -76,7 +75,7 @@ public interface BaseModelView<TViewer> {
      * @param b The blue component [0-255]
      */
     default void colorize(int r, int g, int b) {
-        for (BaseBoneView bone : bones()) {
+        for (AbstractBoneView bone : bones()) {
             bone.colorize(r, g, b);
         }
     }
@@ -88,19 +87,19 @@ public interface BaseModelView<TViewer> {
      * @param rgb The encoded color
      */
     default void colorize(int rgb) {
-        for (BaseBoneView bone : bones()) {
+        for (AbstractBoneView bone : bones()) {
             bone.colorize(rgb);
         }
     }
 
     /**
      * Colorizes this view using the default,
-     * initial color {@link BaseBoneView#DEFAULT_COLOR}
+     * initial color {@link AbstractBoneView#DEFAULT_COLOR}
      *
-     * @see BaseModelView#colorize(int)
+     * @see AbstractModelView#colorize(int)
      */
     default void colorizeDefault() {
-        colorize(BaseBoneView.DEFAULT_COLOR);
+        colorize(AbstractBoneView.DEFAULT_COLOR);
     }
 
     /**
@@ -110,7 +109,7 @@ public interface BaseModelView<TViewer> {
      * @return The model view bone views
      * @since 1.0.0
      */
-    Collection<? extends BaseBoneView> bones();
+    Collection<? extends AbstractBoneView> bones();
 
     /**
      * Gets the bone with the specified name
@@ -118,7 +117,7 @@ public interface BaseModelView<TViewer> {
      * @param name The bone name
      * @return The bone view, null if absent
      */
-    @Nullable BaseBoneView bone(String name);
+    @Nullable AbstractBoneView bone(String name);
 
     /**
      * Returns the animation controller linked to
@@ -162,5 +161,4 @@ public interface BaseModelView<TViewer> {
     default void tickAnimations() {
         animationController().tick();
     }
-
 }

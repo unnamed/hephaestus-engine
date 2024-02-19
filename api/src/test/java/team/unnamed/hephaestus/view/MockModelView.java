@@ -34,17 +34,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class MockModelView implements BaseModelView<Object> {
+public class MockModelView implements AbstractModelView<Object> {
 
     private final Model model;
     private final AnimationPlayer animationPlayer;
-    private final Map<String, BaseBoneView> bones;
+    private final Map<String, AbstractBoneView> bones;
     private final Set<Object> viewers = new HashSet<>();
 
     public MockModelView(
             Model model,
             AnimationPlayer animationPlayer,
-            Map<String, BaseBoneView> bones
+            Map<String, AbstractBoneView> bones
     ) {
         this.model = model;
         this.animationPlayer = animationPlayer;
@@ -76,12 +76,12 @@ public class MockModelView implements BaseModelView<Object> {
     }
 
     @Override
-    public Collection<? extends BaseBoneView> bones() {
+    public Collection<? extends AbstractBoneView> bones() {
         return bones.values();
     }
 
     @Override
-    public @Nullable BaseBoneView bone(String name) {
+    public @Nullable AbstractBoneView bone(String name) {
         return bones.get(name);
     }
 

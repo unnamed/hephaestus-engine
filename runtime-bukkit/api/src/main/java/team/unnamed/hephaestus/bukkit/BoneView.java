@@ -25,7 +25,7 @@ package team.unnamed.hephaestus.bukkit;
 
 import org.bukkit.Color;
 import org.jetbrains.annotations.ApiStatus;
-import team.unnamed.hephaestus.view.BaseBoneView;
+import team.unnamed.hephaestus.view.AbstractBoneView;
 
 /**
  * Represents a model bone view for Bukkit-based servers,
@@ -33,7 +33,7 @@ import team.unnamed.hephaestus.view.BaseBoneView;
  *
  * @since 1.0.0
  */
-public interface BoneView extends BaseBoneView {
+public interface BoneView extends AbstractBoneView {
     /**
      * Returns this bone view's entity id.
      *

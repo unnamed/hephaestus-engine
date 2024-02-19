@@ -23,7 +23,7 @@
  */
 package team.unnamed.hephaestus;
 
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 
 /**
@@ -56,7 +56,7 @@ public interface ModelEngine<TViewer, TLocation> {
      * @param location The view location
      * @return The created model view
      */
-    BaseModelView<TViewer> createView(Model model, TLocation location);
+    AbstractModelView<TViewer> createView(Model model, TLocation location);
 
     /**
      * Creates a new view for the given {@code model} at the
@@ -72,8 +72,8 @@ public interface ModelEngine<TViewer, TLocation> {
      * @param location The view location
      * @return The created model view (tracked)
      */
-    default BaseModelView<TViewer> createViewAndTrack(Model model, TLocation location) {
-        BaseModelView<TViewer> view = createView(model, location);
+    default AbstractModelView<TViewer> createViewAndTrack(Model model, TLocation location) {
+        AbstractModelView<TViewer> view = createView(model, location);
         tracker().startGlobalTracking(view);
         return view;
     }

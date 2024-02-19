@@ -46,8 +46,7 @@ import team.unnamed.hephaestus.util.Quaternion;
  *
  * @since 1.0.0
  */
-public interface BaseBoneView {
-
+public interface AbstractBoneView {
     int DEFAULT_COLOR = 0xFFFFFF;
 
     /**
@@ -92,9 +91,9 @@ public interface BaseBoneView {
 
     /**
      * Colorizes this view using the default,
-     * initial color {@link BaseBoneView#DEFAULT_COLOR}
+     * initial color {@link AbstractBoneView#DEFAULT_COLOR}
      *
-     * @see BaseModelView#colorize(int)
+     * @see AbstractModelView#colorize(int)
      */
     default void colorizeDefault() {
         colorize(DEFAULT_COLOR);

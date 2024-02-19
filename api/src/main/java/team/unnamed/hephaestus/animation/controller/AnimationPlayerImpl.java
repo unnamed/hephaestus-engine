@@ -34,8 +34,8 @@ import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimeline;
 import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimelinePlayhead;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.util.Vectors;
-import team.unnamed.hephaestus.view.BaseBoneView;
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractBoneView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.mocha.MochaEngine;
 
 import java.util.Collection;
@@ -49,12 +49,12 @@ import static java.util.Objects.requireNonNull;
 
 class AnimationPlayerImpl implements AnimationPlayer {
     private final PriorityLinkedList<AnimationQueue> animations = new PriorityLinkedList<>();
-    private final BaseModelView<?> view;
-    private final MochaEngine<BaseModelView<?>> scriptEngine;
+    private final AbstractModelView<?> view;
+    private final MochaEngine<AbstractModelView<?>> scriptEngine;
 
     private final Map<String, BoneFrame> lastFrames = new HashMap<>();
 
-    AnimationPlayerImpl(final @NotNull BaseModelView<?> view) {
+    AnimationPlayerImpl(final @NotNull AbstractModelView<?> view) {
         this.view = requireNonNull(view, "view");
         this.scriptEngine = MochaEngine.createStandard(view);
     }
@@ -151,7 +151,7 @@ class AnimationPlayerImpl implements AnimationPlayer {
                 parentRotation.toEulerDegrees().multiply(-1, 1, 1)
         ).add(parentPosition);
 
-        BaseBoneView boneView = view.bone(bone.name());
+        AbstractBoneView boneView = view.bone(bone.name());
         if (boneView != null) {
             boneView.update(globalPosition, globalRotation, globalScale);
         }
@@ -167,7 +167,7 @@ class AnimationPlayerImpl implements AnimationPlayer {
     }
 
     @Override
-    public @NotNull MochaEngine<BaseModelView<?>> scriptEngine() {
+    public @NotNull MochaEngine<AbstractModelView<?>> scriptEngine() {
         return scriptEngine;
     }
 

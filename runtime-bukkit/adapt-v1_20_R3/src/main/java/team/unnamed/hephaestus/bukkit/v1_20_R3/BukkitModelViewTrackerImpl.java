@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.bukkit.track.BukkitModelViewTracker;
 import team.unnamed.hephaestus.bukkit.ModelView;
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
 
 import java.util.HashMap;
@@ -56,7 +56,7 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
     }
 
     @Override
-    public boolean stopTracking(final @NotNull BaseModelView<Player> abstractView) {
+    public boolean stopTracking(final @NotNull AbstractModelView<Player> abstractView) {
         final var view = ensureThisModuleModelView(abstractView);
         final var base = view.base();
 
@@ -77,7 +77,7 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
     }
 
     @Override
-    public boolean startGlobalTracking(final @NotNull BaseModelView<Player> abstractView) {
+    public boolean startGlobalTracking(final @NotNull AbstractModelView<Player> abstractView) {
         final var view = ensureThisModuleModelView(abstractView);
         return startGlobalTrackingOn(view, createSyntheticBaseEntityWhenNoProvided(view));
     }
@@ -88,7 +88,7 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
     }
 
     @Override
-    public boolean startTrackingOn(final @NotNull BaseModelView<Player> abstractView, final @NotNull Entity base, final @NotNull ModelViewTrackingRule<Player> trackingRule) {
+    public boolean startTrackingOn(final @NotNull AbstractModelView<Player> abstractView, final @NotNull Entity base, final @NotNull ModelViewTrackingRule<Player> trackingRule) {
         final var view = ensureThisModuleModelView(abstractView);
         final var baseHandle = ((CraftEntity) base).getHandle();
         final var world = ((CraftWorld) base.getWorld()).getHandle();
@@ -146,7 +146,7 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
     }
 
     @Override
-    public boolean startTracking(final @NotNull BaseModelView<Player> abstractView, final @NotNull ModelViewTrackingRule<Player> trackingRule) {
+    public boolean startTracking(final @NotNull AbstractModelView<Player> abstractView, final @NotNull ModelViewTrackingRule<Player> trackingRule) {
         final var view = ensureThisModuleModelView(abstractView);
         return startTrackingOn(view, createSyntheticBaseEntityWhenNoProvided(view), trackingRule);
     }
@@ -166,7 +166,7 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
         return entity;
     }
 
-    private @NotNull ModelViewImpl ensureThisModuleModelView(final BaseModelView<Player> view) {
+    private @NotNull ModelViewImpl ensureThisModuleModelView(final AbstractModelView<Player> view) {
         if (view instanceof ModelViewImpl impl) {
             return impl;
         } else if (view == null) {

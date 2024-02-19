@@ -23,7 +23,7 @@
  */
 package team.unnamed.hephaestus.view.track;
 
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 
 /**
  * Responsible for tracking model views, this means to check players
@@ -52,7 +52,7 @@ public interface ModelViewTracker<TViewer> {
      * @return True if the view is now being tracked, false if
      * it was already being tracked
      */
-    boolean startTracking(BaseModelView<TViewer> view, ModelViewTrackingRule<TViewer> trackingRule);
+    boolean startTracking(AbstractModelView<TViewer> view, ModelViewTrackingRule<TViewer> trackingRule);
 
     /**
      * Starts tracking the given {@code view}, this means to
@@ -67,7 +67,7 @@ public interface ModelViewTracker<TViewer> {
      * @return True if the view is now being tracked, false if
      * it was already being tracked
      */
-    default boolean startGlobalTracking(BaseModelView<TViewer> view) {
+    default boolean startGlobalTracking(AbstractModelView<TViewer> view) {
         return startTracking(view, ModelViewTrackingRule.all());
     }
 
@@ -79,6 +79,6 @@ public interface ModelViewTracker<TViewer> {
      * @param view The view to stop tracking
      * @return True if success, false if view is not being tracked
      */
-    boolean stopTracking(BaseModelView<TViewer> view);
+    boolean stopTracking(AbstractModelView<TViewer> view);
 
 }

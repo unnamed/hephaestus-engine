@@ -37,7 +37,7 @@ import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.util.Quaternion;
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
 
 import java.util.Collection;
@@ -46,7 +46,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
-public class ModelEntity extends EntityCreature implements BaseModelView<Player> {
+public class ModelEntity extends EntityCreature implements AbstractModelView<Player> {
 
     protected final Model model;
     protected final float scale;

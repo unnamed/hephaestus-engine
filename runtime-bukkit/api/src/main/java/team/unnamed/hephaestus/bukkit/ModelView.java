@@ -29,13 +29,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.hephaestus.view.BaseBoneView;
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 
 import java.util.Collection;
 import java.util.UUID;
 
-public interface ModelView extends BaseModelView<Player> {
+public interface ModelView extends AbstractModelView<Player> {
     /**
      * Sets the base entity id.
      *

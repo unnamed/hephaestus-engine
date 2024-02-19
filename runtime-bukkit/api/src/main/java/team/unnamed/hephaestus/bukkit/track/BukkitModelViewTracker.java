@@ -28,7 +28,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.bukkit.ModelView;
-import team.unnamed.hephaestus.view.BaseModelView;
+import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.hephaestus.view.track.ModelViewTracker;
 import team.unnamed.hephaestus.view.track.ModelViewTrackingRule;
 
@@ -93,7 +93,7 @@ public interface BukkitModelViewTracker extends ModelViewTracker<Player> {
      * it was already being tracked
      * @since 1.0.0
      */
-    boolean startTrackingOn(final @NotNull BaseModelView<Player> view, final @NotNull Entity base, final @NotNull ModelViewTrackingRule<Player> trackingRule);
+    boolean startTrackingOn(final @NotNull AbstractModelView<Player> view, final @NotNull Entity base, final @NotNull ModelViewTrackingRule<Player> trackingRule);
 
     /**
      * Starts tracking the given {@code view}, this means to
@@ -111,7 +111,7 @@ public interface BukkitModelViewTracker extends ModelViewTracker<Player> {
      * @since 1.0.0
      */
     @Override
-    boolean startTracking(final @NotNull BaseModelView<Player> view, final @NotNull ModelViewTrackingRule<Player> trackingRule);
+    boolean startTracking(final @NotNull AbstractModelView<Player> view, final @NotNull ModelViewTrackingRule<Player> trackingRule);
 
     /**
      * Starts tracking the given {@code view}, this means to
@@ -128,7 +128,7 @@ public interface BukkitModelViewTracker extends ModelViewTracker<Player> {
      * @since 1.0.0
      */
     @Override
-    default boolean startGlobalTracking(final @NotNull BaseModelView<Player> view) {
+    default boolean startGlobalTracking(final @NotNull AbstractModelView<Player> view) {
         return startTracking(view, ModelViewTrackingRule.all());
     }
 }
