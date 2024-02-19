@@ -26,20 +26,29 @@ package team.unnamed.hephaestus;
 import net.kyori.examination.Examinable;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
+import static java.util.Objects.requireNonNull;
+
 /**
- * Represents an in-game {@link Model} movable part.
+ * Represents a {@link Model} movable part.
+ *
+ * <p>Note that this is just a specification of how the model
+ * should be rendered, it doesn't contain any rendering logic,
+ * it's just a data structure. For rendering/view logic, check
+ * the {@link team.unnamed.hephaestus.view.AbstractBoneView} interface</p>
  *
  * @since 1.0.0
  */
-public class Bone implements Examinable {
-
+public final class Bone implements Examinable {
     private final String name;
 
     private final Vector3Float position;
@@ -53,18 +62,18 @@ public class Bone implements Examinable {
     private final boolean parentOnly;
 
     public Bone(
-            String name,
-            Vector3Float position,
-            Vector3Float rotation,
-            Map<String, Bone> children,
-            int customModelData,
-            float scale,
-            boolean parentOnly
+            final @NotNull String name,
+            final @NotNull Vector3Float position,
+            final @NotNull Vector3Float rotation,
+            final @NotNull Map<String, Bone> children,
+            final int customModelData,
+            final float scale,
+            final boolean parentOnly
     ) {
-        this.name = name;
-        this.position = position;
-        this.rotation = rotation;
-        this.children = children;
+        this.name = requireNonNull(name, "name");
+        this.position = requireNonNull(position, "position");
+        this.rotation = requireNonNull(rotation, "rotation");
+        this.children = requireNonNull(children, "children");
         this.customModelData = customModelData;
         this.scale = scale;
         this.parentOnly = parentOnly;
@@ -75,27 +84,31 @@ public class Bone implements Examinable {
      * are unique in the {@link Model} scope
      *
      * @return The bone name
+     * @since 1.0.0
      */
-    public String name() {
+    public @NotNull String name() {
         return name;
     }
 
     /**
-     * Returns the bone position relative to parent
-     * bone position, in Minecraft blocks
+     * Returns the bone position relative to its
+     * parent bone position, in Minecraft blocks
      *
      * @return The bone position
+     * @since 1.0.0
      */
-    public Vector3Float position() {
+    public @NotNull Vector3Float position() {
         return position;
     }
 
     /**
-     * Returns this bone initial rotation
+     * Returns this bone initial rotation,
+     * in euler angles (degrees).
      *
      * @return The bone initial rotation
+     * @since 1.0.0
      */
-    public Vector3Float rotation() {
+    public @NotNull Vector3Float rotation() {
         return rotation;
     }
 
@@ -112,27 +125,31 @@ public class Bone implements Examinable {
      * the resource-pack</strong>
      *
      * @return The bone custom model data
+     * @since 1.0.0
      */
     public int customModelData() {
         return customModelData;
     }
 
     /**
-     * Returns this bone child bones
+     * Returns this bone children bones.
      *
      * @return The child bones
+     * @since 1.0.0
      */
-    public Collection<Bone> children() {
+    public @NotNull Collection<Bone> children() {
         return children.values();
     }
 
     /**
      * Returns a map of this bone children
-     * bones, keys are bone names
+     * bones, keys are bone names.
      *
      * @return The child bone map
+     * @since 1.0.0
      */
-    public Map<String, Bone> childrenMap() {
+    @ApiStatus.Internal // I don't really like having 2 children methods
+    public @NotNull Map<String, Bone> childrenMap() {
         return children;
     }
 
@@ -153,7 +170,15 @@ public class Bone implements Examinable {
         return scale;
     }
 
-    public boolean isParentOnly() {
+    /**
+     * Returns whether this bone is just a parent-only
+     * bone, which means that it doesn't have any cubes,
+     * which makes it invisible.
+     *
+     * @return Whether this bone is parent-only
+     * @since 1.0.0
+     */
+    public boolean parentOnly() {
         return parentOnly;
     }
 
@@ -161,16 +186,36 @@ public class Bone implements Examinable {
     public @NotNull Stream<? extends ExaminableProperty> examinableProperties() {
         return Stream.of(
                 ExaminableProperty.of("name", name),
+                ExaminableProperty.of("position", position),
                 ExaminableProperty.of("rotation", rotation),
-                ExaminableProperty.of("bones", children),
-                ExaminableProperty.of("offset", position),
-                ExaminableProperty.of("customModelData", customModelData)
+                ExaminableProperty.of("children", children),
+                ExaminableProperty.of("customModelData", customModelData),
+                ExaminableProperty.of("scale", scale),
+                ExaminableProperty.of("parentOnly", parentOnly)
         );
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return examine(StringExaminer.simpleEscaping());
     }
 
+    @Override
+    public boolean equals(final @Nullable Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final var bone = (Bone) o;
+        return customModelData == bone.customModelData
+                && Float.compare(scale, bone.scale) == 0
+                && parentOnly == bone.parentOnly
+                && name.equals(bone.name)
+                && position.equals(bone.position)
+                && rotation.equals(bone.rotation)
+                && children.equals(bone.children);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, position, rotation, children, customModelData, scale, parentOnly);
+    }
 }

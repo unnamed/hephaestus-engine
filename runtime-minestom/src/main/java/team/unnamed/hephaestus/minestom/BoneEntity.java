@@ -71,7 +71,7 @@ public class BoneEntity extends GenericBoneEntity {
         super.setInvisible(invisible);
 
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        if (bone.isParentOnly() || invisible) {
+        if (bone.parentOnly() || invisible) {
             meta.setItemStack(ItemStack.AIR);
         } else {
             meta.setItemStack(BASE_HELMET.withMeta(itemMeta ->

@@ -116,7 +116,7 @@ public class PlayerBoneEntity extends BoneEntity {
         super.setInvisible(invisible);
 
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        if (bone.isParentOnly() || invisible) {
+        if (bone.parentOnly() || invisible) {
             meta.setItemStack(ItemStack.AIR);
         } else {
             meta.setItemStack(BASE_HEAD.withMeta(PlayerHeadMeta.class, itemMeta -> {

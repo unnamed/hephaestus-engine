@@ -70,7 +70,7 @@ public class PlayerModelEntity extends ModelEntity {
 
         bones.put(bone.name(), boneEntity);
 
-        if (bone.isParentOnly()) {
+        if (bone.parentOnly()) {
             boneEntity.setInvisible(true);
         }
 

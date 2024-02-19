@@ -103,7 +103,7 @@ public class ModelEntity extends EntityCreature implements AbstractModelView<Pla
         BoneEntity boneEntity = new BoneEntity(this, bone, position, rotation, scale);
         bones.put(bone.name(), boneEntity);
 
-        if (bone.isParentOnly()) {
+        if (bone.parentOnly()) {
             boneEntity.setInvisible(true);
         }
 
