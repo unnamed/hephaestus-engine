@@ -56,7 +56,6 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
     protected final Bone bone;
 
     private BoneModifier modifier = null;
-    public boolean dirtyColor;
 
     private final float modelScale;
     protected List<SynchedEntityData.DataValue<?>> initialData;
@@ -205,7 +204,6 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
             nmsItem = CraftItemStack.asNMSCopy(item);
 
             setItemStack(nmsItem);
-            this.dirtyColor = true;
         }
     }
 
