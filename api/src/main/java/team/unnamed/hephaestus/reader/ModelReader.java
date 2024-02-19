@@ -31,6 +31,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Responsible for reading and parsing {@link Model} from a
@@ -84,4 +87,19 @@ public interface ModelReader {
         }
     }
 
+    /**
+     * Reads a model from the given {@code path}.
+     *
+     * @param path The path to the file containing the model data
+     * @return The parsed model
+     * @throws ModelFormatException If parsing fails
+     * @since 1.0.0
+     */
+    default @NotNull Model read(final @NotNull Path path) {
+        try (final var input = Files.newInputStream(path)) {
+            return read(input);
+        } catch (final IOException e) {
+            throw new UncheckedIOException("Failed to read model from path: " + path, e);
+        }
+    }
 }
