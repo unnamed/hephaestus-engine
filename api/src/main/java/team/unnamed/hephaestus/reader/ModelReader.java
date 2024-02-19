@@ -44,7 +44,6 @@ import java.nio.file.Path;
  */
 @FunctionalInterface
 public interface ModelReader {
-
     /**
      * Reads a model from a {@link InputStream}, this
      * method <strong>should not close</strong> the
