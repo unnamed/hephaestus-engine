@@ -50,5 +50,5 @@ publishing {
 }
 
 signing {
-    // sign(publishing.publications["maven"])
+    sign(publishing.publications["maven"])
 }
