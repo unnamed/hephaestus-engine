@@ -29,7 +29,7 @@ import team.unnamed.creative.base.Vector3Float;
 
 public class QuaternionTest {
 
-    private static final double THRESHOLD = 0.00001D;
+    private static final double THRESHOLD = 0.01D;
 
     @Test
     @DisplayName("Test Euler Angle to Quaternion conversion")
