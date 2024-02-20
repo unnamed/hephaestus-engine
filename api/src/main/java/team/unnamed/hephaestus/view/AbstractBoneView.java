@@ -51,11 +51,23 @@ public interface AbstractBoneView {
 
     /**
      * Returns the bone represented by this
-     * bone view
+     * bone view.
      *
      * @return The viewed bone
+     * @since 1.0.0
      */
-    Bone bone();
+    @NotNull Bone bone();
+
+    /**
+     * Returns the name of the bone represented
+     * by this bone view.
+     *
+     * @return The name of the bone
+     * @since 1.0.0
+     */
+    default @NotNull String name() {
+        return bone().name();
+    }
 
     @Nullable BoneModifier modifier();
 

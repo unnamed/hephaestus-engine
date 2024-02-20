@@ -125,7 +125,7 @@ public class BoneEntity extends GenericBoneEntity {
     }
 
     @Override
-    public Bone bone() {
+    public @NotNull Bone bone() {
         return bone;
     }
 

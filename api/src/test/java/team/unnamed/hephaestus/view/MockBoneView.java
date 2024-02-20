@@ -47,7 +47,7 @@ public class MockBoneView implements AbstractBoneView {
     }
 
     @Override
-    public Bone bone() {
+    public @NotNull Bone bone() {
         return bone;
     }
 

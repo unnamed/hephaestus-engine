@@ -139,7 +139,7 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
     }
 
     @Override
-    public Bone bone() {
+    public @NotNull Bone bone() {
         return bone;
     }
 
