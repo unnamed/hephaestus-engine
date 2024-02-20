@@ -37,7 +37,6 @@ import team.unnamed.hephaestus.view.AbstractModelView;
  * @see ModelViewTrackingRule
  */
 public interface ModelViewTracker<TViewer> {
-
     /**
      * Starts tracking the given {@code view}, this means to
      * handle the viewers of this view, adding and removing
@@ -80,5 +79,4 @@ public interface ModelViewTracker<TViewer> {
      * @return True if success, false if view is not being tracked
      */
     boolean stopTracking(AbstractModelView<TViewer> view);
-
 }

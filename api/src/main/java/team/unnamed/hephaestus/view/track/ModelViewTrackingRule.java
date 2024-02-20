@@ -34,7 +34,6 @@ import team.unnamed.hephaestus.view.AbstractModelView;
  */
 @FunctionalInterface
 public interface ModelViewTrackingRule<TViewer> {
-
     /**
      * Function called every time a new viewer candidate is found,
      * commonly, when it enters the model's vision range
@@ -55,5 +54,4 @@ public interface ModelViewTrackingRule<TViewer> {
     static <TViewer> ModelViewTrackingRule<TViewer> all() {
         return (view, candidate) -> true;
     }
-
 }
