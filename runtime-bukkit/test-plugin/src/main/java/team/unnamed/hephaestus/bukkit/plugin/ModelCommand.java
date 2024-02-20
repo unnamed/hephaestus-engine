@@ -92,7 +92,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                             .build()
             );
         } else {
-            view.animationController().add(animation);
+            view.animationPlayer().add(animation);
         }
     }
 

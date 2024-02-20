@@ -227,7 +227,7 @@ class ModelViewImpl implements ModelView {
     }
 
     @Override
-    public AnimationPlayer animationController() {
+    public @NotNull AnimationPlayer animationPlayer() {
         return animationPlayer;
     }
 

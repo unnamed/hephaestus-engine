@@ -151,7 +151,7 @@ public class ModelEntity extends EntityCreature implements AbstractModelView<Pla
     }
 
     @Override
-    public AnimationPlayer animationController() {
+    public @NotNull AnimationPlayer animationPlayer() {
         return animationPlayer;
     }
 

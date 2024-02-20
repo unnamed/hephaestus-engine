@@ -122,12 +122,13 @@ public interface AbstractModelView<TViewer> {
     @Nullable AbstractBoneView bone(String name);
 
     /**
-     * Returns the animation controller linked to
-     * this model view
+     * Returns the animation player linked to
+     * this model view.
      *
-     * @return The animation controller
+     * @return The animation player
+     * @since 1.0.0
      */
-    AnimationPlayer animationController();
+    @NotNull AnimationPlayer animationPlayer();
 
     /**
      * Finds and plays the animation with the
@@ -141,7 +142,7 @@ public interface AbstractModelView<TViewer> {
     default void playAnimation(String name, int transitionTicks) {
         Animation animation = model().animations().get(name);
         Objects.requireNonNull(animation, "Animation " + name);
-        animationController().add(animation, transitionTicks);
+        animationPlayer().add(animation, transitionTicks);
     }
 
     /**
@@ -161,6 +162,6 @@ public interface AbstractModelView<TViewer> {
      * to the next animation frame
      */
     default void tickAnimations() {
-        animationController().tick();
+        animationPlayer().tick();
     }
 }

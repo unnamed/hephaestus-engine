@@ -86,7 +86,7 @@ public class MockModelView implements AbstractModelView<Object> {
     }
 
     @Override
-    public AnimationPlayer animationController() {
+    public @NotNull AnimationPlayer animationPlayer() {
         return animationPlayer;
     }
 
