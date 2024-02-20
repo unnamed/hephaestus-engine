@@ -45,13 +45,7 @@ public interface BoneView extends AbstractBoneView {
     void colorize(Color color);
 
     @Override
-    default void colorize(int r, int g, int b) {
-        colorize(Color.fromRGB(r, g, b));
+    default void colorize(final int red, final int green, final int blue) {
+        colorize(Color.fromRGB(red, green, blue));
     }
-
-    @Override
-    default void colorize(int rgb) {
-        colorize(Color.fromRGB(rgb));
-    }
-
 }

@@ -152,12 +152,7 @@ public class BoneEntity extends GenericBoneEntity {
     }
 
     @Override
-    public void colorize(int r, int g, int b) {
-        colorize(new Color(r, g, b));
-    }
-
-    @Override
-    public void colorize(int rgb) {
-        colorize(new Color(rgb));
+    public void colorize(final int red, int green, int blue) {
+        colorize(new Color(red, green, blue));
     }
 }

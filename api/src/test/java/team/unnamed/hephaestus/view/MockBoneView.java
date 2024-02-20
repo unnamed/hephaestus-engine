@@ -61,13 +61,8 @@ public class MockBoneView implements AbstractBoneView {
     }
 
     @Override
-    public void colorize(int r, int g, int b) {
-        this.color = new Color(r, g, b).getRGB();
-    }
-
-    @Override
-    public void colorize(int rgb) {
-        this.color = rgb;
+    public void colorize(int red, int green, int blue) {
+        this.color = new Color(red, green, blue).getRGB();
     }
 
     @Override

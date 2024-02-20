@@ -69,16 +69,17 @@ public interface AbstractModelView<TViewer> {
 
     /**
      * Colorizes this view using the specified
-     * {@code r} (red), {@code g} (green) and
-     * {@code b} (blue) color components
+     * {@code red}, {@code green} and {@code blue}
+     * color components.
      * 
-     * @param r The red component [0-255]
-     * @param g The green component [0-255]
-     * @param b The blue component [0-255]
+     * @param red The red component [0-255]
+     * @param green The green component [0-255]
+     * @param blue The blue component [0-255]
+     * @since 1.0.0
      */
-    default void colorize(int r, int g, int b) {
-        for (AbstractBoneView bone : bones()) {
-            bone.colorize(r, g, b);
+    default void colorize(final int red, final int green, final int blue) {
+        for (final var bone : bones()) {
+            bone.colorize(red, green, blue);
         }
     }
 
@@ -87,11 +88,10 @@ public interface AbstractModelView<TViewer> {
      * encoded RGB (Red, Green, Blue) color
      *
      * @param rgb The encoded color
+     * @since 1.0.0
      */
-    default void colorize(int rgb) {
-        for (AbstractBoneView bone : bones()) {
-            bone.colorize(rgb);
-        }
+    default void colorize(final int rgb) {
+        colorize((rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255);
     }
 
     /**

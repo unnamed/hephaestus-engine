@@ -84,22 +84,26 @@ public interface AbstractBoneView {
 
     /**
      * Colorizes this bone view using the specified
-     * {@code r} (red), {@code g} (green) and
-     * {@code b} (blue) color components
+     * {@code red}, {@code green} and {@code blue}
+     * color components.
      *
-     * @param r The red component [0-255]
-     * @param g The green component [0-255]
-     * @param b The blue component [0-255]
+     * @param red The red component [0-255]
+     * @param green The green component [0-255]
+     * @param blue The blue component [0-255]
+     * @since 1.0.0
      */
-    void colorize(int r, int g, int b);
+    void colorize(final int red, final int green, final int blue);
 
     /**
      * Colorizes this bone view using the specified,
-     * encoded RGB (Red, Green, Blue) color
+     * encoded RGB (Red, Green, Blue) color.
      *
      * @param rgb The encoded color
+     * @since 1.0.0
      */
-    void colorize(int rgb);
+    default void colorize(final int rgb) {
+        colorize((rgb >> 16) & 255, (rgb >> 8) & 255, rgb & 255);
+    }
 
     /**
      * Colorizes this view using the default,

@@ -130,13 +130,8 @@ public class ModelEntity extends EntityCreature implements AbstractModelView<Pla
     }
 
     @Override
-    public void colorize(int r, int g, int b) {
-        colorize(new Color(r, g, b));
-    }
-
-    @Override
-    public void colorize(int rgb) {
-        colorize(new Color(rgb));
+    public void colorize(int red, int green, int blue) {
+        colorize(new Color(red, green, blue));
     }
 
     public void colorize(Color color) {
