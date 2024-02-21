@@ -94,7 +94,7 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
             for (final TextureAsset texture : asset.textures().values()) {
                 // write the texture, using "<modelName>/" as prefix
                 resourcePack.texture(
-                        Texture.builder()
+                        Texture.texture()
                                 .key(Key.key(namespace, model.name() + '/' + texture.name()))
                                 .data(texture.data())
                                 .build()
@@ -112,7 +112,7 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
             return (Integer) predicate.value();
         }));
 
-        resourcePack.model(team.unnamed.creative.model.Model.builder()
+        resourcePack.model(team.unnamed.creative.model.Model.model()
                 .key(LEATHER_HORSE_ARMOR_KEY)
                 .parent(team.unnamed.creative.model.Model.ITEM_HANDHELD)
                 .textures(ModelTextures.builder()
@@ -124,7 +124,7 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
                 .build()
         );
 
-        resourcePack.atlas(Atlas.builder()
+        resourcePack.atlas(Atlas.atlas()
                 .key(Atlas.BLOCKS)
                 .sources(sources)
                 .build()
@@ -166,7 +166,7 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
         Key key = Key.key(namespace, path);
 
         Map<ItemTransform.Type, ItemTransform> displays = new HashMap<>();
-        displays.put(ItemTransform.Type.THIRDPERSON_LEFTHAND, ItemTransform.builder()
+        displays.put(ItemTransform.Type.THIRDPERSON_LEFTHAND, ItemTransform.transform()
                 .scale(new Vector3Float(bone.scale(), bone.scale(), bone.scale()))
                 .build()
         );
@@ -180,7 +180,7 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
         final List<Element> elements = new ArrayList<>(bone.cubes().size());
         for (final ElementAsset elementAsset : bone.cubes()) {
             elements.add(
-                    Element.builder()
+                    Element.element()
                             .from(elementAsset.from())
                             .to(elementAsset.to())
                             .rotation(elementAsset.rotation())
@@ -189,7 +189,7 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
             );
         }
 
-        return team.unnamed.creative.model.Model.builder()
+        return team.unnamed.creative.model.Model.model()
                 .key(key)
                 .display(displays)
                 .textures(ModelTextures.builder()
