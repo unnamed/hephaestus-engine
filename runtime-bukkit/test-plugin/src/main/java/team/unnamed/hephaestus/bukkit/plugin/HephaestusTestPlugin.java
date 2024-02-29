@@ -53,6 +53,9 @@ public final class HephaestusTestPlugin extends JavaPlugin {
         registry.registerModel(loadModel("dragon.bbmodel"));
         registry.registerModel(loadModel("geometry.bbmodel"));
         registry.registerModel(loadModel("redstone_monstrosity.bbmodel"));
+        registry.registerModel(loadModel("correct_x_axis_rotation_test.bbmodel"));
+        registry.registerModel(loadModel("correct_z_axis_rotation_test.bbmodel"));
+        registry.registerModel(loadModel("correct_y_axis_rotation_test.bbmodel"));
         registry.registerModel(loadModel("player/detailed/animations.bbmodel"));
 
         // listen to resource pack generation
