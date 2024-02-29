@@ -43,6 +43,7 @@ import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
 import team.unnamed.hephaestus.bukkit.ModelView;
 import team.unnamed.hephaestus.util.Quaternion;
+import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -135,18 +136,28 @@ class ModelViewImpl implements ModelView {
         // create the bone entities
         ImmutableMap.Builder<String, BoneEntity> bones = ImmutableMap.builder();
         for (Bone bone : model.bones()) {
-            instantiateBone(bone, Vector3Float.ZERO, bones);
+            instantiateBone(bone, Vector3Float.ZERO, Quaternion.IDENTITY, bones);
         }
         return bones.build();
     }
 
-    protected void instantiateBone(Bone bone, Vector3Float parentPosition, ImmutableMap.Builder<String, BoneEntity> into) {
-        var position = bone.position().add(parentPosition);
-        var entity = new BoneEntity(this, bone, position, Quaternion.IDENTITY.multiply(Quaternion.fromEulerDegrees(bone.rotation())), scale);
+    protected void instantiateBone(
+            final @NotNull Bone bone,
+            final @NotNull Vector3Float parentPosition,
+            final @NotNull Quaternion parentRotation,
+            final @NotNull ImmutableMap.Builder<String, BoneEntity> into
+    ) {
+        final var rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
+        final var position = Vectors.rotateDegrees(
+                bone.position(),
+                parentRotation.toEulerDegrees().multiply(-1, 1, 1)
+        ).add(parentPosition);
+
+        var entity = new BoneEntity(this, bone, position, rotation, scale);
         into.put(bone.name(), entity);
 
         for (var child : bone.children()) {
-            instantiateBone(child, position, into);
+            instantiateBone(child, position, rotation, into);
         }
     }
 
