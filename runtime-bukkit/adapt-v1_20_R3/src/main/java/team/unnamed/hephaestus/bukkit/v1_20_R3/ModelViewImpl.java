@@ -148,10 +148,7 @@ class ModelViewImpl implements ModelView {
             final @NotNull ImmutableMap.Builder<String, BoneEntity> into
     ) {
         final var rotation = parentRotation.multiply(Quaternion.fromEulerDegrees(bone.rotation()));
-        final var position = Vectors.rotateDegrees(
-                bone.position(),
-                parentRotation.toEulerDegrees().multiply(-1, 1, 1)
-        ).add(parentPosition);
+        final var position = parentRotation.transform(bone.position()).add(parentPosition);
 
         var entity = new BoneEntity(this, bone, position, rotation, scale);
         into.put(bone.name(), entity);

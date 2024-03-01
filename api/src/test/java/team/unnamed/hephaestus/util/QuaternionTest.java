@@ -27,6 +27,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import team.unnamed.creative.base.Vector3Float;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class QuaternionTest {
 
     private static final double THRESHOLD = 0.01D;
@@ -50,6 +52,58 @@ public class QuaternionTest {
         assertQuaternionEqualsEuler(-0.001743, 0.0872458, 0.0691110, 0.9937850, new Vector3Float(0.5F, 10.0F, 8.0F));
     }
 
+    @Test
+    void test_rotation_in_multiple_axis() {
+        // in single axis (X)
+        assertRotation(
+                new Vector3Float(0, -1, 0),
+                new Vector3Float(0, 0, 1),
+                new Vector3Float(90, 0, 0)
+        );
+        // in single axis (Y)
+        assertRotation(
+                new Vector3Float(0, 0, -1),
+                new Vector3Float(1, 0, 0),
+                new Vector3Float(0, 90, 0)
+        );
+        // in single axis (Z)
+        assertRotation(
+                new Vector3Float(-1, 0, 0),
+                new Vector3Float(0, 1, 0),
+                new Vector3Float(0, 0, 90)
+        );
+
+        // in multiple axis (X,Y)
+        assertRotation(
+                new Vector3Float(1, 0, 0),
+                new Vector3Float(0, 1, 0),
+                new Vector3Float(90, 90, 0)
+        );
+        // in multiple axis (X,Z)
+        assertRotation(
+                new Vector3Float(0, 0, 1),
+                new Vector3Float(0, 1, 0),
+                new Vector3Float(90, 0, 90)
+        );
+        // in multiple axis (Y,Z)
+        assertRotation(
+                new Vector3Float(0, 1, 0),
+                new Vector3Float(0, 0, 1),
+                new Vector3Float(0, 90, 90)
+        );
+        // in multiple axis (X,Y,Z)
+        assertRotation(
+                new Vector3Float(0, 0, -1),
+                new Vector3Float(1, 0, 0),
+                new Vector3Float(90, 90, 90)
+        );
+        assertRotation(
+                new Vector3Float(0.5F, 0.5F, -0.70710677F),
+                new Vector3Float(1, 0, 0),
+                new Vector3Float(45, 45, 45)
+        );
+    }
+
     private static void assertQuaternionEqualsEuler(double x, double y, double z, double w, Vector3Float euler) {
         Quaternion expected = new Quaternion(x, y, z, w);
         Quaternion quaternion = Quaternion.fromEulerDegrees(euler);
@@ -60,4 +114,17 @@ public class QuaternionTest {
         StructureAssertEquals.assertQuaternionEquivalent(expected, reconverted, THRESHOLD);
     }
 
+    private static void assertRotation(
+            Vector3Float expected,
+            Vector3Float vector,
+            Vector3Float rotation
+    ) {
+        // Test using Quaternions too
+        final var quaternion = Quaternion.fromEulerDegrees(rotation);
+        final var rotatedWithQuaternion = quaternion.transform(vector);
+        assertTrue(
+                Vectors.equals(expected, rotatedWithQuaternion, 0.000001D),
+                "Vectors should be equal, expected:  " + expected + " got: " + rotatedWithQuaternion
+        );
+    }
 }

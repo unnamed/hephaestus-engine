@@ -33,7 +33,6 @@ import team.unnamed.hephaestus.animation.timeline.bone.BoneTimelinePlayhead;
 import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimeline;
 import team.unnamed.hephaestus.animation.timeline.effect.EffectsTimelinePlayhead;
 import team.unnamed.hephaestus.util.Quaternion;
-import team.unnamed.hephaestus.util.Vectors;
 import team.unnamed.hephaestus.view.AbstractBoneView;
 import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.mocha.MochaEngine;
@@ -146,10 +145,7 @@ class AnimationPlayerImpl implements AnimationPlayer {
         Vector3Float globalScale = parentScale.multiply(frameScale);
 
         Quaternion globalRotation = parentRotation.multiply(Quaternion.fromEulerDegrees(localRotation));
-        Vector3Float globalPosition = Vectors.rotateDegrees(
-                localPosition.multiply(globalScale),
-                parentRotation.toEulerDegrees().multiply(-1, 1, 1)
-        ).add(parentPosition);
+        Vector3Float globalPosition = parentRotation.transform(localPosition.multiply(globalScale)).add(parentPosition);
 
         AbstractBoneView boneView = view.bone(bone.name());
         if (boneView != null) {
