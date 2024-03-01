@@ -39,6 +39,14 @@ class VectorRotationTest {
                 Vectors.equals(expected, rotated, 0.000001D),
                 "Vectors should be equal, expected:  " + expected + " got: " + rotated
         );
+
+        // Test using Quaternions too
+        final var quaternion = Quaternion.fromEulerDegrees(rotation);
+        final var rotatedWithQuaternion = quaternion.transform(vector);
+        assertTrue(
+                Vectors.equals(expected, rotatedWithQuaternion, 0.000001D),
+                "Vectors should be equal, expected:  " + expected + " got: " + rotatedWithQuaternion
+        );
     }
 
     @Test

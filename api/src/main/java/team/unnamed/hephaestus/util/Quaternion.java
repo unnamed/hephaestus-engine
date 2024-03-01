@@ -202,6 +202,30 @@ public final class Quaternion implements Examinable {
         return equals(other, threshold) || equals(other.negate(), threshold);
     }
 
+    public @NotNull Vector3Float transform(final @NotNull Vector3Float vector) {
+        final var vx = vector.x();
+        final var vy = vector.y();
+        final var vz = vector.z();
+
+        final var xx = x * x;
+        final var xy = x * y;
+        final var xz = x * z;
+        final var xw = x * w;
+        final var yy = y * y;
+        final var yz = y * z;
+        final var yw = y * w;
+        final var zz = z * z;
+        final var zw = z * w;
+
+        // From JOML under the MIT License
+        // https://github.com/JOML-CI/JOML/blob/main/src/main/java/org/joml/Quaternionf.java#L1317
+        return new Vector3Float(
+                (float) Math.fma(Math.fma(-2, yy + zz, 1), vx, Math.fma(2 * (xy - zw), vy, (2 * (xz + yw)) * vz)),
+                (float) Math.fma(2 * (xy + zw), vx, Math.fma(Math.fma(-2, xx + zz, 1), vy, (2 * (yz - xw)) * vz)),
+                (float) Math.fma(2 * (xz - yw), vx, Math.fma(2 * (yz + xw), vy, Math.fma(-2, xx + yy, 1) * vz))
+        );
+    }
+
     /**
      * Multiplies this quaternion rotations with the given
      * {@code other} quaternion rotations
