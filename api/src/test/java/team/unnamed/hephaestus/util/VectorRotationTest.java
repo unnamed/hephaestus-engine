@@ -29,48 +29,6 @@ import team.unnamed.creative.base.Vector3Float;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VectorRotationTest {
-
-    private static void assertRotationAroundY(
-            Vector3Float expected,
-            Vector3Float vector,
-            double angle
-    ) {
-        Vector3Float rotated = Vectors.rotateAroundYRadians(vector, angle);
-        assertTrue(
-                Vectors.equals(expected, rotated, 0.000001D),
-                "Vectors should be equal, expected:  " + expected + " got: " + rotated
-        );
-    }
-
-    @Test
-    void test_rotation_around_y() {
-        assertRotationAroundY(
-                new Vector3Float(0, 0, 1),
-                new Vector3Float(1, 0, 0),
-                Math.PI / 2
-        );
-        assertRotationAroundY(
-                new Vector3Float(0, 0, -1),
-                new Vector3Float(1, 0, 0),
-                -Math.PI / 2
-        );
-        assertRotationAroundY(
-                new Vector3Float(1, 0, 0),
-                new Vector3Float(1, 0, 0),
-                Math.PI * 2
-        );
-        assertRotationAroundY(
-                new Vector3Float(-5, 2, -20),
-                new Vector3Float(5, 2, 20),
-                Math.PI
-        );
-        assertRotationAroundY(
-                new Vector3Float(-5, 2, -20),
-                new Vector3Float(5, 2, 20),
-                -Math.PI
-        );
-    }
-
     private static void assertRotation(
             Vector3Float expected,
             Vector3Float vector,

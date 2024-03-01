@@ -47,25 +47,6 @@ public final class Vectors {
     }
 
     /**
-     * Rotates the given vector around the Y axis by the given angle
-     * in radians, <b>counter-clockwise</b>.
-     *
-     * @param vector The vector to rotate
-     * @param angle The angle in radians
-     * @return The rotated vector
-     */
-    public static Vector3Float rotateAroundYRadians(Vector3Float vector, double angle) {
-        double sin =  Math.sin(angle);
-        double cos = Math.cos(angle);
-
-        return new Vector3Float(
-                (float) (vector.x() * cos - vector.z() * sin),
-                vector.y(),
-                (float) (vector.x() * sin + vector.z() * cos)
-        );
-    }
-
-    /**
      * Rotates the given vector by the given 3D rotation vector
      * in degrees, <b>counter-clockwise</b>, <b>XYZ order</b>.
      *
