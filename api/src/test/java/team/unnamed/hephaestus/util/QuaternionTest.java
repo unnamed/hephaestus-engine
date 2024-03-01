@@ -35,7 +35,12 @@ public class QuaternionTest {
     @DisplayName("Test Euler Angle to Quaternion conversion")
     public void test_quaternion_euler_angle_conversion() {
         assertQuaternionEqualsEuler(0.0000000, 0.0000000, 0.0000000, 1.0000000, Vector3Float.ZERO);
+
+        // 90-degrees in a single axis
+        assertQuaternionEqualsEuler(0.7071060, 0.0000000, 0.0000000, 0.7071060, new Vector3Float(90.0F, 0.0F, 0.0F));
         assertQuaternionEqualsEuler(0.0000000, 0.7071060, 0.0000000, 0.7071060, new Vector3Float(0.0F, 90.0F, 0.0F));
+        assertQuaternionEqualsEuler(0.0000000, 0.0000000, 0.7071060, 0.7071060, new Vector3Float(00.0F, 0.0F, 90.0F));
+
         assertQuaternionEqualsEuler(-0.270598, 0.6532810, 0.2705980, 0.6532810, new Vector3Float(0.0F, 90.0F, 45.0F));
         assertQuaternionEqualsEuler(-0.353553, 0.3535530, 0.1464460, 0.8535530, new Vector3Float(45.0F, 45.0F, 0.0F));
         assertQuaternionEqualsEuler(-0.707106, 0.0000000, 0.7071060, 0.0000000, new Vector3Float(180.0F, 90.0F, 0.0F));
