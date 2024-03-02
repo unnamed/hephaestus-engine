@@ -66,6 +66,8 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
 
     private void spawn(Player source, Model model) {
         ModelView view = engine.createViewAndTrack(model, source.getLocation());
+        // tick em
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, view::tickAnimations, 0L, 1L);
         source.sendMessage(
                 Component.text()
                         .append(Component.text("Created view with id "))
