@@ -199,7 +199,16 @@ final class ElementReader {
                 ? Vector3Float.ZERO
                 : GsonUtil.getVector3FloatFromJson(json.get("rotation"));
 
+        // We negate the X and Z axis since Blockbench uses
+        // a different coordinate system where the Z axis is
+        // inverted
+        rotation = rotation.multiply(-1, 1, -1);
+
         // The position of this bone, in Minecraft units
+        // (1 Blockbench unit = 1/16 Minecraft unit)
+        // We negate the X and Z axis since Blockbench uses
+        // a different coordinate system where the Z axis is
+        // inverted
         Vector3Float absolutePosition = unitOrigin.divide(-Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);
         Vector3Float position = absolutePosition.subtract(parentAbsolutePosition);
 
