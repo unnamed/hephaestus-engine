@@ -168,6 +168,8 @@ public final class AnimationReader {
 
                         if (channel.equals("position")) {
                             value = value.divide(-Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);
+                        } else if (channel.equals("rotation")) {
+                            value = value.multiply(1, -1, -1);
                         }
 
                         String interpolation = keyframeJson.has("interpolation")
