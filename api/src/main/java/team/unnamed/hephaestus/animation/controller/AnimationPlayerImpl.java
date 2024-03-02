@@ -136,11 +136,8 @@ class AnimationPlayerImpl implements AnimationPlayer {
         Vector3Float framePosition = boneFrame.position();
         Vector3Float frameRotation = boneFrame.rotation();
 
-        Vector3Float defaultPosition = bone.position();
-        Vector3Float defaultRotation = bone.rotation();
-
-        Vector3Float localPosition = defaultPosition.add(framePosition);
-        Vector3Float localRotation = defaultRotation.subtract(frameRotation);
+        Vector3Float localPosition = bone.position().add(framePosition);
+        Vector3Float localRotation = bone.rotation().add(frameRotation);
 
         Vector3Float globalScale = parentScale.multiply(frameScale);
 

@@ -167,7 +167,7 @@ public final class AnimationReader {
                         Vector3Float value = new Vector3Float(x, y, z);
 
                         if (channel.equals("position")) {
-                            value = value.divide(Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);
+                            value = value.divide(-Blockbench.BLOCK_SIZE, Blockbench.BLOCK_SIZE, -Blockbench.BLOCK_SIZE);
                         }
 
                         String interpolation = keyframeJson.has("interpolation")
