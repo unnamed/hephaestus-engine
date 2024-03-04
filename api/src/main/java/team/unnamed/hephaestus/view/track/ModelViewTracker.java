@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.view.track;
 
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.view.AbstractModelView;
 
 /**
@@ -50,8 +51,9 @@ public interface ModelViewTracker<TViewer> {
      * @param trackingRule The tracking rule, filters viewers
      * @return True if the view is now being tracked, false if
      * it was already being tracked
+     * @since 1.0.0
      */
-    boolean startTracking(AbstractModelView<TViewer> view, ModelViewTrackingRule<TViewer> trackingRule);
+    boolean startTracking(final @NotNull AbstractModelView<TViewer> view, final @NotNull ModelViewTrackingRule<TViewer> trackingRule);
 
     /**
      * Starts tracking the given {@code view}, this means to
@@ -65,8 +67,9 @@ public interface ModelViewTracker<TViewer> {
      * @param view The view to track
      * @return True if the view is now being tracked, false if
      * it was already being tracked
+     * @since 1.0.0
      */
-    default boolean startGlobalTracking(AbstractModelView<TViewer> view) {
+    default boolean startGlobalTracking(final @NotNull AbstractModelView<TViewer> view) {
         return startTracking(view, ModelViewTrackingRule.all());
     }
 
@@ -77,6 +80,7 @@ public interface ModelViewTracker<TViewer> {
      *
      * @param view The view to stop tracking
      * @return True if success, false if view is not being tracked
+     * @since 1.0.0
      */
-    boolean stopTracking(AbstractModelView<TViewer> view);
+    boolean stopTracking(final @NotNull AbstractModelView<TViewer> view);
 }

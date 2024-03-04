@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.view.track;
 
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.view.AbstractModelView;
 
 /**
@@ -41,8 +42,9 @@ public interface ModelViewTrackingRule<TViewer> {
      * @param view The model view
      * @param candidate The viewer candidate
      * @return True if the candidate should be added as viewer
+     * @since 1.0.0
      */
-    boolean shouldView(AbstractModelView<TViewer> view, TViewer candidate);
+    boolean shouldView(final @NotNull AbstractModelView<TViewer> view, final @NotNull TViewer candidate);
 
     /**
      * A tracking rule that lets <strong>all</strong> the players
@@ -50,8 +52,9 @@ public interface ModelViewTrackingRule<TViewer> {
      *
      * @return A {@link ModelViewTrackingRule} instance that always returns true
      * @param <TViewer> The viewer/player type, depends on platform
+     * @since 1.0.0
      */
-    static <TViewer> ModelViewTrackingRule<TViewer> all() {
+    static <TViewer> @NotNull ModelViewTrackingRule<TViewer> all() {
         return (view, candidate) -> true;
     }
 }
