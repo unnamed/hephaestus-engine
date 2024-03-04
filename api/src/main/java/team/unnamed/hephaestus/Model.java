@@ -107,6 +107,18 @@ public class Model implements Examinable {
     }
 
     /**
+     * Returns the {@link Bone} with the given name
+     * or null if it doesn't exist.
+     *
+     * @param name The bone name
+     * @return The bone or null
+     * @since 1.0.0
+     */
+    public @Nullable Bone bone(final @NotNull String name) {
+        return bones.get(name);
+    }
+
+    /**
      * Returns a map of the registered animations
      * for this model, keys are the animation names
      *

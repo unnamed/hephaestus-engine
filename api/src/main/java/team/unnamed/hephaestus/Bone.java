@@ -154,6 +154,18 @@ public final class Bone implements Examinable {
     }
 
     /**
+     * Returns the child bone with the given name,
+     * or null if not found.
+     *
+     * @param name The child bone name
+     * @return The child bone, or null
+     * @since 1.0.0
+     */
+    public @Nullable Bone child(final @NotNull String name) {
+        return children.get(name);
+    }
+
+    /**
      * Returns this bone initial scale, which is just
      * a compensation to make big models show with
      * their correct size, since resource-packs are
