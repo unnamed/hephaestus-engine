@@ -45,7 +45,7 @@ import org.joml.Vector3f;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.bukkit.BoneView;
-import team.unnamed.hephaestus.modifier.BoneModifier;
+import team.unnamed.hephaestus.view.modifier.BoneModifier;
 import team.unnamed.hephaestus.util.Quaternion;
 
 import java.util.List;
