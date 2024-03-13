@@ -21,22 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus;
+package team.unnamed.hephaestus.view.modifier.player.skin;
 
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.examination.Examinable;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-@ApiStatus.Internal
-public final class Minecraft {
-
-    public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
-    public static final float PLAYER_DEFAULT_PICK_RANGE = 4.5F;
-
-    public static final String DISPLAY_TAG = "display";
-    public static final String CUSTOM_MODEL_DATA_TAG = "CustomModelData";
-    public static final String COLOR_TAG = "color";
-    public static final String SKULL_OWNER_TAG = "SkullOwner";
-
-    private Minecraft() {
+/**
+ * Represents a player skin, which is composed of a
+ * signature and a value, both of them are Base64
+ * encoded strings.
+ *
+ * @since 1.0.0
+ */
+@ApiStatus.NonExtendable
+public interface Skin extends Examinable {
+    @Contract("_, _, _ -> new")
+    static @NotNull Skin skin(final @NotNull String signature, final @NotNull String value, final @NotNull Type type) {
+        return new SkinImpl(signature, value, type);
     }
 
+    @Contract("_, _ -> new")
+    static @NotNull Skin skin(final @NotNull String signature, final @NotNull String value) {
+        return skin(signature, value, Type.NORMAL);
+    }
+
+    @NotNull String signature();
+
+    @NotNull String value();
+
+    @NotNull Type type();
+
+    @NotNull CompoundBinaryTag asNBT();
+
+    enum Type {
+        NORMAL,
+        SLIM
+    }
 }

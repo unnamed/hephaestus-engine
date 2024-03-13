@@ -23,12 +23,14 @@
  */
 package team.unnamed.hephaestus.view;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.view.modifier.BoneModifier;
 import team.unnamed.hephaestus.util.Quaternion;
+import team.unnamed.hephaestus.view.modifier.BoneModifierMap;
 
 /**
  * Base abstraction for representing {@link Bone}
@@ -46,7 +48,7 @@ import team.unnamed.hephaestus.util.Quaternion;
  *
  * @since 1.0.0
  */
-public interface AbstractBoneView {
+public interface AbstractBoneView extends BoneModifierMap {
     int DEFAULT_COLOR = 0xFFFFFF;
 
     /**
@@ -67,19 +69,6 @@ public interface AbstractBoneView {
      */
     default @NotNull String name() {
         return bone().name();
-    }
-
-    @Nullable BoneModifier modifier();
-
-    void modifier(final @Nullable BoneModifier modifier);
-
-    default void modifying(final @NotNull BoneModifier modifier) {
-        final var previous = modifier();
-        if (previous == null) {
-            modifier(modifier);
-        } else {
-            modifier(previous.andThen(modifier));
-        }
     }
 
     /**
@@ -128,4 +117,15 @@ public interface AbstractBoneView {
      * @since 1.0.0
      */
     void update(final @NotNull Vector3Float position, final @NotNull Quaternion rotation, final @NotNull Vector3Float scale);
+
+    default void updateTransformation() {
+    }
+
+    default void updateItem() {
+    }
+
+    default void updateAll() {
+        updateTransformation();
+        updateItem();
+    }
 }

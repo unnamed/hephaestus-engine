@@ -21,8 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.player;
+package team.unnamed.hephaestus.view.modifier.player.skin;
 
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
@@ -36,11 +37,16 @@ final class SkinImpl implements Skin {
     private final String signature;
     private final String value;
     private final Type type;
+    private final CompoundBinaryTag asNBT;
 
     SkinImpl(final @NotNull String signature, final @NotNull String value, final @NotNull Type type) {
         this.signature = requireNonNull(signature, "signature");
         this.value = requireNonNull(value, "value");
         this.type = requireNonNull(type, "type");
+        this.asNBT = CompoundBinaryTag.builder()
+                .putString("Value", value)
+                .putString("Signature", signature)
+                .build();
     }
 
     @Override
@@ -56,6 +62,11 @@ final class SkinImpl implements Skin {
     @Override
     public @NotNull Type type() {
         return type;
+    }
+
+    @Override
+    public @NotNull CompoundBinaryTag asNBT() {
+        return asNBT;
     }
 
     @Override

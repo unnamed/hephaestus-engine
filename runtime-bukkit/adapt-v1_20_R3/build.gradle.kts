@@ -18,7 +18,6 @@ dependencies {
     paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
 
     implementation(project(":hephaestus-runtime-bukkit-api"))
-    implementation("net.kyori:adventure-platform-bukkit:4.3.2")
 }
 
 tasks {

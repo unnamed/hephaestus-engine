@@ -24,50 +24,58 @@
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import com.mojang.math.Transformation;
+import net.kyori.adventure.nbt.BinaryTagTypes;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.nbt.TagStringIO;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Color;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_20_R3.util.CraftMagicNumbers;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
+import team.unnamed.hephaestus.Hephaestus;
+import team.unnamed.hephaestus.Minecraft;
 import team.unnamed.hephaestus.bukkit.BoneView;
-import team.unnamed.hephaestus.view.modifier.BoneModifier;
 import team.unnamed.hephaestus.util.Quaternion;
+import team.unnamed.hephaestus.view.modifier.BoneModifierMap;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-class BoneEntity extends Display.ItemDisplay implements BoneView {
+class BoneEntity extends Display.ItemDisplay implements BoneView, BoneModifierMap.Forwarding {
     // Bone item NBT: { CustomModelData: int, display: { color: 0xrrggbb } }
-    private static final String DISPLAY_TAG = "display";
-    private static final String CUSTOM_MODEL_DATA_TAG = "CustomModelData";
-    private static final String COLOR_TAG = "color";
-
     protected final ModelViewImpl view;
     protected final Bone bone;
-
-    private BoneModifier modifier = null;
 
     private final float modelScale;
     protected List<SynchedEntityData.DataValue<?>> initialData;
 
-    private Vector3Float lastPosition;
-    private Quaternion lastRotation;
-    private Vector3Float lastScale;
+    private final BoneModifierMap modifiers = BoneModifierMap.create(this);
+
+    private Vector3Float lastPosition = Vector3Float.ZERO;
+    private Quaternion lastRotation = Quaternion.IDENTITY;
+    private Vector3Float lastScale = Vector3Float.ONE;
+
+    private int color = 0xFFFFFF;
 
     public BoneEntity(ModelViewImpl view, Bone bone, Vector3Float initialPosition, Quaternion initialRotation, float modelScale) {
         //noinspection DataFlowIssue
@@ -85,15 +93,7 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
         setNoGravity(false);
 
         update(initialPosition, initialRotation, Vector3Float.ONE);
-
-        final var itemStack = new ItemStack(CraftMagicNumbers.getItem(Material.LEATHER_HORSE_ARMOR), 1);
-        final var tag = new CompoundTag();
-        final var display = new CompoundTag();
-        display.putInt(COLOR_TAG, Color.WHITE.asRGB());
-        tag.put(DISPLAY_TAG, display);
-        tag.putInt(CUSTOM_MODEL_DATA_TAG, bone.customModelData());
-        itemStack.setTag(tag);
-        setItemStack(itemStack);
+        updateItem();
 
         initialData = super.getEntityData().packDirty();
     }
@@ -144,22 +144,10 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
     }
 
     @Override
-    public @Nullable BoneModifier modifier() {
-        return modifier;
-    }
-
-    @Override
-    public void modifier(final @Nullable BoneModifier modifier) {
-        this.modifier = modifier;
-    }
-
-    @Override
     public void update(@NotNull Vector3Float position, @NotNull Quaternion rotation, @NotNull Vector3Float scale) {
-        if (modifier != null) {
-            position = modifier.modifyPosition(position);
-            rotation = modifier.modifyRotation(rotation);
-            scale = modifier.modifyScale(scale);
-        }
+        position = modifiers.modifyPosition(position);
+        rotation = modifiers.modifyRotation(rotation);
+        scale = modifiers.modifyScale(scale);
 
         if (position.equals(lastPosition) && rotation.equals(lastRotation) && scale.equals(lastScale)) {
             // Don't update if everything is the same (avoids marking the data as dirty)
@@ -173,7 +161,7 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
 
         // Changes are not immediate, packets are sent by the base entity tracker
         setTransformation(new Transformation(
-                modifyTranslation(new Vector3f(position.x(), position.y(), position.z()).mul(modelScale * bone.scale())),
+                new Vector3f(position.x(), position.y(), position.z()).mul(modelScale * bone.scale()),
                 null,
                 new Vector3f(
                         modelScale * bone.scale() * scale.x(),
@@ -190,18 +178,52 @@ class BoneEntity extends Display.ItemDisplay implements BoneView {
         setTransformationInterpolationDelay(0);
     }
 
-    protected Vector3f modifyTranslation(Vector3f translation) {
-        return translation;
+    @Override
+    public void colorize(final @NotNull Color color) {
+        final var newColor = color.asRGB();
+        if (newColor == this.color) {
+            // No changes
+            return;
+        }
+        this.color = newColor;
+        updateItem();
     }
 
     @Override
-    public void colorize(final @NotNull Color color) {
-        final var item = getItemStack();
-        final var display = item.getOrCreateTag().getCompound(DISPLAY_TAG);
-        final var newColor = color.asRGB();
-        if (!display.contains(COLOR_TAG) || newColor != display.getInt(COLOR_TAG)) {
-            display.putInt(COLOR_TAG, newColor);
-            setItemStack(item); // Makes the entity data dirty so it's sent later
+    public void updateTransformation() {
+        update(lastPosition, lastRotation, lastScale);
+    }
+
+    @Override
+    public void updateItem() {
+        final var itemKey = modifiers.modifyItem(Hephaestus.BONE_ITEM_KEY);
+        final var tag = modifiers.modifyItemTag(CompoundBinaryTag.builder()
+                .put(Minecraft.DISPLAY_TAG, CompoundBinaryTag.builder()
+                        .putInt(Minecraft.COLOR_TAG, color)
+                        .build())
+                .putInt(Minecraft.CUSTOM_MODEL_DATA_TAG, bone.customModelData())
+                .build());
+
+        final var item = BuiltInRegistries.ITEM.get(new ResourceLocation(itemKey.namespace(), itemKey.value()));
+        final var itemStack = new ItemStack(item, 1);
+
+        try {
+            final var bytes = new ByteArrayOutputStream();
+            final var output = new DataOutputStream(bytes);
+            BinaryTagTypes.COMPOUND.write(tag, output);
+            output.flush();
+
+            final var nmsTag = CompoundTag.TYPE.load(new DataInputStream(new ByteArrayInputStream(bytes.toByteArray())), NbtAccounter.unlimitedHeap());
+            itemStack.setTag(nmsTag);
+        } catch (final IOException e) {
+            throw new RuntimeException("Failed to write item tag", e);
         }
+
+        setItemStack(itemStack);
+    }
+
+    @Override
+    public @NotNull BoneModifierMap modifiers() {
+        return modifiers;
     }
 }

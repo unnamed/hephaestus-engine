@@ -21,22 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus;
+package team.unnamed.hephaestus.view.modifier.player.rig;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import team.unnamed.creative.ResourcePack;
 
-@ApiStatus.Internal
-public final class Minecraft {
+@FunctionalInterface
+public interface PlayerRigWriter<T> {
+    void write(T target);
 
-    public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
-    public static final float PLAYER_DEFAULT_PICK_RANGE = 4.5F;
-
-    public static final String DISPLAY_TAG = "display";
-    public static final String CUSTOM_MODEL_DATA_TAG = "CustomModelData";
-    public static final String COLOR_TAG = "color";
-    public static final String SKULL_OWNER_TAG = "SkullOwner";
-
-    private Minecraft() {
+    static @NotNull PlayerRigWriter<ResourcePack> resource() {
+        return resource(PlayerRig.vanilla());
     }
 
+    static @NotNull PlayerRigWriter<ResourcePack> resource(final @NotNull PlayerRig rig) {
+        return new ResourcePlayerRigWriter(rig);
+    }
 }

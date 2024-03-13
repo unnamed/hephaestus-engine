@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.player;
+package team.unnamed.hephaestus.view.modifier.player.rig;
 
 import net.kyori.adventure.key.Key;
+import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.ResourcePack;
-import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.model.ItemOverride;
 import team.unnamed.creative.model.ItemPredicate;
 import team.unnamed.creative.model.ItemTransform;
@@ -33,30 +33,20 @@ import team.unnamed.creative.model.Model;
 import team.unnamed.creative.model.ModelTextures;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-public final class ResourcePlayerModelWriter implements PlayerModelWriter<ResourcePack> {
+import static java.util.Objects.requireNonNull;
+
+public final class ResourcePlayerRigWriter implements PlayerRigWriter<ResourcePack> {
     private static final Key PLAYER_HEAD_KEY = Key.key("minecraft", "item/player_head");
     private static final Key TEMPLATE_SKULL_KEY = Key.key("minecraft", "item/template_skull");
 
-    private final static ClassLoader CLASS_LOADER = ResourcePlayerModelWriter.class.getClassLoader();
+    private final PlayerRig rig;
 
-    private final PlayerBoneType[] playerBoneTypes;
-    private final Writable vshFile, fshFile;
-
-    public ResourcePlayerModelWriter() {
-        this(
-                SimplePlayerBoneType.values(),
-                Writable.resource(CLASS_LOADER, "playermodel/shaders/core/rendertype_entity_translucent.vsh"),
-                Writable.resource(CLASS_LOADER, "playermodel/shaders/core/rendertype_entity_translucent.fsh")
-        );
-    }
-
-    public ResourcePlayerModelWriter(PlayerBoneType[] playerBoneTypes, Writable vshFile, Writable fshFile) {
-        this.playerBoneTypes = playerBoneTypes;
-        this.vshFile = vshFile;
-        this.fshFile = fshFile;
+    public ResourcePlayerRigWriter(final @NotNull PlayerRig rig) {
+        this.rig = requireNonNull(rig, "rig");
     }
 
     @Override
@@ -64,9 +54,12 @@ public final class ResourcePlayerModelWriter implements PlayerModelWriter<Resour
         final List<ItemOverride> overrides = new ArrayList<>();
 
         // write overrides
-        for (final PlayerBoneType boneType : playerBoneTypes) {
-            final Key key = Key.key("custom/entities/player/" + boneType.boneName().toLowerCase());
-            final Model model = Model.model()
+        for (final PlayerBoneType boneType : rig.types()) {
+            final var hasSlimVariant = boneType.modelData() != boneType.slimModelData();
+
+            // Write normal variant
+            final var key = Key.key("custom/entities/player/" + boneType.boneName());
+            resourcePack.model(Model.model()
                     .key(key)
                     .parent(Model.BUILT_IN_ENTITY)
                     .display(new HashMap<>() {{
@@ -76,24 +69,42 @@ public final class ResourcePlayerModelWriter implements PlayerModelWriter<Resour
                                 boneType.scale()
                         ));
                     }})
-                    .textures(ModelTextures.builder().build()) // todo:
-                    .build();
-
-            resourcePack.model(model);
-
+                    .textures(ModelTextures.builder().build())
+                    .build());
             overrides.add(ItemOverride.of(key, ItemPredicate.customModelData(boneType.modelData())));
+
+            // Write slim variant, if this bone type has it
+            if (hasSlimVariant) {
+                final var slimKey = Key.key("custom/entities/player/slim_" + boneType.boneName());
+                resourcePack.model(Model.model()
+                        .key(slimKey)
+                        .parent(Model.BUILT_IN_ENTITY)
+                        .display(new HashMap<>() {{
+                            put(ItemTransform.Type.THIRDPERSON_LEFTHAND, ItemTransform.transform(
+                                    boneType.rotation(),
+                                    boneType.slimTranslation(),
+                                    boneType.slimScale()
+                            ));
+                        }})
+                        .textures(ModelTextures.builder().build())
+                        .build());
+                overrides.add(ItemOverride.of(slimKey, ItemPredicate.customModelData(boneType.slimModelData())));
+            }
         }
+
+        // Sort overrides by custom model data
+        overrides.sort(Comparator.comparingInt(override -> ((int) override.predicate().get(0).value())));
 
         // override player head model
         resourcePack.model(Model.model()
                 .key(PLAYER_HEAD_KEY)
                 .parent(TEMPLATE_SKULL_KEY)
                 .overrides(overrides)
-                .textures(ModelTextures.builder().build()) // todo:
+                .textures(ModelTextures.builder().build())
                 .build());
 
         // copy our shaders
-        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.fsh", fshFile);
-        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.vsh", vshFile);
+        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.fsh", rig.fragmentShader());
+        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.vsh", rig.vertexShader());
     }
 }

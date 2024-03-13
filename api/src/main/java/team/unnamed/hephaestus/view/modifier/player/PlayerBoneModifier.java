@@ -21,22 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus;
+package team.unnamed.hephaestus.view.modifier.player;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import team.unnamed.hephaestus.view.modifier.BoneModifier;
+import team.unnamed.hephaestus.view.modifier.player.rig.PlayerBoneType;
+import team.unnamed.hephaestus.view.modifier.player.skin.Skin;
 
-@ApiStatus.Internal
-public final class Minecraft {
+public interface PlayerBoneModifier extends BoneModifier {
+    void type(final @NotNull PlayerBoneType type);
 
-    public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
-    public static final float PLAYER_DEFAULT_PICK_RANGE = 4.5F;
+    @Nullable PlayerBoneType type();
 
-    public static final String DISPLAY_TAG = "display";
-    public static final String CUSTOM_MODEL_DATA_TAG = "CustomModelData";
-    public static final String COLOR_TAG = "color";
-    public static final String SKULL_OWNER_TAG = "SkullOwner";
+    void skin(final @NotNull Skin skin);
 
-    private Minecraft() {
-    }
-
+    @Nullable Skin skin();
 }

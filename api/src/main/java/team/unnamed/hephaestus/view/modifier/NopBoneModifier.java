@@ -21,23 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.player;
+package team.unnamed.hephaestus.view.modifier;
 
-import org.jetbrains.annotations.Nullable;
-import team.unnamed.creative.base.Vector3Float;
-
-public interface PlayerBoneType {
-    String boneName();
-
-    float offset();
-
-    int modelData();
-
-    Vector3Float rotation();
-
-    Vector3Float scale();
-
-    Vector3Float translation();
-
-    boolean slim();
+enum NopBoneModifier implements BoneModifier {
+    INSTANCE
 }

@@ -21,22 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.player;
+package team.unnamed.hephaestus.view.modifier.player.rig;
 
-import team.unnamed.creative.ResourcePack;
-import team.unnamed.creative.base.Writable;
+import net.kyori.adventure.key.KeyPattern;
+import org.intellij.lang.annotations.Subst;
+import org.jetbrains.annotations.NotNull;
+import team.unnamed.creative.base.Vector3Float;
 
-@FunctionalInterface
-public interface PlayerModelWriter<T> {
+public interface PlayerBoneType {
+    @Subst("head")
+    @KeyPattern.Value
+    @NotNull String boneName();
 
-    void write(T target);
+    float offset();
 
-    static PlayerModelWriter<ResourcePack> resource() {
-        return new ResourcePlayerModelWriter();
+    int modelData();
+
+    default int slimModelData() {
+        return modelData();
     }
 
-    static PlayerModelWriter<ResourcePack> resource(PlayerBoneType[] playerBoneTypes, Writable vshFile, Writable fshFile) {
-        return new ResourcePlayerModelWriter(playerBoneTypes, vshFile, fshFile);
+    Vector3Float rotation();
+
+    Vector3Float scale();
+
+    default @NotNull Vector3Float slimScale() {
+        return scale();
     }
 
+    Vector3Float translation();
+
+    default @NotNull Vector3Float slimTranslation() {
+        return translation();
+    }
 }

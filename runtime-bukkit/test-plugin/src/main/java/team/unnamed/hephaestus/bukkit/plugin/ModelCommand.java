@@ -40,8 +40,10 @@ import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.Animation;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 import team.unnamed.hephaestus.bukkit.ModelView;
-import team.unnamed.hephaestus.player.PlayerModel;
-import team.unnamed.hephaestus.player.Skin;
+import team.unnamed.hephaestus.view.modifier.BoneModifierType;
+import team.unnamed.hephaestus.view.modifier.player.rig.PlayerRig;
+import team.unnamed.hephaestus.view.modifier.player.skin.Skin;
+import team.unnamed.hephaestus.view.modifier.player.skin.SkinProvider;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -56,7 +58,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
     private final ModelRegistry registry;
     private final BukkitModelEngine engine;
     private final Plugin plugin;
-    private final MojangSkinProvider skinProvider = new MojangSkinProvider();
+    private final SkinProvider skinProvider = SkinProvider.mojang();
 
     public ModelCommand(Plugin plugin, ModelRegistry registry, BukkitModelEngine engine) {
         this.registry = registry;
@@ -64,7 +66,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
     }
 
-    private void spawn(Player source, Model model) {
+    private ModelView spawn(Player source, Model model) {
         ModelView view = engine.createViewAndTrack(model, source.getLocation());
         // tick em
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, view::tickAnimations, 0L, 1L);
@@ -77,6 +79,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                         .color(NamedTextColor.GREEN)
                         .build()
         );
+        return view;
     }
 
     private void animate(Player source, ModelView view, String animationName) {
@@ -183,7 +186,7 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                     @Override
                     public void run() {
                         try {
-                            Skin skin = skinProvider.fetchSkin(args[1]);
+                            Skin skin = skinProvider.fetch(args[1]);
                             if (skin == null) {
                                 sender.sendMessage(
                                         Component.text()
@@ -196,7 +199,18 @@ public class ModelCommand implements CommandExecutor, TabCompleter {
                                 new BukkitRunnable() {
                                     @Override
                                     public void run() {
-                                        spawn(player, PlayerModel.fromModel(skin, registry.model("jeqo"), DetailedPlayerBoneType.values()));
+                                        final var view = spawn(player, registry.model("jeqo"));
+                                        final var rig = PlayerRig.detailed();
+                                        view.bones().forEach(b -> {
+                                            final var type = rig.get(b.name());
+                                            if (type == null) {
+                                                return;
+                                            }
+                                            b.configure(BoneModifierType.PLAYER_PART, part -> {
+                                                part.type(type);
+                                                part.skin(skin);
+                                            });
+                                        });
                                     }
                                 }.runTaskLater(plugin, 0L);
                             }

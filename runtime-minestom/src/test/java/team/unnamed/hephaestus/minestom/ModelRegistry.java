@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import team.unnamed.creative.ResourcePack;
 import team.unnamed.hephaestus.Model;
-import team.unnamed.hephaestus.player.PlayerModelWriter;
+import team.unnamed.hephaestus.view.modifier.player.rig.PlayerRigWriter;
 import team.unnamed.hephaestus.reader.ModelReader;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
 import team.unnamed.hephaestus.writer.ModelWriter;
@@ -61,7 +61,7 @@ public final class ModelRegistry {
 
     public void write(ResourcePack resourcePack) {
         ModelWriter.resource().write(resourcePack, models.values());
-        PlayerModelWriter.resource().write(resourcePack);
+        PlayerRigWriter.resource().write(resourcePack);
     }
 
     public void model(Model model) {

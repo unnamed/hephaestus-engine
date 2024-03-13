@@ -30,7 +30,7 @@ tasks {
         dependencies {
             exclude(dependency("team.unnamed:creative-api"))
             exclude(dependency("com.google.code.gson:gson"))
-            exclude(dependency("net.kyori:adventure-.*"))
+            exclude(dependency("net.kyori:adventure-api"))
             exclude(dependency("net.kyori:examination-.*"))
             exclude(dependency("org.jetbrains:annotations"))
         }

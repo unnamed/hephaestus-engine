@@ -21,22 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus;
+package team.unnamed.hephaestus.view.modifier.player.skin;
 
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-@ApiStatus.Internal
-public final class Minecraft {
+public interface SkinProvider {
+    @Nullable Skin fetch(final @NotNull String username) throws Exception;
 
-    public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
-    public static final float PLAYER_DEFAULT_PICK_RANGE = 4.5F;
-
-    public static final String DISPLAY_TAG = "display";
-    public static final String CUSTOM_MODEL_DATA_TAG = "CustomModelData";
-    public static final String COLOR_TAG = "color";
-    public static final String SKULL_OWNER_TAG = "SkullOwner";
-
-    private Minecraft() {
+    static @NotNull SkinProvider mojang() {
+        return new MojangSkinProvider();
     }
 
+    static @NotNull SkinProvider minetools() {
+        return new MinetoolsSkinProvider();
+    }
 }

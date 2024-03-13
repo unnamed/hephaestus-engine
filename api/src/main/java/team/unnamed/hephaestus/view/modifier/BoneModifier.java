@@ -23,11 +23,25 @@
  */
 package team.unnamed.hephaestus.view.modifier;
 
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.util.Quaternion;
 
 public interface BoneModifier {
+    static @NotNull BoneModifier nop() {
+        return NopBoneModifier.INSTANCE;
+    }
+
+    default @NotNull Key modifyItem(final @NotNull Key original) {
+        return original;
+    }
+
+    default @NotNull CompoundBinaryTag modifyItemTag(final @NotNull CompoundBinaryTag original) {
+        return original;
+    }
+
     default @NotNull Vector3Float modifyPosition(final @NotNull Vector3Float original) {
         return original;
     }
@@ -42,6 +56,16 @@ public interface BoneModifier {
 
     default @NotNull BoneModifier andThen(final @NotNull BoneModifier modifier) {
         return new BoneModifier() {
+            @Override
+            public @NotNull Key modifyItem(final @NotNull Key original) {
+                return modifier.modifyItem(BoneModifier.this.modifyItem(original));
+            }
+
+            @Override
+            public @NotNull CompoundBinaryTag modifyItemTag(final @NotNull CompoundBinaryTag original) {
+                return modifier.modifyItemTag(BoneModifier.this.modifyItemTag(original));
+            }
+
             @Override
             public @NotNull Vector3Float modifyPosition(final @NotNull Vector3Float original) {
                 return modifier.modifyPosition(BoneModifier.this.modifyPosition(original));

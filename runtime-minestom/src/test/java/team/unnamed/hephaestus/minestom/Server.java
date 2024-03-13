@@ -37,18 +37,16 @@ import team.unnamed.creative.BuiltResourcePack;
 import team.unnamed.creative.server.ResourcePackServer;
 import team.unnamed.creative.server.handler.ResourcePackRequestHandler;
 import team.unnamed.hephaestus.minestom.entity.RedstoneMonstrosity;
-import team.unnamed.hephaestus.minestom.playermodel.PlayerModelEntity;
-import team.unnamed.hephaestus.minestom.skin.MinetoolsSkinProvider;
-import team.unnamed.hephaestus.minestom.skin.SkinProvider;
-import team.unnamed.hephaestus.player.PlayerModel;
-import team.unnamed.hephaestus.player.SimplePlayerBoneType;
+import team.unnamed.hephaestus.view.modifier.BoneModifierType;
+import team.unnamed.hephaestus.view.modifier.player.skin.SkinProvider;
+import team.unnamed.hephaestus.view.modifier.player.rig.PlayerRig;
 
 import java.io.InputStream;
 import java.util.logging.LogManager;
 
 public class Server {
 
-    private final static SkinProvider SKIN_PROVIDER = new MinetoolsSkinProvider();
+    private final static SkinProvider SKIN_PROVIDER = SkinProvider.minetools();
 
     public static void main(String[] args) throws Exception {
         // configure logger
@@ -106,15 +104,25 @@ public class Server {
 
         {
             // add a custom model entity (PlayerModelEntity)
-            final PlayerModelEntity playerModel = new PlayerModelEntity(
+            final var playerModel = new ModelEntity(
                     EntityType.ARMOR_STAND,
-                    PlayerModel.fromModel(
-                            SKIN_PROVIDER.fetchSkin("biconsumer"),
-                            registry.model("player_anims"),
-                            SimplePlayerBoneType.values()
-                    ),
+                    registry.model("player_anims"),
                     1f
             );
+
+            final var skin = SKIN_PROVIDER.fetch("biconsumer");
+            final var rig = PlayerRig.vanilla();
+
+            playerModel.bones().forEach(bone -> {
+                final var type = rig.get(bone.bone().name());
+                if (type != null) {
+                    bone.configure(BoneModifierType.PLAYER_PART, modifier -> {
+                        modifier.type(type);
+                        modifier.skin(skin);
+                    });
+                }
+            });
+
             playerModel.setInstance(instance, new Pos(5, 43, 0));
             MinestomModelEngine.minestom().tracker().startGlobalTracking(playerModel);
             registry.view("playertest", playerModel);

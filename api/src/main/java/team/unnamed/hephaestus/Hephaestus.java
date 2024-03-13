@@ -23,6 +23,8 @@
  */
 package team.unnamed.hephaestus;
 
+import net.kyori.adventure.key.Key;
+
 /**
  * hephaestus-engine!
  *
@@ -47,6 +49,8 @@ public final class Hephaestus {
      * @since 1.0.0
      */
     public static final String NAMESPACE = "hephaestus";
+
+    public static final Key BONE_ITEM_KEY = Key.key("minecraft", "leather_horse_armor");
 
     // maybe hold a version?
 

@@ -1,6 +1,6 @@
 [versions]
 creative = "1.7.0"
-adventure = "4.9.3"
+adventure = "4.15.0"
 annotations = "24.1.0"
 mocha = "3.0.0-SNAPSHOT"
 
@@ -19,6 +19,7 @@ creative-serializer-minecraft = { group = "team.unnamed", name = "creative-seria
 mocha = { group = "team.unnamed", name = "mocha", version.ref = "mocha" }
 
 adventure-api = { group = "net.kyori", name = "adventure-api", version.ref = "adventure" }
+adventure-nbt = { group = "net.kyori", name = "adventure-nbt", version.ref = "adventure" }
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotations" }
 
 # reader-blockbench

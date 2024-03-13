@@ -26,15 +26,15 @@ package team.unnamed.hephaestus.bukkit.plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.creative.ResourcePack;
-import team.unnamed.creative.base.Writable;
 import team.unnamed.creative.central.CreativeCentralProvider;
 import team.unnamed.creative.central.event.pack.ResourcePackGenerateEvent;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 import team.unnamed.hephaestus.bukkit.plugin.track.ModelViewPersistenceHandlerImpl;
 import team.unnamed.hephaestus.bukkit.v1_20_R3.BukkitModelEngine_v1_20_R3;
-import team.unnamed.hephaestus.player.PlayerModelWriter;
+import team.unnamed.hephaestus.view.modifier.player.rig.PlayerRigWriter;
 import team.unnamed.hephaestus.reader.blockbench.BBModelReader;
+import team.unnamed.hephaestus.view.modifier.player.rig.PlayerRig;
 import team.unnamed.hephaestus.writer.ModelWriter;
 
 import java.io.InputStream;
@@ -65,11 +65,7 @@ public final class HephaestusTestPlugin extends JavaPlugin {
             // write models to the resource pack
             ModelWriter.resource("hephaestus_test_plugin_namespace")
                     .write(resourcePack, registry.models());
-            PlayerModelWriter.resource(
-                    DetailedPlayerBoneType.values(),
-                    Writable.resource(getClassLoader(), "models/player/detailed/rendertype_entity_translucent.vsh"),
-                    Writable.resource(getClassLoader(), "models/player/detailed/rendertype_entity_translucent.fsh")
-            ).write(resourcePack);
+            PlayerRigWriter.resource(PlayerRig.detailed()).write(resourcePack);
         });
 
         // register our command

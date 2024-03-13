@@ -30,6 +30,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.hephaestus.view.AbstractBoneView;
 
 import java.util.Collection;
 import java.util.Map;
@@ -44,7 +45,7 @@ import static java.util.Objects.requireNonNull;
  * <p>Note that this is just a specification of how the model
  * should be rendered, it doesn't contain any rendering logic,
  * it's just a data structure. For rendering/view logic, check
- * the {@link team.unnamed.hephaestus.view.AbstractBoneView} interface</p>
+ * the {@link AbstractBoneView} interface</p>
  *
  * @since 1.0.0
  */
