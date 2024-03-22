@@ -52,7 +52,7 @@ import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 
-class ModelViewImpl implements ModelView {
+public class ModelViewImpl implements ModelView {
     // We need the plugin instance for some operations
     private final Plugin plugin;
 

@@ -61,7 +61,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
-class BoneEntity extends Display.ItemDisplay implements BoneView, BoneModifierMap.Forwarding {
+public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneModifierMap.Forwarding {
     // Bone item NBT: { CustomModelData: int, display: { color: 0xrrggbb } }
     protected final ModelViewImpl view;
     protected final Bone bone;
