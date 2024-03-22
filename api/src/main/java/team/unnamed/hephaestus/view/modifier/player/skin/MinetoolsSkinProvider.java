@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -37,7 +38,15 @@ final class MinetoolsSkinProvider implements SkinProvider {
     private static final JsonParser JSON_PARSER = new JsonParser();
 
     @Override
-    public @Nullable Skin fetch(final @NotNull String username) throws Exception {
+    public @Nullable Skin fetch(final @NotNull String username) {
+        try {
+            return fetch0(username);
+        } catch (final IOException e) {
+            throw new RuntimeException("Failed to fetch skin for username: '" + username + "'", e);
+        }
+    }
+
+    private @Nullable Skin fetch0(final @NotNull String username) throws IOException {
         // fetch UUID by username
         final var uuid = MojangSkinProvider.fetchUUIDByUsername(username);
         if (uuid == null) {

@@ -68,7 +68,15 @@ final class MojangSkinProvider implements SkinProvider {
     }
     
     @Override
-    public @Nullable Skin fetch(final @NotNull String username) throws Exception {
+    public @Nullable Skin fetch(final @NotNull String username) {
+        try {
+            return fetch0(username);
+        } catch (final IOException e) {
+            throw new RuntimeException("Failed to fetch skin for username: '" + username + "'", e);
+        }
+    }
+
+    private @Nullable Skin fetch0(final @NotNull String username) throws IOException {
         final var uuid = fetchUUIDByUsername(username);
         if (uuid == null) {
             return null;

@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface SkinProvider {
-    @Nullable Skin fetch(final @NotNull String username) throws Exception;
+    @Nullable Skin fetch(final @NotNull String username);
 
     static @NotNull SkinProvider mojang() {
         return new MojangSkinProvider();
