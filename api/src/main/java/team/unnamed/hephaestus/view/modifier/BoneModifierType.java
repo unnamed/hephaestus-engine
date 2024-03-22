@@ -33,6 +33,8 @@ import team.unnamed.hephaestus.view.modifier.player.PlayerBoneModifierImpl;
 
 import java.util.function.Function;
 
+import static java.util.Objects.requireNonNull;
+
 public final class BoneModifierType<T extends BoneModifier> implements Keyed, Examinable {
     public static final BoneModifierType<PlayerBoneModifier> PLAYER_PART = new BoneModifierType<>(
             Key.key("hephaestus", "player_part"),
@@ -45,9 +47,9 @@ public final class BoneModifierType<T extends BoneModifier> implements Keyed, Ex
     private final Function<AbstractBoneView, T> factory;
 
     private BoneModifierType(final @NotNull Key key, final @NotNull Class<T> type, final @NotNull Function<AbstractBoneView, T> factory) {
-        this.key = key;
-        this.type = type;
-        this.factory = factory;
+        this.key = requireNonNull(key, "key");
+        this.type = requireNonNull(type, "type");
+        this.factory = requireNonNull(factory, "factory");
     }
 
     @Override
@@ -61,5 +63,9 @@ public final class BoneModifierType<T extends BoneModifier> implements Keyed, Ex
 
     public @NotNull T create(final @NotNull AbstractBoneView bone) {
         return factory.apply(bone);
+    }
+
+    public static <T extends BoneModifier> @NotNull BoneModifierType<T> create(final @NotNull Key key, final @NotNull Class<T> type, final @NotNull Function<AbstractBoneView, T> factory) {
+        return new BoneModifierType<>(key, type, factory);
     }
 }
