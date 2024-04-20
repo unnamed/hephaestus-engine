@@ -1,5 +1,5 @@
 [versions]
-creative = "1.7.1"
+creative = "1.7.2"
 adventure = "4.15.0"
 annotations = "24.1.0"
 mocha = "3.0.0-SNAPSHOT"
