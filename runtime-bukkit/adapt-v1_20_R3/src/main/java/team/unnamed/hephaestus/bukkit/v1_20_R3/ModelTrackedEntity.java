@@ -24,7 +24,6 @@
 package team.unnamed.hephaestus.bukkit.v1_20_R3;
 
 import net.minecraft.server.level.ChunkMap;
-import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.bukkit.entity.Player;
@@ -87,5 +86,9 @@ final class ModelTrackedEntity extends ChunkMap.TrackedEntity {
             view.remove(player.connection::send);
             seenBySelf = false;
         }
+    }
+
+    public boolean seenBySelf() {
+        return seenBySelf;
     }
 }

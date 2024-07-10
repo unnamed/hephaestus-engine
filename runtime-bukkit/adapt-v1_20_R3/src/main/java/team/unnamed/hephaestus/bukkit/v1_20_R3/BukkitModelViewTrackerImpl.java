@@ -80,6 +80,11 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
 
         // If we replaced the tracker, restore it
         if (tracker instanceof ModelTrackedEntity replacementTracker) {
+            if (replacementTracker.seenBySelf()) {
+                // Hide the view from the player
+                tracker.removePlayer((ServerPlayer) baseHandle);
+            }
+
             final var old = replacementTracker.replaced();
             chunkMap.entityMap.put(base.getEntityId(), old);
             baseHandle.tracker = old;

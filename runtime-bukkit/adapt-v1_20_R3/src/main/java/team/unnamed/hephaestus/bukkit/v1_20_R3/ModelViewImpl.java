@@ -43,7 +43,6 @@ import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.animation.controller.AnimationPlayer;
 import team.unnamed.hephaestus.bukkit.ModelView;
 import team.unnamed.hephaestus.util.Quaternion;
-import team.unnamed.hephaestus.util.Vectors;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -120,6 +119,11 @@ public class ModelViewImpl implements ModelView {
             ids[i++] = bone.getId();
         }
         packetConsumer.accept(new ClientboundRemoveEntitiesPacket(ids));
+    }
+
+    public void forceRemove(final @NotNull Player player) {
+        final var connection = ((CraftPlayer) player).getHandle().connection;
+        remove(connection::send);
     }
 
     protected void base(final @Nullable Entity base) {
@@ -204,10 +208,13 @@ public class ModelViewImpl implements ModelView {
     public boolean removeViewer(final @NotNull Player player) {
         requireNonNull(player, "player");
         if (base != null) {
-            player.hideEntity(plugin, base);
+            if (base == player) {
+                forceRemove(player);
+            } else {
+                player.hideEntity(plugin, base);
+            }
         } else if (viewers.remove(player)) {
-            final var connection = ((CraftPlayer) player).getHandle().connection;
-            remove(connection::send);
+            forceRemove(player);
             return true;
         }
         return false;
