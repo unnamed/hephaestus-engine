@@ -61,7 +61,7 @@ public interface PlayerRig {
      * @return The vertex shader used by this rig
      * @since 1.0.0
      */
-    @NotNull Writable vertexShader();
+    @Nullable Writable vertexShader();
 
     /**
      * Returns the fragment shader used by this rig.
@@ -69,7 +69,7 @@ public interface PlayerRig {
      * @return The fragment shader used by this rig
      * @since 1.0.0
      */
-    @NotNull Writable fragmentShader();
+    @Nullable Writable fragmentShader();
 
     /**
      * Returns the vanilla player rig, which is the default

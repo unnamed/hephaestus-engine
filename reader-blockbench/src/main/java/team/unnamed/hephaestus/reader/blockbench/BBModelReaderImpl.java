@@ -78,12 +78,9 @@ final class BBModelReaderImpl implements BBModelReader {
             throw new ModelFormatException("Model '" + modelName + "' uses box UV, which is not supported.");
         }
 
-        final JsonObject resolution = json.getAsJsonObject("resolution");
-        modelData.textureWidth = resolution.get("width").getAsInt();
-        modelData.textureHeight = resolution.get("height").getAsInt();
-
         final Map<String, TextureAsset> textures = TextureReader.readTextures(json, modelData);
-        ElementReader.readElements(json, modelData);
+        ElementReader.readElements(json, modelData, textures);
+
         final Map<String, Animation> animations = AnimationReader.readAnimations(json);
 
         return new Model(

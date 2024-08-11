@@ -36,6 +36,10 @@ public interface BoneModifierMap extends BoneModifier {
 
     <T extends BoneModifier> void removeModifier(final @NotNull BoneModifierType<T> type);
 
+    default <T extends BoneModifier> void configure(final @NotNull BoneModifierType<T> type) {
+        configure(type, ignored -> {});
+    };
+
     <T extends BoneModifier> void configure(final @NotNull BoneModifierType<T> type, final @NotNull Consumer<T> configure);
 
     boolean hasModifier(final @NotNull BoneModifierType<?> type);

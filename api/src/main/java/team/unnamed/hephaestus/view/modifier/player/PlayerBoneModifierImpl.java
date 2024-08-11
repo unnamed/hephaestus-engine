@@ -67,22 +67,23 @@ public final class PlayerBoneModifierImpl implements PlayerBoneModifier {
         final var modelData = skin != null && skin.type() == Skin.Type.SLIM
                 ? type.slimModelData()
                 : type.modelData();
-        final var color = original.getCompound(Minecraft.DISPLAY_TAG).getInt(Minecraft.COLOR_TAG);
+
+        final var color = original.getInt(Minecraft.COLOR_TAG);
+
         final var builder = CompoundBinaryTag.builder()
                 .putInt(Minecraft.CUSTOM_MODEL_DATA_TAG, modelData)
-                .put(Minecraft.DISPLAY_TAG, CompoundBinaryTag.builder()
-                        .putInt(Minecraft.COLOR_TAG, color)
-                        .build());
+                .putInt(Minecraft.COLOR_TAG, color);
 
         if (skin != null) {
-            builder.put("SkullOwner", CompoundBinaryTag.builder()
-                    .put("Properties", CompoundBinaryTag.builder()
-                            .put("textures", ListBinaryTag.builder()
-                                    .add(skin.asNBT())
-                                    .build())
-                            .build())
-                    .build());
+            builder.put(Minecraft.PROFILE_TAG, CompoundBinaryTag.builder()
+                    .put(Minecraft.PROPERTIES_TAG, ListBinaryTag.builder()
+                            .add(skin.asNBT())
+                            .build()
+                    )
+                    .build()
+            );
         }
+
         return builder.build();
     }
 

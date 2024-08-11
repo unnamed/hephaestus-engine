@@ -58,6 +58,9 @@ final class TextureReader {
             final String name = textureObjectNode.get("name").getAsString();
             final String source = textureObjectNode.get("source").getAsString();
 
+            final int uvWidth = textureObjectNode.get("uv_width").getAsInt();
+            final int uvHeight = textureObjectNode.get("uv_height").getAsInt();
+
             if (!source.startsWith(BASE_64_PREFIX)) {
                 throw new ModelFormatException("Texture '" + name + "' of '" + modelData.name + "' doesn't" +
                         " contain a valid texture source. Must start with a Base64 prefix");
@@ -67,7 +70,7 @@ final class TextureReader {
             final TextureAsset texture;
 
             try {
-                texture = TextureAsset.textureAsset(id, name, textureData);
+                texture = TextureAsset.textureAsset(id, name, uvWidth, uvHeight, textureData);
             } catch (final InvalidKeyException e) {
                 throw new ModelFormatException("Texture '" + name + "' of '" + modelData.name + "' has" +
                         " an invalid name.", e);

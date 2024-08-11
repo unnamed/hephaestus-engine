@@ -54,4 +54,9 @@ public interface PlayerBoneType {
     default @NotNull Vector3Float slimTranslation() {
         return translation();
     }
+
+    static @NotNull PlayerBoneTypeImpl.Builder builder(final @NotNull @KeyPattern.Value String name) {
+        return new PlayerBoneTypeImpl.Builder(name);
+    }
+
 }

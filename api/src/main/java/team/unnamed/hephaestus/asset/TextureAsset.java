@@ -45,15 +45,21 @@ public final class TextureAsset {
 
     private final String id;
     private final String name;
+    private final int uvWidth;
+    private final int uvHeight;
     private final Writable data;
 
     private TextureAsset(
             final @NotNull String id,
             @Subst("texture.png") @Pattern("[a-z0-9_\\-./]+") final @NotNull String name,
+            int uvWidth,
+            int uvHeight,
             final @NotNull Writable data
     ) {
         this.id = requireNonNull(id, "id");
         this.name = requireNonNull(name, "name");
+        this.uvWidth = uvWidth;
+        this.uvHeight = uvHeight;
         this.data = requireNonNull(data, "data");
 
         // validate the name, will throw InvalidKeyException if invalid
@@ -93,6 +99,14 @@ public final class TextureAsset {
         return name;
     }
 
+    public int uvWidth() {
+        return uvWidth;
+    }
+
+    public int uvHeight() {
+        return uvHeight;
+    }
+
     /**
      * Returns the actual PNG texture data as
      * a {@link Writable} instance.
@@ -118,8 +132,10 @@ public final class TextureAsset {
     public static @NotNull TextureAsset textureAsset(
             final @NotNull String id,
             @Subst("texture.png") @Pattern("[a-z0-9_\\-./]+") final @NotNull String name,
+            final int uvWidth,
+            final int uvHeight,
             final @NotNull Writable data
     ) {
-        return new TextureAsset(id, name, data);
+        return new TextureAsset(id, name, uvWidth, uvHeight, data);
     }
 }

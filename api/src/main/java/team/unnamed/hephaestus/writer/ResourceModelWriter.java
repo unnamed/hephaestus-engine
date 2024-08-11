@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus.writer;
 
+import com.google.gson.internal.LazilyParsedNumber;
 import net.kyori.adventure.key.Key;
 import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
@@ -83,6 +84,16 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
         List<ItemOverride> overrides = new ArrayList<>();
         List<AtlasSource> sources = new ArrayList<>();
 
+        team.unnamed.creative.model.Model oldLeather = resourcePack.model(LEATHER_HORSE_ARMOR_KEY);
+        if (oldLeather != null) {
+            overrides.addAll(oldLeather.overrides());
+        }
+
+        final var oldAtlas = resourcePack.atlas(Atlas.BLOCKS);
+        if (oldAtlas != null) {
+            sources.addAll(oldAtlas.sources());
+        }
+
         for (Model model : models) {
             ModelAsset asset = model.asset();
 
@@ -109,7 +120,10 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
         // sort overrides comparing by customModelData
         overrides.sort(Comparator.comparing(override -> {
             ItemPredicate predicate = override.predicate().get(0);
-            return (Integer) predicate.value();
+
+            return predicate.value() instanceof LazilyParsedNumber parsedNumber
+                    ? parsedNumber.intValue()
+                    : (Integer) predicate.value();
         }));
 
         resourcePack.model(team.unnamed.creative.model.Model.model()

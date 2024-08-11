@@ -31,10 +31,16 @@ public final class Minecraft {
     public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
     public static final float PLAYER_DEFAULT_PICK_RANGE = 4.5F;
 
-    public static final String DISPLAY_TAG = "display";
-    public static final String CUSTOM_MODEL_DATA_TAG = "CustomModelData";
-    public static final String COLOR_TAG = "color";
-    public static final String SKULL_OWNER_TAG = "SkullOwner";
+    public static final String CUSTOM_MODEL_DATA_TAG = "minecraft:custom_model_data";
+    public static final String COLOR_TAG = "minecraft:dyed_color";
+    public static final String PROFILE_TAG = "minecraft:profile";
+
+    //Skin
+    public static final String PROPERTIES_TAG = "properties";
+    public static final String SIGNATURE_TAG = "signature";
+    public static final String VALUE_TAG = "value";
+    public static final String PROPERTY_NAME_TAG = "name";
+    public static final String PROPERTY_NAME_VALUE = "textures";
 
     private Minecraft() {
     }

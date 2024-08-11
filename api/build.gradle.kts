@@ -9,4 +9,5 @@ dependencies {
     api(libs.adventure.nbt)
     api(libs.gson)
     api(libs.mocha)
+    api(libs.gson)
 }

@@ -37,8 +37,8 @@ import team.unnamed.hephaestus.view.AbstractBoneView;
 import team.unnamed.hephaestus.view.AbstractModelView;
 import team.unnamed.mocha.MochaEngine;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,8 +67,9 @@ class AnimationPlayerImpl implements AnimationPlayer {
                 queue = new AnimationQueue();
             }
 
-            if (transitionTicks == 0 || queue.current == null) {
+            if (transitionTicks == 0 || queue.current == null || lastFrames.isEmpty()) {
                 queue.clear();
+                lastFrames.clear();
                 queue.setCurrent(animation);
             } else {
                 queue.clear();
@@ -84,17 +85,34 @@ class AnimationPlayerImpl implements AnimationPlayer {
     @Override
     public synchronized void remove(final @NotNull Animation animation) {
         requireNonNull(animation, "animation");
+        for (AnimationQueue queue : animations) {
+            if (queue.current == null) {
+                continue;
+            }
+
+            if (queue.current.name().equals(animation.name())) {
+                queue.moveToNextAnimation();
+            }
+        }
         //animations.remove(animation);
     }
 
     @Override
     public @NotNull Collection<Animation> animations() {
-        //return animations;
-        return Collections.emptySet();
+        Collection<Animation> playing = new ArrayList<>();
+        animations.forEach(queue -> {
+            if (queue.current != null) {
+                playing.add(queue.current);
+            }
+
+            playing.addAll(queue.queue);
+        });
+        return playing;
     }
 
     @Override
     public void clear() {
+        lastFrames.clear();
         animations.clear();
     }
 
@@ -146,6 +164,7 @@ class AnimationPlayerImpl implements AnimationPlayer {
 
         AbstractBoneView boneView = view.bone(bone.name());
         if (boneView != null) {
+            globalRotation = globalRotation.multiply(boneView.localRotation());
             boneView.update(globalPosition, globalRotation, globalScale);
         }
 
@@ -193,7 +212,7 @@ class AnimationPlayerImpl implements AnimationPlayer {
                         queue.moveToNextAnimation();
                         // animation ended, lastFrames are removed
                         // so that next calls will return INITIAL
-                        lastFrames.remove(boneName);
+                        lastFrames.clear();
                         return frame;
                     case LOOP:
                         queue.setCurrent(animation);

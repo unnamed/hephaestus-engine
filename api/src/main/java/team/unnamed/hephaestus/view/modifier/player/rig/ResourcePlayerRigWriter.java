@@ -104,7 +104,13 @@ public final class ResourcePlayerRigWriter implements PlayerRigWriter<ResourcePa
                 .build());
 
         // copy our shaders
-        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.fsh", rig.fragmentShader());
-        resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.vsh", rig.vertexShader());
+        if (rig.fragmentShader() != null) {
+            resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.fsh", rig.fragmentShader());
+        }
+
+        if (rig.vertexShader() != null) {
+            resourcePack.unknownFile("assets/minecraft/shaders/core/rendertype_entity_translucent.vsh", rig.vertexShader());
+        }
+
     }
 }

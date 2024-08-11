@@ -23,7 +23,6 @@
  */
 package team.unnamed.hephaestus.minestom;
 
-import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
@@ -31,14 +30,7 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
 import net.minestom.server.item.ItemStack;
-import net.minestom.server.item.Material;
-import net.minestom.server.item.metadata.LeatherArmorMeta;
-import net.minestom.server.utils.NamespaceID;
 import org.jetbrains.annotations.NotNull;
-import org.jglrxavpok.hephaistos.nbt.NBTCompound;
-import org.jglrxavpok.hephaistos.nbt.NBTException;
-import org.jglrxavpok.hephaistos.nbt.NBTReader;
-import org.jglrxavpok.hephaistos.nbt.NBTType;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Hephaestus;
@@ -46,33 +38,18 @@ import team.unnamed.hephaestus.Minecraft;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.modifier.BoneModifierMap;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 public class BoneEntity extends GenericBoneEntity implements BoneModifierMap.Forwarding {
-
-    private static final ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
-            .meta(new LeatherArmorMeta.Builder()
-                    .color(new Color(0xFFFFFF))
-                    .build()
-            )
-            .build();
 
     protected final ModelEntity view;
     protected final Bone bone;
     private final BoneModifierMap modifiers = BoneModifierMap.create(this);
     protected final float modelScale;
 
+    protected Quaternion localRotation = Quaternion.IDENTITY;
+
     private int color = 0xFFFFFF;
 
-    public BoneEntity(
-            ModelEntity view,
-            Bone bone,
-            Vector3Float initialPosition,
-            Quaternion initialRotation,
-            float modelScale
-    ) {
+    public BoneEntity(ModelEntity view, Bone bone, Vector3Float initialPosition, Quaternion initialRotation, float modelScale) {
         super(EntityType.ITEM_DISPLAY);
         this.view = view;
         this.bone = bone;
@@ -81,16 +58,13 @@ public class BoneEntity extends GenericBoneEntity implements BoneModifierMap.For
     }
 
     @Override
-    public void setInvisible(boolean invisible) {
-        super.setInvisible(invisible);
+    public Quaternion localRotation() {
+        return localRotation;
+    }
 
-        ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        if (bone.parentOnly() || invisible) {
-            meta.setItemStack(ItemStack.AIR);
-        } else {
-            meta.setItemStack(BASE_HELMET.withMeta(itemMeta ->
-                    itemMeta.customModelData(bone.customModelData())));
-        }
+    @Override
+    public void rotate(Quaternion rotation) {
+        this.localRotation = rotation;
     }
 
     protected void initialize(Vector3Float initialPosition, Quaternion initialRotation) {
@@ -116,11 +90,7 @@ public class BoneEntity extends GenericBoneEntity implements BoneModifierMap.For
         meta.setTransformationInterpolationStartDelta(0);
         meta.setTranslation(new Pos(position.x(), position.y(), position.z()).mul(modelScale * bone.scale()));
         meta.setRightRotation(rotation.toFloatArray());
-        meta.setScale(new Vec(
-                modelScale * bone.scale() * scale.x(),
-                modelScale * bone.scale() * scale.y(),
-                modelScale * bone.scale() * scale.z()
-        ));
+        meta.setScale(new Vec(modelScale * bone.scale() * scale.x(), modelScale * bone.scale() * scale.y(), modelScale * bone.scale() * scale.z()));
 
         meta.setNotifyAboutChanges(true);
     }
@@ -162,34 +132,24 @@ public class BoneEntity extends GenericBoneEntity implements BoneModifierMap.For
 
     @Override
     public void updateItem() {
-        final var itemKey = modifiers.modifyItem(Hephaestus.BONE_ITEM_KEY);
-        final var tag = modifiers.modifyItemTag(CompoundBinaryTag.builder()
-                .put(Minecraft.DISPLAY_TAG, CompoundBinaryTag.builder()
-                        .putInt(Minecraft.COLOR_TAG, color)
-                        .build())
-                .putInt(Minecraft.CUSTOM_MODEL_DATA_TAG, bone.customModelData())
-                .build());
+        if (isInvisible()) {
+            ((ItemDisplayMeta) getEntityMeta()).setItemStack(ItemStack.AIR);
+        } else {
+            final var itemKey = modifiers.modifyItem(Hephaestus.BONE_ITEM_KEY);
+            final var components = modifiers.modifyItemTag(CompoundBinaryTag.builder()
+                    .putInt(Minecraft.CUSTOM_MODEL_DATA_TAG, bone.customModelData())
+                    .putInt(Minecraft.COLOR_TAG, color)
+                    .build()
+            );
 
-        final var item = Material.fromNamespaceId(NamespaceID.from(itemKey));
-        if (item == null) {
-            throw new IllegalStateException("Item key " + itemKey + " is not a valid material");
+            final var itemNbt = CompoundBinaryTag.builder()
+                    .putString("id", itemKey.asString())
+                    .putInt("count", 1)
+                    .put("components", components)
+                    .build();
+
+            ((ItemDisplayMeta) getEntityMeta()).setItemStack(ItemStack.fromItemNBT(itemNbt));
         }
-        var itemStack = ItemStack.of(item, 1);
-
-        try {
-            final var bytes = new ByteArrayOutputStream();
-            final var output = new DataOutputStream(bytes);
-            BinaryTagTypes.COMPOUND.write(tag, output);
-            output.flush();
-
-            final var minestomTag = (NBTCompound) NBTReader.fromArray(bytes.toByteArray())
-                    .readRaw(NBTType.TAG_Compound.getOrdinal());
-            itemStack = itemStack.withMeta(meta -> meta.tagHandler().updateContent(minestomTag));
-        } catch (final IOException | NBTException e) {
-            throw new RuntimeException("Failed to write item tag", e);
-        }
-
-        ((ItemDisplayMeta) getEntityMeta()).setItemStack(itemStack);
     }
 
     @Override

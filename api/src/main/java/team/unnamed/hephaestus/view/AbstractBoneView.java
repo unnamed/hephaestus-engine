@@ -32,6 +32,8 @@ import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.modifier.BoneModifierMap;
 
+import java.util.function.Function;
+
 /**
  * Base abstraction for representing {@link Bone}
  * views, it is a bone that is actually present in
@@ -128,4 +130,13 @@ public interface AbstractBoneView extends BoneModifierMap {
         updateTransformation();
         updateItem();
     }
+
+    default void rotate(Quaternion rotation) {
+
+    }
+
+    default Quaternion localRotation() {
+        return Quaternion.IDENTITY;
+    }
+
 }

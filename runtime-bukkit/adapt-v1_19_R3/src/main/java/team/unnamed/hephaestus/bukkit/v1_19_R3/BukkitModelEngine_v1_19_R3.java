@@ -21,24 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.reader.blockbench;
+package team.unnamed.hephaestus.bukkit.v1_19_R3;
 
-import team.unnamed.creative.base.Vector2Float;
-import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.ModelDataCursor;
-import team.unnamed.hephaestus.asset.BoneAsset;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
+import team.unnamed.hephaestus.bukkit.track.ModelViewPersistenceHandler;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-class BBModelData {
-
-    // todo: !!!!!! this is ugly, fix it
-    String name;
-    Vector2Float boundingBox = new Vector2Float(1, 1);
-
-    ModelDataCursor modelDataCursor;
-    final Map<String, Bone> bones = new LinkedHashMap<>();
-    final Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
-
+@ApiStatus.NonExtendable
+public interface BukkitModelEngine_v1_19_R3 extends BukkitModelEngine {
+    static BukkitModelEngine create(Plugin plugin, final @NotNull ModelViewPersistenceHandler persistenceHandler) {
+        return new BukkitModelEngine_v1_19_R3Impl(plugin, persistenceHandler);
+    }
 }

@@ -28,6 +28,7 @@ import net.kyori.examination.ExaminableProperty;
 import net.kyori.examination.string.StringExaminer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import team.unnamed.hephaestus.Minecraft;
 
 import java.util.stream.Stream;
 
@@ -44,8 +45,9 @@ final class SkinImpl implements Skin {
         this.value = requireNonNull(value, "value");
         this.type = requireNonNull(type, "type");
         this.asNBT = CompoundBinaryTag.builder()
-                .putString("Value", value)
-                .putString("Signature", signature)
+                .putString(Minecraft.PROPERTY_NAME_TAG, Minecraft.PROPERTY_NAME_VALUE)
+                .putString(Minecraft.SIGNATURE_TAG, signature)
+                .putString(Minecraft.VALUE_TAG, value)
                 .build();
     }
 

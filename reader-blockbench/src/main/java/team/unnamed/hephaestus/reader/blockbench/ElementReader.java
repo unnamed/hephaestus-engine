@@ -36,6 +36,7 @@ import team.unnamed.creative.texture.TextureUV;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.asset.BoneAsset;
 import team.unnamed.hephaestus.asset.ElementAsset;
+import team.unnamed.hephaestus.asset.TextureAsset;
 import team.unnamed.hephaestus.process.ElementScale;
 import team.unnamed.hephaestus.reader.ModelFormatException;
 
@@ -56,7 +57,8 @@ final class ElementReader {
      */
     static void readElements(
             JsonObject json,
-            BBModelData modelData
+            BBModelData modelData,
+            Map<String, TextureAsset> textures
     ) {
 
         // Local map holding relations of cube identifier to
@@ -115,12 +117,17 @@ final class ElementReader {
                         ? -1
                         : faceJson.get("texture").getAsInt();
 
+                final var texture = textures.get(textureId + "");
+                if (texture == null) {
+                    continue;
+                }
+
                 JsonArray uvJson = faceJson.get("uv").getAsJsonArray();
                 final TextureUV uv = TextureUV.uv(
-                        uvJson.get(0).getAsFloat() / modelData.textureWidth,
-                        uvJson.get(1).getAsFloat() / modelData.textureHeight,
-                        uvJson.get(2).getAsFloat() / modelData.textureWidth,
-                        uvJson.get(3).getAsFloat() / modelData.textureHeight
+                        uvJson.get(0).getAsFloat() / texture.uvWidth(),
+                        uvJson.get(1).getAsFloat() / texture.uvHeight(),
+                        uvJson.get(2).getAsFloat() / texture.uvWidth(),
+                        uvJson.get(3).getAsFloat() / texture.uvHeight()
                 );
 
                 int faceRotation = faceJson.has("rotation") ? faceJson.get("rotation").getAsInt() : ElementFace.DEFAULT_ROTATION;

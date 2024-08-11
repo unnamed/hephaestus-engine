@@ -2,6 +2,12 @@ plugins {
     id("hephaestus.publishing-conventions")
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 repositories {
     maven("https://jitpack.io")
     mavenCentral()

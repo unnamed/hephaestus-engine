@@ -41,12 +41,14 @@ import team.unnamed.hephaestus.view.modifier.BoneModifierType;
 import team.unnamed.hephaestus.view.modifier.player.skin.SkinProvider;
 import team.unnamed.hephaestus.view.modifier.player.rig.PlayerRig;
 
+
 import java.io.InputStream;
 import java.util.logging.LogManager;
 
 public class Server {
 
     private final static SkinProvider SKIN_PROVIDER = SkinProvider.minetools();
+
 
     public static void main(String[] args) throws Exception {
         // configure logger

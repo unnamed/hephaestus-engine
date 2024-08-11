@@ -21,24 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.reader.blockbench;
+package team.unnamed.hephaestus;
 
-import team.unnamed.creative.base.Vector2Float;
-import team.unnamed.hephaestus.Bone;
-import team.unnamed.hephaestus.ModelDataCursor;
-import team.unnamed.hephaestus.asset.BoneAsset;
+import org.jetbrains.annotations.ApiStatus;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+@ApiStatus.Internal
+public final class MinecraftPre1_20_5 {
 
-class BBModelData {
+    public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
+    public static final float PLAYER_DEFAULT_PICK_RANGE = 4.5F;
 
-    // todo: !!!!!! this is ugly, fix it
-    String name;
-    Vector2Float boundingBox = new Vector2Float(1, 1);
+    public static final String DISPLAY_TAG = "display";
+    public static final String CUSTOM_MODEL_DATA_TAG = "CustomModelData";
+    public static final String COLOR_TAG = "color";
+    public static final String SKULL_OWNER_TAG = "SkullOwner";
 
-    ModelDataCursor modelDataCursor;
-    final Map<String, Bone> bones = new LinkedHashMap<>();
-    final Map<String, BoneAsset> boneAssets = new LinkedHashMap<>();
+    private MinecraftPre1_20_5() {
+    }
 
 }

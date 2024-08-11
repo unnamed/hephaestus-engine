@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R3;
+package team.unnamed.hephaestus.bukkit.v1_19_R3;
 
 import com.mojang.math.Transformation;
 import net.kyori.adventure.nbt.BinaryTagTypes;
@@ -87,7 +87,7 @@ public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneMod
 
     protected void initialize(Vector3Float initialPosition, Quaternion initialRotation) {
         setItemTransform(ItemDisplayContext.THIRD_PERSON_LEFT_HAND);
-        setTransformationInterpolationDuration(3);
+        setInterpolationDuration(3);
         setViewRange(1000);
         setNoGravity(false);
 
@@ -174,7 +174,7 @@ public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneMod
                         rotation.w()
                 )
         ));
-        setTransformationInterpolationDelay(0);
+        setInterpolationDelay(0);
     }
 
     @Override
@@ -212,7 +212,13 @@ public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneMod
             BinaryTagTypes.COMPOUND.write(tag, output);
             output.flush();
 
-            final var nmsTag = CompoundTag.TYPE.load(new DataInputStream(new ByteArrayInputStream(bytes.toByteArray())), NbtAccounter.unlimitedHeap());
+            final var nmsTag = CompoundTag.TYPE.load(
+                    new DataInputStream(
+                            new ByteArrayInputStream(bytes.toByteArray())
+                    ),
+                    -1,
+                    NbtAccounter.UNLIMITED
+            );
             itemStack.setTag(nmsTag);
         } catch (final IOException e) {
             throw new RuntimeException("Failed to write item tag", e);
