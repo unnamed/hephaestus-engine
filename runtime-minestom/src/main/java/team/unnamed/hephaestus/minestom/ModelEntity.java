@@ -78,8 +78,6 @@ public class ModelEntity extends EntityCreature implements AbstractModelView<Pla
 
     @Override
     public void setInvisible(boolean invisible) {
-        super.setInvisible(invisible);
-
         for (GenericBoneEntity bone : bones()) {
             bone.setInvisible(invisible);
         }
@@ -88,7 +86,7 @@ public class ModelEntity extends EntityCreature implements AbstractModelView<Pla
     private void initialize() {
         Vector2Float boundingBox = model.boundingBox();
         setBoundingBox(boundingBox.x(), boundingBox.y(), boundingBox.x());
-        setInvisible(true);
+        super.setInvisible(true);
         setNoGravity(true);
 
         for (Bone bone : model.bones()) {

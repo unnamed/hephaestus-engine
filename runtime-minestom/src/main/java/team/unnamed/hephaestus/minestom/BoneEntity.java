@@ -126,6 +126,12 @@ public class BoneEntity extends GenericBoneEntity implements BoneModifierMap.For
     }
 
     @Override
+    public void setInvisible(boolean invisible) {
+        super.setInvisible(invisible);
+        updateItem();
+    }
+
+    @Override
     public void colorize(final int red, int green, int blue) {
         colorize(new Color(red, green, blue));
     }
