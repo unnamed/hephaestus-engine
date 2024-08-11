@@ -26,6 +26,7 @@ package team.unnamed.hephaestus.minestom;
 import net.kyori.adventure.sound.Sound;
 import net.minestom.server.color.Color;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
@@ -92,6 +93,15 @@ public class ModelEntity extends EntityCreature implements AbstractModelView<Pla
         for (Bone bone : model.bones()) {
             createBone(bone, Vector3Float.ZERO, Quaternion.IDENTITY);
         }
+    }
+
+    @Override
+    public void removePassenger(@NotNull Entity entity) {
+        if (entity instanceof GenericBoneEntity) {
+            return;
+        }
+
+        super.removePassenger(entity);
     }
 
     protected void createBone(Bone bone, Vector3Float parentPosition, Quaternion parentRotation) {
