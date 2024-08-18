@@ -1,7 +1,7 @@
 plugins {
     id("hephaestus.runtime-bukkit-conventions")
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("xyz.jpenilla.run-paper") version "2.2.3"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 dependencies {
