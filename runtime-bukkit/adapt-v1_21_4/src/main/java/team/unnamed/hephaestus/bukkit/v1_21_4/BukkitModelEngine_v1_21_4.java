@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R3;
+package team.unnamed.hephaestus.bukkit.v1_21_4;
 
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
@@ -30,8 +30,8 @@ import team.unnamed.hephaestus.bukkit.BukkitModelEngine;
 import team.unnamed.hephaestus.bukkit.track.ModelViewPersistenceHandler;
 
 @ApiStatus.NonExtendable
-public interface BukkitModelEngine_v1_20_R3 extends BukkitModelEngine {
+public interface BukkitModelEngine_v1_21_4 extends BukkitModelEngine {
     static BukkitModelEngine create(Plugin plugin, final @NotNull ModelViewPersistenceHandler persistenceHandler) {
-        return new BukkitModelEngine_v1_20_R3Impl(plugin, persistenceHandler);
+        return new BukkitModelEngine_v1_21_4Impl(plugin, persistenceHandler);
     }
 }

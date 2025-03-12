@@ -1,6 +1,9 @@
 # Gradle files
 .gradle
 
+# Secrets!
+/reader-blockbench/src/test/resources/hidden_models
+
 # Output files
 /build/
 /*/build/
