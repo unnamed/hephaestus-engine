@@ -30,6 +30,8 @@ import team.unnamed.creative.ResourcePack;
 import team.unnamed.creative.atlas.Atlas;
 import team.unnamed.creative.atlas.AtlasSource;
 import team.unnamed.creative.base.Vector3Float;
+import team.unnamed.creative.item.Item;
+import team.unnamed.creative.item.ItemModel;
 import team.unnamed.creative.model.Element;
 import team.unnamed.creative.model.ItemOverride;
 import team.unnamed.creative.model.ItemPredicate;
@@ -60,7 +62,7 @@ import java.util.Map;
  * @since 1.0.0
  */
 final class ResourceModelWriter implements ModelWriter<ResourcePack> {
-
+    private static final Key LEATHER_HORSE_ARMOR_ITEM_MODEL_KEY = Key.key("leather_horse_armor");
     private static final Key LEATHER_HORSE_ARMOR_KEY = Key.key("item/leather_horse_armor");
 
     @Subst(Hephaestus.NAMESPACE)
@@ -123,6 +125,13 @@ final class ResourceModelWriter implements ModelWriter<ResourcePack> {
                 .overrides(overrides)
                 .build()
         );
+
+        resourcePack.item(Item.item(LEATHER_HORSE_ARMOR_ITEM_MODEL_KEY, ItemModel.composite(
+                ItemOverride.toItemModels(
+                        ItemModel.reference(LEATHER_HORSE_ARMOR_KEY),
+                        overrides
+                )
+        )));
 
         resourcePack.atlas(Atlas.atlas()
                 .key(Atlas.BLOCKS)
