@@ -1,11 +1,17 @@
 plugins {
     id("hephaestus.runtime-bukkit-conventions")
     id("hephaestus.publishing-conventions")
-    id("io.papermc.paperweight.userdev") version "1.5.12"
+    id("io.papermc.paperweight.userdev") version "1.7.1"
 }
 
 repositories {
     maven("https://libraries.minecraft.net/")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 tasks {
@@ -15,14 +21,14 @@ tasks {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
 
     implementation(project(":hephaestus-runtime-bukkit-api"))
 }
 
 tasks {
     reobfJar {
-        outputJar = file("build/libs/hephaestus-runtime-bukkit-adapt-v1_20_R3-reobf.jar")
+        outputJar = file("build/libs/hephaestus-runtime-bukkit-adapt-v1_21_R1-reobf.jar")
     }
     create<Sign>("signReobfJar") {
         dependsOn(reobfJar)
