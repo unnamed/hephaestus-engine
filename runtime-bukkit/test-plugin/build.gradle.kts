@@ -4,27 +4,33 @@ plugins {
     id("xyz.jpenilla.run-paper") version "2.2.3"
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 dependencies {
     // server api
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
 
     // resource-pack plugin api
-    compileOnly("team.unnamed:creative-central-api:1.3.0")
+    compileOnly("team.unnamed:creative-central-api:1.4.0")
 
     // hephaestus-engine dependencies
     implementation(project(":hephaestus-api"))
     implementation(project(":hephaestus-reader-blockbench"))
     implementation(project(":hephaestus-runtime-bukkit-api"))
-    implementation(project(":hephaestus-runtime-bukkit-adapt-v1_20_R3", configuration = "reobf"))
+    implementation(project(":hephaestus-runtime-bukkit-adapt-v1_21_R1", configuration = "reobf"))
 }
 
 tasks {
     runServer {
         downloadPlugins {
-            modrinth("central", "1.3.0") // creative-central
+            modrinth("central", "1.4.0") // creative-central
         }
 
-        minecraftVersion("1.20.4")
+        minecraftVersion("1.21")
     }
     shadowJar {
         dependencies {

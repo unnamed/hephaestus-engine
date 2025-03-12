@@ -7,7 +7,7 @@ rootProject.name = "hephaestus-parent"
 includePrefixed("api")
 includePrefixed("reader-blockbench")
 includePrefixed("runtime-bukkit:api")
-includePrefixed("runtime-bukkit:adapt-v1_20_R3")
+includePrefixed("runtime-bukkit:adapt-v1_21_R1")
 includePrefixed("runtime-bukkit:test-plugin")
 includePrefixed("runtime-minestom")
 
