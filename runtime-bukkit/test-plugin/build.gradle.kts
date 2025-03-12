@@ -1,7 +1,7 @@
 plugins {
     id("hephaestus.runtime-bukkit-conventions")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("xyz.jpenilla.run-paper") version "2.2.3"
+    id("com.gradleup.shadow") version "8.3.6"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 java {
@@ -21,7 +21,7 @@ dependencies {
     implementation(project(":hephaestus-api"))
     implementation(project(":hephaestus-reader-blockbench"))
     implementation(project(":hephaestus-runtime-bukkit-api"))
-    implementation(project(":hephaestus-runtime-bukkit-adapt-v1_21_R1", configuration = "reobf"))
+    implementation(project(":hephaestus-runtime-bukkit-adapt-v1_21_4", configuration = "reobf"))
 }
 
 tasks {

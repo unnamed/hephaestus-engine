@@ -21,12 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R3;
+package team.unnamed.hephaestus.bukkit.v1_21_4;
 
 import com.mojang.math.Transformation;
 import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.TagStringIO;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -204,7 +203,7 @@ public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneMod
                 .putInt(Minecraft.CUSTOM_MODEL_DATA_TAG, bone.customModelData())
                 .build());
 
-        final var item = BuiltInRegistries.ITEM.get(new ResourceLocation(itemKey.namespace(), itemKey.value()));
+        final var item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(itemKey.namespace(), itemKey.value()));
         final var itemStack = new ItemStack(item, 1);
 
         try {

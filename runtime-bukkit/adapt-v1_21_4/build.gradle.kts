@@ -1,7 +1,7 @@
 plugins {
     id("hephaestus.runtime-bukkit-conventions")
     id("hephaestus.publishing-conventions")
-    id("io.papermc.paperweight.userdev") version "1.7.1"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.14"
 }
 
 repositories {
@@ -21,7 +21,7 @@ tasks {
 }
 
 dependencies {
-    paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
 
     implementation(project(":hephaestus-runtime-bukkit-api"))
 }

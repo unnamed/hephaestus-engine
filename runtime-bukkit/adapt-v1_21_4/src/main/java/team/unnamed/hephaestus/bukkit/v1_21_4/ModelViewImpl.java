@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.v1_20_R3;
+package team.unnamed.hephaestus.bukkit.v1_21_4;
 
 import com.google.common.collect.ImmutableMap;
 import net.kyori.adventure.sound.Sound;
@@ -30,7 +30,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -89,7 +89,7 @@ public class ModelViewImpl implements ModelView {
 
         // add passengers to base entity
         //noinspection DataFlowIssue
-        packetConsumer.accept(new ClientboundSetPassengersPacket(new FriendlyByteBuf(null) {
+        packetConsumer.accept(ClientboundSetPassengersPacket.STREAM_CODEC.decode(new FriendlyByteBuf(null) {
             @Override
             public int readVarInt() {
                 return baseEntityId;

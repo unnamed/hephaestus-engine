@@ -35,11 +35,17 @@ import team.unnamed.hephaestus.asset.BoneAsset;
 import team.unnamed.hephaestus.asset.ElementAsset;
 import team.unnamed.hephaestus.asset.ModelAsset;
 import team.unnamed.hephaestus.asset.TextureAsset;
+import team.unnamed.hephaestus.reader.ModelFormatException;
 import team.unnamed.hephaestus.reader.ModelReader;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
+import java.util.Queue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -113,4 +119,29 @@ public class BBModelReaderTest {
         }
     }
 
+    @Test
+    @DisplayName("Test that all of the hidden models are correctly read (don't throw exceptions)")
+    public void test_hidden() throws IOException {
+        ModelReader reader = BBModelReader.blockbench();
+        Path folder = Path.of("src", "test", "resources", "hidden_models");
+
+        if (!Files.exists(folder)) {
+            return;
+        }
+
+        // recursively read all files in the folder and try to read them
+        try (final var stream = Files.walk(folder)) {
+            stream.forEach(file -> {
+                if (!Files.isRegularFile(file)) {
+                    return;
+                }
+
+                try (InputStream resource = Files.newInputStream(file)) {
+                    reader.read(resource);
+                } catch (IOException | ModelFormatException e) {
+                    throw new IllegalStateException("Failed to read " + file, e);
+                }
+            });
+        }
+    }
 }
