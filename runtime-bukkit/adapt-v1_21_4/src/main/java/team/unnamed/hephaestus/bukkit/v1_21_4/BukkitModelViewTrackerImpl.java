@@ -87,7 +87,6 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
 
             final var old = replacementTracker.replaced();
             chunkMap.entityMap.put(base.getEntityId(), old);
-            baseHandle.tracker = old;
             tracker = old;
         }
 
@@ -159,7 +158,6 @@ final class BukkitModelViewTrackerImpl implements BukkitModelViewTracker {
                     baseHandle.getType().trackDeltas()
             );
             chunkMap.entityMap.put(base.getEntityId(), entityTracker);
-            baseHandle.tracker = entityTracker;
             broadcastChangesFunction = packet -> {
                 ((ServerPlayer) baseHandle).connection.send(packet);
                 entityTracker.broadcast(packet);

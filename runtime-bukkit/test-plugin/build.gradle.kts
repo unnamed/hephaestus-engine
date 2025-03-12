@@ -12,7 +12,7 @@ java {
 
 dependencies {
     // server api
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
 
     // resource-pack plugin api
     compileOnly("team.unnamed:creative-central-api:1.4.0")
@@ -27,10 +27,10 @@ dependencies {
 tasks {
     runServer {
         downloadPlugins {
-            modrinth("central", "1.4.0") // creative-central
+            //modrinth("central", "1.3.0") // creative-central
         }
 
-        minecraftVersion("1.21")
+        minecraftVersion("1.21.4")
     }
     shadowJar {
         dependencies {

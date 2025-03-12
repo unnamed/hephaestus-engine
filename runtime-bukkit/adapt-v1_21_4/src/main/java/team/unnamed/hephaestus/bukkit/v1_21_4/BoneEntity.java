@@ -24,8 +24,11 @@
 package team.unnamed.hephaestus.bukkit.v1_21_4;
 
 import com.mojang.math.Transformation;
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.nbt.BinaryTagTypes;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
@@ -37,8 +40,11 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomModelData;
+import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Color;
 import org.jetbrains.annotations.NotNull;
@@ -196,27 +202,17 @@ public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneMod
     @Override
     public void updateItem() {
         final var itemKey = modifiers.modifyItem(Hephaestus.BONE_ITEM_KEY);
-        final var tag = modifiers.modifyItemTag(CompoundBinaryTag.builder()
-                .put(Minecraft.DISPLAY_TAG, CompoundBinaryTag.builder()
-                        .putInt(Minecraft.COLOR_TAG, color)
-                        .build())
-                .putInt(Minecraft.CUSTOM_MODEL_DATA_TAG, bone.customModelData())
-                .build());
 
-        final var item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(itemKey.namespace(), itemKey.value()));
+        final var item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(itemKey.namespace(), itemKey.value())).orElseThrow();
         final var itemStack = new ItemStack(item, 1);
 
-        try {
-            final var bytes = new ByteArrayOutputStream();
-            final var output = new DataOutputStream(bytes);
-            BinaryTagTypes.COMPOUND.write(tag, output);
-            output.flush();
-
-            final var nmsTag = CompoundTag.TYPE.load(new DataInputStream(new ByteArrayInputStream(bytes.toByteArray())), NbtAccounter.unlimitedHeap());
-            itemStack.setTag(nmsTag);
-        } catch (final IOException e) {
-            throw new RuntimeException("Failed to write item tag", e);
-        }
+        itemStack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, true));
+        itemStack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
+                List.of((float) bone.customModelData()),
+                List.of(),
+                List.of(),
+                List.of()
+        ));
 
         setItemStack(itemStack);
     }
