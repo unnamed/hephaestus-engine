@@ -23,6 +23,7 @@
  */
 package team.unnamed.hephaestus;
 
+import net.kyori.adventure.key.Key;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
@@ -30,6 +31,8 @@ public final class Minecraft {
 
     public static final float PLAYER_CREATIVE_PICK_RANGE = 5.0F;
     public static final float PLAYER_DEFAULT_PICK_RANGE = 4.5F;
+
+    public static final Key PLAYER_HEAD_ITEM_KEY = Key.key("minecraft", "player_head");
 
     public static final String DISPLAY_TAG = "display";
     public static final String CUSTOM_MODEL_DATA_TAG = "CustomModelData";

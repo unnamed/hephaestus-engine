@@ -23,11 +23,8 @@
  */
 package team.unnamed.hephaestus.view.modifier;
 
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
 import org.jetbrains.annotations.NotNull;
-import team.unnamed.creative.base.Vector3Float;
-import team.unnamed.hephaestus.util.Quaternion;
+import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.view.AbstractBoneView;
 
 import java.util.HashMap;
@@ -40,6 +37,11 @@ final class BoneModifierMapImpl implements BoneModifierMap {
 
     public BoneModifierMapImpl(final @NotNull AbstractBoneView bone) {
         this.bone = bone;
+    }
+
+    @Override
+    public <T extends BoneModifier> @Nullable T getModifier(@NotNull BoneModifierType<T> type) {
+        return (T) modifiers.get(type);
     }
 
     @Override
@@ -61,45 +63,5 @@ final class BoneModifierMapImpl implements BoneModifierMap {
     @Override
     public boolean hasModifier(final @NotNull BoneModifierType<?> type) {
         return modifiers.containsKey(type);
-    }
-
-    @Override
-    public @NotNull Key modifyItem(@NotNull Key previous) {
-        for (BoneModifier modifier : modifiers.values()) {
-            previous = modifier.modifyItem(previous);
-        }
-        return previous;
-    }
-
-    @Override
-    public @NotNull CompoundBinaryTag modifyItemTag(@NotNull CompoundBinaryTag previous) {
-        for (BoneModifier modifier : modifiers.values()) {
-            previous = modifier.modifyItemTag(previous);
-        }
-        return previous;
-    }
-
-    @Override
-    public @NotNull Vector3Float modifyPosition(@NotNull Vector3Float position) {
-        for (BoneModifier modifier : modifiers.values()) {
-            position = modifier.modifyPosition(position);
-        }
-        return position;
-    }
-
-    @Override
-    public @NotNull Quaternion modifyRotation(@NotNull Quaternion rotation) {
-        for (BoneModifier modifier : modifiers.values()) {
-            rotation = modifier.modifyRotation(rotation);
-        }
-        return rotation;
-    }
-
-    @Override
-    public @NotNull Vector3Float modifyScale(@NotNull Vector3Float scale) {
-        for (BoneModifier modifier : modifiers.values()) {
-            scale = modifier.modifyScale(scale);
-        }
-        return scale;
     }
 }

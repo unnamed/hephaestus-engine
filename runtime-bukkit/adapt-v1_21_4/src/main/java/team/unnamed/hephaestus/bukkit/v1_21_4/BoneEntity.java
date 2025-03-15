@@ -23,7 +23,10 @@
  */
 package team.unnamed.hephaestus.bukkit.v1_21_4;
 
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.math.Transformation;
+import net.kyori.adventure.key.Key;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.PacketListener;
@@ -38,6 +41,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Color;
 import org.jetbrains.annotations.NotNull;
@@ -46,11 +50,16 @@ import org.joml.Vector3f;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Hephaestus;
+import team.unnamed.hephaestus.Minecraft;
 import team.unnamed.hephaestus.bukkit.BoneView;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.modifier.BoneModifierMap;
+import team.unnamed.hephaestus.view.modifier.BoneModifierType;
+import team.unnamed.hephaestus.view.modifier.player.rig.PlayerBoneType;
+import team.unnamed.hephaestus.view.modifier.player.skin.Skin;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneModifierMap.Forwarding {
@@ -137,9 +146,16 @@ public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneMod
 
     @Override
     public void update(@NotNull Vector3Float position, @NotNull Quaternion rotation, @NotNull Vector3Float scale) {
-        position = modifiers.modifyPosition(position);
-        rotation = modifiers.modifyRotation(rotation);
-        scale = modifiers.modifyScale(scale);
+        // we can modify the position, rotation and scale depending on the bone modifiers here
+        final var playerBoneModifier = modifiers.getModifier(BoneModifierType.PLAYER_PART);
+        if (playerBoneModifier != null) {
+            // position however, requires an offset
+            final var playerBoneType = playerBoneModifier.type();
+            if (playerBoneType != null) {
+                position = position.add(0, playerBoneType.offset() / bone.scale(), 0);
+            }
+            // rotation and scale are not modified
+        }
 
         if (position.equals(lastPosition) && rotation.equals(lastRotation) && scale.equals(lastScale)) {
             // Don't update if everything is the same (avoids marking the data as dirty)
@@ -188,18 +204,39 @@ public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneMod
 
     @Override
     public void updateItem() {
-        final var itemKey = modifiers.modifyItem(Hephaestus.BONE_ITEM_KEY);
+        final var playerBoneModifier = modifiers.getModifier(BoneModifierType.PLAYER_PART);
+        final Skin skin;
+        final PlayerBoneType playerBoneType;
+        final ItemStack itemStack;
+        if (playerBoneModifier != null
+                && (skin = playerBoneModifier.skin()) != null
+                && (playerBoneType = playerBoneModifier.type()) != null) {
+            itemStack = createItemStack(Minecraft.PLAYER_HEAD_ITEM_KEY);
 
-        final var item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(itemKey.namespace(), itemKey.value())).orElseThrow();
-        final var itemStack = new ItemStack(item, 1);
+            // set the skin texture
+            final var properties = new PropertyMap();
+            properties.put("textures", new Property(
+                    "textures",
+                    skin.value(),
+                    skin.signature()
+            ));
+            itemStack.set(DataComponents.PROFILE, new ResolvableProfile(
+                    Optional.empty(), // name, no name
+                    Optional.empty(), // uuid,
+                    properties
+            ));
+
+            // set the player bone type custom model data
+            setSingleCustomModelData(itemStack, skin.type() == Skin.Type.SLIM ? playerBoneType.slimModelData() : playerBoneType.modelData());
+        } else {
+            itemStack = createItemStack(Hephaestus.BONE_ITEM_KEY);
+
+            // use the bone custom model data
+            setSingleCustomModelData(itemStack, bone.customModelData());
+        }
+
 
         itemStack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, true));
-        itemStack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
-                List.of((float) bone.customModelData()),
-                List.of(),
-                List.of(),
-                List.of()
-        ));
 
         setItemStack(itemStack);
     }
@@ -207,5 +244,19 @@ public class BoneEntity extends Display.ItemDisplay implements BoneView, BoneMod
     @Override
     public @NotNull BoneModifierMap modifiers() {
         return modifiers;
+    }
+
+    private static @NotNull ItemStack createItemStack(final @NotNull Key type) {
+        final var item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath(type.namespace(), type.value())).orElseThrow();
+        return new ItemStack(item, 1);
+    }
+
+    private static void setSingleCustomModelData(final @NotNull ItemStack item, final int customModelData) {
+        item.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
+                List.of((float) customModelData),
+                List.of(),
+                List.of(),
+                List.of()
+        ));
     }
 }

@@ -34,6 +34,8 @@ public interface BoneModifierMap extends BoneModifier {
         return new BoneModifierMapImpl(bone);
     }
 
+    <T extends BoneModifier> @Nullable T getModifier(final @NotNull BoneModifierType<T> type);
+
     <T extends BoneModifier> void removeModifier(final @NotNull BoneModifierType<T> type);
 
     <T extends BoneModifier> void configure(final @NotNull BoneModifierType<T> type, final @NotNull Consumer<T> configure);
@@ -42,6 +44,11 @@ public interface BoneModifierMap extends BoneModifier {
 
     interface Forwarding extends BoneModifierMap {
         @NotNull BoneModifierMap modifiers();
+
+        @Override
+        default <T extends BoneModifier> @Nullable T getModifier(final @NotNull BoneModifierType<T> type) {
+            return modifiers().getModifier(type);
+        }
 
         @Override
         default <T extends BoneModifier> void removeModifier(final @NotNull BoneModifierType<T> type) {
