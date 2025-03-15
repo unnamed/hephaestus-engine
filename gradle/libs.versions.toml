@@ -1,6 +1,6 @@
 [versions]
 creative = "1.8.0-SNAPSHOT"
-adventure = "4.15.0"
+adventure = "4.19.0"
 annotations = "24.1.0"
 mocha = "3.0.0"
 
