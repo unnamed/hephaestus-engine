@@ -5,7 +5,7 @@ annotations = "24.1.0"
 mocha = "3.0.0"
 
 # reader-blockbench
-gson = "2.11.0"
+gson = "2.12.1"
 
 # runtime-minestom
 minestom = "7320437640"
