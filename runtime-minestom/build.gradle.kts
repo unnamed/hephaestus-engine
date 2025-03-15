@@ -16,6 +16,6 @@ dependencies {
     testImplementation(libs.creative.serializer.minecraft)
 
     testImplementation(libs.minestom)
-    testImplementation("org.slf4j:slf4j-jdk14:2.0.12")
+    testImplementation("org.slf4j:slf4j-jdk14:2.0.17")
     testImplementation(project(":hephaestus-reader-blockbench"))
 }
