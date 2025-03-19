@@ -36,7 +36,7 @@ dependencies {
     implementation("me.fixeddev:commandflow-bukkit:0.6.0") // command-flow
 
     // hooks
-    compileOnly("io.lumine:Mythic-Dist:5.3.5") // MythicMobs
+    compileOnly("io.lumine:Mythic-Dist:5.8.1") // MythicMobs
     compileOnly("net.citizensnpcs:citizens-main:2.0.30-SNAPSHOT") { // Citizens
         exclude(group = "*", module = "*")
     }
