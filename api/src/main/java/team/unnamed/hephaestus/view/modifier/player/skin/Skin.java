@@ -23,7 +23,6 @@
  */
 package team.unnamed.hephaestus.view.modifier.player.skin;
 
-import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.examination.Examinable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -53,8 +52,6 @@ public interface Skin extends Examinable {
     @NotNull String value();
 
     @NotNull Type type();
-
-    @NotNull CompoundBinaryTag asNBT();
 
     enum Type {
         NORMAL,
