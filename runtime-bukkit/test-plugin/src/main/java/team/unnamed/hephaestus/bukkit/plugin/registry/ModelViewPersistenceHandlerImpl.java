@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.plugin.track;
+package team.unnamed.hephaestus.bukkit.plugin.registry;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
@@ -29,7 +29,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import team.unnamed.hephaestus.Model;
 import team.unnamed.hephaestus.bukkit.ModelView;
-import team.unnamed.hephaestus.bukkit.plugin.registry.ModelRegistry;
 import team.unnamed.hephaestus.bukkit.track.ModelViewPersistenceHandler;
 
 import java.util.concurrent.CompletableFuture;
@@ -62,6 +61,7 @@ public final class ModelViewPersistenceHandlerImpl implements ModelViewPersisten
             return CompletableFuture.completedFuture(null);
         }
 
+        System.out.println("Found out model: " + model.name() + " for entity with UUID: " + entity.getUniqueId() + "!");
         return CompletableFuture.completedFuture(model);
     }
 
@@ -70,5 +70,6 @@ public final class ModelViewPersistenceHandlerImpl implements ModelViewPersisten
         final var model = view.model();
         final var data = entity.getPersistentDataContainer();
         data.set(MODEL_KEY, PersistentDataType.STRING, model.name());
+        System.out.println("Saved model: " + model.name() + " for entity with UUID: " + entity.getUniqueId() + "!");
     }
 }

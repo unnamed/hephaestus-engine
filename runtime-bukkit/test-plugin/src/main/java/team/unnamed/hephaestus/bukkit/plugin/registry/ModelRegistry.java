@@ -21,33 +21,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package team.unnamed.hephaestus.bukkit.plugin;
+package team.unnamed.hephaestus.bukkit.plugin.registry;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.hephaestus.Model;
+import team.unnamed.hephaestus.bukkit.ModelView;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class ModelRegistry {
+import static java.util.Objects.requireNonNull;
 
-    private final Map<String, Model> models = new HashMap<>();
+public final class ModelRegistry {
+    private final Map<String, Model> models = new ConcurrentHashMap<>();
+    private final Map<UUID, ModelView> views = new ConcurrentHashMap<>();
 
-    public void registerModel(Model model) {
+    public void register(final @NotNull Model model) {
+        requireNonNull(model, "model");
         models.put(model.name(), model);
     }
 
-    public @Nullable Model model(String name) {
+    public @Nullable Model model(final @NotNull String name) {
+        requireNonNull(name, "name");
         return models.get(name);
     }
 
-    public Collection<String> modelNames() {
-        return models.keySet();
+    public @Nullable ModelView view(final @NotNull UUID uuid) {
+        requireNonNull(uuid, "uuid");
+        return views.get(uuid);
     }
 
-    public Collection<Model> models() {
+    public void view(final @NotNull ModelView view) {
+        requireNonNull(view, "view");
+        views.put(view.getUniqueId(), view);
+    }
+
+    public @NotNull Collection<ModelView> views() {
+        return views.values();
+    }
+
+    public @NotNull Collection<Model> models() {
         return models.values();
     }
-
 }
