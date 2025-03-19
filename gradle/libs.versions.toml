@@ -1,7 +1,7 @@
 [versions]
 creative = "1.8.0-SNAPSHOT"
 adventure = "4.15.0"
-annotations = "24.1.0"
+annotations = "26.0.2"
 mocha = "3.0.1"
 
 # reader-blockbench
