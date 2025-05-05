@@ -23,46 +23,45 @@
  */
 package team.unnamed.hephaestus.minestom;
 
-import net.kyori.adventure.nbt.BinaryTagTypes;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.key.Key;
 import net.minestom.server.color.Color;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
-import net.minestom.server.item.metadata.LeatherArmorMeta;
-import net.minestom.server.utils.NamespaceID;
+import net.minestom.server.item.component.CustomModelData;
+import net.minestom.server.item.component.HeadProfile;
 import org.jetbrains.annotations.NotNull;
-import org.jglrxavpok.hephaistos.nbt.NBTCompound;
-import org.jglrxavpok.hephaistos.nbt.NBTException;
-import org.jglrxavpok.hephaistos.nbt.NBTReader;
-import org.jglrxavpok.hephaistos.nbt.NBTType;
 import team.unnamed.creative.base.Vector3Float;
 import team.unnamed.hephaestus.Bone;
 import team.unnamed.hephaestus.Hephaestus;
 import team.unnamed.hephaestus.Minecraft;
 import team.unnamed.hephaestus.util.Quaternion;
 import team.unnamed.hephaestus.view.modifier.BoneModifierMap;
+import team.unnamed.hephaestus.view.modifier.BoneModifierType;
+import team.unnamed.hephaestus.view.modifier.player.rig.PlayerBoneType;
+import team.unnamed.hephaestus.view.modifier.player.skin.Skin;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
 public class BoneEntity extends GenericBoneEntity implements BoneModifierMap.Forwarding {
 
     private static final ItemStack BASE_HELMET = ItemStack.builder(Material.LEATHER_HORSE_ARMOR)
-            .meta(new LeatherArmorMeta.Builder()
-                    .color(new Color(0xFFFFFF))
-                    .build()
-            )
+            .set(DataComponents.DYED_COLOR, new Color(0xFFFFFF))
             .build();
 
     protected final ModelEntity view;
     protected final Bone bone;
     private final BoneModifierMap modifiers = BoneModifierMap.create(this);
     protected final float modelScale;
+
+    private Vector3Float lastPosition = Vector3Float.ZERO;
+    private Quaternion lastRotation = Quaternion.IDENTITY;
+    private Vector3Float lastScale = Vector3Float.ONE;
 
     private int color = 0xFFFFFF;
 
@@ -88,14 +87,16 @@ public class BoneEntity extends GenericBoneEntity implements BoneModifierMap.For
         if (bone.parentOnly() || invisible) {
             meta.setItemStack(ItemStack.AIR);
         } else {
-            meta.setItemStack(BASE_HELMET.withMeta(itemMeta ->
-                    itemMeta.customModelData(bone.customModelData())));
+            meta.setItemStack(itemWithCustomData(
+                    BASE_HELMET,
+                    bone.customModelData()
+            ));
         }
     }
 
     protected void initialize(Vector3Float initialPosition, Quaternion initialRotation) {
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
-        meta.setDisplayContext(ItemDisplayMeta.DisplayContext.THIRD_PERSON_LEFT_HAND);
+        meta.setDisplayContext(ItemDisplayMeta.DisplayContext.THIRDPERSON_LEFT_HAND);
         meta.setTransformationInterpolationDuration(3);
         meta.setViewRange(1000);
         meta.setHasNoGravity(true);
@@ -107,9 +108,25 @@ public class BoneEntity extends GenericBoneEntity implements BoneModifierMap.For
 
     @Override
     public void update(@NotNull Vector3Float position, @NotNull Quaternion rotation, @NotNull Vector3Float scale) {
-        position = modifiers.modifyPosition(position);
-        rotation = modifiers.modifyRotation(rotation);
-        scale = modifiers.modifyScale(scale);
+        final var playerBoneModifier = modifiers.getModifier(BoneModifierType.PLAYER_PART);
+        if (playerBoneModifier != null) {
+            // position however, requires an offset
+            final var playerBoneType = playerBoneModifier.type();
+            if (playerBoneType != null) {
+                position = position.add(0, playerBoneType.offset() / bone.scale(), 0);
+            }
+            // rotation and scale are not modified
+        }
+
+        if (position.equals(lastPosition) && rotation.equals(lastRotation) && scale.equals(lastScale)) {
+            // Don't update if everything is the same (avoids marking the data as dirty)
+            // todo: we can separate this!
+            return;
+        }
+
+        lastPosition = position;
+        lastRotation = rotation;
+        lastScale = scale;
 
         ItemDisplayMeta meta = (ItemDisplayMeta) getEntityMeta();
         meta.setNotifyAboutChanges(false);
@@ -162,38 +179,50 @@ public class BoneEntity extends GenericBoneEntity implements BoneModifierMap.For
 
     @Override
     public void updateItem() {
-        final var itemKey = modifiers.modifyItem(Hephaestus.BONE_ITEM_KEY);
-        final var tag = modifiers.modifyItemTag(CompoundBinaryTag.builder()
-                .put(Minecraft.DISPLAY_TAG, CompoundBinaryTag.builder()
-                        .putInt(Minecraft.COLOR_TAG, color)
-                        .build())
-                .putInt(Minecraft.CUSTOM_MODEL_DATA_TAG, bone.customModelData())
-                .build());
+        final var playerBoneModifier = modifiers.getModifier(BoneModifierType.PLAYER_PART);
+        final Skin skin;
+        final PlayerBoneType playerBoneType;
+        ItemStack itemStack;
+        if (playerBoneModifier != null
+                && (skin = playerBoneModifier.skin()) != null
+                && (playerBoneType = playerBoneModifier.type()) != null) {
+            itemStack = createItemStack(Minecraft.PLAYER_HEAD_ITEM_KEY);
 
-        final var item = Material.fromNamespaceId(NamespaceID.from(itemKey));
-        if (item == null) {
-            throw new IllegalStateException("Item key " + itemKey + " is not a valid material");
-        }
-        var itemStack = ItemStack.of(item, 1);
+            itemStack = itemStack.with(DataComponents.PROFILE, new HeadProfile(
+                    null, // name, no name
+                    null, // uuid,
+                    List.of(new HeadProfile.Property("textures", skin.value(), skin.signature()))
+            ));
 
-        try {
-            final var bytes = new ByteArrayOutputStream();
-            final var output = new DataOutputStream(bytes);
-            BinaryTagTypes.COMPOUND.write(tag, output);
-            output.flush();
+            // set the player bone type custom model data
+            itemStack = itemWithCustomData(itemStack, skin.type() == Skin.Type.SLIM ? playerBoneType.slimModelData() : playerBoneType.modelData());
+        } else {
+            itemStack = createItemStack(Hephaestus.BONE_ITEM_KEY);
 
-            final var minestomTag = (NBTCompound) NBTReader.fromArray(bytes.toByteArray())
-                    .readRaw(NBTType.TAG_Compound.getOrdinal());
-            itemStack = itemStack.withMeta(meta -> meta.tagHandler().updateContent(minestomTag));
-        } catch (final IOException | NBTException e) {
-            throw new RuntimeException("Failed to write item tag", e);
+            // use the bone custom model data
+            itemStack = itemWithCustomData(itemStack, bone.customModelData());
         }
 
+
+        itemStack = itemStack.with(DataComponents.DYED_COLOR, new Color(color));
         ((ItemDisplayMeta) getEntityMeta()).setItemStack(itemStack);
+    }
+
+    private static @NotNull ItemStack createItemStack(final @NotNull Key type) {
+        return ItemStack.builder(Objects.requireNonNull(Material.fromKey(type))).build();
     }
 
     @Override
     public @NotNull BoneModifierMap modifiers() {
         return modifiers;
+    }
+
+    private ItemStack itemWithCustomData(final @NotNull ItemStack item, final int customModelData) {
+        return item.with(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(
+                List.of((float) customModelData),
+                List.of(),
+                List.of(),
+                List.of()
+        ));
     }
 }

@@ -9,7 +9,7 @@ includePrefixed("reader-blockbench")
 includePrefixed("runtime-bukkit:api")
 includePrefixed("runtime-bukkit:adapt-v1_21_4")
 includePrefixed("runtime-bukkit:test-plugin")
-//includePrefixed("runtime-minestom")
+includePrefixed("runtime-minestom")
 
 fun includePrefixed(name: String) {
     val kebabName = name.replace(':', '-')
