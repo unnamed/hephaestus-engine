@@ -1,6 +1,6 @@
 plugins {
     id("hephaestus.runtime-bukkit-conventions")
-    id("com.gradleup.shadow") version "8.3.6"
+    id("com.gradleup.shadow") version "8.3.11"
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
